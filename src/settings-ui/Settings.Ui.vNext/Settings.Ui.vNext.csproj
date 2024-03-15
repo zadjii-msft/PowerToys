@@ -1,0 +1,203 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Version.props" />
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.20348.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <RootNamespace>Settings.Ui.VNext</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+    <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <ApplicationIcon>Assets\Settings\icon.ico</ApplicationIcon>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- OutputPath looks like this because it has to be called both by settings and publish.cmd -->
+    <OutputPath>..\..\..\$(Platform)\$(Configuration)\WinUI3Apps</OutputPath>
+    <SelfContained>true</SelfContained>
+    <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
+    <ProjectPriFileName>PowerToys.Settings.VNext.pri</ProjectPriFileName>
+  </PropertyGroup>
+
+  <!-- SelfContained=true requires RuntimeIdentifier to be set -->
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='ARM64'">
+    <RuntimeIdentifier>win-arm64</RuntimeIdentifier>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <NoWarn></NoWarn>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>CA1720</WarningsNotAsErrors>
+    <Optimize>False</Optimize>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <NoWarn></NoWarn>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>CA1720</WarningsNotAsErrors>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <!-- See https://learn.microsoft.com/windows/apps/develop/platform/csharp-winrt/net-projection-from-cppwinrt-component for more info -->
+  <PropertyGroup>
+    <CsWinRTIncludes>PowerToys.GPOWrapper</CsWinRTIncludes>
+    <CsWinRTGeneratedFilesDir>$(OutDir)</CsWinRTGeneratedFilesDir>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Assets\Settings\icon.ico" />
+    <Content Include="Assets\Settings\Icons\AlwaysOnTop.png" />
+    <Content Include="Assets\Settings\Icons\Awake.png" />
+    <Content Include="Assets\Settings\Icons\ColorPicker.png" />
+    <Content Include="Assets\Settings\Icons\CommandNotFound.png" />
+    <Content Include="Assets\Settings\Icons\CropAndLock.png" />
+    <Content Include="Assets\Settings\Icons\EnvironmentVariables.png" />
+    <Content Include="Assets\Settings\Icons\FancyZones.png" />
+    <Content Include="Assets\Settings\Icons\FileExplorerPreview.png" />
+    <Content Include="Assets\Settings\Icons\FileLocksmith.png" />
+    <Content Include="Assets\Settings\Icons\FindMyMouse.png" />
+    <Content Include="Assets\Settings\Icons\Hosts.png" />
+    <Content Include="Assets\Settings\Icons\ImageResizer.png" />
+    <Content Include="Assets\Settings\Icons\KeyboardManager.png" />
+    <Content Include="Assets\Settings\Icons\MouseCrosshairs.png" />
+    <Content Include="Assets\Settings\Icons\MouseHighlighter.png" />
+    <Content Include="Assets\Settings\Icons\MouseJump.png" />
+    <Content Include="Assets\Settings\Icons\MouseUtils.png" />
+    <Content Include="Assets\Settings\Icons\MouseWithoutBorders.png" />
+    <Content Include="Assets\Settings\Icons\PasteAsPlainText.png" />
+    <Content Include="Assets\Settings\Icons\Peek.png" />
+    <Content Include="Assets\Settings\Icons\PowerRename.png" />
+    <Content Include="Assets\Settings\Icons\PowerToys.png" />
+    <Content Include="Assets\Settings\Icons\PowerToysRun.png" />
+    <Content Include="Assets\Settings\Icons\QuickAccent.png" />
+    <Content Include="Assets\Settings\Icons\RegistryPreview.png" />
+    <Content Include="Assets\Settings\Icons\ScreenRuler.png" />
+    <Content Include="Assets\Settings\Icons\ShortcutGuide.png" />
+    <Content Include="Assets\Settings\Icons\TextExtractor.png" />
+    <Content Include="Assets\Settings\Icons\VideoConferenceMute.png" />
+    <Content Include="Assets\Settings\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\Settings\logo.png" />
+    <Content Include="Assets\Settings\Logo.scale-200.png" />
+    <Content Include="Assets\Settings\logo150.png" />
+    <Content Include="Assets\Settings\logo44.png" />
+    <Content Include="Assets\Settings\Modules\AlwaysOnTop.png" />
+    <Content Include="Assets\Settings\Modules\Awake.png" />
+    <Content Include="Assets\Settings\Modules\CmdNotFound.png" />
+    <Content Include="Assets\Settings\Modules\ColorPicker.png" />
+    <Content Include="Assets\Settings\Modules\CropAndLock.png" />
+    <Content Include="Assets\Settings\Modules\EnvironmentVariables.png" />
+    <Content Include="Assets\Settings\Modules\FancyZones.png" />
+    <Content Include="Assets\Settings\Modules\FileExplorerPreview.png" />
+    <Content Include="Assets\Settings\Modules\FileLocksmith.png" />
+    <Content Include="Assets\Settings\Modules\HostsFileEditor.png" />
+    <Content Include="Assets\Settings\Modules\ImageResizer.png" />
+    <Content Include="Assets\Settings\Modules\KBM.png" />
+    <Content Include="Assets\Settings\Modules\MouseUtils.png" />
+    <Content Include="Assets\Settings\Modules\MouseWithoutBorders.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\AlwaysOnTop.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\Awake.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\CmdNotFound.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\ColorPicker.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\CropAndLock.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\EnvironmentVariables.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\FancyZones.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\FileExplorer.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\FileLocksmith.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\HostsFileEditor.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\ImageResizer.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\KBM.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\MouseUtils.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\MouseWithoutBorders.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\PasteAsPlainText.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\Peek.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\PowerRename.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\PTHero.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\PTHeroShort.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\QuickAccent.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\RegistryPreview.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\Run.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\ScreenRuler.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\ShortcutGuide.png" />
+    <Content Include="Assets\Settings\Modules\OOBE\TextExtractor.gif" />
+    <Content Include="Assets\Settings\Modules\OOBE\VideoConferenceMute.png" />
+    <Content Include="Assets\Settings\Modules\PasteAsPlainText.png" />
+    <Content Include="Assets\Settings\Modules\Peek.png" />
+    <Content Include="Assets\Settings\Modules\PowerLauncher.png" />
+    <Content Include="Assets\Settings\Modules\PowerRename.png" />
+    <Content Include="Assets\Settings\Modules\PT.png" />
+    <Content Include="Assets\Settings\Modules\QuickAccent.png" />
+    <Content Include="Assets\Settings\Modules\RegistryPreview.png" />
+    <Content Include="Assets\Settings\Modules\Run.png" />
+    <Content Include="Assets\Settings\Modules\ScreenRuler.png" />
+    <Content Include="Assets\Settings\Modules\ShortcutGuide.png" />
+    <Content Include="Assets\Settings\Modules\TextExtractor.png" />
+    <Content Include="Assets\Settings\Modules\VideoConference.png" />
+    <Content Include="Assets\Settings\Modules\Wallpaper.png" />
+    <Content Include="Assets\Settings\Scripts\CheckCmdNotFoundRequirements.ps1" />
+    <Content Include="Assets\Settings\Scripts\DisableModule.ps1" />
+    <Content Include="Assets\Settings\Scripts\EnableModule.ps1" />
+    <Content Include="Assets\Settings\Scripts\InstallPowerShell7.ps1" />
+    <Content Include="Assets\Settings\Scripts\InstallWinGetClientModule.ps1" />
+    <Content Include="Assets\Settings\SplashScreen.png" />
+    <Content Include="Assets\Settings\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Settings\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Settings\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Settings\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\Settings\StoreLogo.png" />
+    <Content Include="Assets\Settings\StoreLogo.scale-100.png" />
+    <Content Include="Assets\Settings\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" />
+    <PackageReference Include="CommunityToolkit.WinUI.Animations" />
+    <PackageReference Include="CommunityToolkit.WinUI.Extensions" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" />
+    <PackageReference Include="WinUIEx" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" />
+    <PackageReference Include="StreamJsonRpc" />
+    <!-- HACK: Microsoft.Extensions.Hosting is referenced, even if it is not used, to force dll versions to be the same as in other projects. Really only needed since the Experimentation APIs that are added in CI reference some net standard 2.0 assemblies. -->
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+  <!-- Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+       Tools extension to be activated for this project even if the Windows App SDK Nuget
+       package has not yet been restored -->
+
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- HACK: Common.UI is referenced, even if it is not used, to force dll versions to be the same as in other projects that use it. It's still unclear why this is the case, but this is need for flattening the install directory. -->
+    <ProjectReference Include="..\..\common\Common.UI\Common.UI.csproj" />
+    <ProjectReference Include="..\..\common\AllExperiments\AllExperiments.csproj" />
+    <ProjectReference Include="..\..\common\GPOWrapper\GPOWrapper.vcxproj" />
+    <ProjectReference Include="..\..\common\interop\PowerToys.Interop.vcxproj" />
+    <ProjectReference Include="..\..\common\ManagedCommon\ManagedCommon.csproj" />
+    <ProjectReference Include="..\..\common\ManagedTelemetry\Telemetry\ManagedTelemetry.csproj" />
+    <ProjectReference Include="..\Settings.UI.Library\Settings.UI.Library.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- TODO: fix issues and reenable -->
+    <!-- These are caused by streamjsonrpc dependency on Microsoft.VisualStudio.Threading.Analyzers -->
+    <!-- We might want to add that to the project and fix the issues as well -->
+    <NoWarn>VSTHRD002;VSTHRD110;VSTHRD100;VSTHRD200;VSTHRD101</NoWarn>
+  </PropertyGroup>
+
+</Project>
