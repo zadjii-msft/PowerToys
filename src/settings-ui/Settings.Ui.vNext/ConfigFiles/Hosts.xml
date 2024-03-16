@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ModuleSettings Name="Hosts" Icon="ms-appx:///Assets/Settings/Icons/Hosts.png" ActivationSetting="true" Gpo="true">
+  <Header Image="ms-appx:///Assets/Settings/Modules/HostsFileEditor.png">
+    <PrimaryLink Name="LearnMore_Hosts" Link="https://aka.ms/PowerToysOverview_HostsFileEditor"></PrimaryLink>
+  </Header>
+  <Footer></Footer>
+  <Group Name="Hosts_Activation_GroupSettings">
+    <Link Name="Hosts_LaunchButtonControl" ActionIcon="&#xE8A7;" Icon="&#xEA37;"></Link>
+    <Toggle Name="Hosts_Toggle_LauchAdministrator" Icon="&#xEA37;" SettingPropertyName="LaunchAdminitstratorEnabled"></Toggle>
+    <Toggle Name="Hosts_Toggle_ShowStartupWarning" Icon="&#xE7EF;" SettingPropertyName="ShowStartupWarning"></Toggle>
+  </Group>
+  <Group Name="Hosts_Behavior_GroupSettings">
+    <ComboBox Name="Hosts_AdditionalLinesPosition" SettingPropertyName="AdditionalLinesPosition" Icon="&#xE8A5;">
+      <Item Name="Hosts_AdditionalLinesPosition_Top" Value="AdditionalLinesPosition.Top"></Item>
+      <Item Name="Hosts_AdditionalLinesPosition_Bottom" Value="AdditionalLinesPosition.Bottom"></Item>
+    </ComboBox>
+    <Toggle Name="Hosts_Toggle_LoopbackDuplicates" Icon="&#xE8A5;" SettingPropertyName="LoopbackDuplicates"></Toggle>
+    <ComboBox Name="Hosts_Encoding" SettingPropertyName="Encoding">
+      <Item Name="Hosts_Encoding_UTF8" Value="HostsEncoding.Utf8"></Item>
+      <Item Name="Hosts_Encoding_UTF8Bom" Value="HostsEncoding.Utf8Bom"></Item>
+    </ComboBox>
+  </Group>
+</ModuleSettings>

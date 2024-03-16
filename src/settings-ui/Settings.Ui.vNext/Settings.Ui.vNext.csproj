@@ -19,8 +19,17 @@
     <OutputPath>..\..\..\$(Platform)\$(Configuration)\WinUI3Apps</OutputPath>
     <SelfContained>true</SelfContained>
     <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
-    <ProjectPriFileName>PowerToys.Settings.VNext.pri</ProjectPriFileName>
+    <ProjectPriFileName>Settings.Ui.VNext.pri</ProjectPriFileName>
   </PropertyGroup>
+
+  <!-- Make directory visible to Source Generators -->
+  <PropertyGroup>
+    <ProjectPath>$(MSBuildThisFileDirectory)</ProjectPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <CompilerVisibleProperty Include="ProjectPath" />
+  </ItemGroup>
+
 
   <!-- SelfContained=true requires RuntimeIdentifier to be set -->
   <PropertyGroup Condition="'$(Platform)'=='x64'">
@@ -53,6 +62,9 @@
     <CsWinRTGeneratedFilesDir>$(OutDir)</CsWinRTGeneratedFilesDir>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="ShellPage.xaml" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Settings\icon.ico" />
     <Content Include="Assets\Settings\Icons\AlwaysOnTop.png" />
@@ -191,6 +203,19 @@
     <ProjectReference Include="..\..\common\ManagedCommon\ManagedCommon.csproj" />
     <ProjectReference Include="..\..\common\ManagedTelemetry\Telemetry\ManagedTelemetry.csproj" />
     <ProjectReference Include="..\Settings.UI.Library\Settings.UI.Library.csproj" />
+    <ProjectReference Include="..\Settings.SourceGenerators\Settings.SourceGenerators.csproj"
+              OutputItemType="Analyzer"
+              ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="MainWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="ShellPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 
   <PropertyGroup>
@@ -199,5 +224,7 @@
     <!-- We might want to add that to the project and fix the issues as well -->
     <NoWarn>VSTHRD002;VSTHRD110;VSTHRD100;VSTHRD200;VSTHRD101</NoWarn>
   </PropertyGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>
