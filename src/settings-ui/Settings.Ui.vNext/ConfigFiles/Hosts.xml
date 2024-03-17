@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ModuleSettings Name="Hosts" Icon="ms-appx:///Assets/Settings/Icons/Hosts.png" ActivationSetting="true" Gpo="true">
   <Header Image="ms-appx:///Assets/Settings/Modules/HostsFileEditor.png">
-    <PrimaryLink Name="LearnMore_Hosts" Link="https://aka.ms/PowerToysOverview_HostsFileEditor"></PrimaryLink>
+    <PrimaryLink Name="LearnMore_Hosts" Uri="https://aka.ms/PowerToysOverview_HostsFileEditor"></PrimaryLink>
   </Header>
   <Footer></Footer>
   <Group Name="Hosts_Activation_GroupSettings">

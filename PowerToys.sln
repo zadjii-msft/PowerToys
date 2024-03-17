@@ -176,6 +176,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		src\.editorconfig = src\.editorconfig
 		.vsconfig = .vsconfig
+		AutoUpdateAssemblyName.txt = AutoUpdateAssemblyName.txt
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		Directory.Packages.props = Directory.Packages.props
@@ -570,7 +571,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileLocksmithLib", "src\mod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Settings.Ui.VNext", "src\settings-ui\Settings.Ui.vNext\Settings.Ui.VNext.csproj", "{78DFB574-FE7E-4131-99F2-9D39C0332FBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings.SourceGenerators", "src\settings-ui\Settings.SourceGenerators\Settings.SourceGenerators.csproj", "{6C2B7F9F-6118-437A-B820-4C651E837CFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Settings.SourceGenerators", "src\settings-ui\Settings.SourceGenerators\Settings.SourceGenerators.csproj", "{6C2B7F9F-6118-437A-B820-4C651E837CFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -21,6 +21,9 @@
     <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
     <ProjectPriFileName>Settings.Ui.VNext.pri</ProjectPriFileName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
 
   <!-- Make directory visible to Source Generators -->
   <PropertyGroup>
@@ -63,7 +66,25 @@
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Controls\AlphaColorPickerButton.xaml" />
+    <None Remove="Controls\ColorFormatEditor.xaml" />
+    <None Remove="Controls\ColorPickerButton.xaml" />
+    <None Remove="Controls\FancyZonesPreviewControl.xaml" />
+    <None Remove="Controls\FlyoutMenuButton\FlyoutMenuButton.xaml" />
+    <None Remove="Controls\IsEnabledTextBlock\IsEnabledTextBlock.xaml" />
+    <None Remove="Controls\KeyVisual\KeyVisual.xaml" />
+    <None Remove="Controls\OOBEPageControl\OOBEPageControl.xaml" />
+    <None Remove="Controls\PowerAccentShortcutControl.xaml" />
+    <None Remove="Controls\SettingsGroup\SettingsGroup.xaml" />
+    <None Remove="Controls\SettingsPageControl\SettingsPageControl.xaml" />
+    <None Remove="Controls\ShortcutControl\ShortcutControl.xaml" />
+    <None Remove="Controls\ShortcutControl\ShortcutDialogContentControl.xaml" />
+    <None Remove="Controls\ShortcutControl\ShortcutWithTextLabelControl.xaml" />
     <None Remove="ShellPage.xaml" />
+    <None Remove="Styles\Button.xaml" />
+    <None Remove="Styles\TextBlock.xaml" />
+    <None Remove="Themes\Colors.xaml" />
+    <None Remove="Themes\Generic.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Settings\icon.ico" />
@@ -203,17 +224,69 @@
     <ProjectReference Include="..\..\common\ManagedCommon\ManagedCommon.csproj" />
     <ProjectReference Include="..\..\common\ManagedTelemetry\Telemetry\ManagedTelemetry.csproj" />
     <ProjectReference Include="..\Settings.UI.Library\Settings.UI.Library.csproj" />
-    <ProjectReference Include="..\Settings.SourceGenerators\Settings.SourceGenerators.csproj"
-              OutputItemType="Analyzer"
-              ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Settings.SourceGenerators\Settings.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Controls\AlphaColorPickerButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\ColorFormatEditor.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\ColorPickerButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\FancyZonesPreviewControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\FlyoutMenuButton\FlyoutMenuButton.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\IsEnabledTextBlock\IsEnabledTextBlock.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\KeyVisual\KeyVisual.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\OOBEPageControl\OOBEPageControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\PowerAccentShortcutControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\SettingsGroup\SettingsGroup.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\SettingsPageControl\SettingsPageControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\ShortcutControl\ShortcutControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\ShortcutControl\ShortcutDialogContentControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\ShortcutControl\ShortcutWithTextLabelControl.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="MainWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="ShellPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Styles\Button.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Styles\TextBlock.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Themes\Colors.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Themes\Generic.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>

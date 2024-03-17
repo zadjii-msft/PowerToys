@@ -138,6 +138,8 @@ namespace Settings.Ui.VNext.Views
             IPCResponseHandleList.Add(ReceiveMessage);
             SetTitleBar();
             GeneratedFunctions.PopulateNavigationItems(navigationView);
+
+            shellFrame.Navigate(typeof(HostsPage));
         }
 
         public static int SendDefaultIPCMessage(string msg)
