@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ModuleSettings Name="Hosts" Icon="ms-appx:///Assets/Settings/Icons/Hosts.png" ActivationSetting="true" Gpo="true">
+<ModuleSettings xmlns="http://schemas.microsoft.com/PowerToys/FileActionsMenu/ModuleDefinition" Name="Hosts" Icon="ms-appx:///Assets/Settings/Icons/Hosts.png" Gpo="true">
   <Header Image="ms-appx:///Assets/Settings/Modules/HostsFileEditor.png">
     <PrimaryLink Name="LearnMore_Hosts" Uri="https://aka.ms/PowerToysOverview_HostsFileEditor"></PrimaryLink>
   </Header>
   <Footer></Footer>
+  <ActivationToggle />
   <Group Name="Hosts_Activation_GroupSettings">
     <Link Name="Hosts_LaunchButtonControl" ActionIcon="&#xE8A7;" Icon="&#xEA37;"></Link>
     <Toggle Name="Hosts_Toggle_LauchAdministrator" Icon="&#xEA37;" SettingPropertyName="LaunchAdminitstratorEnabled"></Toggle>

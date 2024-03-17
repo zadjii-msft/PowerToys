@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns="http://schemas.microsoft.com/PowerToys/FileActionsMenu/ModuleDefinition" targetNamespace="http://schemas.microsoft.com/PowerToys/FileActionsMenu/ModuleDefinition" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:group name="elements">
+    <xs:choice>
+      <xs:element name="ComboBox">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" name="Item">
+              <xs:complexType>
+                <xs:attribute name="Name" type="xs:string" use="required" />
+                <xs:attribute name="Value" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="Name" type="xs:string" use="required" />
+          <xs:attribute name="SettingPropertyName" type="xs:string" use="required" />
+          <xs:attribute name="Icon" type="xs:string" use="optional" />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Link">
+        <xs:complexType>
+          <xs:attribute name="Name" type="xs:string" use="required" />
+          <xs:attribute name="ActionIcon" type="xs:string" use="required" />
+          <xs:attribute name="Icon" type="xs:string" use="required" />
+        </xs:complexType>
+      </xs:element>
+      <xs:element maxOccurs="unbounded" name="Toggle">
+        <xs:complexType>
+          <xs:attribute name="Name" type="xs:string" use="required" />
+          <xs:attribute name="Icon" type="xs:string" use="required" />
+          <xs:attribute name="SettingPropertyName" type="xs:string" use="required" />
+        </xs:complexType>
+      </xs:element>
+      <xs:element maxOccurs="unbounded" name="ActivationToggle">
+      </xs:element>
+    </xs:choice>
+
+  </xs:group>
+  <xs:element name="ModuleSettings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Header" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PrimaryLink" maxOccurs ="1">
+                <xs:complexType>
+                  <xs:attribute name="Name" type="xs:string" use="required" />
+                  <xs:attribute name="Uri" type="xs:anyURI" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="Image" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Footer" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SecondaryLink" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="Name" type="xs:string" use="required" />
+                  <xs:attribute name="Uri" type="xs:anyURI" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:choice maxOccurs="unbounded">
+          <xs:group ref="elements" maxOccurs ="unbounded" />
+          <xs:element maxOccurs="unbounded" name="Group">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:group ref="elements" maxOccurs="unbounded" />
+              </xs:sequence>
+              <xs:attribute name="Name" type="xs:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="Name" type="xs:string" use="required" />
+      <xs:attribute name="Icon" type="xs:anyURI" use="required" />
+      <xs:attribute name="Gpo" type="xs:boolean" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

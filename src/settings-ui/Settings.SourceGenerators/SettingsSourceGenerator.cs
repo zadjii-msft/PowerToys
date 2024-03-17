@@ -95,6 +95,25 @@ namespace Settings.Ui.VNext
                 string headerPrimaryLinkName = doc.SelectSingleNode("ModuleSettings/Header/PrimaryLink").Attributes["Name"].Value;
                 string headerPrimaryLinkUri = doc.SelectSingleNode("ModuleSettings/Header/PrimaryLink").Attributes["Uri"].Value;
 
+                // Generate secondary links
+                StringBuilder secondaryLinksSource = new StringBuilder();
+                XmlNodeList secondaryLinks = doc.SelectNodes("ModuleSettings/Footer/SecondaryLink");
+
+                foreach (XmlNode link in secondaryLinks)
+                {
+                    string linkName = link.Attributes["Name"].Value;
+                    string linkUri = link.Attributes["Uri"].Value;
+
+                    secondaryLinksSource.Append(
+                        $@"
+                    new Settings.Ui.VNext.Controls.PageLink
+                    {{
+                        Text = loader.GetString(""{linkName}/Text""),
+                        Link = new Uri(""{linkUri}"")
+                    }},
+");
+                }
+
                 doc.SelectSingleNode("ModuleSettings/Header").RemoveAll();
                 doc.SelectSingleNode("ModuleSettings/Footer").RemoveAll();
 
@@ -125,6 +144,11 @@ namespace Settings.Ui.VNext
                         Link = new Uri(""{headerPrimaryLinkUri}"")
                     }}
                 }},
+                {(secondaryLinks.Count > 0 ? $@"SecondaryLinksHeader = loader.GetString(""{moduleName}/SecondaryLinksHeader"")," : string.Empty)}
+                SecondaryLinks = new System.Collections.ObjectModel.ObservableCollection<Settings.Ui.VNext.Controls.PageLink>
+                {{
+                    {secondaryLinksSource}
+                }}
             }};
         }}
     }}
