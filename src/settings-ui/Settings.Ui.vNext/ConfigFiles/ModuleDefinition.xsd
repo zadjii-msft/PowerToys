@@ -1,23 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns="http://schemas.microsoft.com/PowerToys/FileActionsMenu/ModuleDefinition" targetNamespace="http://schemas.microsoft.com/PowerToys/FileActionsMenu/ModuleDefinition" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="InfoBarSeverity">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Informational" />
+      <xs:enumeration value="Success" />
+      <xs:enumeration value="Warning" />
+      <xs:enumeration value="Error" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:group name="elements">
     <xs:choice>
+      <xs:element name="InfoBar">
+        <xs:complexType>
+          <xs:attribute name="Text" type="xs:string" use="required"></xs:attribute>
+          <xs:attribute name="Severity" type="InfoBarSeverity" use="required"></xs:attribute>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="ComboBox">
+        <xs:annotation>
+          <xs:documentation>
+            An element that lets the user select a value from a list of options. One option has to be selected by default.
+          </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
           <xs:sequence>
             <xs:element maxOccurs="unbounded" name="Item">
               <xs:complexType>
-                <xs:attribute name="Name" type="xs:string" use="required" />
-                <xs:attribute name="Value" type="xs:string" use="required" />
+                <xs:attribute name="Name" type="xs:string" use="required">
+                  <xs:annotation>
+                    <xs:documentation>
+                      The name of the option.
+                    </xs:documentation>
+                  </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="Value" type="xs:string" use="required">
+                  <xs:annotation>
+                    <xs:documentation>
+                      The value of the option. Needs to be an enum value or true or false.
+                    </xs:documentation>
+                  </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="Default" type="xs:boolean" use="optional">
+                  <xs:annotation>
+                    <xs:documentation>
+                      If true, this option will be selected by default. Only one option can be selected by default.
+                    </xs:documentation>
+                  </xs:annotation>
+                </xs:attribute>
               </xs:complexType>
             </xs:element>
           </xs:sequence>
-          <xs:attribute name="Name" type="xs:string" use="required" />
-          <xs:attribute name="SettingPropertyName" type="xs:string" use="required" />
-          <xs:attribute name="Icon" type="xs:string" use="optional" />
+          <xs:attribute name="Name" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation>
+                The name of the ComboBox.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="SettingPropertyName" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation>
+                The name of the property in the settings object that will be updated when the user selects an option.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="Icon" type="xs:anyURI" use="optional">
+            <xs:annotation>
+              <xs:documentation>
+                The uri to the icon that will be displayed next to the ComboBox.
+              </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
         </xs:complexType>
       </xs:element>
       <xs:element name="Link">
+        <xs:annotation>
+          <xs:documentation>
+            An element that represents a link displayed as a settings card.
+          </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
           <xs:attribute name="Name" type="xs:string" use="required" />
           <xs:attribute name="ActionIcon" type="xs:string" use="required" />
@@ -25,6 +86,11 @@
         </xs:complexType>
       </xs:element>
       <xs:element maxOccurs="unbounded" name="Toggle">
+        <xs:annotation>
+          <xs:documentation>
+            An element that represents a toggle displayed as a settings card.
+          </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
           <xs:attribute name="Name" type="xs:string" use="required" />
           <xs:attribute name="Icon" type="xs:string" use="required" />
@@ -34,12 +100,21 @@
       <xs:element maxOccurs="unbounded" name="ActivationToggle">
       </xs:element>
     </xs:choice>
-
   </xs:group>
   <xs:element name="ModuleSettings">
+    <xs:annotation>
+      <xs:documentation>
+        Represents the settings for a module.
+      </xs:documentation>
+    </xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:element name="Header" minOccurs="1" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation>
+              Contains the primary link to the documentation for the module.
+            </xs:documentation>
+          </xs:annotation>
           <xs:complexType>
             <xs:sequence>
               <xs:element name="PrimaryLink" maxOccurs ="1">
@@ -53,6 +128,11 @@
           </xs:complexType>
         </xs:element>
         <xs:element name="Footer" minOccurs="1" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation>
+              Contains the secondary links to the documentation for the module displayed at the bottom of the settings page.
+            </xs:documentation>
+          </xs:annotation>
           <xs:complexType>
             <xs:sequence>
               <xs:element name="SecondaryLink" minOccurs="0" maxOccurs="unbounded">
@@ -67,18 +147,47 @@
         <xs:choice maxOccurs="unbounded">
           <xs:group ref="elements" maxOccurs ="unbounded" />
           <xs:element maxOccurs="unbounded" name="Group">
+            <xs:annotation>
+              <xs:documentation>
+                Represents a group of settings with a header.
+              </xs:documentation>
+            </xs:annotation>
             <xs:complexType>
               <xs:sequence>
                 <xs:group ref="elements" maxOccurs="unbounded" />
               </xs:sequence>
-              <xs:attribute name="Name" type="xs:string" use="required" />
+              <xs:attribute name="Name" type="xs:string" use="required">
+                <xs:annotation>
+                  <xs:documentation>
+                    The name of the group displayed as the header.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:attribute>
             </xs:complexType>
           </xs:element>
         </xs:choice>
       </xs:sequence>
-      <xs:attribute name="Name" type="xs:string" use="required" />
-      <xs:attribute name="Icon" type="xs:anyURI" use="required" />
-      <xs:attribute name="Gpo" type="xs:boolean" use="required" />
+      <xs:attribute name="Name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            The name of the module.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Icon" type="xs:anyURI" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            The uri to the icon that will be displayed in the header.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Gpo" type="xs:boolean" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            If true, GPO related properties will be generated for this module.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 </xs:schema>

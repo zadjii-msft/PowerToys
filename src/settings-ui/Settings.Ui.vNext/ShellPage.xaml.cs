@@ -8,6 +8,7 @@ using ManagedCommon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
+using Settings.Ui.VNext.Controls;
 using Settings.Ui.VNext.Helpers;
 using Settings.Ui.VNext.Services;
 using Settings.Ui.VNext.ViewModels;

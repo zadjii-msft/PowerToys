@@ -2,8 +2,11 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Xml;
 using Microsoft.CodeAnalysis;
@@ -14,19 +17,20 @@ namespace Settings.SourceGenerators
     public class SettingsSourceGenerator : ISourceGenerator
     {
         private GeneratorExecutionContext _context;
-        private string[] _modules = new[] { "Hosts" };
+        private string[] _modules = new[] { "Hosts", "FileLocksmith" };
         private StringBuilder _source;
         private string _projectPath;
+        private bool _failed = false;
 
         public void Execute(GeneratorExecutionContext context)
         {
             // Remove following comment for debugging
-/*#if DEBUG
+#if DEBUG
             if (!Debugger.IsAttached)
             {
                 Debugger.Launch();
             }
-#endif*/
+#endif
 
             _context = context;
 
@@ -48,6 +52,11 @@ namespace Settings.Ui.VNext
 ");
 
             GeneratePopulateNavigationItemsFunction();
+            if (_failed)
+            {
+                return;
+            }
+
             GenerateSettingsPages();
 
             _source.Append(@"       }
@@ -65,18 +74,32 @@ namespace Settings.Ui.VNext
             {
                 XmlDocument doc = new XmlDocument();
                 doc.Load($"{_projectPath}/ConfigFiles/{item}.xml");
-                string moduleName = doc.SelectSingleNode("ModuleSettings").Attributes["Name"].Value;
-                string iconUri = doc.SelectSingleNode("ModuleSettings").Attributes["Icon"].Value;
+                doc.Schemas.Add("http://schemas.microsoft.com/PowerToys/FileActionsMenu/ModuleDefinition", $"{_projectPath}/ConfigFiles/ModuleDefinition.xsd");
+                doc.Validate((_, e) =>
+                {
+                    _context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("PT0001", "XML Validation error", $"XML Validation error in {item}.xml: " + e.Message, "XML validation Error", DiagnosticSeverity.Error, true, "Error: " + e.Message), null));
+                    _failed = true;
+                });
+
+                if (_failed)
+                {
+                    return;
+                }
+
+                string moduleName = doc.GetNode("ModuleSettings").Attributes["Name"].Value;
+                string iconUri = doc.GetNode("ModuleSettings").Attributes["Icon"].Value;
 
                 // Todo: Add NavHelper.NavigateTo property
                 _source.Append(
                     $@"
-                    NavigationViewItem navigationViewItem = new();
-                    var loader = ResourceLoaderInstance.ResourceLoader;
-                    navigationViewItem.Content = loader.GetString(""Shell_{moduleName}/Content"");
-                    navigationViewItem.Icon = new BitmapIcon()  {{ UriSource = new Uri(""{iconUri}""), ShowAsMonochrome = false }};
-                    navigationView.MenuItems.Add(navigationViewItem);
-                    NavHelper.SetNavigateTo(navigationViewItem, typeof({moduleName}Page));
+                    {{
+                        NavigationViewItem navigationViewItem = new();
+                        var loader = ResourceLoaderInstance.ResourceLoader;
+                        navigationViewItem.Content = loader.GetString(""Shell_{moduleName}/Content"");
+                        navigationViewItem.Icon = new BitmapIcon()  {{ UriSource = new Uri(""{iconUri}""), ShowAsMonochrome = false }};
+                        navigationView.MenuItems.Add(navigationViewItem);
+                        NavHelper.SetNavigateTo(navigationViewItem, typeof({moduleName}Page));
+                    }}
 ");
             }
         }
@@ -90,14 +113,14 @@ namespace Settings.Ui.VNext
                 XmlDocument doc = new XmlDocument();
                 doc.Load($"{_projectPath}/ConfigFiles/{item}.xml");
 
-                string moduleName = doc.SelectSingleNode("ModuleSettings").Attributes["Name"].Value;
-                string headerImage = doc.SelectSingleNode("ModuleSettings/Header").Attributes["Image"].Value;
-                string headerPrimaryLinkName = doc.SelectSingleNode("ModuleSettings/Header/PrimaryLink").Attributes["Name"].Value;
-                string headerPrimaryLinkUri = doc.SelectSingleNode("ModuleSettings/Header/PrimaryLink").Attributes["Uri"].Value;
+                string moduleName = doc.GetNode("ModuleSettings").Attributes["Name"].Value;
+                string headerImage = doc.GetNode("ModuleSettings/Header").Attributes["Image"].Value;
+                string headerPrimaryLinkName = doc.GetNode("ModuleSettings/Header/PrimaryLink").Attributes["Name"].Value;
+                string headerPrimaryLinkUri = doc.GetNode("ModuleSettings/Header/PrimaryLink").Attributes["Uri"].Value;
 
                 // Generate secondary links
                 StringBuilder secondaryLinksSource = new StringBuilder();
-                XmlNodeList secondaryLinks = doc.SelectNodes("ModuleSettings/Footer/SecondaryLink");
+                XmlNodeList secondaryLinks = doc.GetNodes("ModuleSettings/Footer/SecondaryLink");
 
                 foreach (XmlNode link in secondaryLinks)
                 {
@@ -114,8 +137,11 @@ namespace Settings.Ui.VNext
 ");
                 }
 
-                doc.SelectSingleNode("ModuleSettings/Header").RemoveAll();
-                doc.SelectSingleNode("ModuleSettings/Footer").RemoveAll();
+                doc.GetNode("ModuleSettings/Header").RemoveAll();
+                doc.GetNode("ModuleSettings/Footer").RemoveAll();
+
+                StringBuilder content = new StringBuilder();
+                GenerateSettingsPageElements(doc.GetNode("ModuleSettings").ChildNodes, content);
 
                 settingsPage.Append($@"// <auto-generated />
 using System;
@@ -123,6 +149,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Settings.Ui.VNext.Helpers;
+using Settings.Ui.VNext.Controls;
+using System.Collections.Generic;
 
 namespace Settings.Ui.VNext
 {{
@@ -148,7 +176,15 @@ namespace Settings.Ui.VNext
                 SecondaryLinks = new System.Collections.ObjectModel.ObservableCollection<Settings.Ui.VNext.Controls.PageLink>
                 {{
                     {secondaryLinksSource}
-                }}
+                }},
+                ModuleContent =
+                    new StackPanel
+                    {{
+                        Children =
+                        {{
+                            {content}
+                        }}
+                    }},
             }};
         }}
     }}
@@ -182,6 +218,60 @@ namespace Settings.Ui.VNext
 
             File.WriteAllText($"{_projectPath}/Generated Files/{moduleName}Page.g.xaml", content);
 #pragma warning restore RS1035 // Do not use APIs banned for analyzers
+        }
+
+        public void GenerateSettingsPageElements(XmlNodeList elements, StringBuilder source)
+        {
+            foreach (XmlNode element in elements)
+            {
+                switch (element.Name)
+                {
+                    case "Group":
+                        GenerateGroup(element, source);
+                        break;
+                    case "InfoBar":
+                        GenerateInfoBar(element, source);
+                        break;
+                }
+            }
+        }
+
+        public void GenerateGroup(XmlNode element, StringBuilder source)
+        {
+            string name = element.Attributes["Name"].Value;
+
+            StringBuilder content = new StringBuilder();
+            GenerateSettingsPageElements(element.ChildNodes, content);
+
+            source.Append(
+                $@"
+                    new SettingsGroup
+                    {{
+                        Header = loader.GetString(""{name}/Header""),
+                        ItemsSource = new System.Collections.ObjectModel.ObservableCollection<UIElement>
+                        {{
+                            {content}
+                        }}
+                    }},
+                ");
+        }
+
+        public void GenerateInfoBar(XmlNode element, StringBuilder source)
+        {
+            string severity = element.Attributes["Severity"].Value;
+            string message = element.Attributes["Text"].Value;
+
+            source.Append(
+                $@"
+                    new InfoBar
+                    {{
+                        Severity = InfoBarSeverity.{severity},
+                        Message = loader.GetString(""{message}/Title""),
+                        IsOpen = true,
+                        IsClosable = false,
+                        IsTabStop = true,
+                    }},
+                ");
         }
 
         public void Initialize(GeneratorInitializationContext context)

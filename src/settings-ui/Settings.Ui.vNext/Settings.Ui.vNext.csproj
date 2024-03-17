@@ -22,6 +22,7 @@
     <ProjectPriFileName>Settings.Ui.VNext.pri</ProjectPriFileName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 

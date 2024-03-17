@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ModuleSettings Name="FileLocksmith" Icon="ms-appx:///Assets/Settings/Icons/FileLocksmith.png" Gpo="true" xmlns="http://schemas.microsoft.com/PowerToys/FileActionsMenu/ModuleDefinition">
+  <Header Image="ms-appx:///Assets/Settings/Modules/FileLocksmith.png">
+    <PrimaryLink Name="LearnMore_FileLocksmith" Uri="https://aka.ms/PowerToysOverview_FileLocksmith"/>
+  </Header>
+  <Footer>
+  </Footer>
+  <ActivationToggle></ActivationToggle>
+  <Group Name="FileLocksmith_ShellIntegration">
+    <ComboBox Name="FileLocksmith_Toggle_ContextMenu" SettingPropertyName="EnablesOnContextExtendedMenu">
+      <Item Name="FileLocksmith_Toggle_StandardContextMenu" Value="False"/>
+      <Item Name="FileLocksmith_Toggle_ExtendedContextMenu" Value="True"/>
+    </ComboBox>
+    <InfoBar Text="ExtendedContextMenuInfo" Severity="Informational"></InfoBar>
+  </Group>
+</ModuleSettings>
