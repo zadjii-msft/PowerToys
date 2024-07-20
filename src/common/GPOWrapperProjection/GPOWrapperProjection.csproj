@@ -23,8 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GPOWrapper\GPOWrapper.vcxproj">
-    </ProjectReference>
+    <ProjectReference Include="..\GPOWrapper\GPOWrapper.vcxproj" />
   </ItemGroup>
 
 </Project>
