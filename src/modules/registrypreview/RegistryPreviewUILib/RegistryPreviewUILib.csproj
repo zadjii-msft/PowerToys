@@ -15,6 +15,7 @@
 
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
     <IsPackable>true</IsPackable>
+    <WindowsSdkPackageVersion>10.0.20348.35-preview</WindowsSdkPackageVersion> 
   </PropertyGroup>
 
   <PropertyGroup>

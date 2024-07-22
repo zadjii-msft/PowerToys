@@ -8,6 +8,7 @@
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
     <Nullable>enable</Nullable>
+    <WindowsSdkPackageVersion>10.0.20348.35-preview</WindowsSdkPackageVersion> 
   </PropertyGroup>
   <ItemGroup>
     <COMReference Include="Scripting">

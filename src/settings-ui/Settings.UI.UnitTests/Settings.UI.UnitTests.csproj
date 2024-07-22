@@ -14,6 +14,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WindowsSdkPackageVersion>10.0.20348.35-preview</WindowsSdkPackageVersion> 
   </PropertyGroup>
 
   <PropertyGroup>

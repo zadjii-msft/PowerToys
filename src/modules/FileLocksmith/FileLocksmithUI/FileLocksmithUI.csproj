@@ -24,6 +24,7 @@
     <SelfContained>true</SelfContained>
     <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
     <ProjectPriFileName>PowerToys.FileLocksmithUI.pri</ProjectPriFileName>
+    <WindowsSdkPackageVersion>10.0.20348.35-preview</WindowsSdkPackageVersion> 
   </PropertyGroup>
 
   <ItemGroup>
