@@ -17,7 +17,14 @@
     <IsPackable>true</IsPackable>
     <WindowsSdkPackageVersion>10.0.20348.35-preview</WindowsSdkPackageVersion> 
   </PropertyGroup>
-
+<!-- START Upgrade Todo: Verify this is needed for RTM -->	
+  <PropertyGroup>
+	<!-- Workaround for CWV2 SDK package bug referencing the winrt implementation binary (Microsoft.Web.WebView2.Core.dll)
+       when TargetPlatform=AnyCPU (as in this project). We don't need it for the cswinrt projection, set flag to  avoid loading it. -->
+	<WebView2EnableCsWinRTProjectionExcludeCoreRef>true</WebView2EnableCsWinRTProjectionExcludeCoreRef>
+  </PropertyGroup>
+<!-- END Upgrade Todo: Verify this is needed for RTM -->
+	
   <PropertyGroup>
     <!-- Properties for nuget package. -->
     <Authors>Microsoft Corporation</Authors>

@@ -17,6 +17,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
+
   </PropertyGroup>
 
   <Import Project="..\..\..\Version.props" />
@@ -28,6 +29,7 @@
     <PackageReference Include="Microsoft.Windows.CsWinRT" />
     <PackageReference Include="MSTest.TestAdapter" />
     <PackageReference Include="MSTest.TestFramework" />
+	<PackageReference Include="Microsoft.Web.WebView2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\PreviewHandlerCommon.csproj" />
