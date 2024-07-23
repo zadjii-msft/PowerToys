@@ -15,7 +15,7 @@
     <ProjectPriFileName>PowerToys.HostsUILib.pri</ProjectPriFileName>
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
     <IsPackable>true</IsPackable>
-    <WindowsSdkPackageVersion>10.0.20348.35-preview</WindowsSdkPackageVersion> 
+    <WindowsSdkPackageVersion>10.0.22621.35-preview</WindowsSdkPackageVersion> 
   </PropertyGroup>
 
 <!-- START Upgrade Todo: Verify this is needed for RTM -->	

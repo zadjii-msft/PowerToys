@@ -9,7 +9,7 @@
     <UseWinUI>true</UseWinUI>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <WindowsSdkPackageVersion>10.0.20348.35-preview</WindowsSdkPackageVersion> 
+    <WindowsSdkPackageVersion>10.0.22621.35-preview</WindowsSdkPackageVersion> 
   </PropertyGroup>
   <ItemGroup>
       <PRIResource Include="..\Peek.UI\Strings\en-US\Resources.resw" Link="Strings\en-US\Resources.resw">
