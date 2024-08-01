@@ -251,7 +251,6 @@ If you disable or don't configure this policy, no predefined rules are applied.
       <string id="MwbValidateRemoteIp">Validate remote machine IP Address</string>
       <string id="MwbDisableUserDefinedIpMappingRules">Disable user defined IP Address mapping rules</string>
       <string id="MwbPolicyDefinedIpMappingRules">Predefined IP Address mapping rules</string>
-      <string id="AllowPowerToysAdvancedPasteOnlineAIModels">Advanced Paste: Allow using online AI models</string>
       <string id="AllowDiagnosticData">Allow sending diagnostic data</string>
     </stringTable>
 

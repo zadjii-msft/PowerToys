@@ -368,18 +368,18 @@
                             x:Uid="GeneralPage_DiagnosticsAndFeedback_Link"
                             Margin="-8,0,0,0"
                             NavigateUri="https://aka.ms/powertoys-data-and-privacy-documentation" />
-                        <InfoBar
-                            x:Uid="DataDiagnostics_SettingIsGPOManaged_InfoBar"
-                            IsClosable="False"
-                            IsOpen="{x:Bind ViewModel.IsDataDiagnosticsGPOManaged, Mode=OneWay}"
-                            IsTabStop="{x:Bind ViewModel.IsDataDiagnosticsGPOManaged, Mode=OneWay}"
-                            Severity="Informational" />
                         <tkcontrols:SettingsCard
                             x:Uid="GeneralPage_EnableDataDiagnostics"
                             HeaderIcon="{ui:FontIcon Glyph=&#xE9D9;}"
                             IsEnabled="{x:Bind ViewModel.IsDataDiagnosticsGPOManaged, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}">
                             <ToggleSwitch x:Uid="ToggleSwitch" IsOn="{x:Bind ViewModel.EnableDataDiagnostics, Mode=TwoWay}" />
                         </tkcontrols:SettingsCard>
+                        <InfoBar
+                            x:Uid="GPO_SettingIsManaged"
+                            IsClosable="False"
+                            IsOpen="{x:Bind ViewModel.IsDataDiagnosticsGPOManaged, Mode=OneWay}"
+                            IsTabStop="{x:Bind ViewModel.IsDataDiagnosticsGPOManaged, Mode=OneWay}"
+                            Severity="Informational" />
                     </StackPanel>
                 </controls:SettingsGroup>
             </StackPanel>

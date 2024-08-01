@@ -3798,9 +3798,6 @@ Activate by holding the key for the character you want to add an accent to, then
   <data name="GeneralPage_DiagnosticsAndFeedback_Link.Content" xml:space="preserve">
     <value>Learn more about the information we log &amp; how it gets used</value>
   </data>
-  <data name="DataDiagnostics_SettingIsGPOManaged_InfoBar.Title" xml:space="preserve">
-    <value>PowerToys diagnostic data is disabled because your organization has blocked permissions to change this setting.</value>
-  </data>
   <data name="GeneralPage_EnableDataDiagnostics.Header" xml:space="preserve">
     <value>Diagnostic data</value>
   </data>

@@ -486,7 +486,7 @@
       </disabledValue>
     </policy>
     <policy name="AllowDiagnosticData" class="Both" displayName="$(string.AllowDiagnosticData)" explainText="$(string.AllowDiagnosticDataDescription)" key="Software\Policies\PowerToys" valueName="AllowDataDiagnostics">
-      <parentCategory ref="PowerToys" />
+      <parentCategory ref="GeneralSettings" />
       <supportedOn ref="SUPPORTED_POWERTOYS_0_84_0" />
       <enabledValue>
         <decimal value="1" />
