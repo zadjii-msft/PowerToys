@@ -40,7 +40,7 @@ namespace Microsoft.PowerToys.Telemetry
             object registryValue = null;
             try
             {
-                registryValue = Registry.GetValue(DataDiagnosticsRegistryKey, DataDiagnosticsRegistryValueName, false);
+                registryValue = Registry.GetValue(DataDiagnosticsRegistryKey, DataDiagnosticsRegistryValueName, 0);
             }
             catch
             {

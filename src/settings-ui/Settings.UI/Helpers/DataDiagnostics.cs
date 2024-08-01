@@ -12,13 +12,14 @@ namespace Microsoft.PowerToys.Settings.Helpers
     {
         private static readonly string DataDiagnosticsRegistryKey = @"HKEY_CURRENT_USER\Software\Classes\PowerToys\";
         private static readonly string DataDiagnosticsRegistryValueName = @"AllowDataDiagnostics";
+        private static readonly string DataDiagnosticsDataDiagnosticsUserActionRegistryValueName = @"DataDiagnosticsUserAction";
 
         public static bool GetValue()
         {
             object registryValue = null;
             try
             {
-                registryValue = Registry.GetValue(DataDiagnosticsRegistryKey, DataDiagnosticsRegistryValueName, false);
+                registryValue = Registry.GetValue(DataDiagnosticsRegistryKey, DataDiagnosticsRegistryValueName, 0);
             }
             catch
             {
@@ -41,6 +42,37 @@ namespace Microsoft.PowerToys.Settings.Helpers
             catch (Exception ex)
             {
                 Logger.LogError($"Failed to set the Data Diagnostics value in the registry: {ex.Message}");
+            }
+        }
+
+        public static bool GetUserActionValue()
+        {
+            object registryValue = null;
+            try
+            {
+                registryValue = Registry.GetValue(DataDiagnosticsRegistryKey, DataDiagnosticsDataDiagnosticsUserActionRegistryValueName, 0);
+            }
+            catch
+            {
+            }
+
+            if (registryValue is not null)
+            {
+                return (int)registryValue == 1 ? true : false;
+            }
+
+            return false;
+        }
+
+        public static void SetUserActionValue(bool value)
+        {
+            try
+            {
+                Registry.SetValue(DataDiagnosticsRegistryKey, DataDiagnosticsDataDiagnosticsUserActionRegistryValueName, value ? 1 : 0);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Failed to set the Data Diagnostics user action value in the registry: {ex.Message}");
             }
         }
     }

@@ -6,6 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tk7controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:tkcontrols="using:CommunityToolkit.WinUI.Controls"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
@@ -17,27 +19,39 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <InfoBar
-            x:Name="DataDiagnosticsInfoBar"
-            x:Uid="Oobe_WhatsNew_DataDiagnostics_InfoBar"
-            Grid.Row="0"
-            VerticalAlignment="Top"
-            IsClosable="True"
-            IsOpen="{x:Bind IsDataDiagnosticsInfoBarEnabled, Mode=OneWay}"
-            IsTabStop="{x:Bind IsDataDiagnosticsInfoBarEnabled, Mode=OneWay}"
-            Severity="Informational">
-            <InfoBar.Content>
-                <StackPanel Spacing="16">
-                    <HyperlinkButton
-                        x:Name="DataDiagnosticsInfoBarDesc"
-                        x:Uid="Oobe_WhatsNew_DataDiagnostics_InfoBar_Desc"
-                        NavigateUri="https://aka.ms/powertoys-data-and-privacy-documentation" />
+        <tkcontrols:SettingsCard
+            Visibility="{x:Bind ShowDataDiagnosticsInfoBar, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+            IsTabStop="{x:Bind ShowDataDiagnosticsInfoBar, Mode=OneWay}"
+            x:Name="WhatsNewDataDiagnosticsInfoBar" x:Uid="Oobe_WhatsNew_DataDiagnostics_InfoBar" Background="{ThemeResource InfoBarInformationalSeverityBackgroundBrush}">
+            <tkcontrols:SettingsCard.HeaderIcon>
+                <FontIcon Foreground="{ThemeResource InfoBarInformationalSeverityIconBackground}" Glyph="&#xF167;" />
+            </tkcontrols:SettingsCard.HeaderIcon>
+            <tkcontrols:SettingsCard.Description>
+                <StackPanel>
+                    <TextBlock x:Name="WhatsNewDataDiagnosticsInfoBarDescText" >
+                        <Hyperlink NavigateUri="https://aka.ms/powertoys-data-and-privacy-documentation">
+                            <Run x:Uid="Oobe_WhatsNew_DataDiagnostics_InfoBar_Desc" />
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock x:Name="WhatsNewDataDiagnosticsInfoBarDescTextYesClicked" Visibility="Collapsed">
+                        <Run x:Uid="Oobe_WhatsNew_DataDiagnostics_Yes_Click_InfoBar_Desc" />
+                        <Hyperlink Click="DataDiagnostics_OpenSettings_Click">
+                            <Run x:Uid="Oobe_WhatsNew_DataDiagnostics_Yes_Click_OpenSettings_Text" />                            
+                        </Hyperlink>
+                    </TextBlock>
                 </StackPanel>
-            </InfoBar.Content>
-            <InfoBar.ActionButton>
-                <Button x:Uid="Oobe_WhatsNew_DataDiagnostics_InfoBar_Button_Enable" Click="EnableDataDiagnostics_Click" />
-            </InfoBar.ActionButton>
-        </InfoBar>
+            </tkcontrols:SettingsCard.Description>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button x:Name="DataDiagnosticsButtonYes" x:Uid="Oobe_WhatsNew_DataDiagnostics_Button_Yes" Click="DataDiagnostics_InfoBar_YesNo_Click" CommandParameter="Yes" />
+                <HyperlinkButton x:Name="DataDiagnosticsButtonNo" x:Uid="Oobe_WhatsNew_DataDiagnostics_Button_No" Click="DataDiagnostics_InfoBar_YesNo_Click" CommandParameter="No" />
+                <Button
+                    Margin="16,0,0,0"
+                    Content="{ui:FontIcon Glyph=&#xE894;,
+                                          FontSize=16}"
+                    Style="{StaticResource SubtleButtonStyle}" 
+                    Click="DataDiagnostics_InfoBar_Close_Click" />
+            </StackPanel>
+        </tkcontrols:SettingsCard>
 
         <StackPanel
             Grid.Row="1"

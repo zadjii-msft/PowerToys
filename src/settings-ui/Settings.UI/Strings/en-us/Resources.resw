@@ -2102,20 +2102,32 @@ Take a moment to preview the various utilities listed or view our comprehensive 
   <data name="Oobe_Overview_EnableDataDiagnostics.Description" xml:space="preserve">
     <value>Helps inform bug fixes, performance, and product decisions</value>
   </data>
-  <data name="Oobe_WhatsNew_DataDiagnostics_InfoBar.Title" xml:space="preserve">
+  <data name="Oobe_WhatsNew_DataDiagnostics_InfoBar.Header" xml:space="preserve">
     <value>Turn on diagnostic data to help us improve PowerToys?</value>
   </data>
-  <data name="Oobe_WhatsNew_DataDiagnostics_InfoBar_Desc.Content" xml:space="preserve">
+  <data name="Oobe_WhatsNew_DataDiagnostics_InfoBar_Desc.Text" xml:space="preserve">
     <value>PowerToys diagnostic data is completely optional.</value>
   </data>
   <data name="Oobe_WhatsNew_DataDiagnostics_InfoBar_Button_Enable.Content" xml:space="preserve">
     <value>Enable</value>
   </data>
-  <data name="Oobe_WhatsNew_DataDiagnostics_Enabled_InfoBar_Title" xml:space="preserve">
+  <data name="Oobe_WhatsNew_DataDiagnostics_Yes_Click_InfoBar_Title" xml:space="preserve">
     <value>Thank you for helping to make PowerToys better!</value>
   </data>
-  <data name="Oobe_WhatsNew_DataDiagnostics_Enabled_InfoBar_Desc" xml:space="preserve">
-    <value>You can change this at any time from settings.</value>
+  <data name="Oobe_WhatsNew_DataDiagnostics_No_Click_InfoBar_Title" xml:space="preserve">
+    <value>Preference updated.</value>
+  </data>
+  <data name="Oobe_WhatsNew_DataDiagnostics_Yes_Click_InfoBar_Desc.Text" xml:space="preserve">
+    <value>You can change this at any time from </value>
+  </data>
+  <data name="Oobe_WhatsNew_DataDiagnostics_Yes_Click_OpenSettings_Text.Text" xml:space="preserve">
+    <value>settings.</value>
+  </data>
+  <data name="Oobe_WhatsNew_DataDiagnostics_Button_Yes.Content" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Oobe_WhatsNew_DataDiagnostics_Button_No.Content" xml:space="preserve">
+    <value>No</value>
   </data>
   <data name="ReleaseNotes.Content" xml:space="preserve">
     <value>Release notes</value>

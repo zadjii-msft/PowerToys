@@ -23,6 +23,7 @@ using Microsoft.PowerToys.Settings.UI.OOBE.Enums;
 using Microsoft.PowerToys.Settings.UI.OOBE.ViewModel;
 using Microsoft.PowerToys.Settings.UI.Views;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Win32;
 
@@ -48,7 +49,7 @@ namespace Microsoft.PowerToys.Settings.UI.OOBE.Views
 
         public OobePowerToysModule ViewModel { get; set; }
 
-        public bool IsDataDiagnosticsInfoBarEnabled => GetIsDataDiagnosticsInfoBarEnabled();
+        public bool ShowDataDiagnosticsInfoBar => GetShowDataDiagnosticsInfoBar();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OobeWhatsNew"/> class.
@@ -60,11 +61,18 @@ namespace Microsoft.PowerToys.Settings.UI.OOBE.Views
             DataContext = ViewModel;
         }
 
-        private bool GetIsDataDiagnosticsInfoBarEnabled()
+        private bool GetShowDataDiagnosticsInfoBar()
         {
             var isDataDiagnosticsGpoDisallowed = GPOWrapper.GetAllowDataDiagnosticsValue() == GpoRuleConfigured.Disabled;
 
             if (isDataDiagnosticsGpoDisallowed)
+            {
+                return false;
+            }
+
+            bool userActed = DataDiagnostics.GetUserActionValue();
+
+            if (userActed)
             {
                 return false;
             }
@@ -194,20 +202,64 @@ namespace Microsoft.PowerToys.Settings.UI.OOBE.Views
             }
         }
 
-        private void EnableDataDiagnostics_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        private void DataDiagnostics_InfoBar_YesNo_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
         {
-            // Update UI
-            DataDiagnosticsInfoBar.Title = ResourceLoaderInstance.ResourceLoader.GetString("Oobe_WhatsNew_DataDiagnostics_Enabled_InfoBar_Title");
-            DataDiagnosticsInfoBarDesc.Content = ResourceLoaderInstance.ResourceLoader.GetString("Oobe_WhatsNew_DataDiagnostics_Enabled_InfoBar_Desc");
-            DataDiagnosticsInfoBar.ActionButton.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            string commandArg = string.Empty;
+            if (sender is Button senderBtn)
+            {
+                commandArg = senderBtn.CommandParameter.ToString();
+            }
+            else if (sender is HyperlinkButton senderLink)
+            {
+                commandArg = senderLink.CommandParameter.ToString();
+            }
 
-            // Enable Data Diagnostics
-            DataDiagnostics.SetValue(true);
+            if (string.IsNullOrEmpty(commandArg))
+            {
+                return;
+            }
+
+            // Update UI
+            if (commandArg == "Yes")
+            {
+                WhatsNewDataDiagnosticsInfoBar.Header = ResourceLoaderInstance.ResourceLoader.GetString("Oobe_WhatsNew_DataDiagnostics_Yes_Click_InfoBar_Title");
+            }
+            else
+            {
+                WhatsNewDataDiagnosticsInfoBar.Header = ResourceLoaderInstance.ResourceLoader.GetString("Oobe_WhatsNew_DataDiagnostics_No_Click_InfoBar_Title");
+            }
+
+            WhatsNewDataDiagnosticsInfoBarDescText.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            WhatsNewDataDiagnosticsInfoBarDescTextYesClicked.Visibility = Microsoft.UI.Xaml.Visibility.Visible;
+            DataDiagnosticsButtonYes.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            DataDiagnosticsButtonNo.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+
+            // Set Data Diagnostics registry values
+            if (commandArg == "Yes")
+            {
+                DataDiagnostics.SetValue(true);
+            }
+            else
+            {
+                DataDiagnostics.SetValue(false);
+            }
+
+            DataDiagnostics.SetUserActionValue(true);
 
             this.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
             {
                 ShellPage.ShellHandler?.SignalGeneralDataUpdate();
             });
+        }
+
+        private void DataDiagnostics_InfoBar_Close_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            WhatsNewDataDiagnosticsInfoBar.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+        }
+
+        private void DataDiagnostics_OpenSettings_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
+        {
+            Common.UI.SettingsDeepLink.OpenSettings(Common.UI.SettingsDeepLink.SettingsWindow.Overview, true);
         }
     }
 }
