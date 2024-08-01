@@ -20,15 +20,17 @@
         </Grid.RowDefinitions>
 
         <tkcontrols:SettingsCard
-            Visibility="{x:Bind ShowDataDiagnosticsInfoBar, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+            x:Name="WhatsNewDataDiagnosticsInfoBar"
+            x:Uid="Oobe_WhatsNew_DataDiagnostics_InfoBar"
+            Background="{ThemeResource InfoBarInformationalSeverityBackgroundBrush}"
             IsTabStop="{x:Bind ShowDataDiagnosticsInfoBar, Mode=OneWay}"
-            x:Name="WhatsNewDataDiagnosticsInfoBar" x:Uid="Oobe_WhatsNew_DataDiagnostics_InfoBar" Background="{ThemeResource InfoBarInformationalSeverityBackgroundBrush}">
+            Visibility="{x:Bind ShowDataDiagnosticsInfoBar, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
             <tkcontrols:SettingsCard.HeaderIcon>
                 <FontIcon Foreground="{ThemeResource InfoBarInformationalSeverityIconBackground}" Glyph="&#xF167;" />
             </tkcontrols:SettingsCard.HeaderIcon>
             <tkcontrols:SettingsCard.Description>
                 <StackPanel>
-                    <TextBlock x:Name="WhatsNewDataDiagnosticsInfoBarDescText" >
+                    <TextBlock x:Name="WhatsNewDataDiagnosticsInfoBarDescText">
                         <Hyperlink NavigateUri="https://aka.ms/powertoys-data-and-privacy-documentation">
                             <Run x:Uid="Oobe_WhatsNew_DataDiagnostics_InfoBar_Desc" />
                         </Hyperlink>
@@ -36,20 +38,28 @@
                     <TextBlock x:Name="WhatsNewDataDiagnosticsInfoBarDescTextYesClicked" Visibility="Collapsed">
                         <Run x:Uid="Oobe_WhatsNew_DataDiagnostics_Yes_Click_InfoBar_Desc" />
                         <Hyperlink Click="DataDiagnostics_OpenSettings_Click">
-                            <Run x:Uid="Oobe_WhatsNew_DataDiagnostics_Yes_Click_OpenSettings_Text" />                            
+                            <Run x:Uid="Oobe_WhatsNew_DataDiagnostics_Yes_Click_OpenSettings_Text" />
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
             </tkcontrols:SettingsCard.Description>
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button x:Name="DataDiagnosticsButtonYes" x:Uid="Oobe_WhatsNew_DataDiagnostics_Button_Yes" Click="DataDiagnostics_InfoBar_YesNo_Click" CommandParameter="Yes" />
-                <HyperlinkButton x:Name="DataDiagnosticsButtonNo" x:Uid="Oobe_WhatsNew_DataDiagnostics_Button_No" Click="DataDiagnostics_InfoBar_YesNo_Click" CommandParameter="No" />
+                <Button
+                    x:Name="DataDiagnosticsButtonYes"
+                    x:Uid="Oobe_WhatsNew_DataDiagnostics_Button_Yes"
+                    Click="DataDiagnostics_InfoBar_YesNo_Click"
+                    CommandParameter="Yes" />
+                <HyperlinkButton
+                    x:Name="DataDiagnosticsButtonNo"
+                    x:Uid="Oobe_WhatsNew_DataDiagnostics_Button_No"
+                    Click="DataDiagnostics_InfoBar_YesNo_Click"
+                    CommandParameter="No" />
                 <Button
                     Margin="16,0,0,0"
+                    Click="DataDiagnostics_InfoBar_Close_Click"
                     Content="{ui:FontIcon Glyph=&#xE894;,
                                           FontSize=16}"
-                    Style="{StaticResource SubtleButtonStyle}" 
-                    Click="DataDiagnostics_InfoBar_Close_Click" />
+                    Style="{StaticResource SubtleButtonStyle}" />
             </StackPanel>
         </tkcontrols:SettingsCard>
 
