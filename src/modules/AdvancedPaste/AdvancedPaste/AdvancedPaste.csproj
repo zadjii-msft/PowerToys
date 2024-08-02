@@ -26,7 +26,7 @@
     <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
     <ProjectPriFileName>PowerToys.AdvancedPaste.pri</ProjectPriFileName>
     <DefineConstants>DISABLE_XAML_GENERATED_MAIN,TRACE</DefineConstants>
-    <WindowsSdkPackageVersion>10.0.22621.35-preview</WindowsSdkPackageVersion> 
+    <WindowsSdkPackageVersion>10.0.22621.37-preview</WindowsSdkPackageVersion>
   </PropertyGroup>
 
   <!-- SelfContained=true requires RuntimeIdentifier to be set -->

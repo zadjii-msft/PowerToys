@@ -12,7 +12,7 @@
     <OutputPath>$(SolutionDir)$(Platform)\$(Configuration)\tests\Hosts.Tests\</OutputPath>
     <RootNamespace>Hosts.Tests</RootNamespace>
     <AssemblyName>PowerToys.Hosts.Tests</AssemblyName>
-    <WindowsSdkPackageVersion>10.0.22621.35-preview</WindowsSdkPackageVersion> 
+    <WindowsSdkPackageVersion>10.0.22621.37-preview</WindowsSdkPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>

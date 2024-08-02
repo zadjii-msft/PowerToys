@@ -23,6 +23,7 @@
 
   <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	<CsWinRTAotWarningLevel>0</CsWinRTAotWarningLevel>
   </PropertyGroup>
 
   <PropertyGroup>
