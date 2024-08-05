@@ -3802,7 +3802,22 @@ Activate by holding the key for the character you want to add an accent to, then
     <value>Diagnostic data</value>
   </data>
   <data name="GeneralPage_EnableDataDiagnostics.Description" xml:space="preserve">
-    <value>Telemetry helps inform bug fixes, performance, and improvements</value>
+    <value>Helps inform bug fixes, performance, and improvements</value>
+  </data>
+  <data name="GeneralPage_ViewDiagnosticData.Header" xml:space="preserve">
+    <value>View diagnostic data</value>
+  </data>
+  <data name="GeneralPage_EnableViewDiagnosticData.Header" xml:space="preserve">
+    <value>Enable viewing</value>
+  </data>
+  <data name="GeneralPage_EnableViewDiagnosticData.Description" xml:space="preserve">
+    <value>Uses up to 1GB (or more) of hard drive space on your PC</value>
+  </data>
+  <data name="GeneralPage_ViewDiagnosticDataViewer.Header" xml:space="preserve">
+    <value>Diagnostic data viewer</value>
+  </data>
+  <data name="GeneralPage_ViewDiagnosticDataViewer.Description" xml:space="preserve">
+    <value>This folder may include .anr, .log, .tomb and .etl files</value>
   </data>
   <data name="Shell_AdvancedPaste.Content" xml:space="preserve">
     <value>Advanced Paste</value>
