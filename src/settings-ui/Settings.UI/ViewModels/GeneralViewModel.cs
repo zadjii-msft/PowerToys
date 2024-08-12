@@ -13,12 +13,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using global::PowerToys.GPOWrapper;
 using ManagedCommon;
-using Microsoft.PowerToys.Settings.Helpers;
 using Microsoft.PowerToys.Settings.UI.Library;
 using Microsoft.PowerToys.Settings.UI.Library.Helpers;
 using Microsoft.PowerToys.Settings.UI.Library.Interfaces;
 using Microsoft.PowerToys.Settings.UI.Library.Utilities;
 using Microsoft.PowerToys.Settings.UI.Library.ViewModels.Commands;
+using Microsoft.PowerToys.Telemetry;
 
 namespace Microsoft.PowerToys.Settings.UI.ViewModels
 {
@@ -149,10 +149,10 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
             }
             else
             {
-                _enableDataDiagnostics = DataDiagnostics.GetValue();
+                _enableDataDiagnostics = DataDiagnosticsSettings.GetEnabledValue();
             }
 
-            _enableViewDataDiagnostics = DataDiagnostics.GetViewEnabledValue();
+            _enableViewDataDiagnostics = DataDiagnosticsSettings.GetViewEnabledValue();
 
             if (dispatcherAction != null)
             {
@@ -421,7 +421,7 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
                 {
                     _enableDataDiagnostics = value;
 
-                    DataDiagnostics.SetValue(_enableDataDiagnostics);
+                    DataDiagnosticsSettings.SetEnabledValue(_enableDataDiagnostics);
                 }
             }
         }
@@ -439,7 +439,7 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
                 {
                     _enableViewDataDiagnostics = value;
 
-                    DataDiagnostics.SetViewEnabledValue(_enableViewDataDiagnostics);
+                    DataDiagnosticsSettings.SetViewEnabledValue(_enableViewDataDiagnostics);
                     OnPropertyChanged(nameof(EnableViewDataDiagnostics));
                 }
             }
@@ -1057,7 +1057,7 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
 
         internal void RefreshSettingsOnExternalChange()
         {
-            EnableDataDiagnostics = DataDiagnostics.GetValue();
+            EnableDataDiagnostics = DataDiagnosticsSettings.GetEnabledValue();
 
             NotifyPropertyChanged(nameof(EnableDataDiagnostics));
         }

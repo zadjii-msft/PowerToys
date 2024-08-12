@@ -14,6 +14,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Data.Json;
 using WinUIEx;
+using WSACrashHelper;
 
 namespace Microsoft.PowerToys.Settings.UI
 {
@@ -22,6 +23,8 @@ namespace Microsoft.PowerToys.Settings.UI
     /// </summary>
     public sealed partial class MainWindow : WindowEx
     {
+        private static ETWTrace etwTrace = new ETWTrace();
+
         public MainWindow(bool createHidden = false)
         {
             var bootTime = new System.Diagnostics.Stopwatch();
@@ -217,6 +220,7 @@ namespace Microsoft.PowerToys.Settings.UI
                 NativeMethods.ShowWindow(hWnd, NativeMethods.SW_HIDE);
             }
 
+            etwTrace.Dispose();
             App.ThemeService.ThemeChanged -= OnThemeChanged;
         }
 

@@ -3,19 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using ManagedCommon;
 using Microsoft.Win32;
 
-namespace Microsoft.PowerToys.Settings.Helpers
+namespace Microsoft.PowerToys.Telemetry
 {
-    public static class DataDiagnostics
+    public static class DataDiagnosticsSettings
     {
         private static readonly string DataDiagnosticsRegistryKey = @"HKEY_CURRENT_USER\Software\Classes\PowerToys\";
         private static readonly string DataDiagnosticsRegistryValueName = @"AllowDataDiagnostics";
         private static readonly string DataDiagnosticsDataDiagnosticsUserActionRegistryValueName = @"DataDiagnosticsUserAction";
         private static readonly string DataDiagnosticsDataDiagnosticsViewDataRegistryValueName = @"DataDiagnosticsViewEnabled";
 
-        public static bool GetValue()
+        public static bool GetEnabledValue()
         {
             object registryValue = null;
             try
@@ -34,15 +33,14 @@ namespace Microsoft.PowerToys.Settings.Helpers
             return false;
         }
 
-        public static void SetValue(bool value)
+        public static void SetEnabledValue(bool value)
         {
             try
             {
                 Registry.SetValue(DataDiagnosticsRegistryKey, DataDiagnosticsRegistryValueName, value ? 1 : 0);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.LogError($"Failed to set the Data Diagnostics value in the registry: {ex.Message}");
             }
         }
 
@@ -71,9 +69,8 @@ namespace Microsoft.PowerToys.Settings.Helpers
             {
                 Registry.SetValue(DataDiagnosticsRegistryKey, DataDiagnosticsDataDiagnosticsUserActionRegistryValueName, value ? 1 : 0);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.LogError($"Failed to set the Data Diagnostics user action value in the registry: {ex.Message}");
             }
         }
 
@@ -102,9 +99,8 @@ namespace Microsoft.PowerToys.Settings.Helpers
             {
                 Registry.SetValue(DataDiagnosticsRegistryKey, DataDiagnosticsDataDiagnosticsViewDataRegistryValueName, value ? 1 : 0);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.LogError($"Failed to set the Data Diagnostics view enabled value in the registry: {ex.Message}");
             }
         }
     }

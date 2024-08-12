@@ -16,16 +16,13 @@ using System.Threading.Tasks;
 using CommunityToolkit.WinUI.UI.Controls;
 using global::PowerToys.GPOWrapper;
 using ManagedCommon;
-using Microsoft.PowerToys.Settings.Helpers;
 using Microsoft.PowerToys.Settings.UI.Helpers;
-using Microsoft.PowerToys.Settings.UI.Library;
 using Microsoft.PowerToys.Settings.UI.OOBE.Enums;
 using Microsoft.PowerToys.Settings.UI.OOBE.ViewModel;
 using Microsoft.PowerToys.Settings.UI.Views;
+using Microsoft.PowerToys.Telemetry;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Win32;
 
 namespace Microsoft.PowerToys.Settings.UI.OOBE.Views
 {
@@ -70,14 +67,14 @@ namespace Microsoft.PowerToys.Settings.UI.OOBE.Views
                 return false;
             }
 
-            bool userActed = DataDiagnostics.GetUserActionValue();
+            bool userActed = DataDiagnosticsSettings.GetUserActionValue();
 
             if (userActed)
             {
                 return false;
             }
 
-            bool registryValue = DataDiagnostics.GetValue();
+            bool registryValue = DataDiagnosticsSettings.GetEnabledValue();
 
             bool isFirstRunAfterUpdate = (App.Current as Microsoft.PowerToys.Settings.UI.App).ShowScoobe;
             if (isFirstRunAfterUpdate && registryValue == false)
@@ -237,14 +234,14 @@ namespace Microsoft.PowerToys.Settings.UI.OOBE.Views
             // Set Data Diagnostics registry values
             if (commandArg == "Yes")
             {
-                DataDiagnostics.SetValue(true);
+                DataDiagnosticsSettings.SetEnabledValue(true);
             }
             else
             {
-                DataDiagnostics.SetValue(false);
+                DataDiagnosticsSettings.SetEnabledValue(false);
             }
 
-            DataDiagnostics.SetUserActionValue(true);
+            DataDiagnosticsSettings.SetUserActionValue(true);
 
             this.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
             {

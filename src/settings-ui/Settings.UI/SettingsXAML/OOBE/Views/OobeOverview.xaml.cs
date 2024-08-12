@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using global::PowerToys.GPOWrapper;
-using Microsoft.PowerToys.Settings.Helpers;
-using Microsoft.PowerToys.Settings.UI.Library;
 using Microsoft.PowerToys.Settings.UI.OOBE.Enums;
 using Microsoft.PowerToys.Settings.UI.OOBE.ViewModel;
 using Microsoft.PowerToys.Settings.UI.Views;
+using Microsoft.PowerToys.Telemetry;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
@@ -32,7 +31,7 @@ namespace Microsoft.PowerToys.Settings.UI.OOBE.Views
                 {
                     _enableDataDiagnostics = value;
 
-                    DataDiagnostics.SetValue(_enableDataDiagnostics);
+                    DataDiagnosticsSettings.SetEnabledValue(_enableDataDiagnostics);
 
                     this.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal, () =>
                     {
@@ -55,7 +54,7 @@ namespace Microsoft.PowerToys.Settings.UI.OOBE.Views
         {
             this.InitializeComponent();
 
-            _enableDataDiagnostics = DataDiagnostics.GetValue();
+            _enableDataDiagnostics = DataDiagnosticsSettings.GetEnabledValue();
 
             ViewModel = new OobePowerToysModule(OobeShellPage.OobeShellHandler.Modules[(int)PowerToysModules.Overview]);
             DataContext = ViewModel;
