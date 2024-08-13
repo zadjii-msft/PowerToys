@@ -80,7 +80,7 @@ namespace WSACrashHelper
                 this.sessionName = string.Format(CultureInfo.InvariantCulture, "{0}-{1}-{2}", executable, Environment.ProcessId, dateTimeNow);
                 this.etwFilePath = Path.Combine(etwFolderPath, $"{this.sessionName}.etl");
                 this.traceSession = new TraceEventSession(
-                    this.sessionName, this.etwFilePath, (TraceEventSessionOptions)(1 | 0x10 | 0x20));
+                    this.sessionName, this.etwFilePath, (TraceEventSessionOptions)(0x800 | 0x20000 | 0x1));
                 this.traceSession.EnableProvider(
                     PowerToysTelemetry.Log.Guid,
                     matchAnyKeywords: (ulong)TelemetryKeyword | (ulong)MeasuresKeyword | (ulong)CriticalDataKeyword);
