@@ -171,14 +171,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		src\.editorconfig = src\.editorconfig
 		.vsconfig = .vsconfig
+		src\Common.Dotnet.CsWinRT.props = src\Common.Dotnet.CsWinRT.props
+		src\Common.SelfContained.props = src\Common.SelfContained.props
 		Cpp.Build.props = Cpp.Build.props
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		Directory.Packages.props = Directory.Packages.props
 		Solution.props = Solution.props
 		src\Version.props = src\Version.props
-		src\Common.SelfContained.props = src\Common.SelfContained.props
-		src\Common.Dotnet.CsWinRT.props = src\Common.Dotnet.CsWinRT.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Settings.UI.Library", "src\settings-ui\Settings.UI.Library\Settings.UI.Library.csproj", "{B1BCC8C6-46B5-4BFA-8F22-20F32D99EC6A}"
@@ -295,8 +295,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Telemetry", "Telemetry", "{
 	ProjectSection(SolutionItems) = preProject
 		src\common\Telemetry\ProjectTelemetry.h = src\common\Telemetry\ProjectTelemetry.h
 		src\common\Telemetry\TelemetryBase.cs = src\common\Telemetry\TelemetryBase.cs
-		src\common\Telemetry\TraceLoggingDefines.h = src\common\Telemetry\TraceLoggingDefines.h
 		src\common\Telemetry\TraceBase.h = src\common\Telemetry\TraceBase.h
+		src\common\Telemetry\TraceLoggingDefines.h = src\common\Telemetry\TraceLoggingDefines.h
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.UI", "src\common\Common.UI\Common.UI.csproj", "{C3A17DCA-217B-462C-BB0C-BE086AF80081}"
@@ -457,7 +457,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileLocksmithExt", "src\mod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileLocksmithUI", "src\modules\FileLocksmith\FileLocksmithUI\FileLocksmithUI.csproj", "{E69B044A-2F8A-45AA-AD0B-256C59421807}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FileLocksmithLibInterop", "src\modules\FileLocksmith\FileLocksmithLibInterop\FileLocksmithLibInterop.vcxproj", "{C604B37E-9D0E-4484-8778-E8B31B0E1B3A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerToys.FileLocksmithLib.Interop", "src\modules\FileLocksmith\FileLocksmithLibInterop\FileLocksmithLibInterop.vcxproj", "{C604B37E-9D0E-4484-8778-E8B31B0E1B3A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPOWrapper", "src\common\GPOWrapper\GPOWrapper.vcxproj", "{E599C30B-9DC8-4E5A-BF27-93D4CCEDE788}"
 EndProject
@@ -583,6 +583,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerToys.Settings.DSC.Sche
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerToys.Interop", "src\common\interop\PowerToys.Interop.vcxproj", "{F055103B-F80B-4D0C-BF48-057C55620033}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EtwTrace", "src\common\Telemetry\EtwTrace\EtwTrace.vcxproj", "{8F021B46-362B-485C-BFBA-CCF83E820CBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2602,6 +2604,18 @@ Global
 		{F055103B-F80B-4D0C-BF48-057C55620033}.Release|x64.Build.0 = Release|x64
 		{F055103B-F80B-4D0C-BF48-057C55620033}.Release|x86.ActiveCfg = Release|x64
 		{F055103B-F80B-4D0C-BF48-057C55620033}.Release|x86.Build.0 = Release|x64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Debug|ARM64.Build.0 = Debug|ARM64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Debug|x64.ActiveCfg = Debug|x64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Debug|x64.Build.0 = Debug|x64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Debug|x86.ActiveCfg = Debug|x64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Debug|x86.Build.0 = Debug|x64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Release|ARM64.ActiveCfg = Release|ARM64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Release|ARM64.Build.0 = Release|ARM64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Release|x64.ActiveCfg = Release|x64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Release|x64.Build.0 = Release|x64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Release|x86.ActiveCfg = Release|x64
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2818,6 +2832,7 @@ Global
 		{C0974915-8A1D-4BF0-977B-9587D3807AB7} = {D1D6BC88-09AE-4FB4-AD24-5DED46A791DD}
 		{1D6893CB-BC0C-46A8-A76C-9728706CA51A} = {557C4636-D7E1-4838-A504-7D19B725EE95}
 		{F055103B-F80B-4D0C-BF48-057C55620033} = {5A7818A8-109C-4E1C-850D-1A654E234B0E}
+		{8F021B46-362B-485C-BFBA-CCF83E820CBD} = {8F62026A-294B-41C6-8839-87463613F216}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C3A2F9D1-7930-4EF4-A6FC-7EE0A99821D0}

@@ -14,6 +14,7 @@
 
 #include <common/comUtils/comUtils.h>
 #include <common/display/dpi_aware.h>
+#include <common/Telemetry/EtwTrace/EtwTrace.h>
 #include <common/notifications/notifications.h>
 #include <common/notifications/dont_show_again.h>
 #include <common/updating/installer.h>
@@ -301,6 +302,9 @@ toast_notification_handler_result toast_notification_handler(const std::wstring_
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR lpCmdLine, int /*nCmdShow*/)
 {
+    Shared::Trace::ETWTrace trace{ L"{38e8889b-9731-53f5-e901-e8a7c1753074}" };
+    trace.UpdateState(true);
+
     Gdiplus::GdiplusStartupInput gpStartupInput;
     ULONG_PTR gpToken;
     GdiplusStartup(&gpToken, &gpStartupInput, NULL);
@@ -477,6 +481,9 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR l
         MessageBoxW(nullptr, std::wstring(err_what.begin(), err_what.end()).c_str(), GET_RESOURCE_STRING(IDS_ERROR).c_str(), MB_OK | MB_ICONERROR);
         result = -1;
     }
+
+    trace.UpdateState(false);
+    trace.Flush();
 
     // We need to release the mutexes to be able to restart the application
     if (msi_mutex)
