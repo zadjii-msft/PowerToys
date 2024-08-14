@@ -20,6 +20,13 @@ PArgb
 Pbgra
 WHITEONBLACK
 
+# TECH
+
+cswinrt
+cppblog
+cppruntime
+cppstd
+cppwinrt
 
 # FILES
 

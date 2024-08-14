@@ -246,10 +246,6 @@ COULDNOT
 countof
 cph
 CPower
-cppblog
-cppruntime
-cppstd
-cppwinrt
 CProj
 createdump
 CREATESCHEDULEDTASK
