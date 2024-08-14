@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml.Media;
 
 namespace AdvancedPaste.Converters
 {
-    public sealed class ListViewIndexConverter : IValueConverter
+    public sealed partial class ListViewIndexConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

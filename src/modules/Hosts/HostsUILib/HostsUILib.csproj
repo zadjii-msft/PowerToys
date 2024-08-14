@@ -10,13 +10,21 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <AssemblyName>PowerToys.HostsUILib</AssemblyName>
-    <Platforms>AnyCPU</Platforms>
+
     <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
     <ProjectPriFileName>PowerToys.HostsUILib.pri</ProjectPriFileName>
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
+	<!-- START Upgrade Todo: Verify this is needed for RTM -->
+	<PropertyGroup>
+		<!-- Workaround for CWV2 SDK package bug referencing the winrt implementation binary (Microsoft.Web.WebView2.Core.dll)
+       when TargetPlatform=AnyCPU (as in this project). We don't need it for the cswinrt projection, set flag to  avoid loading it. -->
+		<WebView2EnableCsWinRTProjectionExcludeCoreRef>true</WebView2EnableCsWinRTProjectionExcludeCoreRef>
+	</PropertyGroup>
+	<!-- END Upgrade Todo: Verify this is needed for RTM -->
+	
   <PropertyGroup>
     <!-- Properties for nuget package. -->
     <Description>Implements the UI control for the PowerToys Hosts File Editor Utility</Description>
@@ -37,7 +45,7 @@
     <Content Remove="Assets\**\*.ico" Pack="false" />
   </ItemGroup>
 
-  <ItemGroup>
+ <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" />
     <PackageReference Include="CommunityToolkit.WinUI.Collections" />
