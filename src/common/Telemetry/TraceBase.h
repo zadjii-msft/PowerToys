@@ -39,17 +39,17 @@ public:
             return false;
         }
 
-        bool isDataDiagnosticsEnabled;
-        DWORD boolSize = static_cast<DWORD>(sizeof(bool));
+        DWORD isDataDiagnosticsEnabled = 0;
+        DWORD size = sizeof(isDataDiagnosticsEnabled);
 
         if (RegGetValueW(
-                key,
+                HKEY_CURRENT_USER,
+                DataDiagnosticsRegKey,
                 DataDiagnosticsRegValueName,
-                nullptr,
-                RRF_RT_REG_QWORD,
+                RRF_RT_REG_DWORD,
                 nullptr,
                 &isDataDiagnosticsEnabled,
-                &boolSize) != ERROR_SUCCESS)
+                &size) != ERROR_SUCCESS)
         {
             RegCloseKey(key);
             return false;

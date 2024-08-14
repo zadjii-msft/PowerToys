@@ -51,25 +51,25 @@ inline bool isDataDiagnosticEnabled()
 {
     HKEY key{};
     if (RegOpenKeyExW(HKEY_CURRENT_USER,
-        DataDiagnosticsRegKey,
-        0,
-        KEY_READ,
-        &key) != ERROR_SUCCESS)
+                        DataDiagnosticsRegKey,
+                        0,
+                        KEY_READ,
+                        &key) != ERROR_SUCCESS)
     {
         return false;
     }
 
-    bool isDataDiagnosticsEnabled;
-    DWORD boolSize = static_cast<DWORD>(sizeof(bool));
+    DWORD isDataDiagnosticsEnabled = 0;
+    DWORD size = sizeof(isDataDiagnosticsEnabled);
 
     if (RegGetValueW(
-        key,
-        DataDiagnosticsRegValueName,
-        nullptr,
-        RRF_RT_REG_QWORD,
-        nullptr,
-        &isDataDiagnosticsEnabled,
-        &boolSize) != ERROR_SUCCESS)
+            HKEY_CURRENT_USER,
+            DataDiagnosticsRegKey,
+            DataDiagnosticsRegValueName,
+            RRF_RT_REG_DWORD,
+            nullptr,
+            &isDataDiagnosticsEnabled,
+            &size) != ERROR_SUCCESS)
     {
         RegCloseKey(key);
         return false;
