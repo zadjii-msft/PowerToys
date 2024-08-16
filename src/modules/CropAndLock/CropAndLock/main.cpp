@@ -4,14 +4,18 @@
 #include "CropAndLockWindow.h"
 #include "ThumbnailCropAndLockWindow.h"
 #include "ReparentCropAndLockWindow.h"
-#include <common/interop/shared_constants.h>
-#include <common/utils/winapi_error.h>
-#include <common/utils/logger_helper.h>
-#include <common/utils/UnhandledExceptionHandler.h>
-#include <common/utils/gpo.h>
 #include "ModuleConstants.h"
-#include <common/utils/ProcessWaiter.h>
 #include "trace.h"
+
+#include <common/interop/shared_constants.h>
+
+#include <common/utils/gpo.h>
+#include <common/utils/logger_helper.h>
+#include <common/utils/ProcessWaiter.h>
+#include <common/utils/UnhandledExceptionHandler.h>
+#include <common/utils/winapi_error.h>
+
+#include <common/Telemetry/EtwTrace/EtwTrace.h>
 
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
@@ -33,6 +37,9 @@ bool m_running = true;
 
 int WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR lpCmdLine, _In_ int)
 {
+    Shared::Trace::ETWTrace trace{ L"{38e8889b-9731-53f5-e901-e8a7c1753074}" };
+    trace.UpdateState(true);
+
     // Initialize COM
     winrt::init_apartment(winrt::apartment_type::single_threaded);
 
@@ -265,6 +272,9 @@ int WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR lpCmdLine, _I
     CloseHandle(m_thumbnail_event_handle);
     CloseHandle(m_exit_event_handle);
     m_event_triggers_thread.join();
+
+    trace.UpdateState(false);
+    trace.Flush();
 
     return util::ShutdownDispatcherQueueControllerAndWait(controller, static_cast<int>(msg.wParam));
 }

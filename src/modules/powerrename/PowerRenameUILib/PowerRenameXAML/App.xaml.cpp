@@ -12,6 +12,8 @@
 #include <common/utils/logger_helper.h>
 #include <common/utils/gpo.h>
 
+#include <common/Telemetry/EtwTrace/EtwTrace.h>
+
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
@@ -53,6 +55,9 @@ App::App()
 /// <param name="e">Details about the launch request and process.</param>
 void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
+    Shared::Trace::ETWTrace trace{ L"{38e8889b-9731-53f5-e901-e8a7c1753074}" };
+    trace.UpdateState(true);
+
     LoggerHelpers::init_logger(moduleName, L"", LogSettings::powerRenameLoggerName);
 
     if (powertoys_gpo::getConfiguredPowerRenameEnabledValue() == powertoys_gpo::gpo_rule_configured_disabled)
@@ -190,4 +195,7 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 
     window = make<MainWindow>();
     window.Activate();
+
+    trace.UpdateState(false);
+    trace.Flush();
 }
