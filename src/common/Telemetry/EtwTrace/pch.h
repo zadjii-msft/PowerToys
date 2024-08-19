@@ -11,6 +11,7 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <chrono>
 #include <iomanip>
 #include <ShlObj.h>

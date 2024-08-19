@@ -115,6 +115,8 @@ namespace Shared
             }
 
             m_sessionName = wil::str_printf<std::wstring>(L"%ws-%d%ws", exeName.c_str(), GetCurrentProcessId(), dateTime.str().c_str());
+            std::replace(m_sessionName.begin(), m_sessionName.end(), '.', '_');
+
             const ULONG etwSessionNameCharCount = static_cast<ULONG>(m_sessionName.size() + 1);
             const ULONG etwSessionNameByteSize = etwSessionNameCharCount * sizeof(m_sessionName[0]);
 
