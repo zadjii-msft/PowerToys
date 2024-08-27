@@ -12,6 +12,10 @@ using System.Collections.ObjectModel;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 using Windows.Win32;
+using CmdPal.Common.Contracts;
+using CmdPal.Common.Extensions;
+using CmdPal.Common.Services;
+using CmdPal.Models;
 
 namespace DeveloperCommandPalette;
 
@@ -278,29 +282,43 @@ public sealed partial class MainPage : Page
 
     private async Task LoadExtensions()
     {
-        if (ViewModel != null) ViewModel.LoadingExtensions = true;
-        // Get extensions for us:
-        AppExtensionCatalog extensionCatalog = AppExtensionCatalog.Open("com.microsoft.windows.commandpalette");
-        IReadOnlyList<AppExtension> extensions = await extensionCatalog.FindAllAsync();
-        foreach (var extension in extensions)
+        if (ViewModel == null) return;
+
+        ViewModel.LoadingExtensions = true;
+
+        var extnService = Application.Current.GetService<IExtensionService>();
+        if (extnService != null)
         {
-            var name = extension.DisplayName;
-            var id = extension.Id;
-            var pfn = extension.Package.Id.FamilyName;
-
-            var (provider, classIds) = await ExtensionLoader.GetExtensionPropertiesAsync(extension);
-            if (provider == null || classIds.Count == 0)
+            var extensions = await extnService.GetInstalledExtensionsAsync(ProviderType.Commands, includeDisabledExtensions: false);
+            foreach(var extension in extensions)
             {
-                continue;
-            }
-
-            AppendLog($"Found Extension:{name}, {id}, {pfn}->");
-
-            foreach (var classId in classIds)
-            {
-                _ = LoadExtensionClassObject(extension, classId);
+                if (extension == null) continue;
+                await LoadActionExtensionObject(extension);
             }
         }
+
+        //// Get extensions for us:
+        //AppExtensionCatalog extensionCatalog = AppExtensionCatalog.Open("com.microsoft.windows.commandpalette");
+        //IReadOnlyList<AppExtension> extensions = await extensionCatalog.FindAllAsync();
+        //foreach (var extension in extensions)
+        //{
+        //    var name = extension.DisplayName;
+        //    var id = extension.Id;
+        //    var pfn = extension.Package.Id.FamilyName;
+
+        //    var (provider, classIds) = await ExtensionLoader.GetExtensionPropertiesAsync(extension);
+        //    if (provider == null || classIds.Count == 0)
+        //    {
+        //        continue;
+        //    }
+
+        //    AppendLog($"Found Extension:{name}, {id}, {pfn}->");
+
+        //    foreach (var classId in classIds)
+        //    {
+        //        _ = LoadExtensionClassObject(extension, classId);
+        //    }
+        //}
 
 
         if (ViewModel != null)
@@ -310,16 +328,13 @@ public sealed partial class MainPage : Page
         }
     }
 
-    private async Task LoadExtensionClassObject(AppExtension extension, string classId)
+    private async Task LoadActionExtensionObject(IExtensionWrapper extension)
     {
-        AppendLog($"\t{classId}");
         try
         {
-            var extensionWrapper = new ExtensionWrapper(extension, classId);
-            await extensionWrapper.StartExtensionAsync();
-            var wrapper = new ActionsProviderWrapper(extensionWrapper);
+            await extension.StartExtensionAsync();
+            var wrapper = new ActionsProviderWrapper(extension);
             ViewModel.CommandsProviders.Add(wrapper);
-
             await LoadTopLevelCommandsFromProvider(wrapper);
         }
         catch (Exception ex)
@@ -386,7 +401,7 @@ sealed class ActionsProviderWrapper
     public bool IsExtension => extensionWrapper != null;
     private readonly bool isValid;
     private ICommandProvider ActionProvider { get; }
-    private readonly ExtensionWrapper? extensionWrapper;
+    private readonly IExtensionWrapper? extensionWrapper;
     private IListItem[] _topLevelItems = [];
     public IListItem[] TopLevelItems => _topLevelItems;
 
@@ -394,7 +409,7 @@ sealed class ActionsProviderWrapper
         ActionProvider = provider;
         isValid = true;
     }
-    public ActionsProviderWrapper(ExtensionWrapper extension)
+    public ActionsProviderWrapper(IExtensionWrapper extension)
     {
         extensionWrapper = extension;
         var extensionImpl = extension.GetExtensionObject();
