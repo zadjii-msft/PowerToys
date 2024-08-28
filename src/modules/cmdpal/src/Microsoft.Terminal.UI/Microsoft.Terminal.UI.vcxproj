@@ -21,7 +21,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetName>PowerToys.$(MSBuildProjectName)</TargetName>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
