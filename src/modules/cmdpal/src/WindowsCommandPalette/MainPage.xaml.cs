@@ -16,6 +16,7 @@ using CmdPal.Common.Contracts;
 using CmdPal.Common.Extensions;
 using CmdPal.Common.Services;
 using CmdPal.Models;
+using System.Runtime.InteropServices;
 
 namespace DeveloperCommandPalette;
 
@@ -116,15 +117,26 @@ public sealed partial class MainPage : Page
         var rootListVm = new ListPageViewModel(new MainListPage(ViewModel));
         InitializePage(rootListVm);
 
-
-
         // TODO! make this async: it was originally on Page_Loaded and was async from there
         // LoadAllCommands().Wait();
         LoadBuiltinCommandsAsync().Wait();
+
+        var extensionService = Application.Current.GetService<IExtensionService>();
+        if (extensionService != null)
+        {
+            extensionService.OnExtensionsChanged += ExtensionService_OnExtensionsChanged;
+        }
+
         _ = LoadExtensions();
 
         RootFrame.Navigate(typeof(ListPage), rootListVm, new DrillInNavigationTransitionInfo());
     }
+
+    private void ExtensionService_OnExtensionsChanged(object? sender, EventArgs e)
+    {
+        _ = LoadAllCommands();
+    }
+
     private void _HackyBadClearFilter()
     {
         // BODGY but I don't care, cause i'm throwing this all out
@@ -132,7 +144,6 @@ public sealed partial class MainPage : Page
             tb.Text = "";
             tb.Focus(FocusState.Programmatic);
         }
-
 
         _ = LoadAllCommands();
     }
@@ -212,10 +223,19 @@ public sealed partial class MainPage : Page
             if (!provider.IsExtension) continue;
             foreach (var item in provider.TopLevelItems)
             {
-                if (action == item.Command)
+                // TODO! We really need a better "SafeWrapper<T>" object that can make sure 
+                // that an extension object is alive when we call things on it. 
+                // Case in point: this. If the extension was killed while we're open, then 
+                // COM calls on it crash (and then we just do nothing)
+                try
                 {
-                    provider.AllowSetForeground(true);
+                    if (action == item.Command)
+                    {
+                        provider.AllowSetForeground(true);
+                        return;
+                    }
                 }
+                catch (COMException e){ AppendLog(e.Message); }
             }
         }
     }
@@ -289,6 +309,7 @@ public sealed partial class MainPage : Page
         var extnService = Application.Current.GetService<IExtensionService>();
         if (extnService != null)
         {
+
             var extensions = await extnService.GetInstalledExtensionsAsync(ProviderType.Commands, includeDisabledExtensions: false);
             foreach(var extension in extensions)
             {
@@ -346,7 +367,6 @@ public sealed partial class MainPage : Page
     private async Task LoadTopLevelCommandsFromProvider(ActionsProviderWrapper actionProvider)
     {
         // TODO! do this better async
-
         await actionProvider.LoadTopLevelCommands().ConfigureAwait(false);
         foreach (var i in actionProvider.TopLevelItems)
         {
@@ -431,8 +451,16 @@ sealed class ActionsProviderWrapper
         {
             _topLevelItems = commands;
         }
-
     }
+    // public async Task<bool> Ping()
+    // {
+    //     if (!isValid) return false;
+    //     if (extensionWrapper != null)
+    //     {
+    //         return extensionWrapper.IsRunning();
+    //     }
+    //     return false;
+    // }
 
     public void AllowSetForeground(bool allow)
     {

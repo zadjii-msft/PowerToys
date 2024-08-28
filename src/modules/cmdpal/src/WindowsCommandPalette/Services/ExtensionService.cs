@@ -43,8 +43,45 @@ public class ExtensionService : IExtensionService, IDisposable
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
+        
+        // These two were an investigation into getting updates when a package
+        // gets redeployed from VS. Neither get raised (nor do the above)
+
+        // _catalog.PackageStatusChanged += Catalog_PackageStatusChanged;
+        // _catalog.PackageStaging += Catalog_PackageStaging;
         _localSettingsService = settingsService;
     }
+
+    //private void Catalog_PackageStaging(PackageCatalog sender, PackageStagingEventArgs args)
+    //{
+    //    lock (_lock)
+    //    {
+    //        var isCmdPalExtension = Task.Run(() =>
+    //        {
+    //            return IsValidCmdPalExtension(args.Package);
+    //        }).Result;
+
+    //        if (isCmdPalExtension)
+    //        {
+    //            OnPackageChange(args.Package);
+    //        }
+    //    }
+    //}
+    //private void Catalog_PackageStatusChanged(PackageCatalog sender, PackageStatusChangedEventArgs args)
+    //{
+    //    lock (_lock)
+    //    {
+    //        var isCmdPalExtension = Task.Run(() =>
+    //        {
+    //            return IsValidCmdPalExtension(args.Package);
+    //        }).Result;
+
+    //        if (isCmdPalExtension)
+    //        {
+    //            OnPackageChange(args.Package);
+    //        }
+    //    }
+    //}
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
     {
