@@ -24,7 +24,7 @@ public sealed class MainViewModel
 {
     internal readonly AllApps.AllAppsPage apps = new();
     internal readonly ObservableCollection<ActionsProviderWrapper> CommandsProviders = new();
-    internal readonly ObservableCollection<IListItem> TopLevelCommands = [];
+    internal readonly ObservableCollection<ExtensionObject<IListItem>> TopLevelCommands = [];
 
     internal readonly List<ICommandProvider> _builtInCommands = [];
 
@@ -55,7 +55,7 @@ public sealed class MainViewModel
     public void ResetTopLevel()
     {
         TopLevelCommands.Clear();
-        TopLevelCommands.Add(new ListItem(apps));
+        TopLevelCommands.Add(new(new ListItem(apps)));
     }
 
     internal void RequestHide()
@@ -74,14 +74,14 @@ public sealed class MainViewModel
         return title + subtitle;
     }
     private string[] _recentCommandHashes = [];// ["SpotifySpotify", "All Apps", "GitHub Issues", "Microsoft/GithubBookmark"];
-    public IEnumerable<IListItem> RecentActions => TopLevelCommands.Where(i => i != null && _recentCommandHashes.Contains(CreateHash(i.Title, i.Subtitle)));
+    public IEnumerable<IListItem> RecentActions => TopLevelCommands.Select(i=>i.Safe).Where(i => i != null).Select(i=>i!).Where(i => i != null && _recentCommandHashes.Contains(CreateHash(i.Title, i.Subtitle)));
     public IEnumerable<IListItem> AppItems => LoadedApps? apps.GetItems().First().Items : [];
-    public IEnumerable<IListItem> Everything => TopLevelCommands.Concat(AppItems).Where(i => i!= null);
+    public IEnumerable<IListItem> Everything => TopLevelCommands.Select(i => i.Safe).Where(i => i != null).Select(i => i!).Concat(AppItems).Where(i => i!= null);
     public IEnumerable<IListItem> Recent => _recentCommandHashes.Select(hash => Everything.Where(i => CreateHash(i.Title, i.Subtitle) == hash ).FirstOrDefault()).Where(i => i != null).Select(i=>i!);
 
     internal void PushRecentAction(ICommand action)
     {
-        IEnumerable<IListItem> topLevel = TopLevelCommands;
+        IEnumerable<IListItem> topLevel = TopLevelCommands.Select(i => i.Safe).Where(i => i != null).Select(i => i!);
         if (LoadedApps)
         {
             topLevel = topLevel.Concat(AppItems);
@@ -223,9 +223,9 @@ public sealed partial class MainPage : Page
             if (!provider.IsExtension) continue;
             foreach (var item in provider.TopLevelItems)
             {
-                // TODO! We really need a better "SafeWrapper<T>" object that can make sure 
-                // that an extension object is alive when we call things on it. 
-                // Case in point: this. If the extension was killed while we're open, then 
+                // TODO! We really need a better "SafeWrapper<T>" object that can make sure
+                // that an extension object is alive when we call things on it.
+                // Case in point: this. If the extension was killed while we're open, then
                 // COM calls on it crash (and then we just do nothing)
                 try
                 {
@@ -370,7 +370,7 @@ public sealed partial class MainPage : Page
         await actionProvider.LoadTopLevelCommands().ConfigureAwait(false);
         foreach (var i in actionProvider.TopLevelItems)
         {
-            ViewModel.TopLevelCommands.Add(i);
+            ViewModel.TopLevelCommands.Add(new(i));
         }
     }
 

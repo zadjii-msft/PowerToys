@@ -198,7 +198,7 @@ public sealed class ListPageViewModel : PageViewModel
 
             //// TODO! Probably bad that this turns list view models into listitems back to NEW view models
             //return ListHelpers.FilterList(Items.Select(vm => vm.ListItem), Query).Select(li => new ListItemViewModel(li)).ToList();
-            var allFilteredItems = ListHelpers.FilterList(Items.SelectMany(section => section).Select(vm => vm.ListItem), Query).Select(li => new ListItemViewModel(li));
+            var allFilteredItems = ListHelpers.FilterList(Items.SelectMany(section => section).Select(vm => vm.ListItem.Safe).Where(li=>li!=null).Select(li=>li!), Query).Select(li => new ListItemViewModel(li));
             var newSection = new SectionInfoList(null, allFilteredItems);
             return [newSection];
         }

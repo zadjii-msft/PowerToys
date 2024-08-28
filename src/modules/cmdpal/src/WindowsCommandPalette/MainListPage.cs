@@ -8,6 +8,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 using Microsoft.Windows.CommandPalette.Extensions;
+using CmdPal.Models;
 
 namespace DeveloperCommandPalette;
 
@@ -98,7 +99,7 @@ public sealed class MainListSection : ISection, INotifyCollectionChanged
     public MainListSection(MainViewModel viewModel)
     {
         this._mainViewModel = viewModel;
-        _Items = new(_mainViewModel.TopLevelCommands.Select(a => new MainListItem(a)));
+        _Items = new(_mainViewModel.TopLevelCommands.Select(w=>w.Safe).Where(li=>li!=null).Select(li => new MainListItem(li!)));
         _Items.CollectionChanged += Bubble_CollectionChanged; ;
     }
 
@@ -195,7 +196,7 @@ public sealed class FilteredListSection : ISection, INotifyCollectionChanged
     public FilteredListSection(MainViewModel viewModel)
     {
         this._mainViewModel = viewModel;
-        _Items = new(_mainViewModel.TopLevelCommands.Select(a => new MainListItem(a)));
+        _Items = new(_mainViewModel.TopLevelCommands.Where(wrapper=>wrapper.Safe!=null).Select(wrapper => new MainListItem(wrapper.Safe!)));
         _Items.CollectionChanged += Bubble_CollectionChanged; ;
     }
 
@@ -261,19 +262,23 @@ public sealed class MainListPage : Microsoft.Windows.CommandPalette.Extensions.H
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
             foreach (var item in e.NewItems)
-                if (item is IListItem listItem)
+                if (item is ExtensionObject<IListItem> listItem)
                 {
-                    if (!_mainViewModel.Recent.Contains(listItem))
+                    var safe = listItem.Safe;
+                    if (safe != null)
                     {
-                        _mainSection._Items.Add(new MainListItem(listItem));
+                        if (!_mainViewModel.Recent.Contains(listItem.Safe))
+                        {
+                            _mainSection._Items.Add(new MainListItem(safe));
+                        }
+                        _filteredSection._Items.Add(new MainListItem(safe));
                     }
-                    _filteredSection._Items.Add(new MainListItem(listItem));
                 }
         }
         else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
         {
             foreach (var item in e.OldItems)
-                if (item is IListItem listItem)
+                if (item is ExtensionObject<IListItem> listItem)
                 {
                     foreach (var mainListItem in _mainSection._Items) // MainListItem
                         if (mainListItem.Item == listItem)
