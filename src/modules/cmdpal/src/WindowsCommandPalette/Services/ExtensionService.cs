@@ -1,15 +1,12 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using CmdPal.Models;
 using Microsoft.CmdPal.Common.Contracts;
 using Microsoft.CmdPal.Common.Extensions;
 using Microsoft.CmdPal.Common.Services;
-// using CmdPal.ExtensionLibrary.TelemetryEvents;
-using CmdPal.Models;
-// using CmdPal.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.CommandPalette.Extensions;
-//using Serilog;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;
@@ -36,52 +33,19 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private static readonly List<IExtensionWrapper> _installedExtensions = new();
     private static readonly List<IExtensionWrapper> _enabledExtensions = new();
-    //private static readonly List<string> _installedWidgetsPackageFamilyNames = new();
 
     public ExtensionService(ILocalSettingsService settingsService)
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
-        
+
         // These two were an investigation into getting updates when a package
         // gets redeployed from VS. Neither get raised (nor do the above)
-
         // _catalog.PackageStatusChanged += Catalog_PackageStatusChanged;
         // _catalog.PackageStaging += Catalog_PackageStaging;
         _localSettingsService = settingsService;
     }
-
-    //private void Catalog_PackageStaging(PackageCatalog sender, PackageStagingEventArgs args)
-    //{
-    //    lock (_lock)
-    //    {
-    //        var isCmdPalExtension = Task.Run(() =>
-    //        {
-    //            return IsValidCmdPalExtension(args.Package);
-    //        }).Result;
-
-    //        if (isCmdPalExtension)
-    //        {
-    //            OnPackageChange(args.Package);
-    //        }
-    //    }
-    //}
-    //private void Catalog_PackageStatusChanged(PackageCatalog sender, PackageStatusChangedEventArgs args)
-    //{
-    //    lock (_lock)
-    //    {
-    //        var isCmdPalExtension = Task.Run(() =>
-    //        {
-    //            return IsValidCmdPalExtension(args.Package);
-    //        }).Result;
-
-    //        if (isCmdPalExtension)
-    //        {
-    //            OnPackageChange(args.Package);
-    //        }
-    //    }
-    //}
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
     {
@@ -143,7 +107,6 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         _installedExtensions.Clear();
         _enabledExtensions.Clear();
-        //_installedWidgetsPackageFamilyNames.Clear();
         OnExtensionsChanged.Invoke(this, EventArgs.Empty);
     }
 
@@ -264,38 +227,6 @@ public class ExtensionService : IExtensionService, IDisposable
         var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId.Equals(extensionUniqueId, StringComparison.Ordinal));
         return extension.FirstOrDefault();
     }
-
-    // private async Task<IEnumerable<string>> GetInstalledWidgetExtensionsAsync()
-    // {
-    //     await _getInstalledWidgetsLock.WaitAsync();
-    //     try
-    //     {
-    //         if (_installedWidgetsPackageFamilyNames.Count == 0)
-    //         {
-    //             var widgetExtensions = await AppExtensionCatalog.Open("com.microsoft.windows.widgets").FindAllAsync();
-    //             foreach (var widgetExtension in widgetExtensions)
-    //             {
-    //                 _installedWidgetsPackageFamilyNames.Add(widgetExtension.Package.Id.FamilyName);
-    //             }
-    //         }
-
-    //         return _installedWidgetsPackageFamilyNames;
-    //     }
-    //     finally
-    //     {
-    //         _getInstalledWidgetsLock.Release();
-    //     }
-    // }
-
-    // public async Task<IEnumerable<string>> GetInstalledCmdPalWidgetPackageFamilyNamesAsync(bool includeDisabledExtensions = false)
-    // {
-    //     var CmdPalExtensionWrappers = await GetInstalledExtensionsAsync(includeDisabledExtensions);
-    //     var widgetExtensionWrappers = await GetInstalledWidgetExtensionsAsync();
-
-    //     var ids = CmdPalExtensionWrappers.Select(x => x.PackageFamilyName).Intersect(widgetExtensionWrappers).ToList();
-
-    //     return ids;
-    // }
 
     public async Task SignalStopExtensionsAsync()
     {

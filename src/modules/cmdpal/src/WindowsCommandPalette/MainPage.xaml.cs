@@ -1,20 +1,20 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using CmdPal.Models;
+using Microsoft.CmdPal.Common.Extensions;
+using Microsoft.CmdPal.Common.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.Windows.CommandPalette.Extensions;
-using Windows.Foundation;
-using System.Collections.ObjectModel;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.Windows.CommandPalette.Extensions;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
+using Windows.Foundation;
 using Windows.Win32;
-using Microsoft.CmdPal.Common.Extensions;
-using Microsoft.CmdPal.Common.Services;
-using CmdPal.Models;
-using System.Runtime.InteropServices;
 
 namespace DeveloperCommandPalette;
 
@@ -31,7 +31,9 @@ public sealed class MainViewModel
     internal bool LoadedApps;
 
     public event TypedEventHandler<object, object?>? HideRequested;
+    
     public event TypedEventHandler<object, object?>? SummonRequested;
+
     public event TypedEventHandler<object, object?>? AppsReady;
 
     internal MainViewModel()
@@ -50,6 +52,7 @@ public sealed class MainViewModel
             AppsReady?.Invoke(this, null);
         }).Start();
     }
+
     public void ResetTopLevel()
     {
         TopLevelCommands.Clear();
@@ -71,6 +74,7 @@ public sealed class MainViewModel
     {
         return title + subtitle;
     }
+
     private string[] _recentCommandHashes = [];// ["SpotifySpotify", "All Apps", "GitHub Issues", "Microsoft/GithubBookmark"];
 
     public IEnumerable<IListItem> RecentActions => TopLevelCommands
@@ -105,6 +109,7 @@ public sealed class MainViewModel
         )
         .Where(i => i != null)
         .Select(i=>i!);
+
     public bool IsRecentCommand(MainListItem item)
     {
         try
@@ -145,6 +150,7 @@ public sealed class MainViewModel
 public sealed partial class MainPage : Page
 {
     private string _log = "";
+
     public MainViewModel ViewModel { get; } = new MainViewModel();
 
     public MainPage()
@@ -191,9 +197,11 @@ public sealed partial class MainPage : Page
             _HackyBadClearFilter();
         }
     }
+
     private void Page_Loaded(object sender, RoutedEventArgs e)
     {
     }
+
     private async Task LoadAllCommands()
     {
         ViewModel.ResetTopLevel();
@@ -203,6 +211,7 @@ public sealed partial class MainPage : Page
         _ = LoadExtensions();
 
     }
+
     public async Task LoadBuiltinCommandsAsync()
     {
         // Load commands from builtins
@@ -348,36 +357,12 @@ public sealed partial class MainPage : Page
         {
 
             var extensions = await extnService.GetInstalledExtensionsAsync(ProviderType.Commands, includeDisabledExtensions: false);
-            foreach(var extension in extensions)
+            foreach (var extension in extensions)
             {
                 if (extension == null) continue;
                 await LoadActionExtensionObject(extension);
             }
         }
-
-        //// Get extensions for us:
-        //AppExtensionCatalog extensionCatalog = AppExtensionCatalog.Open("com.microsoft.windows.commandpalette");
-        //IReadOnlyList<AppExtension> extensions = await extensionCatalog.FindAllAsync();
-        //foreach (var extension in extensions)
-        //{
-        //    var name = extension.DisplayName;
-        //    var id = extension.Id;
-        //    var pfn = extension.Package.Id.FamilyName;
-
-        //    var (provider, classIds) = await ExtensionLoader.GetExtensionPropertiesAsync(extension);
-        //    if (provider == null || classIds.Count == 0)
-        //    {
-        //        continue;
-        //    }
-
-        //    AppendLog($"Found Extension:{name}, {id}, {pfn}->");
-
-        //    foreach (var classId in classIds)
-        //    {
-        //        _ = LoadExtensionClassObject(extension, classId);
-        //    }
-        //}
-
 
         if (ViewModel != null)
         {
