@@ -493,7 +493,7 @@ public class BookmarksActionProvider : ICommandProvider
                 ];
             }
 
-            / /listItem.Subtitle = "Bookmark";
+            // listItem.Subtitle = "Bookmark";
             if (action is AddBookmarkPage) { }
             else
             {

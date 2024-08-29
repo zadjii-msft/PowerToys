@@ -11,25 +11,35 @@ namespace DeveloperCommandPalette;
 public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
 {
     private readonly DispatcherQueue DispatcherQueue;
+
     internal IListItem ListItem { get; init; }
+
     internal string Title { get; private set; }
+
     internal string Subtitle { get; private set; }
+
     internal string Icon { get; private set; }
 
     internal Lazy<DetailsViewModel?> _Details;
+
     internal DetailsViewModel? Details => _Details.Value;
+
     internal IFallbackHandler? FallbackHandler => this.ListItem.FallbackHandler;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
     internal ICommand DefaultAction => ListItem.Command;
+
     internal bool CanInvoke => DefaultAction != null && DefaultAction is IInvokableCommand or IPage;
+
     internal IconElement IcoElement => Microsoft.Terminal.UI.IconPathConverter.IconMUX(Icon);
 
-    private IEnumerable<ICommandContextItem> contextActions => ListItem.MoreCommands == null ? [] : ListItem.MoreCommands.Where(i => i is ICommandContextItem).Select(i=> (ICommandContextItem)i);
+    private IEnumerable<ICommandContextItem> contextActions => ListItem.MoreCommands == null ? [] : ListItem.MoreCommands.Where(i => i is ICommandContextItem).Select(i => (ICommandContextItem)i);
+
     internal bool HasMoreCommands => contextActions.Any();
 
     internal TagViewModel[] Tags = [];
+
     internal bool HasTags => Tags.Length > 0;
 
     internal IList<ContextItemViewModel> ContextActions

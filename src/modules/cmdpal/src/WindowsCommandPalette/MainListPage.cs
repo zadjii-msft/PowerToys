@@ -190,7 +190,7 @@ public sealed class FilteredListSection : ISection, INotifyCollectionChanged
     //
     // instead run the query once when the action query changes, and store the
     // results.
-    public IListItem[] Items => itemsToEnumerate.Where(i => i!= null).ToArray();
+    public IListItem[] Items => itemsToEnumerate.Where(i => i != null).ToArray();
 
 
     public FilteredListSection(MainViewModel viewModel)
