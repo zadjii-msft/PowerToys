@@ -4,33 +4,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 using System.Xml;
-using Windows.ApplicationModel.Contacts;
-using Windows.Win32;
 
 using PackageVersion = AllApps.Programs.UWP.PackageVersion;
 
 namespace AllApps.Programs;
-
-internal sealed class Native
-{
-
-    [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1838:Avoid 'StringBuilder' parameters for P/Invokes", Justification = "<Pending>")]
-    public static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, string ppvReserved);
-}
 
 [Serializable]
 public class UWPApplication : IProgram
@@ -75,7 +57,7 @@ public class UWPApplication : IProgram
     private const string ContrastWhite = "contrast-white";
 
     private const string ContrastBlack = "contrast-black";
-
+    /*
     // Function to calculate the score of a result
     //private int Score(string query)
     //{
@@ -83,14 +65,15 @@ public class UWPApplication : IProgram
     //    var descriptionMatch = StringMatcher.FuzzySearch(query, Description);
     //    var score = new[] { displayNameMatch.Score, descriptionMatch.Score / 2 }.Max();
     //    return score;
-    //}
+    //}*/
 
     // Function to set the subtitle based on the Type of application
     private static string SetSubtitle()
     {
-        return "";// Properties.Resources.powertoys_run_plugin_program_packaged_application;
+        return string.Empty; // Properties.Resources.powertoys_run_plugin_program_packaged_application;
     }
 
+    /*
     //public Result Result(string query, string queryArguments, IPublicAPI api)
     //{
     //    ArgumentNullException.ThrowIfNull(api);
@@ -202,9 +185,10 @@ public class UWPApplication : IProgram
 
     //    return contextMenus;
     //}
+    */
 
-    //private async void Launch(/*IPublicAPI api, */string queryArguments)
-    //{
+    // private async void Launch(/*IPublicAPI api, */string queryArguments)
+    // {
     //    var appManager = new ApplicationActivationManager();
     //    const ActivateOptions noFlags = ActivateOptions.None;
     //    await Task.Run(() =>
@@ -221,8 +205,7 @@ public class UWPApplication : IProgram
     //            //api.ShowMsg(name, message, string.Empty);
     //        }
     //    }).ConfigureAwait(false);
-    //}
-
+    // }
     public UWPApplication(IAppxManifestApplication manifestApp, UWP package)
     {
         ArgumentNullException.ThrowIfNull(manifestApp);
@@ -251,6 +234,7 @@ public class UWPApplication : IProgram
         Description = ResourceFromPri(package.FullName, Description);
         logoUri = LogoUriFromManifest(manifestApp);
         UpdateLogoPath();
+
         // logoUri = "";
         Enabled = true;
         CanRunElevated = IfApplicationcanRunElevated();
@@ -293,10 +277,8 @@ public class UWPApplication : IProgram
         return false;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
     internal string ResourceFromPri(string packageFullName, string resourceReference)
     {
-        //return "";
         const string prefix = "ms-resource:";
 
         // Using OrdinalIgnoreCase since this is used internally
@@ -330,8 +312,6 @@ public class UWPApplication : IProgram
             }
 
             var outBuffer = new StringBuilder(128);
-            //var outBox = "                                                                                                                                ";
-            
             var source = $"@{{{packageFullName}? {parsed}}}";
             var hResult = Native.SHLoadIndirectString(source, outBuffer, outBuffer.Capacity, null);
             if (hResult != 0)
@@ -349,12 +329,10 @@ public class UWPApplication : IProgram
                         }
                         else
                         {
-                            //ProgramLogger.Exception($"Can't load null or empty result pri {sourceFallback} in uwp location {Package.Location}", new ArgumentNullException(null), GetType(), Package.Location);
-
+                            // ProgramLogger.Exception($"Can't load null or empty result pri {sourceFallback} in uwp location {Package.Location}", new ArgumentNullException(null), GetType(), Package.Location);
                             return string.Empty;
                         }
                     }
-
                 }
 
                 // https://github.com/Wox-launcher/Wox/issues/964
@@ -363,9 +341,9 @@ public class UWPApplication : IProgram
                 // for
                 // Microsoft.MicrosoftOfficeHub_17.7608.23501.0_x64__8wekyb3d8bbwe: ms-resource://Microsoft.MicrosoftOfficeHub/officehubintl/AppManifest_GetOffice_Description
                 // Microsoft.BingFoodAndDrink_3.0.4.336_x64__8wekyb3d8bbwe: ms-resource:AppDescription
-                var e = Marshal.GetExceptionForHR((int)hResult);
-                //ProgramLogger.Exception($"Load pri failed {source} with HResult {hResult} and location {Package.Location}", e, GetType(), Package.Location);
 
+                // var e = Marshal.GetExceptionForHR((int)hResult);
+                // ProgramLogger.Exception($"Load pri failed {source} with HResult {hResult} and location {Package.Location}", e, GetType(), Package.Location);
                 return string.Empty;
             }
             else
@@ -377,12 +355,10 @@ public class UWPApplication : IProgram
                 }
                 else
                 {
-                    //ProgramLogger.Exception($"Can't load null or empty result pri {source} in uwp location {Package.Location}", new ArgumentNullException(null), GetType(), Package.Location);
-
+                    // ProgramLogger.Exception($"Can't load null or empty result pri {source} in uwp location {Package.Location}", new ArgumentNullException(null), GetType(), Package.Location);
                     return string.Empty;
                 }
             }
-
         }
         else
         {
@@ -390,7 +366,7 @@ public class UWPApplication : IProgram
         }
     }
 
-    private static readonly Dictionary<PackageVersion, string> _logoKeyFromVersion = new Dictionary<PackageVersion, string>
+    private static readonly Dictionary<PackageVersion, string> _logoKeyFromVersion = new()
     {
         { PackageVersion.Windows10, "Square44x44Logo" },
         { PackageVersion.Windows81, "Square30x30Logo" },
@@ -490,8 +466,8 @@ public class UWPApplication : IProgram
             {
                 if (highContrast)
                 {
-                    string suffixThemePath = $"{prefix}.targetsize-{factor}_{colorscheme}{extension}";
-                    string prefixThemePath = $"{prefix}.{colorscheme}_targetsize-{factor}{extension}";
+                    var suffixThemePath = $"{prefix}.targetsize-{factor}_{colorscheme}{extension}";
+                    var prefixThemePath = $"{prefix}.{colorscheme}_targetsize-{factor}{extension}";
                     paths.Add(suffixThemePath);
                     paths.Add(prefixThemePath);
                     pathFactorPairs.Add(suffixThemePath, factor);
@@ -499,8 +475,8 @@ public class UWPApplication : IProgram
                 }
                 else
                 {
-                    string simplePath = $"{prefix}.targetsize-{factor}{extension}";
-                    string altformUnPlatedPath = $"{prefix}.targetsize-{factor}_altform-unplated{extension}";
+                    var simplePath = $"{prefix}.targetsize-{factor}{extension}";
+                    var altformUnPlatedPath = $"{prefix}.targetsize-{factor}_altform-unplated{extension}";
                     paths.Add(simplePath);
                     paths.Add(altformUnPlatedPath);
                     pathFactorPairs.Add(simplePath, factor);
@@ -606,8 +582,8 @@ public class UWPApplication : IProgram
             path = Path.Combine(Package.Location, "Assets", uri);
         }
 
-        //switch (theme)
-        //{
+        // switch (theme)
+        // {
         //    case Theme.HighContrastBlack:
         //    case Theme.HighContrastOne:
         //    case Theme.HighContrastTwo:
@@ -622,20 +598,22 @@ public class UWPApplication : IProgram
         //    default:
         //        isLogoUriSet = SetColoredIcon(path, ContrastBlack);
         //        break;
-        //}
+        // }
         isLogoUriSet = SetColoredIcon(path, ContrastBlack) || SetColoredIcon(path, ContrastWhite);
 
         if (!isLogoUriSet)
         {
             LogoPath = string.Empty;
             LogoType = LogoType.Error;
-            //ProgramLogger.Exception($"|{UserModelId} can't find logo uri for {uri} in package location: {Package.Location}", new FileNotFoundException(), GetType(), Package.Location);
+
+            // ProgramLogger.Exception($"|{UserModelId} can't find logo uri for {uri} in package location: {Package.Location}", new FileNotFoundException(), GetType(), Package.Location);
         }
-        //LogoPath = path;
+
+        // LogoPath = path;
     }
 
-    //public ImageSource Logo()
-    //{
+    // public ImageSource Logo()
+    // {
     //    if (LogoType == LogoType.Colored)
     //    {
     //        var logo = ImageFromPath(LogoPath);
@@ -646,12 +624,11 @@ public class UWPApplication : IProgram
     //    {
     //        return ImageFromPath(LogoPath);
     //    }
-    //}
-
+    // }
     private const int _dpiScale100 = 96;
-
-    //private ImageSource PlatedImage(BitmapImage image)
-    //{
+    /*
+    // private ImageSource PlatedImage(BitmapImage image)
+    // {
     //    if (!string.IsNullOrEmpty(BackgroundColor))
     //    {
     //        string currentBackgroundColor;
@@ -741,16 +718,10 @@ public class UWPApplication : IProgram
     //        return new BitmapImage(new Uri(ImageLoader.ErrorIconPath));
     //    }
     //}
+    */
 
     public override string ToString()
     {
         return $"{DisplayName}: {Description}";
     }
-}
-
-public enum LogoType
-{
-    Error,
-    Colored,
-    HighContrast,
 }
