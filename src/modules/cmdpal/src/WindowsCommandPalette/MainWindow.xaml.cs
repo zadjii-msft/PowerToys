@@ -53,19 +53,20 @@ public sealed partial class MainWindow : Window
 
         return Windows.Win32.PInvoke.CallWindowProc(origPrc, hwnd, uMsg, wParam, lParam);
     }
+
     public void Summon()
     {
         Windows.Win32.PInvoke.ShowWindow(hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOW);
         Windows.Win32.PInvoke.SetForegroundWindow(hwnd);
-        //Windows.Win32.PInvoke.SetFocus(hwnd);
+        // Windows.Win32.PInvoke.SetFocus(hwnd);
         Windows.Win32.PInvoke.SetActiveWindow(hwnd);
         MainPage.ViewModel.Summon();
     }
+
     public MainWindow()
     {
         this.InitializeComponent();
         this._mainViewModel = MainPage.ViewModel;
-
 
          hwnd = new Windows.Win32.Foundation.HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
 
@@ -79,6 +80,7 @@ public sealed partial class MainWindow : Window
         AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
 
         ExtendsContentIntoTitleBar = true;
+
         // Hide our titlebar. We'll make the sides draggable later
         m_AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
         AppTitleTextBlock.Text = AppInfo.Current.DisplayInfo.DisplayName;
@@ -87,10 +89,11 @@ public sealed partial class MainWindow : Window
 
         Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync("ThisIsAVeryBizarreString", true);
 
-        //PositionForStartMenu();
+        // PositionForStartMenu();
         PositionCentered();
         _mainViewModel.HideRequested += _mainViewModel_HideRequested;
     }
+
     private async Task SetupHotkey()
     {
         var hotkeySettingString = await Application.Current.GetService<ILocalSettingsService>().ReadSettingAsync<string>("GlobalHotkey") ?? "win+ctrl+.";
@@ -102,6 +105,7 @@ public sealed partial class MainWindow : Window
         origPrc = Marshal.GetDelegateForFunctionPointer<WNDPROC>((IntPtr)Windows.Win32.PInvoke.SetWindowLongPtr(hwnd, WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, hotKeyPrcPointer));
 
     }
+
     private void PositionCentered()
     {
         m_AppWindow.Resize(new SizeInt32 { Width = 860, Height = 512 });
@@ -146,7 +150,7 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception)
         {
-            //react appropriately
+            // react appropriately
         }
 
         Microsoft.UI.Windowing.DisplayArea displayArea = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(m_AppWindow.Id, Microsoft.UI.Windowing.DisplayAreaFallback.Nearest);

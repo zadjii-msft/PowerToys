@@ -35,7 +35,7 @@ public sealed class FormViewModel : System.ComponentModel.INotifyPropertyChanged
 
     internal void InitialRender()
     {
-        //var t = new Task<bool>(() => {
+        // var t = new Task<bool>(() => {
             this.TemplateJson = this.form.TemplateJson();
             try
             {
@@ -45,11 +45,11 @@ public sealed class FormViewModel : System.ComponentModel.INotifyPropertyChanged
             {
                 this.DataJson = "{}";
             }
-            //return true;
-        //});
-        //t.Start();
-        //await t;
 
+            // return true;
+        // });
+        // t.Start();
+        // await t;
         AdaptiveCardTemplate template = new(TemplateJson);
         var cardJson = template.Expand(DataJson);
         this.card = AdaptiveCard.FromJsonString(cardJson);

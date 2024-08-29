@@ -4,15 +4,15 @@
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 using Microsoft.Windows.CommandPalette.Extensions;
 using Windows.Foundation;
-//using Quicklinks;
-//using Scripts;
 
 namespace DeveloperCommandPalette;
 
 public sealed class MainListItem : ListItem
 {
     private readonly IListItem _listItem;
+
     public IListItem Item => _listItem;
+
     internal MainListItem(IListItem listItem) : base(listItem.Command)
     {
         _listItem = listItem;

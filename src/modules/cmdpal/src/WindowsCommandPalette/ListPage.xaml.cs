@@ -42,6 +42,7 @@ public class SectionInfoList : ObservableCollection<ListItemViewModel>
             observable.CollectionChanged -= Items_CollectionChanged;
             observable.CollectionChanged += Items_CollectionChanged;
         }
+
         if (this.DispatcherQueue == null)
         {
             throw new InvalidOperationException("DispatcherQueue is null");
@@ -50,7 +51,7 @@ public class SectionInfoList : ObservableCollection<ListItemViewModel>
 
     private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        //DispatcherQueue.TryEnqueue(() => {
+        // DispatcherQueue.TryEnqueue(() => {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
             foreach (var i in e.NewItems)
@@ -63,26 +64,29 @@ public class SectionInfoList : ObservableCollection<ListItemViewModel>
                         this.Add(vm);
 
                     }
-                    //if (isDynamic)
-                    //{
+
+                    // if (isDynamic)
+                    // {
                     //    // Dynamic lists are in charge of their own
                     //    // filtering. They know if this thing was already
                     //    // filtered or not.
                     //    FilteredItems.Add(vm);
-                    //}
+                    // }
                 }
             }
         }
         else if (e.Action == NotifyCollectionChangedAction.Reset)
         {
             this.Clear();
-            //Items.Clear();
-            //if (isDynamic)
-            //{
+
+            // Items.Clear();
+            // if (isDynamic)
+            // {
             //    FilteredItems.Clear();
-            //}
+            // }
         }
-        //});
+
+        // });
     }
 }
 
@@ -197,7 +201,7 @@ public sealed class ListPageViewModel : PageViewModel
             }
 
             //// TODO! Probably bad that this turns list view models into listitems back to NEW view models
-            //return ListHelpers.FilterList(Items.Select(vm => vm.ListItem), Query).Select(li => new ListItemViewModel(li)).ToList();
+            // return ListHelpers.FilterList(Items.Select(vm => vm.ListItem), Query).Select(li => new ListItemViewModel(li)).ToList();
             var allFilteredItems = ListHelpers.FilterList(Items.SelectMany(section => section).Select(vm => vm.ListItem), Query).Select(li => new ListItemViewModel(li));
             var newSection = new SectionInfoList(null, allFilteredItems);
             return [newSection];
@@ -306,9 +310,9 @@ public sealed partial class ListPage : Page, System.ComponentModel.INotifyProper
         if (sender is not ListViewItem listItem) return;
         if (listItem.DataContext is not ListItemViewModel li) return;
         _ = li;
-        // For a bit I had double-clicks Invoke and single just select, but that crashes?
-        //ItemsList.SelectedItem = listItem;
 
+        // For a bit I had double-clicks Invoke and single just select, but that crashes?
+        // ItemsList.SelectedItem = listItem;
         if (li.DefaultAction != null)
         {
             DoAction(new(li.DefaultAction));
@@ -317,12 +321,12 @@ public sealed partial class ListPage : Page, System.ComponentModel.INotifyProper
 
     private void ListViewItem_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
-        //if (sender is not ListViewItem listItem) return;
-        //if (listItem.DataContext is not ListItemViewModel li) return;
-        //if (li.DefaultAction != null)
-        //{
+        // if (sender is not ListViewItem listItem) return;
+        // if (listItem.DataContext is not ListItemViewModel li) return;
+        // if (li.DefaultAction != null)
+        // {
         //    DoAction(new(li.DefaultAction));
-        //}
+        // }
     }
 
     private void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -431,9 +435,11 @@ public sealed partial class ListPage : Page, System.ComponentModel.INotifyProper
         // into us initially. We handle the filtering of these ones. Commands
         // from async querying happens later.
         var newMatches = await ViewModel.GetFilteredItems(text);
+
         // this.ItemsCVS.Source = ViewModel.FilteredItems;
         // Returns back on the UI thread
         ListHelpers.InPlaceUpdateList(ViewModel.FilteredItems, newMatches);
+
         // for (var i = 0; i < ViewModel.FilteredItems.Count && i < newMatches.Count; i++)
         // {
         //     for (var j = i; j < ViewModel.FilteredItems.Count; j++)
@@ -448,7 +454,7 @@ public sealed partial class ListPage : Page, System.ComponentModel.INotifyProper
         //         }
         //     }
 
-        //     if (ViewModel.FilteredItems[i] != newMatches[i])
+        // if (ViewModel.FilteredItems[i] != newMatches[i])
         //     {
         //         ViewModel.FilteredItems.Insert(i, newMatches[i]);
         //     }

@@ -70,7 +70,8 @@ public sealed partial class MarkdownPage : Page, System.ComponentModel.INotifyPr
                     mdTextBox.Text = ViewModel.MarkdownContent[0];
                     TitleBlock.Text = ViewModel.Title;
                 }
-                //        if (ViewModel.PageCommand != null)
+
+                // if (ViewModel.PageCommand != null)
                 //        {
                 //            ActionsDropdown.ItemsSource = ViewModel.PageCommand.Commands;
                 //            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoreCommandsAvailable)));
@@ -79,6 +80,7 @@ public sealed partial class MarkdownPage : Page, System.ComponentModel.INotifyPr
             });
         });
     }
+
     private void DoAction(ActionViewModel actionViewModel)
     {
         ViewModel?.DoAction(actionViewModel);
@@ -114,8 +116,8 @@ public sealed partial class MarkdownPage : Page, System.ComponentModel.INotifyPr
             ShowMode = FlyoutShowMode.Standard
         };
         MoreCommandsButton.Flyout.ShowAt(MoreCommandsButton, options);
-        //ActionsDropdown.SelectedIndex = 0;
-        //ActionsDropdown.Focus(FocusState.Programmatic);
+        // ActionsDropdown.SelectedIndex = 0;
+        // ActionsDropdown.Focus(FocusState.Programmatic);
     }
 #pragma warning disable CA1822 // Mark members as static
     private bool MoreCommandsAvailable => (ViewModel?.Page.Commands != null) && (ViewModel.Page.Commands.Length > 0);

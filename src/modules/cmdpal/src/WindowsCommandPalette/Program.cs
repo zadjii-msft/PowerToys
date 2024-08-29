@@ -55,7 +55,8 @@ sealed class  Program
     {
         ExtendedActivationKind kind = args.Kind;
         _ = kind;
-        //app?.
+
+        // app?.
         // If we already have a form, display the message now.
         // Otherwise, add it to the collection for displaying later.
         if (App.Current is App thisApp)
