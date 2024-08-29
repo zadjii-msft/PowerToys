@@ -145,9 +145,8 @@ public sealed class ListPageViewModel : PageViewModel
         // we already have, then rebuilding it. We shouldn't do that. We should
         // still use the results from GetItems and put them into the code in
         // UpdateFilter to intelligently add/remove as needed.
-        //Items.Clear();
-        //FilteredItems.Clear();
-
+        // Items.Clear();
+        // FilteredItems.Clear();
         Collection<SectionInfoList> newItems = new();
 
         var size = sections.Length;
@@ -157,19 +156,20 @@ public sealed class ListPageViewModel : PageViewModel
             var sectionItems = new SectionInfoList(
                 section,
                 section.Items
-                    .Where(i=>i!= null && !string.IsNullOrEmpty(i.Title))
+                    .Where(i => i != null && !string.IsNullOrEmpty(i.Title))
                     .Select(i => new ListItemViewModel(i))
                 );
+
             // var items = section.Items;
             // for (var i = 0; i < items.Length; i++) {
             //     ListItemViewModel vm = new(items[i]);
             //     Items.Add(vm);
             //     FilteredItems.Add(vm);
             // }
-
             newItems.Add(sectionItems);
-            //Items.Add(sectionItems);
-            //FilteredItems.Add(sectionItems);
+
+            // Items.Add(sectionItems);
+            // FilteredItems.Add(sectionItems);
         }
 
         ListHelpers.InPlaceUpdateList(Items, newItems);

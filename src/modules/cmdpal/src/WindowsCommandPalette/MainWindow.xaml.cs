@@ -201,9 +201,12 @@ public sealed partial class MainWindow : Window
 
         //// Get the rectangle around the content
         GeneralTransform transform = MainPage.TransformToVisual(null);
-        Rect bounds = transform.TransformBounds(new Rect(0, 0,
-                                                         MainPage.ActualWidth,
-                                                         MainPage.ActualHeight));
+        Rect bounds = transform.TransformBounds(
+            new Rect(
+                0,
+                0,
+                MainPage.ActualWidth,
+                MainPage.ActualHeight));
         Windows.Graphics.RectInt32 contentRect = GetRect(bounds, scaleAdjustment);
 
         var rectArray = new Windows.Graphics.RectInt32[] { contentRect };
@@ -217,9 +220,9 @@ public sealed partial class MainWindow : Window
         var h = ContentGrid.ActualHeight;
         var dragSides = new Windows.Graphics.RectInt32[] {
             GetRect(new Rect(0, 0, w, 24), scaleAdjustment),
-            GetRect(new Rect(0, h-24, ContentGrid.ActualWidth, 24), scaleAdjustment),
+            GetRect(new Rect(0, h - 24, ContentGrid.ActualWidth, 24), scaleAdjustment),
             GetRect(new Rect(0, 0, 24, h), scaleAdjustment),
-            GetRect(new Rect(w-24, 0, 24, h), scaleAdjustment),
+            GetRect(new Rect(w - 24, 0, 24, h), scaleAdjustment),
         };
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Caption, dragSides);
     }

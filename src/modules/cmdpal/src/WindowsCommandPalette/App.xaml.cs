@@ -82,11 +82,11 @@ public partial class App : Application, IApp
 
                 //// Main window: Allow access to the main window
                 //// from anywhere in the application.
-                //services.AddSingleton(_ => MainWindow);
+                // services.AddSingleton(_ => MainWindow);
 
                 //// DispatcherQueue: Allow access to the DispatcherQueue for
                 //// the main window for general purpose UI thread access.
-                //services.AddSingleton(_ => MainWindow.DispatcherQueue);
+                // services.AddSingleton(_ => MainWindow.DispatcherQueue);
 
                 // Configuration
                 services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

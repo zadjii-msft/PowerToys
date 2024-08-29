@@ -99,12 +99,12 @@ public sealed class MainListSection : ISection, INotifyCollectionChanged
     {
         this._mainViewModel = viewModel;
         _Items = new(_mainViewModel.TopLevelCommands.Select(a => new MainListItem(a)));
-        _Items.CollectionChanged += Bubble_CollectionChanged; ;
+        _Items.CollectionChanged += Bubble_CollectionChanged;
     }
 
     internal void UpdateQuery(string query)
     {
-        var fallbacks = _Items.Select(i => i?.FallbackHandler).Where(fb => fb != null).Select(fb=>fb!);
+        var fallbacks = _Items.Select(i => i?.FallbackHandler).Where(fb => fb != null).Select(fb => fb!);
         foreach (var fb in fallbacks)
         {
             fb.UpdateQuery(query);
@@ -118,6 +118,7 @@ public sealed class MainListSection : ISection, INotifyCollectionChanged
             CollectionChanged?.Invoke(this, e);
         });
     }
+
     internal void Reset()
     {
         _Items.Clear();
@@ -224,7 +225,7 @@ public sealed class MainListPage : Microsoft.Windows.CommandPalette.Extensions.H
 
     public MainListPage(MainViewModel viewModel)
     {
-        this._mainViewModel= viewModel;
+        this._mainViewModel = viewModel;
 
         _mainSection = new(_mainViewModel);
         _recentsListSection = new(_mainViewModel);

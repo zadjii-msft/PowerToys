@@ -82,7 +82,7 @@ internal sealed class SettingsForm: Form
         var hotkey = "win+ctrl+.";
         try
         {
-            hotkey = await Application.Current.GetService<ILocalSettingsService>().ReadSettingAsync<string>("GlobalHotkey") ;
+            hotkey = await Application.Current.GetService<ILocalSettingsService>().ReadSettingAsync<string>("GlobalHotkey");
         }
         catch (Exception ex)
         {
