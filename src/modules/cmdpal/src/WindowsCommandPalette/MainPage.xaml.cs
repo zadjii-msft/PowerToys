@@ -21,6 +21,9 @@ namespace DeveloperCommandPalette;
 public sealed class MainViewModel
 {
     internal readonly AllApps.AllAppsPage apps = new();
+    internal readonly QuitActionProvider quitActionProvider = new();
+    public event TypedEventHandler<object, object?>? QuitRequested { add => quitActionProvider.QuitRequested += value; remove => quitActionProvider.QuitRequested -= value; }
+
     internal readonly ObservableCollection<ActionsProviderWrapper> CommandsProviders = new();
     internal readonly ObservableCollection<ExtensionObject<IListItem>> TopLevelCommands = [];
 
@@ -41,7 +44,7 @@ public sealed class MainViewModel
         _builtInCommands.Add(new Run.Bookmarks.BookmarksActionProvider());
         _builtInCommands.Add(new Calculator.CalculatorActionProvider());
         _builtInCommands.Add(new Run.Settings.SettingsActionProvider());
-        _builtInCommands.Add(new QuitActionProvider());
+        _builtInCommands.Add(quitActionProvider);
 
         ResetTopLevel();
 
@@ -104,12 +107,12 @@ public sealed class MainViewModel
         .Where(i => i!= null);
 
     public IEnumerable<ExtensionObject<IListItem>> Recent => _recentCommandHashes
-        .Select(hash => 
+        .Select(hash =>
             Everything
                 .Where(i => {
-                    try { 
-                        var o = i.Unsafe; 
-                        return CreateHash(o.Title, o.Subtitle) == hash; 
+                    try {
+                        var o = i.Unsafe;
+                        return CreateHash(o.Title, o.Subtitle) == hash;
                     } catch (COMException) { return false; }
                 })
                 .FirstOrDefault()

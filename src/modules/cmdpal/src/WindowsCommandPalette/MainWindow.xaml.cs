@@ -91,6 +91,12 @@ public sealed partial class MainWindow : Window
         //PositionForStartMenu();
         PositionCentered();
         _mainViewModel.HideRequested += _mainViewModel_HideRequested;
+
+        _mainViewModel.QuitRequested += (s, e) =>
+        {
+            this.Close();
+            // Application.Current.Exit();
+        };
     }
     private async Task SetupHotkey()
     {
