@@ -43,15 +43,23 @@ public class SpongebotPage : Microsoft.Windows.CommandPalette.Extensions.Helpers
             new CommandContextItem(CopyTextAction)
         ];
     }
-    public void UpdateQuery(string query) {
-        if (string.IsNullOrEmpty(query)) {
+
+    public void UpdateQuery(string query)
+    {
+        if (string.IsNullOrEmpty(query))
+        {
             this.Name = "";
-        } else {
+        }
+        else
+        {
             this.Name = ConvertToAlternatingCase(query);
         }
+
         this.CopyTextAction.Text = this.Name;
     }
-    static string ConvertToAlternatingCase(string input) {
+
+    static string ConvertToAlternatingCase(string input)
+    {
         StringBuilder sb = new StringBuilder();
         for (var i = 0; i < input.Length; i++)
         {
@@ -63,7 +71,8 @@ public class SpongebotPage : Microsoft.Windows.CommandPalette.Extensions.Helpers
         return sb.ToString();
     }
 
-    public override string[] Bodies() {
+    public override string[] Bodies()
+    {
         var t = _GenerateMeme(this.Name);
         t.ConfigureAwait(false);
         return [t.Result];
@@ -116,6 +125,7 @@ public class SpongebotPage : Microsoft.Windows.CommandPalette.Extensions.Helpers
 internal sealed class SpongebotCommandsProvider : ICommandProvider
 {
     public string DisplayName => $"Spongebob, mocking";
+
     public IconDataType Icon => new("");
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
@@ -125,10 +135,11 @@ internal sealed class SpongebotCommandsProvider : ICommandProvider
     public IListItem[] TopLevelCommands()
     {
         var spongebotPage = new SpongebotPage();
-        var listItem = new ListItem(spongebotPage) {
-            MoreCommands = [new CommandContextItem(spongebotPage.CopyTextAction)]
+        var listItem = new ListItem(spongebotPage)
+        {
+            MoreCommands = [new CommandContextItem(spongebotPage.CopyTextAction)],
         };
-        return [ listItem ];
+        return [listItem];
     }
 }
 

@@ -26,18 +26,25 @@ namespace DeveloperCommandPalette;
 /// </summary>
 public sealed partial class MainWindow : Window
 {
-    private readonly AppWindow m_AppWindow;
-    private MainViewModel _mainViewModel { get; init; }
-    private readonly HWND hwnd;
-    private const uint DOT_KEY = 0xBE;
-    private const uint WM_HOTKEY = 0x0312;
+    private readonly AppWindow _appWindow;
+
+    private MainViewModel MainViewModel { get; init; }
+
+    private readonly HWND _hwnd;
+
     private WNDPROC? origPrc;
     private WNDPROC? hotKeyPrc;
 
-    private Windows.Win32.Foundation.LRESULT HotKeyPrc(Windows.Win32.Foundation.HWND hwnd,
-            uint uMsg,
-            Windows.Win32.Foundation.WPARAM wParam,
-            Windows.Win32.Foundation.LPARAM lParam)
+#pragma warning disable SA1310 // Field names should not contain underscore
+    private const uint DOT_KEY = 0xBE;
+    private const uint WM_HOTKEY = 0x0312;
+#pragma warning restore SA1310 // Field names should not contain underscore
+
+    private LRESULT HotKeyPrc(
+        HWND hwnd,
+        uint uMsg,
+        WPARAM wParam,
+        LPARAM lParam)
     {
         if (uMsg == WM_HOTKEY)
         {
@@ -47,84 +54,92 @@ public sealed partial class MainWindow : Window
             }
             else
             {
-                Windows.Win32.PInvoke.ShowWindow(hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_HIDE);
+                Windows.Win32.PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_HIDE);
             }
 
-            return (Windows.Win32.Foundation.LRESULT)IntPtr.Zero;
+            return (LRESULT)IntPtr.Zero;
         }
 
         return Windows.Win32.PInvoke.CallWindowProc(origPrc, hwnd, uMsg, wParam, lParam);
     }
+
     public void Summon()
     {
-        Windows.Win32.PInvoke.ShowWindow(hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOW);
-        Windows.Win32.PInvoke.SetForegroundWindow(hwnd);
+        Windows.Win32.PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_SHOW);
+        Windows.Win32.PInvoke.SetForegroundWindow(_hwnd);
+        
         //Windows.Win32.PInvoke.SetFocus(hwnd);
-        Windows.Win32.PInvoke.SetActiveWindow(hwnd);
+        Windows.Win32.PInvoke.SetActiveWindow(_hwnd);
         MainPage.ViewModel.Summon();
     }
+
     public MainWindow()
     {
         this.InitializeComponent();
-        this._mainViewModel = MainPage.ViewModel;
+        this.MainViewModel = MainPage.ViewModel;
 
-
-         hwnd = new Windows.Win32.Foundation.HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
+        _hwnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
 
         _ = SetupHotkey();
 
         // Assumes "this" is a XAML Window. In projects that don't use
         // WinUI 3 1.3 or later, use interop APIs to get the AppWindow.
-        m_AppWindow = this.AppWindow;
+        _appWindow = this.AppWindow;
 
         Activated += MainWindow_Activated;
         AppTitleBar.SizeChanged += AppTitleBar_SizeChanged;
 
         ExtendsContentIntoTitleBar = true;
+
         // Hide our titlebar. We'll make the sides draggable later
-        m_AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
+        _appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
         AppTitleTextBlock.Text = AppInfo.Current.DisplayInfo.DisplayName;
 
-        m_AppWindow.Title = AppTitleTextBlock.Text;
+        _appWindow.Title = AppTitleTextBlock.Text;
 
         Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync("ThisIsAVeryBizarreString", true);
 
-        //PositionForStartMenu();
+        // PositionForStartMenu();
         PositionCentered();
-        _mainViewModel.HideRequested += _mainViewModel_HideRequested;
+        MainViewModel.HideRequested += _mainViewModel_HideRequested;
 
-        _mainViewModel.QuitRequested += (s, e) =>
+        MainViewModel.QuitRequested += (s, e) =>
         {
             this.Close();
+
             // Application.Current.Exit();
         };
     }
+
     private async Task SetupHotkey()
     {
         var hotkeySettingString = await Application.Current.GetService<ILocalSettingsService>().ReadSettingAsync<string>("GlobalHotkey") ?? "win+ctrl+.";
         var (key, modifiers) = StringToKeybinding(hotkeySettingString);
         var (vk, mod) = UwpToWin32(key, modifiers);
-        var success = Windows.Win32.PInvoke.RegisterHotKey(hwnd, 0, mod, vk);
+        var success = Windows.Win32.PInvoke.RegisterHotKey(_hwnd, 0, mod, vk);
         hotKeyPrc = HotKeyPrc;
         var hotKeyPrcPointer = Marshal.GetFunctionPointerForDelegate(hotKeyPrc);
-        origPrc = Marshal.GetDelegateForFunctionPointer<WNDPROC>((IntPtr)Windows.Win32.PInvoke.SetWindowLongPtr(hwnd, WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, hotKeyPrcPointer));
-
+        origPrc = Marshal.GetDelegateForFunctionPointer<WNDPROC>((IntPtr)Windows.Win32.PInvoke.SetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, hotKeyPrcPointer));
     }
+
     private void PositionCentered()
     {
-        m_AppWindow.Resize(new SizeInt32 { Width = 860, Height = 512 });
-        DisplayArea displayArea = DisplayArea.GetFromWindowId(m_AppWindow.Id, DisplayAreaFallback.Nearest);
+        _appWindow.Resize(new SizeInt32 { Width = 860, Height = 512 });
+        DisplayArea displayArea = DisplayArea.GetFromWindowId(_appWindow.Id, DisplayAreaFallback.Nearest);
+
         if (displayArea is not null)
         {
-            var CenteredPosition = AppWindow.Position;
-            CenteredPosition.X = ((displayArea.WorkArea.Width - AppWindow.Size.Width) / 2);
-            CenteredPosition.Y = ((displayArea.WorkArea.Height - AppWindow.Size.Height) / 2);
-            AppWindow.Move(CenteredPosition);
+            var centeredPosition = AppWindow.Position;
+            centeredPosition.X = (displayArea.WorkArea.Width - AppWindow.Size.Width) / 2;
+            centeredPosition.Y = (displayArea.WorkArea.Height - AppWindow.Size.Height) / 2;
+
+            AppWindow.Move(centeredPosition);
         }
     }
+
     private void PositionForStartMenu()
     {
-        m_AppWindow.Resize(new Windows.Graphics.SizeInt32(768, 768));
+        _appWindow.Resize(new SizeInt32(768, 768));
 
         // now put the window in the right place
         //
@@ -155,30 +170,31 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception)
         {
-            //react appropriately
+            // react appropriately
         }
 
-        Microsoft.UI.Windowing.DisplayArea displayArea = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(m_AppWindow.Id, Microsoft.UI.Windowing.DisplayAreaFallback.Nearest);
+        var displayArea = DisplayArea.GetFromWindowId(_appWindow.Id, DisplayAreaFallback.Nearest);
         if (displayArea is not null)
         {
-            var CenteredPosition = m_AppWindow.Position;
+            var centeredPosition = _appWindow.Position;
             if (onLeft)
             {
-                CenteredPosition.X = 16;
-                CenteredPosition.Y = ((displayArea.WorkArea.Height - m_AppWindow.Size.Height) - 16);
+                centeredPosition.X = 16;
+                centeredPosition.Y = ((displayArea.WorkArea.Height - _appWindow.Size.Height) - 16);
             }
             else
             {
-                CenteredPosition.X = ((displayArea.WorkArea.Width - m_AppWindow.Size.Width) / 2);
-                CenteredPosition.Y = ((displayArea.WorkArea.Height - m_AppWindow.Size.Height) - 16);
+                centeredPosition.X = ((displayArea.WorkArea.Width - _appWindow.Size.Width) / 2);
+                centeredPosition.Y = ((displayArea.WorkArea.Height - _appWindow.Size.Height) - 16);
             }
-            m_AppWindow.Move(CenteredPosition);
+
+            _appWindow.Move(centeredPosition);
         }
     }
 
     private void _mainViewModel_HideRequested(object sender, object? args)
     {
-        Windows.Win32.PInvoke.ShowWindow(hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_HIDE);
+        Windows.Win32.PInvoke.ShowWindow(_hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_HIDE);
     }
 
     private void AppTitleBar_Loaded(object sender, RoutedEventArgs e)
@@ -205,8 +221,8 @@ public sealed partial class MainWindow : Window
 
         var scaleAdjustment = AppTitleBar.XamlRoot.RasterizationScale;
 
-        RightPaddingColumn.Width = new GridLength(m_AppWindow.TitleBar.RightInset / scaleAdjustment);
-        LeftPaddingColumn.Width = new GridLength(m_AppWindow.TitleBar.LeftInset / scaleAdjustment);
+        RightPaddingColumn.Width = new GridLength(_appWindow.TitleBar.RightInset / scaleAdjustment);
+        LeftPaddingColumn.Width = new GridLength(_appWindow.TitleBar.LeftInset / scaleAdjustment);
 
         //// Get the rectangle around the content
         GeneralTransform transform = MainPage.TransformToVisual(null);
@@ -224,7 +240,8 @@ public sealed partial class MainWindow : Window
         // Add four drag-able regions, around the sides of our content
         var w = ContentGrid.ActualWidth;
         var h = ContentGrid.ActualHeight;
-        var dragSides = new Windows.Graphics.RectInt32[] {
+        var dragSides = new Windows.Graphics.RectInt32[]
+        {
             GetRect(new Rect(0, 0, w, 24), scaleAdjustment),
             GetRect(new Rect(0, h - 24, ContentGrid.ActualWidth, 24), scaleAdjustment),
             GetRect(new Rect(0, 0, 24, h), scaleAdjustment),
@@ -258,7 +275,7 @@ public sealed partial class MainWindow : Window
             }
             else
             {
-                Windows.Win32.PInvoke.ShowWindow(hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_HIDE);
+                Windows.Win32.PInvoke.ShowWindow(_hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_HIDE);
             }
         }
         else
@@ -267,7 +284,6 @@ public sealed partial class MainWindow : Window
                 (SolidColorBrush)App.Current.Resources["WindowCaptionForeground"];
         }
     }
-
 
     private static string KeybindingToString(VirtualKey key, VirtualKeyModifiers modifiers)
     {
@@ -281,19 +297,22 @@ public sealed partial class MainWindow : Window
             keyString = Regex.Replace(keyString, "([a-z])([A-Z])", "$1+$2");
         }
 
-        var modifierString = "";
+        var modifierString = string.Empty;
         if (modifiers.HasFlag(VirtualKeyModifiers.Control))
         {
             modifierString += "ctrl+";
         }
+
         if (modifiers.HasFlag(VirtualKeyModifiers.Shift))
         {
             modifierString += "shift+";
         }
+
         if (modifiers.HasFlag(VirtualKeyModifiers.Menu))
         {
             modifierString += "alt+";
         }
+
         if (modifiers.HasFlag(VirtualKeyModifiers.Windows))
         {
             modifierString += "win+";
@@ -301,6 +320,7 @@ public sealed partial class MainWindow : Window
 
         return modifierString + keyString;
     }
+
     private static (VirtualKey key, VirtualKeyModifiers modifiers) StringToKeybinding(string keybinding)
     {
         var parts = keybinding.Split('+');
@@ -334,21 +354,26 @@ public sealed partial class MainWindow : Window
 
         return (key, modifiers);
     }
+
     private static (uint vk, Windows.Win32.UI.Input.KeyboardAndMouse.HOT_KEY_MODIFIERS mod) UwpToWin32(VirtualKey key, VirtualKeyModifiers modifiers)
     {
-        Windows.Win32.UI.Input.KeyboardAndMouse.HOT_KEY_MODIFIERS mod = new();
+        Windows.Win32.UI.Input.KeyboardAndMouse.HOT_KEY_MODIFIERS mod = default;
+
         if (modifiers.HasFlag(VirtualKeyModifiers.Control))
         {
             mod |= Windows.Win32.UI.Input.KeyboardAndMouse.HOT_KEY_MODIFIERS.MOD_CONTROL;
         }
+
         if (modifiers.HasFlag(VirtualKeyModifiers.Shift))
         {
             mod |= Windows.Win32.UI.Input.KeyboardAndMouse.HOT_KEY_MODIFIERS.MOD_SHIFT;
         }
+
         if (modifiers.HasFlag(VirtualKeyModifiers.Menu))
         {
             mod |= Windows.Win32.UI.Input.KeyboardAndMouse.HOT_KEY_MODIFIERS.MOD_ALT;
         }
+
         if (modifiers.HasFlag(VirtualKeyModifiers.Windows))
         {
             mod |= Windows.Win32.UI.Input.KeyboardAndMouse.HOT_KEY_MODIFIERS.MOD_WIN;
