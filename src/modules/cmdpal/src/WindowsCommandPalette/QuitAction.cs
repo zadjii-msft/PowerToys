@@ -44,6 +44,6 @@ public class QuitActionProvider : ICommandProvider
 
     public IListItem[] TopLevelCommands()
     {
-        return [new ListItem(quitAction) { Subtitle = "Exit Run" }];
+        return [new ListItem(quitAction) { Subtitle = "Exit Command Palette" }];
     }
 }

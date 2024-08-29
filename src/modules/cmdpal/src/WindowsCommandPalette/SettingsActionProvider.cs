@@ -128,7 +128,7 @@ public class SettingsActionProvider : ICommandProvider
 
     public IListItem[] TopLevelCommands()
     {
-        return [ new ListItem(settingsPage) { Subtitle = "Runv2 settings"} ];
+        return [ new ListItem(settingsPage) { Subtitle = "CmdPal settings"} ];
     }
 }
 
