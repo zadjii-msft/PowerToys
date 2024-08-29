@@ -101,6 +101,7 @@ public class SpongebotPage : Microsoft.Windows.CommandPalette.Extensions.Helpers
 """;
         return body;
     }
+
     internal static string StateJsonPath()
     {
         // Get the path to our exe
@@ -110,7 +111,6 @@ public class SpongebotPage : Microsoft.Windows.CommandPalette.Extensions.Helpers
         // now, the state is just next to the exe
         return System.IO.Path.Combine(directory, "state.json");
     }
-
 }
 
 internal sealed class SpongebotCommandsProvider : ICommandProvider

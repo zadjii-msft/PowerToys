@@ -1001,8 +1001,7 @@ public class Win32Program // : IProgram
                 (/*settings.EnablePathEnvironmentVariableSource*/ false, () => PathEnvironmentProgramPaths(settings_RunCommandSuffixes)),
             };
 
-            //var disabledProgramsList = settings.DisabledProgramSources;
-
+            // var disabledProgramsList = settings.DisabledProgramSources;
             // Get all paths but exclude all normal .Executables
             paths.UnionWith(sources
                 .AsParallel()
@@ -1023,7 +1022,6 @@ public class Win32Program // : IProgram
         catch (Exception )
         {
             // ProgramLogger.Exception("An unexpected error occurred", e, MethodBase.GetCurrentMethod().DeclaringType, "Not available");
-
             return Array.Empty<Win32Program>();
         }
     }

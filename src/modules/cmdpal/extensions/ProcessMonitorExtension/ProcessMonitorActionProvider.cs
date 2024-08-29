@@ -17,7 +17,6 @@ using Windows.Foundation;
 
 namespace ProcessMonitorExtension;
 
-
 internal sealed class ProcessItem
 {
     internal Process Process { get; init; }
@@ -97,7 +96,6 @@ sealed class ProcessListPage : ListPage {
         return [ s ];
     }
 
-
     //internal void RefreshProcesses()
     //{
     //    Processes = GetRunningProcesses();
@@ -125,6 +123,7 @@ sealed class ProcessListPage : ListPage {
                     Name = p.ProcessName,
                     ExePath = exePath,
                     Memory = p.WorkingSet64,
+
                     // oh no CPU is not trivial to get
                 };
             });

@@ -4,8 +4,8 @@
 
 using System;
 using System.Runtime.InteropServices;
-// using Wox.Plugin.Common.Win32;
 
+// using Wox.Plugin.Common.Win32;
 namespace AllApps.Programs;
 
 [Guid("5DA89BF4-3773-46BE-B650-7E744863B7E8")]

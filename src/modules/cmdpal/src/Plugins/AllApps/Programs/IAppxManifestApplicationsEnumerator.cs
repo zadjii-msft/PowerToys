@@ -5,16 +5,15 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace AllApps.Programs
+namespace AllApps.Programs;
+
+[Guid("9EB8A55A-F04B-4D0D-808D-686185D4847A")]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+public interface IAppxManifestApplicationsEnumerator
 {
-    [Guid("9EB8A55A-F04B-4D0D-808D-686185D4847A")]
-    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IAppxManifestApplicationsEnumerator
-    {
-        IAppxManifestApplication GetCurrent();
+    IAppxManifestApplication GetCurrent();
 
-        bool GetHasCurrent();
+    bool GetHasCurrent();
 
-        bool MoveNext();
-    }
+    bool MoveNext();
 }
