@@ -50,7 +50,7 @@ public class SectionInfoList : ObservableCollection<ListItemViewModel>
 
     private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        //DispatcherQueue.TryEnqueue(() => {
+        // DispatcherQueue.TryEnqueue(() => {
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
             foreach (var i in e.NewItems)
@@ -63,26 +63,29 @@ public class SectionInfoList : ObservableCollection<ListItemViewModel>
                         this.Add(vm);
 
                     }
-                    //if (isDynamic)
-                    //{
+
+                    // if (isDynamic)
+                    // {
                     //    // Dynamic lists are in charge of their own
                     //    // filtering. They know if this thing was already
                     //    // filtered or not.
                     //    FilteredItems.Add(vm);
-                    //}
+                    // }
                 }
             }
         }
         else if (e.Action == NotifyCollectionChangedAction.Reset)
         {
             this.Clear();
-            //Items.Clear();
-            //if (isDynamic)
-            //{
+
+            // Items.Clear();
+            // if (isDynamic)
+            // {
             //    FilteredItems.Clear();
-            //}
+            // }
         }
-        //});
+
+        // });
     }
 }
 
@@ -145,8 +148,8 @@ public sealed class ListPageViewModel : PageViewModel
         // we already have, then rebuilding it. We shouldn't do that. We should
         // still use the results from GetItems and put them into the code in
         // UpdateFilter to intelligently add/remove as needed.
-        //Items.Clear();
-        //FilteredItems.Clear();
+        // Items.Clear();
+        // FilteredItems.Clear();
 
         Collection<SectionInfoList> newItems = new();
 
@@ -157,19 +160,20 @@ public sealed class ListPageViewModel : PageViewModel
             var sectionItems = new SectionInfoList(
                 section,
                 section.Items
-                    .Where(i=>i!= null && !string.IsNullOrEmpty(i.Title))
+                    .Where(i => i != null && !string.IsNullOrEmpty(i.Title))
                     .Select(i => new ListItemViewModel(i))
                 );
+
             // var items = section.Items;
             // for (var i = 0; i < items.Length; i++) {
             //     ListItemViewModel vm = new(items[i]);
             //     Items.Add(vm);
             //     FilteredItems.Add(vm);
             // }
-
             newItems.Add(sectionItems);
-            //Items.Add(sectionItems);
-            //FilteredItems.Add(sectionItems);
+
+            // Items.Add(sectionItems);
+            // FilteredItems.Add(sectionItems);
         }
 
         ListHelpers.InPlaceUpdateList(Items, newItems);
@@ -197,7 +201,7 @@ public sealed class ListPageViewModel : PageViewModel
             }
 
             //// TODO! Probably bad that this turns list view models into listitems back to NEW view models
-            //return ListHelpers.FilterList(Items.Select(vm => vm.ListItem), Query).Select(li => new ListItemViewModel(li)).ToList();
+            // return ListHelpers.FilterList(Items.Select(vm => vm.ListItem), Query).Select(li => new ListItemViewModel(li)).ToList();
             var allFilteredItems = ListHelpers.FilterList(Items.SelectMany(section => section).Select(vm => vm.ListItem), Query).Select(li => new ListItemViewModel(li));
             var newSection = new SectionInfoList(null, allFilteredItems);
             return [newSection];
@@ -306,9 +310,9 @@ public sealed partial class ListPage : Page, System.ComponentModel.INotifyProper
         if (sender is not ListViewItem listItem) return;
         if (listItem.DataContext is not ListItemViewModel li) return;
         _ = li;
-        // For a bit I had double-clicks Invoke and single just select, but that crashes?
-        //ItemsList.SelectedItem = listItem;
 
+        // For a bit I had double-clicks Invoke and single just select, but that crashes?
+        // ItemsList.SelectedItem = listItem;
         if (li.DefaultAction != null)
         {
             DoAction(new(li.DefaultAction));
@@ -317,12 +321,12 @@ public sealed partial class ListPage : Page, System.ComponentModel.INotifyProper
 
     private void ListViewItem_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
     {
-        //if (sender is not ListViewItem listItem) return;
-        //if (listItem.DataContext is not ListItemViewModel li) return;
-        //if (li.DefaultAction != null)
-        //{
+        // if (sender is not ListViewItem listItem) return;
+        // if (listItem.DataContext is not ListItemViewModel li) return;
+        // if (li.DefaultAction != null)
+        // {
         //    DoAction(new(li.DefaultAction));
-        //}
+        // }
     }
 
     private void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -448,7 +452,7 @@ public sealed partial class ListPage : Page, System.ComponentModel.INotifyProper
         //         }
         //     }
 
-        //     if (ViewModel.FilteredItems[i] != newMatches[i])
+        // if (ViewModel.FilteredItems[i] != newMatches[i])
         //     {
         //         ViewModel.FilteredItems.Insert(i, newMatches[i]);
         //     }

@@ -104,7 +104,7 @@ public sealed class MainListSection : ISection, INotifyCollectionChanged
 
     internal void UpdateQuery(string query)
     {
-        var fallbacks = _Items.Select(i => i?.FallbackHandler).Where(fb => fb != null).Select(fb=>fb!);
+        var fallbacks = _Items.Select(i => i?.FallbackHandler).Where(fb => fb != null).Select(fb => fb!);
         foreach (var fb in fallbacks)
         {
             fb.UpdateQuery(query);
@@ -189,7 +189,7 @@ public sealed class FilteredListSection : ISection, INotifyCollectionChanged
     //
     // instead run the query once when the action query changes, and store the
     // results.
-    public IListItem[] Items => itemsToEnumerate.Where(i => i!= null).ToArray();
+    public IListItem[] Items => itemsToEnumerate.Where(i => i != null).ToArray();
 
 
     public FilteredListSection(MainViewModel viewModel)
@@ -224,7 +224,7 @@ public sealed class MainListPage : Microsoft.Windows.CommandPalette.Extensions.H
 
     public MainListPage(MainViewModel viewModel)
     {
-        this._mainViewModel= viewModel;
+        this._mainViewModel = viewModel;
 
         _mainSection = new(_mainViewModel);
         _recentsListSection = new(_mainViewModel);

@@ -57,7 +57,7 @@ public sealed partial class MainWindow : Window
     {
         Windows.Win32.PInvoke.ShowWindow(hwnd, Windows.Win32.UI.WindowsAndMessaging.SHOW_WINDOW_CMD.SW_SHOW);
         Windows.Win32.PInvoke.SetForegroundWindow(hwnd);
-        //Windows.Win32.PInvoke.SetFocus(hwnd);
+        // Windows.Win32.PInvoke.SetFocus(hwnd);
         Windows.Win32.PInvoke.SetActiveWindow(hwnd);
         MainPage.ViewModel.Summon();
     }
@@ -87,7 +87,7 @@ public sealed partial class MainWindow : Window
 
         Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync("ThisIsAVeryBizarreString", true);
 
-        //PositionForStartMenu();
+        // PositionForStartMenu();
         PositionCentered();
         _mainViewModel.HideRequested += _mainViewModel_HideRequested;
     }
@@ -146,7 +146,7 @@ public sealed partial class MainWindow : Window
         }
         catch (Exception)
         {
-            //react appropriately
+            // react appropriately
         }
 
         Microsoft.UI.Windowing.DisplayArea displayArea = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(m_AppWindow.Id, Microsoft.UI.Windowing.DisplayAreaFallback.Nearest);
@@ -217,9 +217,9 @@ public sealed partial class MainWindow : Window
         var h = ContentGrid.ActualHeight;
         var dragSides = new Windows.Graphics.RectInt32[] {
             GetRect(new Rect(0, 0, w, 24), scaleAdjustment),
-            GetRect(new Rect(0, h-24, ContentGrid.ActualWidth, 24), scaleAdjustment),
+            GetRect(new Rect(0, h - 24, ContentGrid.ActualWidth, 24), scaleAdjustment),
             GetRect(new Rect(0, 0, 24, h), scaleAdjustment),
-            GetRect(new Rect(w-24, 0, 24, h), scaleAdjustment),
+            GetRect(new Rect(w - 24, 0, 24, h), scaleAdjustment),
         };
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Caption, dragSides);
     }

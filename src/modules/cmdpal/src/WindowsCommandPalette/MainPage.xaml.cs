@@ -68,11 +68,11 @@ public sealed class MainViewModel
     {
         return title + subtitle;
     }
-    private string[] _recentCommandHashes = [];// ["SpotifySpotify", "All Apps", "GitHub Issues", "Microsoft/GithubBookmark"];
+    private string[] _recentCommandHashes = [];
     public IEnumerable<IListItem> RecentActions => TopLevelCommands.Where(i => i != null && _recentCommandHashes.Contains(CreateHash(i.Title, i.Subtitle)));
-    public IEnumerable<IListItem> AppItems => LoadedApps? apps.GetItems().First().Items : [];
-    public IEnumerable<IListItem> Everything => TopLevelCommands.Concat(AppItems).Where(i => i!= null);
-    public IEnumerable<IListItem> Recent => _recentCommandHashes.Select(hash => Everything.Where(i => CreateHash(i.Title, i.Subtitle) == hash ).FirstOrDefault()).Where(i => i != null).Select(i=>i!);
+    public IEnumerable<IListItem> AppItems => LoadedApps ? apps.GetItems().First().Items : [];
+    public IEnumerable<IListItem> Everything => TopLevelCommands.Concat(AppItems).Where(i => i != null);
+    public IEnumerable<IListItem> Recent => _recentCommandHashes.Select(hash => Everything.Where(i => CreateHash(i.Title, i.Subtitle) == hash).FirstOrDefault()).Where(i => i != null).Select(i => i!);
 
     internal void PushRecentAction(ICommand action)
     {

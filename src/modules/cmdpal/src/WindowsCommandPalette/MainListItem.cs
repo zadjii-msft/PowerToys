@@ -4,8 +4,6 @@
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 using Microsoft.Windows.CommandPalette.Extensions;
 using Windows.Foundation;
-//using Quicklinks;
-//using Scripts;
 
 namespace DeveloperCommandPalette;
 

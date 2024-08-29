@@ -19,7 +19,7 @@ public class PageViewModel
     public bool Nested { get => nested; set => nested = value; }
 
     protected IPage pageAction { get; }
-    //public IPage PageAction { get => pageAction; set => pageAction = value; }
+    // public IPage PageAction { get => pageAction; set => pageAction = value; }
     public ActionViewModel Command { get; }
 
     public event TypedEventHandler<object, ActionViewModel>? RequestDoAction;

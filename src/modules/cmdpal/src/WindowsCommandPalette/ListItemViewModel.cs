@@ -26,7 +26,7 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
     internal bool CanInvoke => DefaultAction != null && DefaultAction is IInvokableCommand or IPage;
     internal IconElement IcoElement => Microsoft.Terminal.UI.IconPathConverter.IconMUX(Icon);
 
-    private IEnumerable<ICommandContextItem> contextActions => ListItem.MoreCommands == null ? [] : ListItem.MoreCommands.Where(i => i is ICommandContextItem).Select(i=> (ICommandContextItem)i);
+    private IEnumerable<ICommandContextItem> contextActions => ListItem.MoreCommands == null ? [] : ListItem.MoreCommands.Where(i => i is ICommandContextItem).Select(i => (ICommandContextItem)i);
     internal bool HasMoreCommands => contextActions.Any();
 
     internal TagViewModel[] Tags = [];

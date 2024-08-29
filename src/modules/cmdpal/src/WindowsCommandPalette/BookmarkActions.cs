@@ -157,13 +157,12 @@ internal sealed class AddBookmarkForm : Form
             var items = jsonState?["items"]?.AsArray();
             if (items != null)
             {
-                // var items = jsonState["items"];
                 var newItem = new JsonObject();
                 newItem["name"] = formName;
                 newItem["bookmark"] = formBookmark;
-                var formData = new BookmarkData() { name = formName.ToString(), bookmark=formBookmark.ToString(), type = bookmarkType };
+                var formData = new BookmarkData() { name = formName.ToString(), bookmark = formBookmark.ToString(), type = bookmarkType };
                 items.Add(JsonSerializer.SerializeToNode(formData, typeof(BookmarkData), SourceGenerationContext.Default));
-                //items.Add(newItem);
+
                 json = jsonState?.ToString();
             }
         }
@@ -490,21 +489,23 @@ public class BookmarksActionProvider : ICommandProvider
                     new CommandContextItem(new OpenInTerminalAction(urlAction.Url))
                 ];
             }
-            //listItem.Subtitle = "Bookmark";
+
+            // listItem.Subtitle = "Bookmark";
             if (action is AddBookmarkPage) { }
             else
             {
                 listItem.Tags = [
                     new Tag() {
                         Text = "Bookmark",
-                        //Icon = new("🔗"),
-                        //Color=Windows.UI.Color.FromArgb(255, 255, 0, 255)
+
+                        // Icon = new("🔗"),
+                        // Color=Windows.UI.Color.FromArgb(255, 255, 0, 255)
                     },
-                    //new Tag() {
+                    // new Tag() {
                     //    Text = "A test",
                     //    //Icon = new("🔗"),
                     //    Color=Windows.UI.Color.FromArgb(255, 255, 0, 0)
-                    //}
+                    // }
                 ];
             }
 
