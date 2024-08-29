@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using CmdPal.Common.Contracts;
-using CmdPal.Common.Extensions;
-using CmdPal.Common.Services;
+using Microsoft.CmdPal.Common.Contracts;
+using Microsoft.CmdPal.Common.Extensions;
+using Microsoft.CmdPal.Common.Services;
 // using CmdPal.ExtensionLibrary.TelemetryEvents;
 using CmdPal.Models;
 // using CmdPal.Telemetry;

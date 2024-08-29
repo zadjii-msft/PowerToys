@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
-using CmdPal.Common.Services;
+using Microsoft.CmdPal.Common.Services;
 using Microsoft.Windows.CommandPalette.Extensions;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;

@@ -6,15 +6,13 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.Windows.CommandPalette.Extensions;
-using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation;
 using System.Collections.ObjectModel;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 using Windows.Win32;
-using CmdPal.Common.Contracts;
-using CmdPal.Common.Extensions;
-using CmdPal.Common.Services;
+using Microsoft.CmdPal.Common.Extensions;
+using Microsoft.CmdPal.Common.Services;
 using CmdPal.Models;
 using System.Runtime.InteropServices;
 
