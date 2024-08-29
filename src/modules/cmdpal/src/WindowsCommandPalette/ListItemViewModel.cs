@@ -6,6 +6,7 @@ using Microsoft.Windows.CommandPalette.Extensions;
 using System.ComponentModel;
 using Microsoft.UI.Dispatching;
 using CmdPal.Models;
+using System.Runtime.InteropServices;
 
 namespace DeveloperCommandPalette;
 
@@ -19,23 +20,30 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
 
     internal Lazy<DetailsViewModel?> _Details;
     internal DetailsViewModel? Details => _Details.Value;
-    internal IFallbackHandler? FallbackHandler => this.ListItem.Safe?.FallbackHandler;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    internal ICommand? DefaultAction => ListItem.Safe?.Command;
+    internal ICommand? DefaultAction { get {try{ return ListItem.Unsafe.Command;} catch (COMException){return null;}}}
+
     internal bool CanInvoke => DefaultAction != null && DefaultAction is IInvokableCommand or IPage;
     internal IconElement IcoElement => Microsoft.Terminal.UI.IconPathConverter.IconMUX(Icon);
 
     private IEnumerable<ICommandContextItem> contextActions
     {
         get {
-            var safe = ListItem.Safe;
-            if (safe == null) return [];
-            return safe.MoreCommands == null ?
-                [] :
-                safe.MoreCommands.Where(i => i is ICommandContextItem).Select(i => (ICommandContextItem)i);
-        } 
+            try
+            {
+                var item = ListItem.Unsafe;
+                return item.MoreCommands == null ?
+                    [] :
+                    item.MoreCommands.Where(i => i is ICommandContextItem).Select(i => (ICommandContextItem)i);
+            }
+            catch (COMException)
+            {
+                /* log something */
+                return [];
+            }
+        }
     }
     internal bool HasMoreCommands => contextActions.Any();
 
@@ -46,13 +54,18 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
     {
         get
         {
-            var safe = ListItem.Safe;
-            if (safe == null) return [];
-
-            var l = contextActions.Select(a => new ContextItemViewModel(a)).ToList();
-            var def = DefaultAction;
-            if (def!=null) l.Insert(0, new(def));
-            return l;
+            try
+            {
+                var l = contextActions.Select(a => new ContextItemViewModel(a)).ToList();
+                var def = DefaultAction;
+                if (def!=null) l.Insert(0, new(def));
+                return l;
+            }
+            catch (COMException)
+            {
+                /* log something */
+                return [];
+            }
         }
     }
 
@@ -69,13 +82,16 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
         }
 
         this._Details = new(() => {
-            // TODO! even this pattern of "get a safe ref, then keep using it" isn't safe
-            var safe = this.ListItem.Safe;
-            if (safe != null)
+            try
             {
-                return safe.Details != null ? new(safe.Details) : null;
+                var item = this.ListItem.Unsafe;
+                return item.Details != null ? new(item.Details) : null;
             }
-            else return null;
+            catch (COMException)
+            {
+                /* log something */
+                return null;
+            }
         });
 
         this.DispatcherQueue = DispatcherQueue.GetForCurrentThread();
@@ -83,34 +99,40 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
 
     private void ListItem_PropertyChanged(object sender, Microsoft.Windows.CommandPalette.Extensions.PropChangedEventArgs args)
     {
-        switch (args.PropertyName)
-        {
-            case "Name":
-            case nameof(Title):
-                {
-                    this.Title = ListItem.Safe?.Title ?? this.Title;
-                }
-                break;
-            case nameof(Subtitle):
-                {
-                    this.Subtitle = ListItem.Safe?.Subtitle ?? this.Subtitle;
-                }
-                break;
-            case "MoreCommands":
-                {
-                    BubbleXamlPropertyChanged(nameof(HasMoreCommands));
-                    BubbleXamlPropertyChanged(nameof(ContextActions));
-                }
-                break;
-            case nameof(Icon):
-                {
-                    this.Icon = ListItem.Safe?.Command.Icon.Icon ?? this.Icon;
-                    BubbleXamlPropertyChanged(nameof(IcoElement));
-                }
-                break;
-        }
-        BubbleXamlPropertyChanged(args.PropertyName);
+        try{
+            var item = ListItem.Unsafe;
+            switch (args.PropertyName)
+            {
+                case "Name":
+                case nameof(Title):
+                    {
+                        this.Title = item.Title;
+                    }
+                    break;
+                case nameof(Subtitle):
+                    {
+                        this.Subtitle = item.Subtitle;
+                    }
+                    break;
+                case "MoreCommands":
+                    {
+                        BubbleXamlPropertyChanged(nameof(HasMoreCommands));
+                        BubbleXamlPropertyChanged(nameof(ContextActions));
+                    }
+                    break;
+                case nameof(Icon):
+                    {
+                        this.Icon = item.Command.Icon.Icon;
+                        BubbleXamlPropertyChanged(nameof(IcoElement));
+                    }
+                    break;
+            }
 
+            BubbleXamlPropertyChanged(args.PropertyName);
+
+        } catch (COMException) {
+            /* log something */
+        }
     }
 
     private void BubbleXamlPropertyChanged(string propertyName)
@@ -128,10 +150,10 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
 
     public void Dispose()
     {
-        var safe = this.ListItem.Safe;
-        if (safe != null)
-        {
-            safe.PropChanged -= ListItem_PropertyChanged;
+        try{
+            this.ListItem.Unsafe.PropChanged -= ListItem_PropertyChanged;
+        } catch (COMException) {
+            /* log something */
         }
     }
 }

@@ -21,12 +21,13 @@ public class ExtensionObject<T> //  where T : IInspectable
         _value = value;
     }
 
-    public T? Safe { 
-        get { 
-            try { 
-                if (_value!.Equals(_value)) return _value; 
-            } catch (COMException){ /* log something */ } 
-            return default; 
-        }
-    }
+    // public T? Safe {
+    //     get {
+    //         try {
+    //             if (_value!.Equals(_value)) return _value;
+    //         } catch (COMException){ /* log something */ }
+    //         return default;
+    //     }
+    // }
+    public T Unsafe => _value;
 }

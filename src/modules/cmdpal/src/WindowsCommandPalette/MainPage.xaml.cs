@@ -74,30 +74,69 @@ public sealed class MainViewModel
         return title + subtitle;
     }
     private string[] _recentCommandHashes = [];// ["SpotifySpotify", "All Apps", "GitHub Issues", "Microsoft/GithubBookmark"];
-    public IEnumerable<IListItem> RecentActions => TopLevelCommands.Select(i=>i.Safe).Where(i => i != null).Select(i=>i!).Where(i => i != null && _recentCommandHashes.Contains(CreateHash(i.Title, i.Subtitle)));
+
+    public IEnumerable<IListItem> RecentActions => TopLevelCommands
+        .Select(i=>i.Unsafe)
+        .Where((i) => {
+            if (i != null)
+            {
+                try{
+                    return _recentCommandHashes.Contains(CreateHash(i.Title, i.Subtitle));
+                } catch(COMException){ return false; }
+            }
+            return false;
+        })
+        .Select(i=>i!);
+
     public IEnumerable<IListItem> AppItems => LoadedApps? apps.GetItems().First().Items : [];
-    public IEnumerable<IListItem> Everything => TopLevelCommands.Select(i => i.Safe).Where(i => i != null).Select(i => i!).Concat(AppItems).Where(i => i!= null);
-    public IEnumerable<IListItem> Recent => _recentCommandHashes.Select(hash => Everything.Where(i => CreateHash(i.Title, i.Subtitle) == hash ).FirstOrDefault()).Where(i => i != null).Select(i=>i!);
+
+    public IEnumerable<ExtensionObject<IListItem>> Everything => TopLevelCommands
+        .Concat(AppItems.Select(i => new ExtensionObject<IListItem>(i)))
+        .Where(i => i!= null);
+
+    public IEnumerable<ExtensionObject<IListItem>> Recent => _recentCommandHashes
+        .Select(hash => 
+            Everything
+                .Where(i => {
+                    try { 
+                        var o = i.Unsafe; 
+                        return CreateHash(o.Title, o.Subtitle) == hash; 
+                    } catch (COMException) { return false; }
+                })
+                .FirstOrDefault()
+        )
+        .Where(i => i != null)
+        .Select(i=>i!);
+    public bool IsRecentCommand(MainListItem item)
+    {
+        try
+        {
+            foreach (var wraprer in Recent)
+            {
+                if (wraprer.Unsafe == item) return true;
+            }
+        }
+        catch (COMException) { return false; }
+        return false;
+    }
 
     internal void PushRecentAction(ICommand action)
     {
-        IEnumerable<IListItem> topLevel = TopLevelCommands.Select(i => i.Safe).Where(i => i != null).Select(i => i!);
-        if (LoadedApps)
+        foreach (var wrapped in Everything)
         {
-            topLevel = topLevel.Concat(AppItems);
-        }
-
-        foreach (var listItem in topLevel)
-        {
-            if (listItem != null && listItem.Command == action)
-            {
-                // Found it, awesome.
-                var hash = CreateHash(listItem.Title, listItem.Subtitle);
-                // Remove the old one and push the new one to the front
-                var recent = new List<string>([hash]).Concat(_recentCommandHashes.Where(h => h != hash)).Take(5).ToArray();
-                _recentCommandHashes = recent.ToArray();
-                return;
+            try{
+                var listItem = wrapped?.Unsafe;
+                if (listItem != null && listItem.Command == action)
+                {
+                    // Found it, awesome.
+                    var hash = CreateHash(listItem.Title, listItem.Subtitle);
+                    // Remove the old one and push the new one to the front
+                    var recent = new List<string>([hash]).Concat(_recentCommandHashes.Where(h => h != hash)).Take(5).ToArray();
+                    _recentCommandHashes = recent.ToArray();
+                    return;
+                }
             }
+            catch(COMException){ /* log something */ }
         }
     }
 }

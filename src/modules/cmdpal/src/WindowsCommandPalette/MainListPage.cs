@@ -59,7 +59,7 @@ public sealed class RecentsListSection : ListSection, INotifyCollectionChanged
         var apps = _mainViewModel.Recent;
         foreach (var app in apps)
         {
-            _Items.Add(new MainListItem(app));
+            _Items.Add(new MainListItem(app.Unsafe)); // we know these are all local
         }
     }
 }
@@ -83,7 +83,7 @@ public sealed class MainListSection : ISection, INotifyCollectionChanged
     //   * Just the top-level actions (if there's no query)
     //   * OR the top-level actions AND the apps (if there's a query)
     private IEnumerable<IListItem> itemsToEnumerate =>
-        _Items.Where(i => i != null && (!_mainViewModel.Recent.Contains(i.Item)));
+        _Items.Where(i => i != null && (!_mainViewModel.IsRecentCommand(i)));
 
     // Watch out future me!
     //
@@ -99,7 +99,7 @@ public sealed class MainListSection : ISection, INotifyCollectionChanged
     public MainListSection(MainViewModel viewModel)
     {
         this._mainViewModel = viewModel;
-        _Items = new(_mainViewModel.TopLevelCommands.Select(w=>w.Safe).Where(li=>li!=null).Select(li => new MainListItem(li!)));
+        _Items = new(_mainViewModel.TopLevelCommands.Select(w=>w.Unsafe).Where(li=>li!=null).Select(li => new MainListItem(li!)));
         _Items.CollectionChanged += Bubble_CollectionChanged; ;
     }
 
@@ -196,7 +196,8 @@ public sealed class FilteredListSection : ISection, INotifyCollectionChanged
     public FilteredListSection(MainViewModel viewModel)
     {
         this._mainViewModel = viewModel;
-        _Items = new(_mainViewModel.TopLevelCommands.Where(wrapper=>wrapper.Safe!=null).Select(wrapper => new MainListItem(wrapper.Safe!)));
+        // TODO: We should probably just get rid of MainListItem entirely, so I'm leaveing these uncaught
+        _Items = new(_mainViewModel.TopLevelCommands.Where(wrapper=>wrapper.Unsafe!=null).Select(wrapper => new MainListItem(wrapper.Unsafe!)));
         _Items.CollectionChanged += Bubble_CollectionChanged; ;
     }
 
@@ -264,15 +265,12 @@ public sealed class MainListPage : Microsoft.Windows.CommandPalette.Extensions.H
             foreach (var item in e.NewItems)
                 if (item is ExtensionObject<IListItem> listItem)
                 {
-                    var safe = listItem.Safe;
-                    if (safe != null)
+                    // Eh, it's fine to be unsafe here, we're probably tossing MainListItem
+                    if (!_mainViewModel.Recent.Contains(listItem))
                     {
-                        if (!_mainViewModel.Recent.Contains(listItem.Safe))
-                        {
-                            _mainSection._Items.Add(new MainListItem(safe));
-                        }
-                        _filteredSection._Items.Add(new MainListItem(safe));
+                        _mainSection._Items.Add(new MainListItem(listItem.Unsafe));
                     }
+                    _filteredSection._Items.Add(new MainListItem(listItem.Unsafe));
                 }
         }
         else if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
