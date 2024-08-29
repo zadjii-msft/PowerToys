@@ -12,7 +12,7 @@ using WinRT;
 
 namespace CmdPal.Models;
 
-public class ExtensionWrapper : IExtensionWrapper
+public class ExtensionWrapper : IExtensionWrapper, IDisposable
 {
     private const int HResultRpcServerNotRunning = -2147023174;
 
@@ -25,6 +25,7 @@ public class ExtensionWrapper : IExtensionWrapper
     };
 
     private IExtension? _extensionObject;
+    private bool disposedValue;
 
     public ExtensionWrapper(AppExtension appExtension, string classId)
     {
@@ -184,5 +185,34 @@ public class ExtensionWrapper : IExtensionWrapper
     public bool HasProviderType(ProviderType providerType)
     {
         return _providerTypes.Contains(providerType);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                // TODO: dispose managed state (managed objects)
+            }
+
+            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+            // TODO: set large fields to null
+            disposedValue = true;
+        }
+    }
+
+    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    // ~ExtensionWrapper()
+    // {
+    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //     Dispose(disposing: false);
+    // }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
