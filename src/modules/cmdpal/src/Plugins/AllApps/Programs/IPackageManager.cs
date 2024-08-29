@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace AllApps.Programs
+namespace AllApps.Programs;
+
+public interface IPackageManager
 {
-    public interface IPackageManager
-    {
-        IEnumerable<IPackage> FindPackagesForCurrentUser();
-    }
+    IEnumerable<IPackage> FindPackagesForCurrentUser();
 }

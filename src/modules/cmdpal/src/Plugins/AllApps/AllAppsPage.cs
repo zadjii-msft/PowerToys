@@ -4,8 +4,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Windows.CommandPalette.Extensions;
 using AllApps.Programs;
+using Microsoft.Windows.CommandPalette.Extensions;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 
 namespace AllApps;
@@ -41,7 +41,7 @@ public sealed class AllAppsPage : ListPage
             Title = "Apps",
             Items = apps
                         .Select((app) => new AppListItem(app))
-                        .ToArray()
+                        .ToArray(),
         };
     }
 
@@ -69,8 +69,9 @@ public sealed class AllAppsPage : ListPage
                 {
                     Name = app.Name,
                     Subtitle = app.Description,
-                    IcoPath = app.LogoType != LogoType.Error ? app.LogoPath : "",
-                    //ExePath = app.FullPath,
+                    IcoPath = app.LogoType != LogoType.Error ? app.LogoPath : string.Empty,
+
+                    // ExePath = app.FullPath,
                     DirPath = app.Location,
                     UserModelId = app.UserModelId,
                 });
@@ -89,15 +90,3 @@ public sealed class AllAppsPage : ListPage
         return uwpResults.Concat(win32Results).OrderBy(app => app.Name).ToList();
     }
 }
-
-//internal sealed class AppAndScore
-//{
-//    public AppItem app;
-//    public int score;
-//}
-
-//internal sealed class AppSearchState
-//{
-//    public string Query { get; set; } = "";
-//    public List<AppAndScore> Results { get; set; } = new();
-//}

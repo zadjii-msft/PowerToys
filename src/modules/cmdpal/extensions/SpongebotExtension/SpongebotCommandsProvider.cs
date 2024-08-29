@@ -15,13 +15,15 @@ namespace SpongebotExtension;
 
 public class CopyTextAction : InvokableCommand
 {
-    internal string Text { get; set;}
+    internal string Text { get; set; }
+
     public CopyTextAction(string text)
     {
         this.Text = text;
         this.Name = "Copy";
         this.Icon = new("\uE8C8");
     }
+
     public override ICommandResult Invoke()
     {
         Microsoft.Windows.CommandPalette.Extensions.Helpers.ClipboardHelper.SetText(Text);
@@ -99,6 +101,7 @@ public class SpongebotPage : Microsoft.Windows.CommandPalette.Extensions.Helpers
 """;
         return body;
     }
+
     internal static string StateJsonPath()
     {
         // Get the path to our exe
@@ -108,7 +111,6 @@ public class SpongebotPage : Microsoft.Windows.CommandPalette.Extensions.Helpers
         // now, the state is just next to the exe
         return System.IO.Path.Combine(directory, "state.json");
     }
-
 }
 
 internal sealed class SpongebotCommandsProvider : ICommandProvider

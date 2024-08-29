@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using Windows.Management.Deployment;
-// using Wox.Plugin.Logger;
 using Package = Windows.ApplicationModel.Package;
 
 namespace AllApps.Programs;

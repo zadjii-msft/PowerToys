@@ -138,14 +138,15 @@ public sealed partial class MainWindow : Window
             if (key != null)
             {
                 var o = key.GetValue("TaskbarGlomLevel");
-                if (o != null && o is Int32 i)
+                if (o != null && o is int i)
                 {
                     onLeft = i > 0;
                 }
+
                 if (!onLeft)
                 {
                     o = key.GetValue("TaskbarAl");
-                    if (o != null && o is Int32 j)
+                    if (o != null && o is int j)
                     {
                         onLeft = j == 0;
                     }
@@ -225,9 +226,9 @@ public sealed partial class MainWindow : Window
         var h = ContentGrid.ActualHeight;
         var dragSides = new Windows.Graphics.RectInt32[] {
             GetRect(new Rect(0, 0, w, 24), scaleAdjustment),
-            GetRect(new Rect(0, h-24, ContentGrid.ActualWidth, 24), scaleAdjustment),
+            GetRect(new Rect(0, h - 24, ContentGrid.ActualWidth, 24), scaleAdjustment),
             GetRect(new Rect(0, 0, 24, h), scaleAdjustment),
-            GetRect(new Rect(w-24, 0, 24, h), scaleAdjustment),
+            GetRect(new Rect(w - 24, 0, 24, h), scaleAdjustment),
         };
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Caption, dragSides);
     }

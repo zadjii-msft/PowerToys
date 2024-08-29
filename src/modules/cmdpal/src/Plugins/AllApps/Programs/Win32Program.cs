@@ -8,13 +8,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security;
+using Microsoft.Win32;
+
 // using Microsoft.Plugin.Program.Logger;
 // using Microsoft.Plugin.Program.Utils;
-using Microsoft.Win32;
 // using Wox.Plugin;
 // using Wox.Plugin.Logger;
 // using DirectoryWrapper = Wox.Infrastructure.FileSystemHelper.DirectoryWrapper;
-
 namespace AllApps.Programs;
 
 [Serializable]
@@ -23,10 +23,9 @@ public class Win32Program // : IProgram
     public static readonly Win32Program InvalidProgram = new(){ Valid = false, Enabled = false };
 
     // private static readonly IFileSystem FileSystem = new FileSystem();
-    //private static readonly IPath Path = FileSystem.Path;
-    //private static readonly IFile File = FileSystem.File;
-    //private static readonly IDirectory Directory = FileSystem.Directory;
-
+    // private static readonly IPath Path = FileSystem.Path;
+    // private static readonly IFile File = FileSystem.File;
+    // private static readonly IDirectory Directory = FileSystem.Directory;
     public string Name { get; set; }
 
     // Localized name based on windows display language
@@ -74,12 +73,10 @@ public class Win32Program // : IProgram
     // Wrappers for File Operations
     public static IFileVersionInfoWrapper FileVersionInfoWrapper { get; set; } = new FileVersionInfoWrapper();
 
-    //public static IFile FileWrapper { get; set; } = new FileSystem().File;
-
+    // public static IFile FileWrapper { get; set; } = new FileSystem().File;
     public static IShellLinkHelper ShellLinkHelper { get; set; } = new ShellLinkHelper();
 
-    //public static IDirectoryWrapper DirectoryWrapper { get; set; } = new DirectoryWrapper();
-
+    // public static IDirectoryWrapper DirectoryWrapper { get; set; } = new DirectoryWrapper();
     private const string ShortcutExtension = "lnk";
     private const string ApplicationReferenceExtension = "appref-ms";
     private const string InternetShortcutExtension = "url";
@@ -103,6 +100,7 @@ public class Win32Program // : IProgram
     // Function to calculate the score of a result
     private int Score(string query)
     {
+        /*
         //var nameMatch = StringMatcher.FuzzySearch(query, Name);
         //var locNameMatch = StringMatcher.FuzzySearch(query, NameLocalized);
         //var descriptionMatch = StringMatcher.FuzzySearch(query, Description);
@@ -112,7 +110,7 @@ public class Win32Program // : IProgram
         //var locLnkResolvedExecutableNameMatch = StringMatcher.FuzzySearch(query, LnkResolvedExecutableNameLocalized);
         //var score = new[] { nameMatch.Score, locNameMatch.Score, descriptionMatch.Score / 2, executableNameMatch.Score, locExecutableNameMatch.Score, lnkResolvedExecutableNameMatch.Score, locLnkResolvedExecutableNameMatch.Score }.Max();
         //return score;
-
+        */
         return query.Length + Name.Length;
     }
 
@@ -164,6 +162,7 @@ public class Win32Program // : IProgram
     {
         switch (AppType)
         {
+            /*
             //case ApplicationType.Win32Application:
             //case ApplicationType.ShortcutApplication:
             //case ApplicationType.ApprefApplication:
@@ -178,6 +177,7 @@ public class Win32Program // : IProgram
             //    return Properties.Resources.powertoys_run_plugin_program_folder_type;
             //case ApplicationType.GenericFile:
             //    return Properties.Resources.powertoys_run_plugin_program_generic_file_type;
+            */
             default:
                 return string.Empty;
         }
@@ -197,6 +197,7 @@ public class Win32Program // : IProgram
         return true;
     }
 
+    /*
     //public Result Result(string query, string queryArguments, IPublicAPI api)
     //{
     //    ArgumentNullException.ThrowIfNull(api);
@@ -348,7 +349,7 @@ public class Win32Program // : IProgram
 
     //    return contextMenus;
     //}
-
+    */
     private ProcessStartInfo GetProcessStartInfo(string programArguments, RunAsType runAs = RunAsType.None)
     {
         return new ProcessStartInfo
@@ -395,29 +396,27 @@ public class Win32Program // : IProgram
                 // Localized name, path and executable based on windows display language
                 NameLocalized = Path.GetFileNameWithoutExtension(path), //  Main.ShellLocalizationHelper.GetLocalizedName(path),
                 FullPathLocalized = path, // Main.ShellLocalizationHelper.GetLocalizedPath(path),
-                ExecutableNameLocalized = Path.GetFileName(path),// Path.GetFileName(Main.ShellLocalizationHelper.GetLocalizedPath(path)),
+                ExecutableNameLocalized = Path.GetFileName(path), // Path.GetFileName(Main.ShellLocalizationHelper.GetLocalizedPath(path)),
             };
         }
         catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
         {
-            //ProgramLogger.Warn($"|Permission denied when trying to load the program from {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
-
+            // ProgramLogger.Warn($"|Permission denied when trying to load the program from {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
         catch (Exception)
         {
-            //ProgramLogger.Exception($"|An unexpected error occurred in the calling method CreateWin32Program at {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
-
+            // ProgramLogger.Exception($"|An unexpected error occurred in the calling method CreateWin32Program at {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
     }
 
-    //private static readonly Regex InternetShortcutURLPrefixes = new Regex(@"^steam:\/\/(rungameid|run|open)\/|^com\.epicgames\.launcher:\/\/apps\/", RegexOptions.Compiled);
-
+    // private static readonly Regex InternetShortcutURLPrefixes = new Regex(@"^steam:\/\/(rungameid|run|open)\/|^com\.epicgames\.launcher:\/\/apps\/", RegexOptions.Compiled);
     // This function filters Internet Shortcut programs
     private static Win32Program InternetShortcutProgram(string path)
     {
         return InvalidProgram;
+        /*
     //    try
     //    {
     //        // We don't want to read the whole file if we don't need to
@@ -493,6 +492,7 @@ public class Win32Program // : IProgram
 
     //        return InvalidProgram;
     //    }
+    */
     }
 
     private static Win32Program LnkProgram(string path)
@@ -513,11 +513,11 @@ public class Win32Program // : IProgram
 
                 program.LnkFilePath = program.FullPath;
                 program.LnkResolvedExecutableName = Path.GetFileName(target);
-                program.LnkResolvedExecutableNameLocalized = Path.GetFileName(target);// Path.GetFileName(Main.ShellLocalizationHelper.GetLocalizedPath(target));
+                program.LnkResolvedExecutableNameLocalized = Path.GetFileName(target); // Path.GetFileName(Main.ShellLocalizationHelper.GetLocalizedPath(target));
 
                 // Using CurrentCulture since this is user facing
                 program.FullPath = Path.GetFullPath(target);
-                program.FullPathLocalized = Path.GetFullPath(target);// Main.ShellLocalizationHelper.GetLocalizedPath(target);
+                program.FullPathLocalized = Path.GetFullPath(target); // Main.ShellLocalizationHelper.GetLocalizedPath(target);
 
                 program.Arguments = ShellLinkHelper.Arguments;
 
@@ -1001,8 +1001,7 @@ public class Win32Program // : IProgram
                 (/*settings.EnablePathEnvironmentVariableSource*/ false, () => PathEnvironmentProgramPaths(settings_RunCommandSuffixes)),
             };
 
-            //var disabledProgramsList = settings.DisabledProgramSources;
-
+            // var disabledProgramsList = settings.DisabledProgramSources;
             // Get all paths but exclude all normal .Executables
             paths.UnionWith(sources
                 .AsParallel()
@@ -1023,7 +1022,6 @@ public class Win32Program // : IProgram
         catch (Exception )
         {
             // ProgramLogger.Exception("An unexpected error occurred", e, MethodBase.GetCurrentMethod().DeclaringType, "Not available");
-
             return Array.Empty<Win32Program>();
         }
     }

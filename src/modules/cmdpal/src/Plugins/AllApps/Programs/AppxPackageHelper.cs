@@ -4,9 +4,7 @@
 
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-//using System.Runtime.InteropServices.ComTypes;
 using Windows.Win32.System.Com;
-// using Wox.Plugin.Common.Win32;
 
 namespace AllApps.Programs;
 

@@ -9,7 +9,9 @@ namespace AllApps;
 internal sealed class AppListItem : ListItem
 {
     private readonly AppItem app;
-    public AppListItem(AppItem app) : base(new AppAction(app))
+
+    public AppListItem(AppItem app)
+        : base(new AppAction(app))
     {
         this.app = app;
         this.Title = app.Name;
@@ -21,7 +23,7 @@ internal sealed class AppListItem : ListItem
         {
             // Win32 exe or other non UWP app
             this._MoreCommands = [
-                new CommandContextItem(new OpenPathAction(app.DirPath){ Name = "Open location", Icon=new("\ue838") })
+                new CommandContextItem(new OpenPathAction(app.DirPath){ Name = "Open location", Icon = new("\ue838") })
             ];
         }
         else

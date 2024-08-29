@@ -7,16 +7,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Windows.CommandPalette.Extensions;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 using Windows.Foundation;
-using System.Runtime.InteropServices;
 
 namespace ProcessMonitorExtension;
-
 
 internal sealed class ProcessItem
 {
@@ -94,9 +93,8 @@ sealed class ProcessListPage : ListPage {
                 ]
             }).ToArray()
         };
-        return [ s ] ;
+        return [ s ];
     }
-
 
     //internal void RefreshProcesses()
     //{
@@ -125,6 +123,7 @@ sealed class ProcessListPage : ListPage {
                     Name = p.ProcessName,
                     ExePath = exePath,
                     Memory = p.WorkingSet64,
+
                     // oh no CPU is not trivial to get
                 };
             });
