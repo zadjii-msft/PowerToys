@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Windows.CommandPalette.Extensions;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 using Windows.Foundation;
-using System.Runtime.InteropServices;
 
 namespace ProcessMonitorExtension;
 
@@ -94,7 +94,7 @@ sealed class ProcessListPage : ListPage {
                 ]
             }).ToArray()
         };
-        return [ s ] ;
+        return [ s ];
     }
 
 
