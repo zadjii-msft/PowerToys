@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "SpongebotExtension (Package)": {
+    "MediaControlsExtension (Package)": {
       "commandName": "MsixPackage"
     },
-    "SpongebotExtension (Unpackaged)": {
+    "MediaControlsExtension (Unpackaged)": {
       "commandName": "Project"
     }
   }
