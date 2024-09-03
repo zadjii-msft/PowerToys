@@ -18,7 +18,7 @@ internal sealed class HackerNewsPage : ListPage
     public HackerNewsPage()
     {
         Icon = new("https://news.ycombinator.com/favicon.ico");
-        Name = "Packer News";
+        Name = "Hacker News";
     }
 
     private static async Task<List<NewsPost>> GetHackerNewsTopPosts()
