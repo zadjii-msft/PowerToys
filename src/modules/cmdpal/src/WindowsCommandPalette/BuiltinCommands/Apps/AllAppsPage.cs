@@ -8,7 +8,7 @@ using Microsoft.Windows.CommandPalette.Extensions;
 using AllApps.Programs;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 
-namespace AllApps;
+namespace WindowsCommandPalette.BuiltinCommands.AllApps;
 
 public sealed class AllAppsPage : ListPage
 {

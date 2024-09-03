@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using AllApps.Programs;
 
-namespace AllApps;
+namespace WindowsCommandPalette.BuiltinCommands.AllApps;
 
 public sealed class AppCache
 {
-    internal IList<Win32Program> Win32s = AllApps.Programs.Win32Program.All();
-    internal IList<UWPApplication> UWPs = Programs.UWP.All();
+    internal IList<Win32Program> Win32s = Win32Program.All();
+    internal IList<UWPApplication> UWPs = UWP.All();
     public static readonly Lazy<AppCache> Instance = new(() => new());
 }

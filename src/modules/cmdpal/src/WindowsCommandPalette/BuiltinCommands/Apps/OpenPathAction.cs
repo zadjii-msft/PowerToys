@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 
-namespace AllApps;
+namespace WindowsCommandPalette.BuiltinCommands.AllApps;
 
 // NOTE this is pretty close to what we'd put in the SDK
 internal sealed class OpenPathAction(string target) : InvokableCommand

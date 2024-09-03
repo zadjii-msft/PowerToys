@@ -17,12 +17,13 @@ using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 using Windows.Foundation;
 using Windows.Win32;
 using WindowsCommandPalette.BuiltinCommands;
+using WindowsCommandPalette.BuiltinCommands.AllApps;
 
 namespace DeveloperCommandPalette;
 
 public sealed class MainViewModel
 {
-    internal readonly AllApps.AllAppsPage apps = new();
+    internal readonly AllAppsPage apps = new();
     internal readonly QuitActionProvider quitActionProvider = new();
     internal readonly ReloadExtensionsActionProvider reloadActionProvider = new();
 
@@ -56,7 +57,7 @@ public sealed class MainViewModel
         // On a background thread, warm up the app cache since we want it more often than not
         new Task(() =>
         {
-            var _ = AllApps.AppCache.Instance.Value;
+            var _ = AppCache.Instance.Value;
             LoadedApps = true;
             AppsReady?.Invoke(this, null);
         }).Start();

@@ -7,7 +7,7 @@ using AllApps.Programs;
 using System.Diagnostics;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 
-namespace AllApps;
+namespace WindowsCommandPalette.BuiltinCommands.AllApps;
 
 internal sealed class AppAction : InvokableCommand
 {
