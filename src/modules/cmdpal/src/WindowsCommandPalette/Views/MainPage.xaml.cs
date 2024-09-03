@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using CmdPal.Models;
+using DeveloperCommandPalette;
 using Microsoft.CmdPal.Common.Extensions;
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.UI.Xaml;
@@ -18,8 +19,9 @@ using Windows.Foundation;
 using Windows.Win32;
 using WindowsCommandPalette.BuiltinCommands;
 using WindowsCommandPalette.BuiltinCommands.AllApps;
+using WindowsCommandPalette.Builtins;
 
-namespace DeveloperCommandPalette;
+namespace WindowsCommandPalette.Views;
 
 public sealed class MainViewModel
 {
@@ -48,7 +50,7 @@ public sealed class MainViewModel
     {
         _builtInCommands.Add(new Run.Bookmarks.BookmarksActionProvider());
         _builtInCommands.Add(new Calculator.CalculatorActionProvider());
-        _builtInCommands.Add(new Run.Settings.SettingsActionProvider());
+        _builtInCommands.Add(new SettingsActionProvider());
         _builtInCommands.Add(quitActionProvider);
         _builtInCommands.Add(reloadActionProvider);
 

@@ -4,8 +4,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Windows.CommandPalette.Extensions;
 using AllApps.Programs;
+using Microsoft.Windows.CommandPalette.Extensions;
 using Microsoft.Windows.CommandPalette.Extensions.Helpers;
 
 namespace WindowsCommandPalette.BuiltinCommands.AllApps;
