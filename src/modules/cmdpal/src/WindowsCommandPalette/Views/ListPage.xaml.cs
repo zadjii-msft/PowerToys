@@ -136,6 +136,7 @@ public sealed class ListPageViewModel : PageViewModel
 
     internal async Task UpdateListItems()
     {
+        this.Loading = true;
         // on main thread
         var t = new Task<ISection[]>(() =>
         {
@@ -194,6 +195,7 @@ public sealed class ListPageViewModel : PageViewModel
 
         ListHelpers.InPlaceUpdateList(Items, newItems);
         ListHelpers.InPlaceUpdateList(FilteredItems, newItems);
+        this.Loading = false;
     }
 
     internal async Task<Collection<SectionInfoList>> GetFilteredItems(string query)

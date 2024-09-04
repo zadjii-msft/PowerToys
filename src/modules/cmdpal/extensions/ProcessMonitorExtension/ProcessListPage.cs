@@ -27,7 +27,6 @@ internal sealed class ProcessListPage : ListPage
     private ISection[] DoGetItems()
     {
         var items = GetRunningProcesses();
-        this.Loading = false;
         var s = new ListSection()
         {
             Title = "Processes",

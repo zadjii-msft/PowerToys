@@ -153,7 +153,7 @@
                      MinHeight="32"
                      FontSize="24"
                      Grid.Column="1"
-                     PlaceholderText="Type here to search"
+                     PlaceholderText="{x:Bind ViewModel.PlaceholderText, Mode=OneWay}"
                      HorizontalAlignment="Stretch" KeyDown="FilterBox_KeyDown" TextChanged="FilterBox_TextChanged"/>
         </Grid>
 
