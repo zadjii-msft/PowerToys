@@ -3,12 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using Microsoft.Windows.CommandPalette.Extensions;
-using Microsoft.Windows.CommandPalette.Extensions.Helpers;
+using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace SpongebotExtension;
 
-internal sealed class SpongebotSettingsPage : Microsoft.Windows.CommandPalette.Extensions.Helpers.FormPage
+internal sealed class SpongebotSettingsPage : Microsoft.CmdPal.Extensions.Helpers.FormPage
 {
     private readonly SpongeSettingsForm settingsForm = new();
 
