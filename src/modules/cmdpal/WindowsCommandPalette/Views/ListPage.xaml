@@ -20,8 +20,8 @@
             <CollectionViewSource x:Name="ItemsCVS" IsSourceGrouped="True" />
             <StackLayout x:Name="HorizontalStackLayout" Orientation="Horizontal" Spacing="8"/>
 
-
-            <DataTemplate x:Key="TagTemplate" x:DataType="devpal:TagViewModel">
+            <!-- <DataTemplate x:Key="TagTemplate" x:DataType="devpal:TagViewModel">
+                <ItemContainer>
                 <Border BorderBrush="{x:Bind BorderBrush, Mode=OneWay}"
                         BorderThickness="1"
                         CornerRadius="4"
@@ -37,7 +37,8 @@
                         <TextBlock VerticalAlignment="Center" Foreground="{x:Bind TextBrush, Mode=OneWay}" FontSize="10" Text="{x:Bind Text, Mode=OneWay}"/>
                     </StackPanel>
                 </Border>
-            </DataTemplate>
+                </ItemContainer>
+            </DataTemplate> -->
 
             <!--Template for items in the main list view -->
             <DataTemplate x:Key="ListItemTemplate" x:DataType="devpal:ListItemViewModel">
@@ -69,11 +70,45 @@
                                        Text="{x:Bind Subtitle, Mode=OneWay}"
                                        Visibility="{x:Bind Subtitle, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}"/>
                         </StackPanel>
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{x:Bind HasTags}">
-                            <ItemsRepeater ItemsSource="{x:Bind Tags}"
-                                           ItemTemplate="{StaticResource TagTemplate}"
-                                           Layout="{StaticResource HorizontalStackLayout}"/>
-                        </StackPanel>
+                        <!--<StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="{x:Bind HasTags}" MinHeight="1" MinWidth="1">-->
+                        <ContentControl Content="{x:Bind TagsElement, Mode=OneWay}" Grid.Column="2"  Visibility="{x:Bind HasTags}" MinHeight="1" MinWidth="1"/>
+                            <!-- <ItemsRepeater ItemsSource="{x:Bind Tags}">
+                                <ItemsRepeater.Layout>
+                                    <StackLayout x:Name="HorizontalStackLayout" Orientation="Horizontal" Spacing="8"/>
+                                </ItemsRepeater.Layout>
+                                <ItemsRepeater.ItemTemplate>
+                                    <DataTemplate x:DataType="devpal:TagViewModel">
+                                        <ContentControl>
+                                            <ContentControl.ContentTemplate>
+                                                <DataTemplate x:DataType="devpal:TagViewModel">
+                                                    <Border BorderBrush="{x:Bind BorderBrush, Mode=OneWay}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="4"
+                                                            Background="{x:Bind BackgroundBrush, Mode=OneWay}"
+                                                            Padding="4, 2, 4, 2"
+                                                            VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <ContentControl Width="12"
+                                                                            Height="12"
+                                                                            Margin="0, 0, 4, 0"
+                                                                            Visibility="{x:Bind HasIcon, Mode=OneWay}"
+                                                                            Content="{x:Bind IcoElement, Mode=OneWay}" />
+                                                            <TextBlock VerticalAlignment="Center" Foreground="{x:Bind TextBrush, Mode=OneWay}" FontSize="10" Text="{x:Bind Text, Mode=OneWay}"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ContentControl.ContentTemplate>
+                                        </ContentControl>
+                                    </DataTemplate>
+                                </ItemsRepeater.ItemTemplate>
+
+                            </ItemsRepeater> -->
+
+                            <!-- <ItemsView ItemsSource="{x:Bind Tags}"
+                                       ItemTemplate="{StaticResource TagTemplate}"
+                                       Layout="{StaticResource HorizontalStackLayout}">
+                            </ItemsView> -->
+                        <!--</StackPanel>-->
                     </Grid>
                 </ListViewItem>
             </DataTemplate>
