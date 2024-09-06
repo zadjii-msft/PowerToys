@@ -60,7 +60,7 @@ public class Tag : BaseObservable, ITag
         set
         {
             _command = value;
-            OnPropertyChanged(nameof(Helpers.Command));
+            OnPropertyChanged(nameof(Command));
         }
     }
 
