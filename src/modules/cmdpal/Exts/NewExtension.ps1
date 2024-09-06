@@ -34,7 +34,7 @@ Options:
 
 Examples:
 
-  .\extensions\NewExtension.ps1 -name MastodonExtension -DisplayName "Mastodon extension for cmdpal"
+  .\Exts\NewExtension.ps1 -name MastodonExtension -DisplayName "Mastodon extension for cmdpal"
 "@
   Exit
 }
