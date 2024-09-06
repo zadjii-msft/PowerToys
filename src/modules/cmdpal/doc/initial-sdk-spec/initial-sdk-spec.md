@@ -907,7 +907,6 @@ simple formatting options.
 
 ```csharp
 interface IMarkdownPage requires IPage {
-    String Title { get; };
     String[] Bodies(); // TODO! should this be an IBody, so we can make it observable?
     IDetails Details();
     IContextItem[] Commands { get; };
@@ -1322,7 +1321,6 @@ classDiagram
 
     IMarkdownPage --|> IPage
     class IMarkdownPage  {
-        String Title
         String[] Bodies()
         IDetails Details()
         IContextItem[] Commands
