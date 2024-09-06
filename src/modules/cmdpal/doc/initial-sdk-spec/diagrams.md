@@ -1,67 +1,42 @@
-```csharp
-interface IFallbackHandler {
-    void UpdateQuery(String query);
-}
 
-[uuid("c78b9851-e76b-43ee-8f76-da5ba14e69a4")]
-interface IContextItem {}
-
-interface ICommandContextItem requires IContextItem {
-    ICommand Command { get; };
-    String Tooltip { get; };
-    Boolean IsCritical { get; }; // todo: better name for "make this red"
-
-    // TODO-future: we should allow app developers to specify a default keybinding for each of these actions
-}
-[uuid("924a87fc-32fe-4471-9156-84b3b30275a6")]
-interface ISeparatorContextItem requires IContextItem {}
-
-interface IListItem requires INotifyPropChanged {
-    String Title{ get; };
-    String Subtitle{ get; };
-    ICommand Command{ get; };
-    IContextItem[] MoreCommands{ get; };  // TODO: name should be better
-    ITag[] Tags{ get; };
-    IDetails Details{ get; };
-    IFallbackHandler FallbackHandler{ get; };
-}
-
-interface ISection {
-    String Title { get; };
-    IListItem[] Items { get; };
-}
-
-interface IGridProperties  {
-    Windows.Foundation.Size TileSize { get; };
-}
-
-interface IListPage requires IPage {
-    String SearchText { get; };
-    String PlaceholderText { get; };
-    Boolean ShowDetails{ get; };
-    IFilters Filters { get; };
-    IGridProperties GridProperties { get; };
-
-    ISection[] GetItems(); // DevPal will be responsible for filtering the list of items
-}
-
-interface IDynamicListPage requires IListPage {
-    ISection[] GetItems(String query); // DevPal will do no filtering of these items
-}
-```
 
 ```mermaid
 classDiagram
-
     class ICommand {
         String Name
         IconDataType Icon
     }
-    IPage <|-- ICommand
+    IPage --|> ICommand
     class IPage  {
         Boolean Loading
     }
 
+    IInvokableCommand --|> ICommand
+    class IInvokableCommand  {
+        ICommandResult Invoke()
+    }
+
+    class IForm {
+        String TemplateJson()
+        String DataJson()
+        String StateJson()
+        ICommandResult SubmitForm(String payload)
+    }
+    IFormPage --|> IPage
+    class IFormPage  {
+        IForm[] Forms()
+    }
+    IForm "1..*" *-- IFormPage
+
+    IMarkdownPage --|> IPage
+    class IMarkdownPage  {
+        String Title
+        String[] Bodies()
+        IDetails Details()
+        IContextItem[] Commands
+    }
+    %% IMarkdownPage *-- IDetails
+    IDetails *-- IMarkdownPage
     %%%%%%%%%
 
     class IFallbackHandler {
@@ -69,7 +44,7 @@ classDiagram
     }
 
 
-    %% IListItem <|-- INotifyPropChanged
+    %% IListItem --|> INotifyPropChanged
     class IListItem  {
         String Title
         String Subtitle
@@ -79,22 +54,22 @@ classDiagram
         IDetails Details
         IFallbackHandler FallbackHandler
     }
-    IListItem *-- ICommand
-    IListItem o-- ITag
-    IListItem *-- IDetails
-    IListItem *-- IFallbackHandler
+    ICommand *-- IListItem
+    ITag "0..*" *-- IListItem
+    IDetails "0..1" *-- IListItem
+    IFallbackHandler "0..1" *-- IListItem
 
     class ISection {
         String Title
         IListItem[] Items
     }
-    ISection o-- IListItem
+    IListItem "0..*" *-- ISection
 
     class IGridProperties  {
         Windows.Foundation.Size TileSize
     }
 
-    IListPage <|-- IPage
+    IListPage --|> IPage
     class IListPage  {
         String SearchText
         String PlaceholderText
@@ -104,16 +79,16 @@ classDiagram
 
         ISection[] GetItems()
     }
-    IListPage *-- IFilters
-    IListPage *-- IGridProperties
-    IListPage o-- ISection
+    IFilters *-- IListPage
+    IGridProperties *-- IListPage
+    ISection "0..*" *-- IListPage
 
-    IDynamicListPage <|-- IListPage
+    IDynamicListPage --|> IListPage
     class IDynamicListPage  {
         ISection[] GetItems(String query)
     }
 
-    %% IContextItem <|-- INotifyPropChanged
+    %% IContextItem --|> INotifyPropChanged
 
 
 
@@ -134,19 +109,28 @@ classDiagram
         String ToolTip
         ICommand Command
     }
-    ITag *-- ICommand
+    ICommand *-- ITag
 
     %%%%%%
     class IContextItem
 
-    ICommandContextItem <|-- IContextItem
+    ICommandContextItem --|> IContextItem
     class ICommandContextItem  {
         ICommand Command
         String Tooltip
         Boolean IsCritical
     }
-    ICommandContextItem *-- ICommand
+    ICommand *-- ICommandContextItem
 
-    ISeparatorContextItem <|-- IContextItem
+    ISeparatorContextItem --|> IContextItem
     class ISeparatorContextItem
+
+
+    class ICommandProvider {
+        String DisplayName
+        IconDataType Icon
+
+        IListItem[] TopLevelCommands()
+    }
+    IListItem "*" *-- ICommandProvider
 ```

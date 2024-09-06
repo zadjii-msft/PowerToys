@@ -1,12 +1,12 @@
 classDiagram
 
     class IExtension {
-        IInspectable GetProvider(ProviderType providerType);
-        void Dispose();
+        IInspectable GetProvider(ProviderType providerType)
+        void Dispose()
     }
 
     class IconDataType {
-        IconDataType(String iconString);
+        IconDataType(String iconString)
         String Icon
     }
 
@@ -15,7 +15,7 @@ classDiagram
     }
 
     class PropChangedEventArgs {
-        PropChangedEventArgs(String propertyName);
+        PropChangedEventArgs(String propertyName)
         String PropertyName
     }
 
@@ -39,7 +39,7 @@ classDiagram
 
     IInvokableCommand <|-- ICommandhe MoreCommands flyout of for a ListItem or a MarkdownPage
     class IInvokableCommand  {
-        ICommandResult Invoke();
+        ICommandResult Invoke()
     }
 
 
@@ -59,7 +59,7 @@ classDiagram
     IFilters o-- IFilterItem
     class IFilters {
         String CurrentFilterId
-        IFilterItem[] AvailableFilters();
+        IFilterItem[] AvailableFilters()
     }
 
     class ITag {
@@ -69,7 +69,6 @@ classDiagram
         String ToolTip
         ICommand Command
     }
-
 
     class IDetailsData
 
@@ -102,9 +101,8 @@ classDiagram
     }
 
     class IFallbackHandler {
-        void UpdateQuery(String query);
+        void UpdateQuery(String query)
     }
-
 
     class IContextItem
 
@@ -112,9 +110,9 @@ classDiagram
     class ICommandContextItem  {
         ICommand Command
         String Tooltip
-        Boolean IsCritical  // todo: better name for "make this red "
+        Boolean IsCritical
 
-        we should allow app developers to specify a default keybinding for each of these actions // TODO-future
+        we should allow app developers to specify a default keybinding for each of these actions
     }
 
     ISeparatorContextItem <|-- IContextItem
@@ -125,7 +123,7 @@ classDiagram
         String Title
         String Subtitle
         ICommand Command
-        IContextItem[] MoreCommands  // TODO: name should be better
+        IContextItem[] MoreCommands
         ITag[] Tags
         IDetails Details
         IFallbackHandler FallbackHandler
@@ -150,37 +148,37 @@ classDiagram
         IFilters Filters
         IGridProperties GridProperties
 
-        ISection[] GetItems(); // DevPal will be responsible for filtering the list of items
+        ISection[] GetItems()
     }
 
     IDynamicListPage <|-- IListPage
     class IDynamicListPage  {
-        ISection[] GetItems(String query); // DevPal will do no filtering of these items
+        ISection[] GetItems(String query)
     }
 
     IMarkdownPage <|-- IPage
     class IMarkdownPage  {
         String Title
-        String[] Bodies(); // TODO! should this be an IBody, so we can make it observable?
-        IDetails Details();
+        String[] Bodies()
+        IDetails Details()
         IContextItem[] Commands
     }
 
 
-    class IForm { // TODO! should this be observable?
-        String TemplateJson();
-        String DataJson();
-        String StateJson();
-        ICommandResult SubmitForm(String payload);
+    class IForm {
+        String TemplateJson()
+        String DataJson()
+        String StateJson()
+        ICommandResult SubmitForm(String payload)
     }
     IFormPage <|-- IPage
     class IFormPage  {
-        IForm[] Forms();
+        IForm[] Forms()
     }
 
     class ICommandProvider {
         String DisplayName
         IconDataType Icon
 
-        IListItem[] TopLevelCommands();
+        IListItem[] TopLevelCommands()
     }
