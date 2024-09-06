@@ -1,0 +1,186 @@
+classDiagram
+
+    class IExtension {
+        IInspectable GetProvider(ProviderType providerType);
+        void Dispose();
+    }
+
+    class IconDataType {
+        IconDataType(String iconString);
+        String Icon
+    }
+
+    class INotifyPropChanged {
+        event Windows.Foundation.TypedEventHandler<Object, PropChangedEventArgs> PropChanged;
+    }
+
+    class PropChangedEventArgs {
+        PropChangedEventArgs(String propertyName);
+        String PropertyName
+    }
+
+    ICommand <|-- INotifyPropChanged
+    class ICommand {
+        String Name
+        IconDataType Icon
+    }
+
+
+    class ICommandResultArgs
+
+    class ICommandResult {
+        CommandResultKind Kind
+        ICommandResultArgs Args
+    }
+    IGoToPageArgs <|-- ICommandResultArgs
+    class IGoToPageArgs {
+        String PageId
+    }
+
+    IInvokableCommand <|-- ICommandhe MoreCommands flyout of for a ListItem or a MarkdownPage
+    class IInvokableCommand  {
+        ICommandResult Invoke();
+    }
+
+
+    class IFilterItem
+
+
+    ISeparatorFilterItem <|-- IFilterItem
+    class ISeparatorFilterItem
+
+    IFilter <|-- IFilterItem
+    class IFilter  {
+        String Id
+        String Name
+        IconDataType Icon
+    }
+
+    IFilters o-- IFilterItem
+    class IFilters {
+        String CurrentFilterId
+        IFilterItem[] AvailableFilters();
+    }
+
+    class ITag {
+        IconDataType Icon
+        String Text
+        Windows.UI.Color Color
+        String ToolTip
+        ICommand Command
+    }
+
+
+    class IDetailsData
+
+    class IDetailsElement {
+        String Key
+        IDetailsData Data
+    }
+    class IDetails {
+        IconDataType HeroImage
+        String Title
+        String Body
+        IDetailsElement[] Metadata
+    }
+    IDetailsTags <|-- IDetailsData
+    class IDetailsTags  {
+        ITag[] Tags
+    }
+    IDetailsLink <|-- IDetailsData
+    class IDetailsLink  {
+        Windows.Foundation.Uri Link
+        String Text
+    }
+
+    IDetailsSeparator <|-- IDetailsData
+    class IDetailsSeparator
+
+    IPage <|-- ICommand
+    class IPage  {
+        Boolean Loading
+    }
+
+    class IFallbackHandler {
+        void UpdateQuery(String query);
+    }
+
+
+    class IContextItem
+
+    ICommandContextItem <|-- IContextItem
+    class ICommandContextItem  {
+        ICommand Command
+        String Tooltip
+        Boolean IsCritical  // todo: better name for "make this red "
+
+        we should allow app developers to specify a default keybinding for each of these actions // TODO-future
+    }
+
+    ISeparatorContextItem <|-- IContextItem
+    class ISeparatorContextItem
+
+    IListItem <|-- INotifyPropChanged
+    class IListItem  {
+        String Title
+        String Subtitle
+        ICommand Command
+        IContextItem[] MoreCommands  // TODO: name should be better
+        ITag[] Tags
+        IDetails Details
+        IFallbackHandler FallbackHandler
+    }
+
+    ISection o-- IListItem
+    class ISection {
+        String Title
+        IListItem[] Items
+    }
+
+    class IGridProperties  {
+        Windows.Foundation.Size TileSize
+    }
+
+    IListPage <|-- IPage
+    IListPage o-- ISection
+    class IListPage  {
+        String SearchText
+        String PlaceholderText
+        Boolean ShowDetails
+        IFilters Filters
+        IGridProperties GridProperties
+
+        ISection[] GetItems(); // DevPal will be responsible for filtering the list of items
+    }
+
+    IDynamicListPage <|-- IListPage
+    class IDynamicListPage  {
+        ISection[] GetItems(String query); // DevPal will do no filtering of these items
+    }
+
+    IMarkdownPage <|-- IPage
+    class IMarkdownPage  {
+        String Title
+        String[] Bodies(); // TODO! should this be an IBody, so we can make it observable?
+        IDetails Details();
+        IContextItem[] Commands
+    }
+
+
+    class IForm { // TODO! should this be observable?
+        String TemplateJson();
+        String DataJson();
+        String StateJson();
+        ICommandResult SubmitForm(String payload);
+    }
+    IFormPage <|-- IPage
+    class IFormPage  {
+        IForm[] Forms();
+    }
+
+    class ICommandProvider {
+        String DisplayName
+        IconDataType Icon
+
+        IListItem[] TopLevelCommands();
+    }
