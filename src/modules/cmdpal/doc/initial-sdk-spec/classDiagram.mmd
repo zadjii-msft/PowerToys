@@ -19,7 +19,7 @@ classDiagram
         String PropertyName
     }
 
-    ICommand <|-- INotifyPropChanged
+    ICommand --|> INotifyPropChanged
     class ICommand {
         String Name
         IconDataType Icon
@@ -32,12 +32,12 @@ classDiagram
         CommandResultKind Kind
         ICommandResultArgs Args
     }
-    IGoToPageArgs <|-- ICommandResultArgs
+    IGoToPageArgs --|> ICommandResultArgs
     class IGoToPageArgs {
         String PageId
     }
 
-    IInvokableCommand <|-- ICommandhe MoreCommands flyout of for a ListItem or a MarkdownPage
+    IInvokableCommand --|> ICommand
     class IInvokableCommand  {
         ICommandResult Invoke()
     }
@@ -45,11 +45,10 @@ classDiagram
 
     class IFilterItem
 
-
-    ISeparatorFilterItem <|-- IFilterItem
+    ISeparatorFilterItem --|> IFilterItem
     class ISeparatorFilterItem
 
-    IFilter <|-- IFilterItem
+    IFilter --|> IFilterItem
     class IFilter  {
         String Id
         String Name
@@ -82,20 +81,20 @@ classDiagram
         String Body
         IDetailsElement[] Metadata
     }
-    IDetailsTags <|-- IDetailsData
+    IDetailsTags --|> IDetailsData
     class IDetailsTags  {
         ITag[] Tags
     }
-    IDetailsLink <|-- IDetailsData
+    IDetailsLink --|> IDetailsData
     class IDetailsLink  {
         Windows.Foundation.Uri Link
         String Text
     }
 
-    IDetailsSeparator <|-- IDetailsData
+    IDetailsSeparator --|> IDetailsData
     class IDetailsSeparator
 
-    IPage <|-- ICommand
+    IPage --|> ICommand
     class IPage  {
         Boolean Loading
     }
@@ -106,7 +105,7 @@ classDiagram
 
     class IContextItem
 
-    ICommandContextItem <|-- IContextItem
+    ICommandContextItem --|> IContextItem
     class ICommandContextItem  {
         ICommand Command
         String Tooltip
@@ -115,10 +114,10 @@ classDiagram
         we should allow app developers to specify a default keybinding for each of these actions
     }
 
-    ISeparatorContextItem <|-- IContextItem
+    ISeparatorContextItem --|> IContextItem
     class ISeparatorContextItem
 
-    IListItem <|-- INotifyPropChanged
+    IListItem --|> INotifyPropChanged
     class IListItem  {
         String Title
         String Subtitle
@@ -139,7 +138,7 @@ classDiagram
         Windows.Foundation.Size TileSize
     }
 
-    IListPage <|-- IPage
+    IListPage --|> IPage
     IListPage o-- ISection
     class IListPage  {
         String SearchText
@@ -151,12 +150,12 @@ classDiagram
         ISection[] GetItems()
     }
 
-    IDynamicListPage <|-- IListPage
+    IDynamicListPage --|> IListPage
     class IDynamicListPage  {
         ISection[] GetItems(String query)
     }
 
-    IMarkdownPage <|-- IPage
+    IMarkdownPage --|> IPage
     class IMarkdownPage  {
         String Title
         String[] Bodies()
@@ -171,7 +170,7 @@ classDiagram
         String StateJson()
         ICommandResult SubmitForm(String payload)
     }
-    IFormPage <|-- IPage
+    IFormPage --|> IPage
     class IFormPage  {
         IForm[] Forms()
     }

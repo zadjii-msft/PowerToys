@@ -36,12 +36,31 @@ classDiagram
         IContextItem[] Commands
     }
     %% IMarkdownPage *-- IDetails
+    IContextItem *-- IMarkdownPage
     IDetails *-- IMarkdownPage
     %%%%%%%%%
 
-    class IFallbackHandler {
-        void UpdateQuery(String query)
-    }
+    %% class IFilterItem
+
+    %% ISeparatorFilterItem --|> IFilterItem
+    %% class ISeparatorFilterItem
+
+    %% IFilter --|> IFilterItem
+    %% class IFilter  {
+    %%     String Id
+    %%     String Name
+    %%     IconDataType Icon
+    %% }
+
+    %% class IFilters {
+    %%     String CurrentFilterId
+    %%     IFilterItem[] AvailableFilters()
+    %% }
+    %% IFilterItem "*" *-- IFilters
+
+    %% class IFallbackHandler {
+    %%     void UpdateQuery(String query)
+    %% }
 
 
     %% IListItem --|> INotifyPropChanged
@@ -54,9 +73,10 @@ classDiagram
         IDetails Details
         IFallbackHandler FallbackHandler
     }
+    IContextItem "0..*" *-- IListItem
+    IDetails "0..1" *-- IListItem
     ICommand *-- IListItem
     ITag "0..*" *-- IListItem
-    IDetails "0..1" *-- IListItem
     IFallbackHandler "0..1" *-- IListItem
 
     class ISection {
