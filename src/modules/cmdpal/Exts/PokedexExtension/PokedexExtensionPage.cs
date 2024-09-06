@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Windows.UI;
 
 namespace PokedexExtension;
 
@@ -43,7 +44,7 @@ internal sealed class PokemonPage : NoOpCommand
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
 internal sealed class PokedexExtensionPage : ListPage
 {
-    private List<Pokemon> _kanto = new()
+    private readonly List<Pokemon> _kanto = new()
     {
         new Pokemon(1, "Bulbasaur", new List<string> { "Grass", "Poison" }),
         new Pokemon(2, "Ivysaur", new List<string> { "Grass", "Poison" }),
@@ -198,7 +199,7 @@ internal sealed class PokedexExtensionPage : ListPage
         new Pokemon(151, "Mew", new List<string> { "Psychic" }),
     };
 
-    private List<Pokemon> _johto = new()
+    private readonly List<Pokemon> _johto = new()
     {
         new Pokemon(152, "Chikorita", new List<string> { "Grass" }),
         new Pokemon(153, "Bayleef", new List<string> { "Grass" }),
@@ -302,7 +303,7 @@ internal sealed class PokedexExtensionPage : ListPage
         new Pokemon(251, "Celebi", new List<string> { "Psychic", "Grass" }),
     };
 
-    private List<Pokemon> _hoenn = new()
+    private readonly List<Pokemon> _hoenn = new()
     {
         new Pokemon(252, "Treecko", new List<string> { "Grass" }),
         new Pokemon(253, "Grovyle", new List<string> { "Grass" }),
@@ -455,16 +456,68 @@ internal sealed class PokedexExtensionPage : ListPage
                 Title = "Kanto",
                 Items = _kanto
                     .AsEnumerable()
-                    .Select(p => new ListItem(new PokemonPage(p))).ToArray(),
+                    .Select(p => GetPokemonListItem(p)).ToArray(),
             },
             new ListSection()
             {
                 Title = "Johto",
                 Items = _johto
                     .AsEnumerable()
-                    .Select(p => new ListItem(new PokemonPage(p))).ToArray(),
+                    .Select(p => GetPokemonListItem(p)).ToArray(),
+            },
+            new ListSection()
+            {
+                Title = "Hoenn",
+                Items = _hoenn
+                    .AsEnumerable()
+                    .Select(p => GetPokemonListItem(p)).ToArray(),
             },
         ];
+    }
+
+    private static ListItem GetPokemonListItem(Pokemon pokemon)
+    {
+        return new ListItem(new PokemonPage(pokemon))
+        {
+            Subtitle = $"#{pokemon.Number}",
+            Tags = pokemon.Types.Select(t => new Tag() { Text = t, Color = GetColorForType(t) }).ToArray(),
+        };
+    }
+
+    // Dictionary mapping Pokémon types to their corresponding colors
+    private static readonly Dictionary<string, Color> TypeColors = new Dictionary<string, Color>
+    {
+        { "Normal", Color.FromArgb(255, 168, 168, 120) },   // Light Brownish Grey
+        { "Fire", Color.FromArgb(255, 240, 128, 48) },      // Orange-Red
+        { "Water", Color.FromArgb(255, 104, 144, 240) },    // Medium Blue
+        { "Electric", Color.FromArgb(255, 248, 208, 48) },  // Yellow
+        { "Grass", Color.FromArgb(255, 120, 200, 80) },     // Green
+        { "Ice", Color.FromArgb(255, 152, 216, 216) },      // Cyan
+        { "Fighting", Color.FromArgb(255, 192, 48, 40) },   // Red
+        { "Poison", Color.FromArgb(255, 160, 64, 160) },    // Purple
+        { "Ground", Color.FromArgb(255, 224, 192, 104) },   // Yellowish Brown
+        { "Flying", Color.FromArgb(255, 168, 144, 240) },   // Light Blue
+        { "Psychic", Color.FromArgb(255, 248, 88, 136) },   // Pink
+        { "Bug", Color.FromArgb(255, 168, 184, 32) },       // Greenish Yellow
+        { "Rock", Color.FromArgb(255, 184, 160, 56) },      // Brown
+        { "Ghost", Color.FromArgb(255, 112, 88, 152) },     // Dark Purple
+        { "Dragon", Color.FromArgb(255, 112, 56, 248) },    // Blue-Violet
+        { "Dark", Color.FromArgb(255, 112, 88, 72) },       // Dark Brown
+        { "Steel", Color.FromArgb(255, 184, 184, 208) },    // Light Grey
+        { "Fairy", Color.FromArgb(255, 238, 153, 172) },    // Light Pink
+    };
+
+    // Method to get the color for a given type
+    public static Color GetColorForType(string type)
+    {
+        // Check if the type exists in the dictionary
+        if (TypeColors.TryGetValue(type, out Color color))
+        {
+            return color;
+        }
+
+        // Default color (e.g., white) if the type is not found
+        return Color.FromArgb(255, 255, 255, 255);
     }
 }
 
