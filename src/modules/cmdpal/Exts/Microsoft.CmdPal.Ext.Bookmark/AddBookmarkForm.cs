@@ -100,7 +100,7 @@ internal sealed class AddBookmarkForm : Form
         };
 
         // Construct a new json blob with the name and url
-        var jsonPath = BookmarksActionProvider.StateJsonPath();
+        var jsonPath = BookmarksCommandProvider.StateJsonPath();
         var data = Bookmarks.ReadFromFile(jsonPath);
 
         data.Data.Add(formData);
