@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.34929.205
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.UI.Poc", "src\WindowsCommandPalette\Microsoft.CmdPal.UI.Poc.csproj", "{F71CF22B-A5C7-4328-A5B3-F4191AE57314}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.UI.Poc", "WindowsCommandPalette\Microsoft.CmdPal.UI.Poc.csproj", "{F71CF22B-A5C7-4328-A5B3-F4191AE57314}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Extensions", "Sample Extensions", "{B7FF739F-7716-4FC3-B622-705486187B87}"
 EndProject
@@ -14,7 +14,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.CmdPal.Extensions
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.Extensions.Helpers", "extensionsdk\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj", "{79060D06-7174-4D66-8D0B-4FF021154049}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.Common", "src\Microsoft.CmdPal.Common\Microsoft.CmdPal.Common.csproj", "{05CDE6EE-23AE-42AF-A9F5-E398C382675F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.Common", "Microsoft.CmdPal.Common\Microsoft.CmdPal.Common.csproj", "{05CDE6EE-23AE-42AF-A9F5-E398C382675F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpongebotExtension", "extensions\SpongebotExtension\SpongebotExtension.csproj", "{57617906-DEC8-4D62-A270-6EBE3F8E5C0D}"
 EndProject
@@ -32,11 +32,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MastodonExtension", "extens
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Built-in Extensions", "Built-in Extensions", "{272D0E9A-8FC3-49F5-8FAD-79ABAE8AB1E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.Bookmarks", "src\Exts\Microsoft.CmdPal.Ext.Bookmark\Microsoft.CmdPal.Ext.Bookmarks.csproj", "{C5BADA22-70FF-41D1-9529-28F4891316A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.Bookmarks", "Exts\Microsoft.CmdPal.Ext.Bookmark\Microsoft.CmdPal.Ext.Bookmarks.csproj", "{C5BADA22-70FF-41D1-9529-28F4891316A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.Calc", "src\Exts\Microsoft.CmdPal.Ext.Calc\Microsoft.CmdPal.Ext.Calc.csproj", "{42DB35EE-1EDB-41E4-9C9F-A3520EBC5CC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.Calc", "Exts\Microsoft.CmdPal.Ext.Calc\Microsoft.CmdPal.Ext.Calc.csproj", "{42DB35EE-1EDB-41E4-9C9F-A3520EBC5CC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.Settings", "src\Exts\Microsoft.CmdPal.Ext.CmdPalSettings\Microsoft.CmdPal.Ext.Settings.csproj", "{7F6796A4-4233-4CEC-914F-95EC7A5283A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.Settings", "Exts\Microsoft.CmdPal.Ext.CmdPalSettings\Microsoft.CmdPal.Ext.Settings.csproj", "{7F6796A4-4233-4CEC-914F-95EC7A5283A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

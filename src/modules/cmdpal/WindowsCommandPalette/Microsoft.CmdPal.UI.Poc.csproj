@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\Common.Dotnet.CsWinRT.props" />
+  <Import Project="..\..\..\Common.Dotnet.CsWinRT.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <RootNamespace>WindowsCommandPalette</RootNamespace>
@@ -68,12 +68,12 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\extensionsdk\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj" />
+    <ProjectReference Include="..\extensionsdk\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj" />
     <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.Bookmark\Microsoft.CmdPal.Ext.Bookmarks.csproj" />
     <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.Calc\Microsoft.CmdPal.Ext.Calc.csproj" />
     <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.CmdPalSettings\Microsoft.CmdPal.Ext.Settings.csproj" />
     <ProjectReference Include="..\Microsoft.CmdPal.Common\Microsoft.CmdPal.Common.csproj" />
-    <ProjectReference Include="..\Microsoft.Terminal.UI\Microsoft.Terminal.UI.vcxproj">
+    <ProjectReference Include="..\src\Microsoft.Terminal.UI\Microsoft.Terminal.UI.vcxproj">
       <ReferenceOutputAssembly>True</ReferenceOutputAssembly>
       <Private>True</Private>
       <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
