@@ -26,7 +26,7 @@ classDiagram
     class IFormPage  {
         IForm[] Forms()
     }
-    IForm "1..*" *-- IFormPage
+    IForm "*" *-- IFormPage
 
     IMarkdownPage --|> IPage
     class IMarkdownPage  {
@@ -36,31 +36,31 @@ classDiagram
         IContextItem[] Commands
     }
     %% IMarkdownPage *-- IDetails
-    IContextItem *-- IMarkdownPage
-    IDetails *-- IMarkdownPage
+    IContextItem "*" *-- IMarkdownPage
+    IDetails "?" *-- IMarkdownPage
     %%%%%%%%%
 
-    %% class IFilterItem
+    class IFilterItem
 
-    %% ISeparatorFilterItem --|> IFilterItem
-    %% class ISeparatorFilterItem
+    ISeparatorFilterItem --|> IFilterItem
+    class ISeparatorFilterItem
 
-    %% IFilter --|> IFilterItem
-    %% class IFilter  {
-    %%     String Id
-    %%     String Name
-    %%     IconDataType Icon
-    %% }
+    IFilter --|> IFilterItem
+    class IFilter  {
+        String Id
+        String Name
+        IconDataType Icon
+    }
 
-    %% class IFilters {
-    %%     String CurrentFilterId
-    %%     IFilterItem[] AvailableFilters()
-    %% }
-    %% IFilterItem "*" *-- IFilters
+    class IFilters {
+        String CurrentFilterId
+        IFilterItem[] AvailableFilters()
+    }
+    IFilterItem "*" *-- IFilters
 
-    %% class IFallbackHandler {
-    %%     void UpdateQuery(String query)
-    %% }
+    class IFallbackHandler {
+        void UpdateQuery(String query)
+    }
 
 
     %% IListItem --|> INotifyPropChanged
@@ -73,17 +73,17 @@ classDiagram
         IDetails Details
         IFallbackHandler FallbackHandler
     }
-    IContextItem "0..*" *-- IListItem
-    IDetails "0..1" *-- IListItem
-    ICommand *-- IListItem
-    ITag "0..*" *-- IListItem
-    IFallbackHandler "0..1" *-- IListItem
+    IContextItem "*" *-- IListItem
+    IDetails "?" *-- IListItem
+    ICommand "?" *-- IListItem
+    ITag "*" *-- IListItem
+    IFallbackHandler "?" *-- IListItem
 
     class ISection {
         String Title
         IListItem[] Items
     }
-    IListItem "0..*" *-- ISection
+    IListItem "*" *-- ISection
 
     class IGridProperties  {
         Windows.Foundation.Size TileSize
@@ -99,9 +99,9 @@ classDiagram
 
         ISection[] GetItems()
     }
-    IFilters *-- IListPage
-    IGridProperties *-- IListPage
-    ISection "0..*" *-- IListPage
+    IGridProperties "?" *-- IListPage
+    ISection "*" *-- IListPage
+    IFilters "*" *-- IListPage
 
     IDynamicListPage --|> IListPage
     class IDynamicListPage  {
@@ -129,7 +129,7 @@ classDiagram
         String ToolTip
         ICommand Command
     }
-    ICommand *-- ITag
+    ICommand "?" *-- ITag
 
     %%%%%%
     class IContextItem
@@ -140,7 +140,7 @@ classDiagram
         String Tooltip
         Boolean IsCritical
     }
-    ICommand *-- ICommandContextItem
+    ICommand "?" *-- ICommandContextItem
 
     ISeparatorContextItem --|> IContextItem
     class ISeparatorContextItem
