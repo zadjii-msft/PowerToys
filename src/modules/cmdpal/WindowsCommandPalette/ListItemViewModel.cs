@@ -30,27 +30,6 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public StackPanel TagsElement {
-        get
-        {
-            var sp = new StackPanel();
-            sp.Orientation = Orientation.Horizontal;
-            try
-            {
-                var maybe = ListItem.Unsafe;
-                foreach (var t in maybe.Tags)
-                {
-                    sp.Children.Add(new TagControl(new(t)));
-                }
-            }
-            catch (COMException)
-            {
-            }
-
-            return sp;
-        }
-    }
-
     internal ICommand? DefaultAction
     {
         get
