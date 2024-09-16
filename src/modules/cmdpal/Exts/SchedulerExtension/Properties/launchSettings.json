@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SchedulerExtension (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SchedulerExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
