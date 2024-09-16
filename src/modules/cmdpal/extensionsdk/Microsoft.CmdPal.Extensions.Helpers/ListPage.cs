@@ -5,6 +5,7 @@ public class ListPage : Page, IListPage
     private string _placeholderText = string.Empty;
     private string _searchText = string.Empty;
     private bool _showDetails;
+    private bool _items;
     private IFilters? _filters;
     private IGridProperties? _gridProperties;
 
@@ -25,6 +26,16 @@ public class ListPage : Page, IListPage
         {
             _searchText = value;
             OnPropertyChanged(nameof(SearchText));
+        }
+    }
+
+    public bool Items
+    {
+        get => _items;
+        set
+        {
+            _items = value;
+            OnPropertyChanged(nameof(Items));
         }
     }
 

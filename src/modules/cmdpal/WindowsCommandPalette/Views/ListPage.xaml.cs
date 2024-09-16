@@ -77,6 +77,8 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             return;
         }
 
+        ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+
         if (e.NavigationMode == NavigationMode.New)
         {
             ViewModel.InitialRender().ContinueWith((t) =>
@@ -209,6 +211,35 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         if (ItemsList.Items.Count > 0)
         {
             ItemsList.SelectedIndex = 0;
+        }
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Check if the property changed is 'Items'
+        if (e.PropertyName == nameof(ViewModel.Items))
+        {
+            if (ViewModel != null)
+            {
+                // Call UpdateFilter when 'Items' changes
+                DispatcherQueue.TryEnqueue(async () =>
+                {
+                    await ViewModel.UpdateListItems();
+                    if (ItemsList.Items.Count > 0)
+                    {
+                        ItemsList.SelectedIndex = 0;
+                    }
+                });
+            }
+        }
+    }
+
+    protected override void OnNavigatedFrom(NavigationEventArgs e)
+    {
+        base.OnNavigatedFrom(e);
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
         }
     }
 

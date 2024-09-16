@@ -17,7 +17,7 @@
         <ResourceDictionary>
             <local:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter" />
 
-            <CollectionViewSource x:Name="ItemsCVS" IsSourceGrouped="True" />
+            <CollectionViewSource x:Name="ItemsCVS" IsSourceGrouped="True"/>
             <StackLayout x:Name="HorizontalStackLayout" Orientation="Horizontal" Spacing="8"/>
 
 
