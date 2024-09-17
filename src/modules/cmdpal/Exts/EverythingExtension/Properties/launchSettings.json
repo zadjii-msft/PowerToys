@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EverythingExtension (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "EverythingExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
