@@ -266,6 +266,13 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             ActionsDropdown.SelectedIndex = 0;
             ActionsDropdown.Focus(FocusState.Programmatic);
         }
+        else if (e.Key == Windows.System.VirtualKey.Back)
+        {
+            if (FilterBox.Text.Length == 0 && ViewModel != null && ViewModel.Nested)
+            {
+                ViewModel?.GoBack();
+            }
+        }
     }
 
     private void FilterBox_TextChanged(object sender, TextChangedEventArgs e)
