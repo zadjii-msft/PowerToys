@@ -14,7 +14,7 @@ namespace EverythingExtension;
 
 public partial class EverythingExtensionActionsProvider : ICommandProvider
 {
-    public string DisplayName => $"Everything Search";
+    public string DisplayName => $"Everything extension for cmdpal";
 
     public IconDataType Icon => new(string.Empty);
 

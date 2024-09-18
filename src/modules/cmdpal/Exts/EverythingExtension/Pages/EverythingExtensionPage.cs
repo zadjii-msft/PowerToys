@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static EverythingExtension.NativeMethods;
 
 namespace EverythingExtension;
@@ -36,6 +35,8 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
 
         var resultCount = Everything_GetNumResults();
 
+        Console.WriteLine(resultCount);
+
         ListItem[] items = new ListItem[resultCount];
 
         // Loop through the results and add them to the list
@@ -49,12 +50,12 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
         }
 
         // Return the ListSection with the items
-        return new ISection[]
-        {
+        return [
             new ListSection()
-                {
+            {
+                    Title = "Results",
                     Items = items,
-                },
-        };
+            },
+        ];
     }
 }

@@ -112,7 +112,7 @@ public sealed class NativeMethods
         MAX,
     }
 
-    internal const string dllName = "Everything64.dll";
+    internal const string dllName = "D:\\source\\PowerToys\\src\\modules\\cmdpal\\Exts\\EverythingExtension\\Everything64.dll";
 
     [DllImport(dllName)]
     internal static extern uint Everything_GetNumResults();
