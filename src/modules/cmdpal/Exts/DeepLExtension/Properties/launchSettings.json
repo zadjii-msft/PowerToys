@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "DeepLExtension (Package)": {
+      "commandName": "MsixPackage",
+      "commandLineArgs": "-RegisterProcessAsComServer"
+    },
+    "DeepLExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
