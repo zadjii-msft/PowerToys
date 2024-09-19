@@ -18,12 +18,12 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
 {
     public EverythingExtensionPage()
     {
-        Icon = new(string.Empty);
+        Icon = new("C:\\Program Files\\Everything\\Everything.exe");
         Name = "Everything";
 
         Everything_SetRequestFlags(Request.FILE_NAME | Request.PATH);
         Everything_SetSort(Sort.NAME_ASCENDING);
-        Everything_SetMax(50);
+        Everything_SetMax(20);
     }
 
     public override ISection[] GetItems(string query)
@@ -53,10 +53,15 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
             var filePath = Marshal.PtrToStringUni(Everything_GetResultPathW(i));
 
             // Concatenate the file path and file name
-            var fullTitle = Path.Combine(filePath, fileName);
+            var fullName = Path.Combine(filePath, fileName);
 
             // System.Drawing.Icon ic = System.Drawing.Icon.ExtractAssociatedIcon(fullTitle);
-            itemList.Add(new ListItem(new OpenFileCommand(fullTitle, filePath)) { Title = fileName, Subtitle = filePath });
+            itemList.Add(new ListItem(new OpenFileCommand(fullName, filePath))
+            {
+                Title = fileName,
+                Subtitle = filePath,
+                MoreCommands = [new CommandContextItem(new OpenExplorerCommand(fullName))],
+            });
         }
 
         // Convert the List to an array and assign it to the Items property
