@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "UnitConverterExtension (Package)": {
+      "commandName": "MsixPackage",
+      "commandLineArgs": "-RegisterProcessAsComServer"
+    },
+    "UnitConverterExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
