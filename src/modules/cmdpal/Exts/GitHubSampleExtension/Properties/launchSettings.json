@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "GitHubSampleExtension (Package)": {
+      "commandName": "MsixPackage",
+      "commandLineArgs": "-RegisterProcessAsComServer"
+    },
+    "GitHubSampleExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
