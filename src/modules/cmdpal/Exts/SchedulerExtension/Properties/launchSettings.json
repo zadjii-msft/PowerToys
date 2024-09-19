@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "SchedulerExtension (Package)": {
+      "commandName": "MsixPackage",
+      "commandLineArgs": "-RegisterProcessAsComServer"
+    },
+    "SchedulerExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

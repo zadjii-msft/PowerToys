@@ -7,6 +7,7 @@ public class ListPage : Page, IListPage
     private bool _showDetails;
     private IFilters? _filters;
     private IGridProperties? _gridProperties;
+    private bool _items;
 
     public string PlaceholderText
     {
@@ -15,6 +16,16 @@ public class ListPage : Page, IListPage
         {
             _placeholderText = value;
             OnPropertyChanged(nameof(PlaceholderText));
+        }
+    }
+
+    public bool Items
+    {
+        get => _items;
+        set
+        {
+            _items = value;
+            OnPropertyChanged(nameof(Items));
         }
     }
 
