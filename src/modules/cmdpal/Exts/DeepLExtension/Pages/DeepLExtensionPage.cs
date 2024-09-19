@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using DeepL;
 using DeepL.Model;
@@ -29,20 +31,33 @@ internal sealed partial class DeepLExtensionPage : DynamicListPage
 
     private async Task<ISection[]> DoGetItems(string query)
     {
-        if (query == string.Empty)
+        var authKey = Environment.GetEnvironmentVariable("DEEPL_KEY");
+        if (string.IsNullOrEmpty(authKey))
         {
             return [
                 new ListSection()
                 {
-                    Title = "DeepL Instructions",
+                    Title = "No DeepL API key detected!",
                     Items = [
-                    new ListItem(new NoOpCommand()) { Title = "Type your sentence to get an English translation. Use \"> TargetLanguage\" to specify a target language." },
+                    new ListItem(new NoOpCommand()) { Title = "Set DEEPL_KEY in your Environment Variables." },
                     ],
                 }
              ];
         }
 
-        var authKey = "<YOUR KEY HERE>";
+        if (query == string.Empty)
+        {
+            return [
+                new ListSection()
+                {
+                    Title = "Type a sentence for an English translation",
+                    Items = [
+                    new ListItem(new NoOpCommand()) { Title = "Type \"> Language\" to translate to a different language." },
+                    ],
+                }
+             ];
+        }
+
         var translator = new Translator(authKey);
         var characterToSplit = '>';
 
@@ -68,41 +83,61 @@ internal sealed partial class DeepLExtensionPage : DynamicListPage
         };
         }
 
+        var targetLanguages = await translator.GetTargetLanguagesAsync();
+        var selectedLanguage = targetLanguages.FirstOrDefault(lang => lang.Code == targetLanguage);
+
         var defaultTranslation = await translator.TranslateTextAsync(queryString, null, targetLanguage, new TextTranslateOptions { Formality = Formality.Default });
+
+        ListSection finalOutput = new ListSection()
+        {
+            Title = "DeepL Responses",
+            Items = [
+                   new ListItem(new NoOpCommand())
+                   {
+                       Title = string.IsNullOrEmpty(query) ? "dynamic item" : defaultTranslation.ToString(),
+                   },
+                ],
+        };
+
         var moreFormalTranslation = await translator.TranslateTextAsync(queryString, null, targetLanguage, new TextTranslateOptions { Formality = Formality.PreferMore });
         var lessFormalTranslation = await translator.TranslateTextAsync(queryString, null, targetLanguage, new TextTranslateOptions { Formality = Formality.PreferLess });
 
-        return [
-           new ListSection()
+        if (selectedLanguage?.SupportsFormality == true)
+        {
+            finalOutput = new ListSection()
             {
                 Title = "DeepL Responses",
                 Items = [
                    new ListItem(new NoOpCommand())
                    {
-                       Title = string.IsNullOrEmpty(query) ? "dynamic item" : defaultTranslation.ToString(), Subtitle = "TO-DO: How do I make a copy button? LOL", Tags = [new Tag()
+                       Title = string.IsNullOrEmpty(query) ? "dynamic item" : defaultTranslation.ToString(), Tags = [new Tag()
                                {
                                    Text = "Default Form",
                                }
                         ],
                    },
-                   new ListItem(new NoOpCommand())
-                   {
+                    new ListItem(new NoOpCommand())
+                    {
                        Title = string.IsNullOrEmpty(query) ? "dynamic item" : moreFormalTranslation.ToString(), Tags = [new Tag()
                                {
                                    Text = "More Formal",
                                }
-                        ],
-                   },
+                         ],
+                    },
                    new ListItem(new NoOpCommand())
-                   {
+                    {
                        Title = string.IsNullOrEmpty(query) ? "dynamic item" : lessFormalTranslation.ToString(), Tags = [new Tag()
                                {
                                    Text = "Less Formal",
                                }
-                        ],
-                   }
+                         ],
+                    }
                 ],
-            }
+            };
+        }
+
+        return [
+            finalOutput
            ];
     }
 }
