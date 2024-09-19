@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -18,10 +19,11 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
     public EverythingExtensionPage()
     {
         Icon = new(string.Empty);
-        Name = "Everything extension for cmdpal";
+        Name = "Everything";
 
         Everything_SetRequestFlags(Request.FILE_NAME | Request.PATH);
-        Everything_SetSort(Sort.PATH_ASCENDING);
+        Everything_SetSort(Sort.NAME_ASCENDING);
+        Everything_SetMax(50);
     }
 
     public override ISection[] GetItems(string query)
@@ -35,27 +37,32 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
 
         var resultCount = Everything_GetNumResults();
 
-        Console.WriteLine(resultCount);
+        // Create a new ListSections
+        var section = new ListSection();
 
-        ListItem[] items = new ListItem[resultCount];
+        // Create a List to store ListItems
+        var itemList = new List<ListItem>();
 
-        // Loop through the results and add them to the list
+        // Loop through the results and add them to the List
         for (uint i = 0; i < resultCount; i++)
         {
-            // Get the result file name (or full path) from Everything
-            var result = Marshal.PtrToStringUni(Everything_GetResultFileNameW(i));
+            // Get the result file name
+            var fileName = Marshal.PtrToStringUni(Everything_GetResultFileNameW(i));
 
-            // Create a new ListItem for each result and set its title
-            items[i] = new ListItem(new NoOpCommand()) { Title = result };
+            // Get the result file path
+            var filePath = Marshal.PtrToStringUni(Everything_GetResultPathW(i));
+
+            // Concatenate the file path and file name
+            var fullTitle = Path.Combine(filePath, fileName);
+
+            // System.Drawing.Icon ic = System.Drawing.Icon.ExtractAssociatedIcon(fullTitle);
+            itemList.Add(new ListItem(new OpenFileCommand(fullTitle, filePath)) { Title = fileName, Subtitle = filePath });
         }
 
+        // Convert the List to an array and assign it to the Items property
+        section.Items = itemList.ToArray();
+
         // Return the ListSection with the items
-        return [
-            new ListSection()
-            {
-                    Title = "Results",
-                    Items = items,
-            },
-        ];
+        return [section];
     }
 }

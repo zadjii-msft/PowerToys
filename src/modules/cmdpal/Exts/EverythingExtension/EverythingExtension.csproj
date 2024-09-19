@@ -41,6 +41,9 @@
     <Folder Include="Forms\" />
     <Folder Include="Commands\" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" />
+  </ItemGroup>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution

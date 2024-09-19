@@ -5,8 +5,7 @@
         "commandLineArgs": "-RegisterProcessAsComServer"
     },
     "EverythingExtension (Unpackaged)": {
-        "commandName": "Project",
-        "commandLineArgs": "-RegisterProcessAsComServer"
+        "commandName": "Project"
     }
   }
 }
