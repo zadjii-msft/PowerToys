@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.UI.Windowing;
 
 namespace EverythingExtension;
 
@@ -16,6 +17,8 @@ internal sealed partial class OpenFileCommand : InvokableCommand
     {
         _fullname = fullname;
         _path = path;
+        Name = "Open file";
+        Icon = new("\ue8e5");
     }
 
     public override CommandResult Invoke()

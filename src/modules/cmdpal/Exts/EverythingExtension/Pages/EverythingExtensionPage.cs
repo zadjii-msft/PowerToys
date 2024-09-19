@@ -60,7 +60,10 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
             {
                 Title = fileName,
                 Subtitle = filePath,
-                MoreCommands = [new CommandContextItem(new OpenExplorerCommand(fullName))],
+                MoreCommands = [
+                    new CommandContextItem(new OpenExplorerCommand(fullName)),
+                    new CommandContextItem(new CopyPathCommand(fullName)),
+                ],
             });
         }
 
