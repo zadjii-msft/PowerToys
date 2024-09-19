@@ -5,6 +5,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.UI.Poc", "WindowsCommandPalette\Microsoft.CmdPal.UI.Poc.csproj", "{F71CF22B-A5C7-4328-A5B3-F4191AE57314}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample Extensions", "Sample Extensions", "{B7FF739F-7716-4FC3-B622-705486187B87}"
+	ProjectSection(SolutionItems) = preProject
+		Exts\SchedulerExtension\AzureExtension.cs = Exts\SchedulerExtension\AzureExtension.cs
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Terminal.UI", "Microsoft.Terminal.UI\Microsoft.Terminal.UI.vcxproj", "{6515F03F-E56D-4DB4-B23D-AC4FB80DB36F}"
 EndProject
@@ -47,6 +50,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.UI.ViewModels", "Microsoft.CmdPal.UI.ViewModels\Microsoft.CmdPal.UI.ViewModels.csproj", "{D2FC419D-0ABC-425F-9D43-A7782AC4A0AE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{865E9369-C53A-40B8-829C-F7843F66D3A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchedulerExtension", "Exts\SchedulerExtension\SchedulerExtension.csproj", "{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureExtensionServer", "Exts\AzureExtensionServer\AzureExtensionServer.csproj", "{F61E958C-B580-4FE6-A323-1E4E765BF522}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -318,6 +325,36 @@ Global
 		{D2FC419D-0ABC-425F-9D43-A7782AC4A0AE}.Release|x64.Build.0 = Release|x64
 		{D2FC419D-0ABC-425F-9D43-A7782AC4A0AE}.Release|x86.ActiveCfg = Release|x64
 		{D2FC419D-0ABC-425F-9D43-A7782AC4A0AE}.Release|x86.Build.0 = Release|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Debug|ARM64.Build.0 = Debug|ARM64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Debug|ARM64.Deploy.0 = Debug|ARM64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Debug|x64.ActiveCfg = Debug|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Debug|x64.Build.0 = Debug|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Debug|x64.Deploy.0 = Debug|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Debug|x86.ActiveCfg = Debug|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Debug|x86.Build.0 = Debug|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Debug|x86.Deploy.0 = Debug|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Release|ARM64.ActiveCfg = Release|ARM64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Release|ARM64.Build.0 = Release|ARM64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Release|ARM64.Deploy.0 = Release|ARM64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Release|x64.ActiveCfg = Release|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Release|x64.Build.0 = Release|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Release|x64.Deploy.0 = Release|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Release|x86.ActiveCfg = Release|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Release|x86.Build.0 = Release|x64
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B}.Release|x86.Deploy.0 = Release|x64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Debug|ARM64.ActiveCfg = Debug|arm64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Debug|ARM64.Build.0 = Debug|arm64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Debug|x64.ActiveCfg = Debug|x64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Debug|x64.Build.0 = Debug|x64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Debug|x86.ActiveCfg = Debug|x64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Debug|x86.Build.0 = Debug|x64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Release|ARM64.ActiveCfg = Release|arm64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Release|ARM64.Build.0 = Release|arm64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Release|x64.ActiveCfg = Release|x64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Release|x64.Build.0 = Release|x64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Release|x86.ActiveCfg = Release|x64
+		{F61E958C-B580-4FE6-A323-1E4E765BF522}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -341,6 +378,8 @@ Global
 		{399B53F1-5AA6-4FE0-8C3C-66E07B84E6F1} = {B7FF739F-7716-4FC3-B622-705486187B87}
 		{1DF70F56-ABB2-4798-BBA5-0B9568715BA1} = {865E9369-C53A-40B8-829C-F7843F66D3A1}
 		{D2FC419D-0ABC-425F-9D43-A7782AC4A0AE} = {865E9369-C53A-40B8-829C-F7843F66D3A1}
+		{E50C5CC4-D49A-44E4-9FD8-2AF7EC4E568B} = {B7FF739F-7716-4FC3-B622-705486187B87}
+		{F61E958C-B580-4FE6-A323-1E4E765BF522} = {B7FF739F-7716-4FC3-B622-705486187B87}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BC94BFC2-A741-4978-B6A4-9E01B7660E6B}

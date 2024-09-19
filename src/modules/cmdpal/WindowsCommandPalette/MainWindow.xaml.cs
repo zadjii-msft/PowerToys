@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using Microsoft.CmdPal.Common.Contracts;
 using Microsoft.CmdPal.Common.Extensions;
@@ -22,6 +23,7 @@ using WinRT;
 
 namespace WindowsCommandPalette;
 
+[SupportedOSPlatform("windows10.0.15063")]
 /// <summary>
 /// An empty window that can be used on its own or navigated to within a Frame.
 /// </summary>
