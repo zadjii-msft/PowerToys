@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "PowerToysExtension (Package)": {
+      "commandName": "MsixPackage",
+      "commandLineArgs": "-RegisterProcessAsComServer",
+    },
+    "PowerToysExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
