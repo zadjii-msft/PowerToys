@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MicrosoftLearnExtension (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "MicrosoftLearnExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
