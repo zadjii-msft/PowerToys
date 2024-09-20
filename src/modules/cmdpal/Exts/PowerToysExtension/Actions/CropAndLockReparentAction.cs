@@ -18,12 +18,12 @@ using WindowsInput.Native;
 
 namespace PowerToysExtension.Actions;
 
-internal sealed partial class ColorPickerAction : InvokableCommand
+internal sealed partial class CropAndLockReparentAction : InvokableCommand
 {
-    internal ColorPickerAction()
+    internal CropAndLockReparentAction()
     {
-        this.Name = "Color Picker";
-        this.Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\ColorPicker.png"));
+        this.Name = "Crop And Lock (Reparent)";
+        this.Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\CropAndLock.png"));
     }
 
     public override ICommandResult Invoke()
@@ -32,8 +32,8 @@ internal sealed partial class ColorPickerAction : InvokableCommand
         {
             var sim = new InputSimulator();
 
-            // Simulate holding down Left Windows key and Left Shift key, then pressing 'C'
-            sim.Keyboard.ModifiedKeyStroke(new[] { VirtualKeyCode.LWIN, VirtualKeyCode.LSHIFT }, VirtualKeyCode.VK_C);
+            // Simulate holding down Left Windows key, Left Control key, Left Shift key, then pressing 'R'
+            sim.Keyboard.ModifiedKeyStroke(new[] { VirtualKeyCode.LWIN, VirtualKeyCode.LCONTROL, VirtualKeyCode.LSHIFT }, VirtualKeyCode.VK_R);
 
             return CommandResult.KeepOpen();
         }

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.CmdPal.Extensions;
@@ -18,12 +19,12 @@ using WindowsInput.Native;
 
 namespace PowerToysExtension.Actions;
 
-internal sealed partial class ColorPickerAction : InvokableCommand
+internal sealed partial class FindMyMouseAction : InvokableCommand
 {
-    internal ColorPickerAction()
+    internal FindMyMouseAction()
     {
-        this.Name = "Color Picker";
-        this.Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\ColorPicker.png"));
+        this.Name = "Find My Mouse";
+        this.Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\FindMyMouse.png"));
     }
 
     public override ICommandResult Invoke()
@@ -32,8 +33,10 @@ internal sealed partial class ColorPickerAction : InvokableCommand
         {
             var sim = new InputSimulator();
 
-            // Simulate holding down Left Windows key and Left Shift key, then pressing 'C'
-            sim.Keyboard.ModifiedKeyStroke(new[] { VirtualKeyCode.LWIN, VirtualKeyCode.LSHIFT }, VirtualKeyCode.VK_C);
+            // Simulate pressing the Ctrl key twice in short succession
+            sim.Keyboard.KeyPress(VirtualKeyCode.LCONTROL); // First press
+            Thread.Sleep(100); // Short delay
+            sim.Keyboard.KeyPress(VirtualKeyCode.LCONTROL); // Second press
 
             return CommandResult.KeepOpen();
         }

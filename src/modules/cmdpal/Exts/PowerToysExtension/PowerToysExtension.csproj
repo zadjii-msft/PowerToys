@@ -6,6 +6,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>false</UseWinUI>
+	<UseWindowsForms>true</UseWindowsForms>
     <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
 
@@ -19,20 +20,24 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
 	<Content Include="Assets\ColorPicker.png" />
 	<Content Include="Assets\CropAndLock.png" />
-	<Content Include="Assets\EnvironmentVariables.png" />
 	<Content Include="Assets\FancyZones.png" />
-	<Content Include="Assets\Hosts.png" />
-	<Content Include="Assets\PowerToys.dark.png" />
-	<Content Include="Assets\PowerToys.light.png" />
-	<Content Include="Assets\RegistryPreview.png" />
+	<Content Include="Assets\FindMyMouse.png" />
+	<Content Include="Assets\MouseCrosshairs.png" />
+	<Content Include="Assets\MouseHighlighter.png" />
+	<Content Include="Assets\MouseJump.png" />
 	<Content Include="Assets\ScreenRuler.png" />
 	<Content Include="Assets\ShortcutGuide.png" />
 	<Content Include="Assets\TextExtractor.png" />
 	<Content Include="Assets\Workspaces.png" />
 	<Content Include="Assets\PowerToys.ico" />
   </ItemGroup>
-
+  
   <ItemGroup>
+	<Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+
+	<ItemGroup>
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
@@ -53,6 +58,9 @@
     <Folder Include="Data\" />
     <Folder Include="Forms\" />
     <Folder Include="Commands\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="InputSimulatorCore" />
   </ItemGroup>
 
   <!--

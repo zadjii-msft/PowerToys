@@ -27,8 +27,105 @@ internal sealed partial class PowerToysExtensionPage : ListPage
             new ListSection()
             {
                 Items = [
-                    new ListItem(new NoOpCommand()) { Title = "TODO: Implement your extension here" },
-                    new ListItem(new ColorPickerAction()) { Title = "Color Picker" },
+                    new ListItem(new ColorPickerAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new CropAndLockReparentAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new CropAndLockThumbnailAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new FancyZonesEditorAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new FindMyMouseAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new MouseCrosshairsAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new MouseHighlighterAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new ScreenRulerAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new ShortcutGuideAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new TextExtractorAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
+                    new ListItem(new WorkspacesEditorAction())
+                        {
+                            Subtitle = "PowerToys",
+                            Tags = [new Tag()
+                                    {
+                                        Text = "Utility",
+                                    }
+                            ],
+                        },
                 ],
             }
         ];

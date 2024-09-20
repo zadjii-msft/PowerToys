@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using PowerToysExtension.Actions;
 
 namespace PowerToysExtension;
 
@@ -20,7 +21,123 @@ public partial class PowerToysExtensionActionsProvider : ICommandProvider
     public IconDataType Icon => new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\PowerToys.ico"));
 
     private readonly IListItem[] _commands = [
-        new ListItem(new PowerToysExtensionPage()),
+        new ListItem(new PowerToysExtensionPage())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Extension",
+                        }
+                ],
+            },
+        new ListItem(new ColorPickerAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new CropAndLockReparentAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new CropAndLockThumbnailAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new FancyZonesEditorAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new FindMyMouseAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new MouseCrosshairsAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new MouseHighlighterAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new MouseJumpAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new ScreenRulerAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new ShortcutGuideAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new TextExtractorAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
+        new ListItem(new WorkspacesEditorAction())
+            {
+                Subtitle = "PowerToys",
+                Tags = [new Tag()
+                        {
+                            Text = "Utility",
+                        }
+                ],
+            },
     ];
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
