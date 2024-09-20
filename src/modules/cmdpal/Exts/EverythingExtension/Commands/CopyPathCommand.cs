@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.UI.Xaml;
 
 internal sealed partial class CopyPathCommand : InvokableCommand
 {
@@ -18,9 +19,8 @@ internal sealed partial class CopyPathCommand : InvokableCommand
 
     public override CommandResult Invoke()
     {
-        // var dataPackage = new Windows.ApplicationModel.DataTransfer.DataPackage();
-        // dataPackage.SetText(_fullname);
-        // Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dataPackage);
+        ClipboardHelper.SetText(_fullname);
+
         return CommandResult.KeepOpen();
     }
 }
