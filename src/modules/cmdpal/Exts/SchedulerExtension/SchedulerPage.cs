@@ -8,11 +8,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Azure.Core;
 using Azure.Identity;
+using Azure.Identity.Broker;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.Extensions.Configuration;
@@ -20,61 +22,99 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Client.Extensions.Msal;
-using Microsoft.IdentityModel.Abstractions;
 using Microsoft.SqlServer.Server;
+using Microsoft.UI.Windowing;
 using Windows.ApplicationModel.Email.DataProvider;
 using Windows.Media.Protection.PlayReady;
+using Windows.Win32.Foundation;
+
+// using Windows.Win32.UI.WindowsAndMessaging;
 using static Microsoft.VisualStudio.Services.Graph.GraphResourceIds;
+using Process = System.Diagnostics.Process;
 
 namespace SchedulerExtension;
 
 internal sealed partial class SchedulerPage : ListPage
 {
+    private string tenantId;
+    private string clientId;
+    private string[] scopes = new[] { "User.Read" };
+    private TokenRequestContext tokenContext;
+    private Uri redirectUri;
+    private InteractiveBrowserCredential interactiveBrowserCredential;
+
+    private enum GetAncestorFlags
+    {
+        GetParent = 1,
+        GetRoot = 2,
+
+        /// <summary>
+        /// Retrieves the owned root window by walking the chain of parent and owner windows returned by GetParent.
+        /// </summary>
+        GetRootOwner = 3,
+    }
+
+    /// <summary>
+    /// Retrieves the handle to the ancestor of the specified window.
+    /// </summary>
+    /// <param name="hwnd">A handle to the window whose ancestor is to be retrieved.
+    /// If this parameter is the desktop window, the function returns NULL. </param>
+    /// <param name="flags">The ancestor to be retrieved.</param>
+    /// <returns>The return value is the handle to the ancestor window.</returns>
+    [DllImport("user32.dll", ExactSpelling = true)]
+    private static extern IntPtr GetAncestor(IntPtr hwnd, GetAncestorFlags flags);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetForegroundWindow();
+
+    // This is your window handle!
+    public IntPtr GetConsoleOrTerminalWindow()
+    {
+        var consoleHandle = GetForegroundWindow();
+        if (consoleHandle != IntPtr.Zero)
+        {
+            var ancestorHandle = GetAncestor(consoleHandle, GetAncestorFlags.GetRootOwner);
+            return ancestorHandle;
+        }
+
+        return IntPtr.Zero;
+    }
+
     // https://learn.microsoft.com/en-us/graph/sdks/choose-authentication-providers?tabs=csharp
     public SchedulerPage()
     {
         Icon = new(string.Empty);
-        Name = "Scheduler";
+        Name = "Best scheduler ever.";
     }
 
-    private static async Task<List<CmdPalToDo>> GetToDoTasks()
+    private void SetAuthInfo()
     {
-        // Multi-tenant apps can use "common",
-        // single-tenant apps must use the tenant ID from the Azure portal
-        // In the azure portal the value you need here is the Primary domain rather than the Tenant Id
-        var tenantId = "tenantId";
+        tenantId = "tenantId - actually principal domain";
+        clientId = "clientId";
+        scopes = new[] { "User.Read" };
+        tokenContext = new TokenRequestContext(scopes);
+        redirectUri = new Uri("ms-appx-web://microsoft.aad.brokerplugin/{clientId}");
+    }
 
-        // Value from app registration
-        var clientId = "clientId";
+    private void SetBrowserCredential()
+    {
+        var parentWindowHandle = GetConsoleOrTerminalWindow();
+        var brokerOptions = new InteractiveBrowserCredentialBrokerOptions(parentWindowHandle);
+        brokerOptions.ClientId = clientId;
+        brokerOptions.TenantId = tenantId;
+        brokerOptions.AuthorityHost = AzureAuthorityHosts.AzurePublicCloud;
+        brokerOptions.RedirectUri = redirectUri;
+        interactiveBrowserCredential = new InteractiveBrowserCredential(brokerOptions);
+    }
 
-        var scopes = new[] { "User.Read" };
-
-        // using Azure.Identity;
-        var options = new InteractiveBrowserCredentialOptions
-        {
-            TenantId = tenantId,
-            ClientId = clientId,
-            AuthorityHost = AzureAuthorityHosts.AzurePublicCloud,
-
-            // MUST be http://localhost or http://localhost:PORT
-            // See https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/System-Browser-on-.Net-Core
-            RedirectUri = new Uri("http://localhost"),
-        };
+    private async Task<List<CmdPalToDo>> GetToDoTasks()
+    {
         try
         {
-            var tokenContext = new TokenRequestContext(scopes);
-
-            // https://learn.microsoft.com/dotnet/api/azure.identity.interactivebrowsercredential
-            var interactiveCredential = new InteractiveBrowserCredential(options);
-            var token = interactiveCredential.Authenticate(tokenContext);
-
-            // interactiveCredential.
-            var graphClient = new GraphServiceClient(interactiveCredential, scopes);
-
-            var listsResult = await graphClient.Me.Todo.Lists.GetAsync();
+            var graphServiceClient = new GraphServiceClient(interactiveBrowserCredential, scopes);
+            var listsResult = await graphServiceClient.Me.Todo.Lists.GetAsync();
             var listId = listsResult.Value.ToArray()[0].Id;
-            var result = await graphClient.Me.Todo.Lists[listId].Tasks.GetAsync();
+            var result = await graphServiceClient.Me.Todo.Lists[listId].Tasks.GetAsync();
             var items = result.Value.ToArray().ToList();
             var tasks = new List<CmdPalToDo>();
             foreach (var item in items)
@@ -137,6 +177,8 @@ internal sealed partial class SchedulerPage : ListPage
 
     private async Task<ISection[]> DoGetItems()
     {
+        SetAuthInfo();
+        SetBrowserCredential();
         List<CmdPalToDo> toDos = await GetToDoTasks();
         this.Loading = false;
         var s = new ListSection()

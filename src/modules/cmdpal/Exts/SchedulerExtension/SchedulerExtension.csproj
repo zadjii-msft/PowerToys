@@ -58,6 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="Azure.Identity.Broker" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" />
     <PackageReference Include="ConfigurationBuilder.Json" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Graph" />
@@ -66,6 +68,10 @@
     <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" />
     <PackageReference Include="Microsoft.VisualStudio.Services.Client" />
     <PackageReference Include="Microsoft.VisualStudio.Services.InteractiveClient" />
+    <PackageReference Include="Microsoft.Windows.CsWin32">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Serilog" />
   </ItemGroup>
 
