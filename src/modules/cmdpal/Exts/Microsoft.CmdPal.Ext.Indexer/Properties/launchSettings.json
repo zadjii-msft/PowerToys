@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Microsoft.CmdPal.Ext.Indexer (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Microsoft.CmdPal.Ext.Indexer (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
