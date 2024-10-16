@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.CmdPal.Ext.Indexer.Commands;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -29,7 +30,7 @@ internal sealed partial class IndexerPage : ListPage
     {
         var items = new List<IndexerItem>();
 
-        var currentDir = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        var currentDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         var files = Directory.GetFiles(currentDir);
 
         foreach (var file in files)
@@ -52,7 +53,7 @@ internal sealed partial class IndexerPage : ListPage
         var s = new ListSection()
         {
             Title = "Files", // TODO: localize
-            Items = items.Select((item) => new ListItem(new NoOpCommand())
+            Items = items.Select((item) => new ListItem(new ShowFileCommand(item))
             {
                 Title = item.FileName,
                 Subtitle = item.FullPath,
