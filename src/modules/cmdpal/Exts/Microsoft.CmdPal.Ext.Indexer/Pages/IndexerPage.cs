@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Indexer.Commands;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Extensions;
@@ -23,15 +24,16 @@ internal sealed partial class IndexerPage : ListPage
 
     public override ISection[] GetItems()
     {
-        return DoGetItems();
+        var t = DoGetItems();
+        t.ConfigureAwait(false);
+        return t.Result;
     }
 
-    private static /*async Task<List<IndexerItem>>*/ List<IndexerItem> GetFiles()
+    private static async Task<List<IndexerItem>> GetFiles()
     {
         var items = new List<IndexerItem>();
-
         var currentDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-        var files = Directory.GetFiles(currentDir);
+        var files = await Task.Run(() => Directory.GetFiles(currentDir));
 
         foreach (var file in files)
         {
@@ -47,9 +49,9 @@ internal sealed partial class IndexerPage : ListPage
         return items;
     }
 
-    private /*async Task<ISection[]>*/ ISection[] DoGetItems()
+    private async Task<ISection[]> DoGetItems()
     {
-        List<IndexerItem> items = /*await*/ GetFiles();
+        List<IndexerItem> items = await GetFiles();
         var s = new ListSection()
         {
             Title = "Files", // TODO: localize
