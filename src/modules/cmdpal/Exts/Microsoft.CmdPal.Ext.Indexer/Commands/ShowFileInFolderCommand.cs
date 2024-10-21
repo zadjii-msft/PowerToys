@@ -9,11 +9,11 @@ using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Commands;
 
-internal sealed partial class ShowFileCommand : InvokableCommand
+internal sealed partial class ShowFileInFolderCommand : InvokableCommand
 {
     private readonly IndexerItem _item;
 
-    internal ShowFileCommand(IndexerItem item)
+    internal ShowFileInFolderCommand(IndexerItem item)
     {
         this._item = item;
         this.Name = "Show in folder"; // TODO: localize
@@ -35,6 +35,6 @@ internal sealed partial class ShowFileCommand : InvokableCommand
             }
         }
 
-        return CommandResult.KeepOpen();
+        return CommandResult.GoHome();
     }
 }

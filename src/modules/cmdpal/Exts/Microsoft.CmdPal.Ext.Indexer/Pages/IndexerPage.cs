@@ -7,19 +7,25 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.CmdPal.Ext.Indexer.Commands;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.Indexer;
 
-internal sealed partial class IndexerPage : ListPage
+internal sealed partial class IndexerPage : DynamicListPage
 {
     public IndexerPage()
     {
         Icon = new("\ue729");
         Name = "Indexer";
+    }
+
+    public override ISection[] GetItems(string query)
+    {
+        var t = DoGetItems();
+        t.ConfigureAwait(false);
+        return t.Result;
     }
 
     public override ISection[] GetItems()
@@ -55,11 +61,7 @@ internal sealed partial class IndexerPage : ListPage
         var s = new ListSection()
         {
             Title = "Files", // TODO: localize
-            Items = items.Select((item) => new ListItem(new ShowFileCommand(item))
-            {
-                Title = item.FileName,
-                Subtitle = item.FullPath,
-            }).ToArray(),
+            Items = items.Select((item) => new IndexerListItem(item)).ToArray(),
         };
 
         return [s];
