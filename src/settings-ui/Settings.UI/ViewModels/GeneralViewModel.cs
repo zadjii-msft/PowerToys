@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -11,6 +13,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
+
 using global::PowerToys.GPOWrapper;
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
@@ -145,7 +148,37 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
             {
                 _fileWatcher = Helper.GetFileWatcher(string.Empty, UpdatingSettings.SettingsFile, dispatcherAction);
             }
+
+            InitializeLanguages();
         }
+
+        // Supported languages. Taken from Resources.wxs + default + en-US
+        private Dictionary<string, string> langTagsAndIds = new Dictionary<string, string>
+        {
+            { string.Empty, "Default_language" },
+            { "ar-SA", "Arabic_Saudi_Arabia_Language" },
+            { "cs-CZ", "Czech_Language" },
+            { "de-DE", "German_Language" },
+            { "en-US", "English_Language" },
+            { "es-ES", "Spanish_Language" },
+            { "fa-IR", "Persian_Farsi_Language" },
+            { "fr-FR", "French_Language" },
+            { "he-IL", "Hebrew_Israel_Language" },
+            { "hu-HU", "Hungarian_Language" },
+            { "it-IT", "Italian_Language" },
+            { "ja-JP", "Japanese_Language" },
+            { "ko-KR", "Korean_Language" },
+            { "nl-NL", "Dutch_Language" },
+            { "pl-PL", "Polish_Language" },
+            { "pt-BR", "Portuguese_Brazil_Language" },
+            { "pt-PT", "Portuguese_Portugal_Language" },
+            { "ru-RU", "Russian_Language" },
+            { "sv-SE", "Swedish_Language" },
+            { "tr-TR", "Turkish_Language" },
+            { "uk-UA", "Ukrainian_Language" },
+            { "zh-CN", "Chinese_Simplified_Language" },
+            { "zh-TW", "Chinese_Traditional_Language" },
+        };
 
         private static bool _isDevBuild;
         private bool _startup;
@@ -176,6 +209,10 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
         private bool _settingsBackupRestoreMessageVisible;
         private string _settingsBackupMessage;
         private string _backupRestoreMessageSeverity;
+
+        private int _languagesIndex;
+        private int _initLanguagesIndex;
+        private bool _languageChanged;
 
         // Gets or sets a value indicating whether run powertoys on start-up.
         public bool Startup
@@ -740,6 +777,51 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
             }
         }
 
+        public ObservableCollection<LanguageModel> Languages { get; } = new ObservableCollection<LanguageModel>();
+
+        public int LanguagesIndex
+        {
+            get
+            {
+                return _languagesIndex;
+            }
+
+            set
+            {
+                if (_languagesIndex != value)
+                {
+                    _languagesIndex = value;
+                    OnPropertyChanged(nameof(LanguagesIndex));
+                    NotifyLanguageChanged();
+                    if (_initLanguagesIndex != value)
+                    {
+                        LanguageChanged = true;
+                    }
+                    else
+                    {
+                        LanguageChanged = false;
+                    }
+                }
+            }
+        }
+
+        public bool LanguageChanged
+        {
+            get
+            {
+                return _languageChanged;
+            }
+
+            set
+            {
+                if (_languageChanged != value)
+                {
+                    _languageChanged = value;
+                    OnPropertyChanged(nameof(LanguageChanged));
+                }
+            }
+        }
+
         public void NotifyPropertyChanged([CallerMemberName] string propertyName = null, bool reDoBackupDryRun = true)
         {
             // Notify UI of property change
@@ -995,6 +1077,57 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
 
                 NotifyPropertyChanged(nameof(IsDownloadAllowed));
             }
+        }
+
+        private void InitializeLanguages()
+        {
+            var lang = LanguageModel.LoadSetting();
+            var selectedLanguageIndex = 0;
+
+            foreach (var item in langTagsAndIds)
+            {
+                var language = new LanguageModel { Tag = item.Key, ResourceID = item.Value, Language = GetResourceString(item.Value) };
+                var index = GetLanguageIndex(language.Language, item.Key == string.Empty);
+                Languages.Insert(index, language);
+
+                if (item.Key.Equals(lang, StringComparison.Ordinal))
+                {
+                    selectedLanguageIndex = index;
+                }
+                else if (index <= selectedLanguageIndex)
+                {
+                    selectedLanguageIndex++;
+                }
+            }
+
+            _initLanguagesIndex = selectedLanguageIndex;
+            LanguagesIndex = selectedLanguageIndex;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1309:Use ordinal string comparison", Justification = "Building a user facing list")]
+        private int GetLanguageIndex(string language, bool isDefault)
+        {
+            if (Languages.Count == 0 || isDefault)
+            {
+                return 0;
+            }
+
+            for (var i = 1; i < Languages.Count; i++)
+            {
+                if (string.Compare(Languages[i].Language, language, StringComparison.CurrentCultureIgnoreCase) > 0)
+                {
+                    return i;
+                }
+            }
+
+            return Languages.Count;
+        }
+
+        private void NotifyLanguageChanged()
+        {
+            OutGoingLanguageSettings outsettings = new OutGoingLanguageSettings(Languages[_languagesIndex].Tag);
+
+            SendConfigMSG(outsettings.ToString());
         }
     }
 }
