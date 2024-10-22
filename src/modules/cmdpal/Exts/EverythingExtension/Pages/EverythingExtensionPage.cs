@@ -10,6 +10,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Windows.UI.ApplicationSettings;
 using static EverythingExtension.NativeMethods;
 
 namespace EverythingExtension;
@@ -18,7 +19,10 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
 {
     public EverythingExtensionPage()
     {
-        Icon = new("C:\\Program Files\\Everything\\Everything.exe");
+        Icon = new(File.Exists("C:\\Program Files\\Everything\\Everything.exe") ?
+            "C:\\Program Files\\Everything\\Everything.exe" :
+            "C:\\Program Files (x86)\\Everything\\Everything.exe"
+        );
         Name = "Everything";
 
         Everything_SetRequestFlags(Request.FILE_NAME | Request.PATH);
