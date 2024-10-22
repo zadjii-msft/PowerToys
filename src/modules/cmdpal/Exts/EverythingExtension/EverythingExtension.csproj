@@ -43,6 +43,12 @@
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(TargetDir)\Everything64.dll" Link="Everything64.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+   <Target Name="Everything64ToTargetDir" BeforeTargets="BeforeBuild">
+     <Copy SourceFiles="Everything64.dll" DestinationFolder="$(TargetDir)" />
+   </Target>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
