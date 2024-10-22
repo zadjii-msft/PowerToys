@@ -32,7 +32,36 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
 
         if (!Everything_QueryW(true))
         {
-            throw new Win32Exception("Unable to Query");
+            // Throwing an exception would make sense, however,
+            // WinRT & COM totally eat any exception info.
+            // var e = new Win32Exception("Unable to Query");
+            var lastError = Everything_GetLastError();
+            var message = lastError switch
+            {
+                (uint)EverythingErrors.EVERYTHING_OK => "The operation completed successfully",
+                (uint)EverythingErrors.EVERYTHING_ERROR_MEMORY => "Failed to allocate memory for the search query",
+                (uint)EverythingErrors.EVERYTHING_ERROR_IPC => "IPC is not available",
+                (uint)EverythingErrors.EVERYTHING_ERROR_REGISTERCLASSEX => "Failed to register the search query window class",
+                (uint)EverythingErrors.EVERYTHING_ERROR_CREATEWINDOW => "Failed to create the search query window",
+                (uint)EverythingErrors.EVERYTHING_ERROR_CREATETHREAD => "Failed to create the search query thread",
+                (uint)EverythingErrors.EVERYTHING_ERROR_INVALIDINDEX => "Invalid index.The index must be greater or equal to 0 and less than the number of visible results",
+                (uint)EverythingErrors.EVERYTHING_ERROR_INVALIDCALL => "Invalid call",
+                _ => "Unexpected error",
+            };
+            List<ListItem> items = new List<ListItem>();
+            items.Add(new ListItem(new NoOpCommand() { Name = "Failed to query. Error was:" }));
+            items.Add(new ListItem(new NoOpCommand()) { Title = message, Subtitle = $"0x{lastError:X8}" });
+            if (lastError == (uint)EverythingErrors.EVERYTHING_ERROR_IPC)
+            {
+                items.Add(new ListItem(new NoOpCommand() { Name = "(Are you sure Everything is running?)" }));
+            }
+
+            return [
+                new ListSection()
+                {
+                    Items = items.ToArray(),
+                }
+            ];
         }
 
         var resultCount = Everything_GetNumResults();

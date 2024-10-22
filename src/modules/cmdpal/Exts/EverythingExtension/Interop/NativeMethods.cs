@@ -3,11 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Win32;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EverythingExtension;
 
@@ -112,6 +116,18 @@ public sealed class NativeMethods
         MAX,
     }
 
+    internal enum EverythingErrors : uint
+    {
+        EVERYTHING_OK = 0u,
+        EVERYTHING_ERROR_MEMORY,
+        EVERYTHING_ERROR_IPC,
+        EVERYTHING_ERROR_REGISTERCLASSEX,
+        EVERYTHING_ERROR_CREATEWINDOW,
+        EVERYTHING_ERROR_CREATETHREAD,
+        EVERYTHING_ERROR_INVALIDINDEX,
+        EVERYTHING_ERROR_INVALIDCALL,
+    }
+
     internal const string dllName = "Everything64.dll";
 
     [DllImport(dllName)]
@@ -163,4 +179,7 @@ public sealed class NativeMethods
 
     [DllImport(dllName)]
     internal static extern void Everything_SetSort(Sort SortType);
+
+    [DllImport(dllName)]
+    internal static extern uint Everything_GetLastError();
 }
