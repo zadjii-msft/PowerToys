@@ -65,6 +65,7 @@ functionality.
   - [Helper SDK Classes](#helper-sdk-classes)
     - [Default implementations](#default-implementations)
     - [Using the Clipboard](#using-the-clipboard)
+    - [Settings helpers](#settings-helpers)
   - [Advanced scenarios](#advanced-scenarios)
     - [Status messages](#status-messages)
   - [Class diagram](#class-diagram)
@@ -1125,11 +1126,15 @@ interface ICommandProvider requires Windows.Foundation.IClosable
 {
     String DisplayName { get; };
     IconDataType Icon { get; };
+    ICommandSettings Settings { get; };
     // TODO! Boolean CanBeCached { get; };
-    // TODO! IFormPage SettingsPage { get; };
 
     IListItem[] TopLevelCommands();
 };
+
+interface ICommandSettings {
+    IFormPage SettingsPage { get; };
+}
 ```
 
 `TopLevelCommands` is the method that DevPal will call to get the list of actions
@@ -1142,17 +1147,20 @@ top-level items are `IListItem`s, they can have `MoreCommands`, `Details` and
 
 ### Settings
 
-Extensions may also want to provide settings to the user.
+Extensions may also want to provide settings to the user. They can do this by
+implementing the `ICommandSettings` interface. This interface has a single
+property, `SettingsPage`, which is a `FormPage`. (We're adding the layer of
+abstraction here to allow for further additions to `ICommandSettings` in the
+future.)
 
-[TODO!]: write this
+In the DevPal settings page, we can then link to each extension's given settings
+page. As these pages are just `FormPage`s, they can be as simple or as complex
+as the extension developer wants, and they're rendered and interacted with in
+the same way.
 
-It would be pretty trivial to just allow apps to provide a `FormPage` as their
-settings page. That would hilariously just work I think. I dunno if Adaptive
-Cards is great for real-time saving of settings though.
-
-We probably also want to provide a helper class for storing settings, so that
-apps don't need to worry too much about mucking around with that. I'm especially
-thinking about storing credentials securely.
+We're then additionally going to provide a collection of settings helpers for
+developers in the helper SDK. This should allow developers to quickly work to
+add settings, without mucking around in building the form JSON themselves.
 
 ## Helper SDK Classes
 
@@ -1246,6 +1254,41 @@ presents persistent difficulties.
 
 We'll provide a helper class that allows developers to easily use the clipboard
 in their extensions.
+
+### Settings helpers
+
+```cs
+class MySettingsPage : Microsoft.Windows.Run.Extensions.FormPage {
+
+    private Microsoft.Windows.Run.Extensions.Settings _settings;
+
+    public MySettingsPage() {
+        var onOffSetting = new Microsoft.Windows.Run.Extensions.ToggleSetting("onOff", "Enable feature", "This feature will do something cool", true);
+        var textSetting = new Microsoft.Windows.Run.Extensions.TextSetting("whatever", "Text setting", "This is a text setting", "Default text");
+
+        this._settings = new(onOffSetting, textSetting);
+    }
+
+    public override IForm[] Forms() {
+        // Possibly, load the settings from a file or something
+        var persistedData = /* load the settings from file */;
+        this._settings.LoadState(persistedData);
+        return this._settings.ToForm();
+    }
+
+    public override ICommandResult SubmitForm(String payload) {
+        this._settings.Update(payload);
+
+        // Do something with the value from the user
+        var onOff = this._settings.Get("onOff");
+
+        /* Also, you can save the settings to the file here */
+        Helpers.SaveSettingsToFile(this._settings.GetState()); // (or whatever)
+
+        return new Microsoft.Windows.Run.Extensions.CommandResult(Microsoft.Windows.Run.Extensions.CommandResultKind.KeepOpen);
+    }
+}
+```
 
 ## Advanced scenarios
 
