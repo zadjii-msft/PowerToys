@@ -58,7 +58,7 @@ internal static class JsonSettingsListHelper
 #pragma warning disable CS0168
         catch (Exception exception)
         {
-            // TODO --> We need some form of logging
+            // TODO GH #108 Logging is something we have to take care of
             // Log.Exception("Error loading settings JSON file", exception, typeof(JsonSettingsListHelper));
         }
 #pragma warning restore CS0168

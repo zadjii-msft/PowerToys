@@ -55,7 +55,7 @@ internal static class ResultHelper
             }
         }
 
-        // TODO --> Investigate scoring
+        // TODO GH #127 --> Investigate scoring
 
         // SetScores(resultList, query);
         return resultList;

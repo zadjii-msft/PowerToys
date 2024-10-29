@@ -1440,7 +1440,7 @@
   </data>
   <data name="PluginDescription" xml:space="preserve">
     <value>Searches Windows settings</value>
-	<comment>{Locked="Windows"}</comment>
+    <comment>{Locked="Windows"}</comment>
   </data>
   <data name="PluginTitle" xml:space="preserve">
     <value>Windows settings</value>
@@ -2078,5 +2078,8 @@
   <data name="Zoom" xml:space="preserve">
     <value>Zoom</value>
     <comment>Mean zooming of things via a magnifier</comment>
+  </data>
+  <data name="OpenSettings" xml:space="preserve">
+    <value>Open Settings</value>
   </data>
 </root>
