@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -12,9 +13,9 @@ namespace WindowsCommandPalette.Views;
 
 public sealed class ListPageViewModel : PageViewModel
 {
-    private readonly ObservableCollection<SectionInfoList> _items = [];
+    private readonly ObservableCollection<ListItemViewModel> _items = [];
 
-    public ObservableCollection<SectionInfoList> FilteredItems { get; set; } = [];
+    public ObservableCollection<ListItemViewModel> FilteredItems { get; set; } = [];
 
     internal IListPage Page => (IListPage)this.PageAction;
 
@@ -35,7 +36,8 @@ public sealed class ListPageViewModel : PageViewModel
     {
         if (args.PropertyName == "Items")
         {
-            this.UpdateListItems().ConfigureAwait(false);
+            Debug.WriteLine("Items changed");
+            _ = this.UpdateListItems();
         }
     }
 
@@ -72,19 +74,32 @@ public sealed class ListPageViewModel : PageViewModel
         // UpdateFilter to intelligently add/remove as needed.
         // Items.Clear();
         // FilteredItems.Clear();
-        ObservableCollection<SectionInfoList> newItems = new();
+        // ObservableCollection<SectionInfoList> newItems = new();
 
         // foreach (var item in items)
         // {
         //    newItems.Add(new ListItemViewModel(item));
         // }
-        SectionInfoList s = new(string.Empty, items.Select(i => new ListItemViewModel(i)));
-        newItems.Add(s);
-        ListHelpers.InPlaceUpdateList(_items, newItems);
+        // SectionInfoList s = new(string.Empty, items.Select(i => new ListItemViewModel(i)));
+        // newItems.Add(s);
+        Collection<ListItemViewModel> newItems = new(items.Select(i => new ListItemViewModel(i)).ToList());
+        Debug.WriteLine($"  Found {newItems.Count} items");
+
         ListHelpers.InPlaceUpdateList(FilteredItems, newItems);
+        ListHelpers.InPlaceUpdateList(_items, newItems);
+
+        /*_items.Clear();
+        FilteredItems.Clear();
+        foreach (var i in newItems)
+        {
+            FilteredItems.Add(i);
+            _items.Add(i);
+        }*/
+
+        Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
     }
 
-    internal async Task<Collection<SectionInfoList>> GetFilteredItems(string query)
+    internal async Task<IEnumerable<ListItemViewModel>> GetFilteredItems(string query)
     {
         if (query == _query)
         {
@@ -105,23 +120,14 @@ public sealed class ListPageViewModel : PageViewModel
                 return _items;
             }
 
-            //// TODO! Probably bad that this turns list view models into listitems back to NEW view models
-            // return ListHelpers.FilterList(Items.Select(vm => vm.ListItem), Query).Select(li => new ListItemViewModel(li)).ToList();
-            try
-            {
-                var allFilteredItems = ListHelpers.FilterList(
-                    _items
-                        .SelectMany(section => section)
-                        .Select(vm => vm.ListItem.Unsafe),
-                    _query).Select(li => new ListItemViewModel(li));
+            // TODO! Probably bad that this turns list view models into listitems back to NEW view models
+            // TODO! make this safer
+            var newFilter = ListHelpers
+                .FilterList(_items.Select(vm => vm.ListItem.Unsafe), query)
+                .Select(li => new ListItemViewModel(li));
 
-                var newSection = new SectionInfoList(string.Empty, allFilteredItems);
-                return [newSection];
-            }
-            catch (COMException ex)
-            {
-                return [new SectionInfoList(string.Empty, [new ListItemViewModel(new ErrorListItem(ex))])];
-            }
+            // ListHelpers.InPlaceUpdateList(FilteredItems, new(newFilter.ToList()));
+            return newFilter;
         }
     }
 }

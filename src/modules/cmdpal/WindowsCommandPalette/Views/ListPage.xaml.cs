@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
@@ -89,7 +90,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             DispatcherQueue.TryEnqueue(async () => { await UpdateFilter(FilterBox.Text); });
         }
 
-        this.ItemsCVS.Source = ViewModel?.FilteredItems;
+        // this.ItemsCVS.Source = ViewModel?.FilteredItems;
         this.ItemsList.SelectedIndex = 0;
     }
 
@@ -286,16 +287,23 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             return;
         }
 
+        Debug.WriteLine($"UpdateFilter({text})");
+
         // ViewModel.Query = text;
 
-        // This first part will first filter all the commands that were passed
-        // into us initially. We handle the filtering of these ones. Commands
-        // from async querying happens later.
-        var newMatches = await ViewModel.GetFilteredItems(text);
+        // // This first part will first filter all the commands that were passed
+        // // into us initially. We handle the filtering of these ones. Commands
+        // // from async querying happens later.
+        // var newMatches = await ViewModel.GetFilteredItems(text);
+        //
+        // // this.ItemsCVS.Source = ViewModel.FilteredItems;
+        // // Returns back on the UI thread
+        // ListHelpers.InPlaceUpdateList(ViewModel.FilteredItems, newMatches);
+        var items = await ViewModel.GetFilteredItems(text);
+        Debug.WriteLine($"  UpdateFilter after GetFilteredItems({text}) --> {items.Count()} ; {ViewModel.FilteredItems.Count}");
 
-        // this.ItemsCVS.Source = ViewModel.FilteredItems;
-        // Returns back on the UI thread
-        ListHelpers.InPlaceUpdateList(ViewModel.FilteredItems, newMatches);
+        ListHelpers.InPlaceUpdateList(ViewModel.FilteredItems, new(items.ToList()));
+        Debug.WriteLine($"  UpdateFilter after InPlaceUpdateList --> {ViewModel.FilteredItems.Count}");
 
         /*
         // for (var i = 0; i < ViewModel.FilteredItems.Count && i < newMatches.Count; i++)

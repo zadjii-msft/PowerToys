@@ -4,6 +4,7 @@
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using WindowsCommandPalette.Models;
@@ -17,7 +18,7 @@ public sealed partial class MainListPage : DynamicListPage
 
     // private readonly MainListSection _mainSection;
     // private readonly RecentsListSection _recentsListSection;
-    // private readonly FilteredListSection _filteredSection;
+    private readonly FilteredListSection _filteredSection;
     private readonly ObservableCollection<MainListItem> topLevelItems = new();
 
     public MainListPage(MainViewModel viewModel)
@@ -26,7 +27,8 @@ public sealed partial class MainListPage : DynamicListPage
 
         // _mainSection = new(_mainViewModel);
         // _recentsListSection = new(_mainViewModel);
-        // _filteredSection = new(_mainViewModel);
+        _filteredSection = new(_mainViewModel);
+        _filteredSection.TopLevelItems = topLevelItems;
         _mainViewModel.TopLevelCommands.CollectionChanged += TopLevelCommands_CollectionChanged;
 
         // _sections = [
@@ -38,18 +40,22 @@ public sealed partial class MainListPage : DynamicListPage
         Loading = false;
     }
 
-    public override IListItem[] GetItems()
-    {
-        return topLevelItems.ToArray();
-    }
-
     public override IListItem[] GetItems(string query)
     {
-        return topLevelItems.ToArray();
+        _filteredSection.Query = query;
+        if (string.IsNullOrEmpty(query))
+        {
+            return topLevelItems.ToArray();
+        }
+        else
+        {
+            return _filteredSection.Items;
+        }
     }
 
     private void TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        Debug.WriteLine("TopLevelCommands_CollectionChanged");
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
             foreach (var item in e.NewItems)

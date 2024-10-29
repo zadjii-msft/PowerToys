@@ -59,10 +59,10 @@ public sealed class CommandProviderWrapper
             {
                 if (extensionWrapper != null)
                 {
-                    Debug.WriteLine($"Error loading commands from {extensionWrapper.ExtensionDisplayName}");
+                    Debug.WriteLine($"Error loading commands from {extensionWrapper.ExtensionDisplayName}", "error");
                 }
 
-                Debug.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString(), "error");
             }
 
             return [];
