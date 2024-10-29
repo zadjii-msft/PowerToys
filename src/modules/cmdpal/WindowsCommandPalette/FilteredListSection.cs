@@ -13,7 +13,11 @@ namespace WindowsCommandPalette;
 
 // The FilteredListSection is for when we've got any filter at all. It starts by
 // enumerating all actions and apps, and returns the subset that matches.
-public sealed partial class FilteredListSection : /*ISection, */INotifyCollectionChanged
+//
+// Although the concept of ISection's is vestigial, this class is still helpful 
+// for encapsulating the filtering of the main page, which has weird logic for 
+// adding apps or not. 
+public sealed partial class FilteredListSection : INotifyCollectionChanged
 {
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
@@ -23,7 +27,8 @@ public sealed partial class FilteredListSection : /*ISection, */INotifyCollectio
     private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
     // Top-level list items, from builtin commands and extensions
-    public ObservableCollection<MainListItem> TopLevelItems { get; set; }
+    // (This is owned by MainListPage)
+    public ObservableCollection<MainListItem> TopLevelItems { get; init; }
 
     // Apps, from the apps built in command.
     private IEnumerable<IListItem> AllApps => _mainViewModel.Apps.GetItems();
@@ -80,9 +85,10 @@ public sealed partial class FilteredListSection : /*ISection, */INotifyCollectio
     // results.
     public IListItem[] Items => ItemsToEnumerate.Where(i => i != null).ToArray();
 
-    public FilteredListSection(MainViewModel viewModel)
+    public FilteredListSection(MainViewModel viewModel, ObservableCollection<MainListItem> topLevelItems)
     {
         this._mainViewModel = viewModel;
+        this.TopLevelItems = topLevelItems;
 
         // TODO: We should probably just get rid of MainListItem entirely, so I'm leaveing these uncaught
         TopLevelItems = new(_mainViewModel.TopLevelCommands.Where(wrapper => wrapper.Unsafe != null).Select(wrapper => new MainListItem(wrapper.Unsafe!)));

@@ -32,8 +32,17 @@ public sealed partial class MainListPage : DynamicListPage
             this.topLevelItems.Add(new MainListItem(i.Unsafe));
         }
 
-        _filteredSection = new(_mainViewModel);
-        _filteredSection.TopLevelItems = topLevelItems;
+        // We're using a FilteredListSection to help abstract some of dealing with
+        // filtering the list of commands & apps. It's just a little more convenient.
+        // It's not an actual section, just vestigial from that era.
+        //
+        // Let the FilteredListSection use our TopLevelItems. That way we don't
+        // need to maintain two lists.
+        _filteredSection = new(_mainViewModel, this.topLevelItems);
+
+        // Listen for changes to the TopLevelCommands. This happens as we async
+        // load them on startup. We'll use CollectionChanged as an opportunity
+        // to raise the 'Items' changed event. 
         _mainViewModel.TopLevelCommands.CollectionChanged += TopLevelCommands_CollectionChanged;
 
         PlaceholderText = "Search...";
@@ -84,26 +93,18 @@ public sealed partial class MainListPage : DynamicListPage
             {
                 if (item is ExtensionObject<IListItem> _)
                 {
-                    // foreach (var mainListItem in _mainSection.TopLevelItems)
-                    // {
-                    //    if (mainListItem.Item == listItem)
-                    //    {
-                    //        // _mainSection.TopLevelItems.Remove(mainListItem);
-                    //        break;
-                    //    }
-                    // }
+                    // If we were maintaining the POC project we'd remove the items here.
                 }
             }
         }
         else if (e.Action == NotifyCollectionChangedAction.Reset)
         {
-            // _mainSection.Reset();
-            // _filteredSection.Reset();
             topLevelItems.Clear();
         }
 
-        // _recentsListSection.Reset();
-        // topLevelItems.Clear();
+        // Sneaky?
+        // Raise a Items changed event, so the list page knows that our items
+        // have changed, and it should re-fetch them.
         this.OnPropertyChanged("Items");
     }
 }

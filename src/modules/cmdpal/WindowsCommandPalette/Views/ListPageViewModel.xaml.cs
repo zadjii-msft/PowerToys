@@ -75,35 +75,21 @@ public sealed class ListPageViewModel : PageViewModel
         // we already have, then rebuilding it. We shouldn't do that. We should
         // still use the results from GetItems and put them into the code in
         // UpdateFilter to intelligently add/remove as needed.
-        // Items.Clear();
-        // FilteredItems.Clear();
-        // ObservableCollection<SectionInfoList> newItems = new();
-
-        // foreach (var item in items)
-        // {
-        //    newItems.Add(new ListItemViewModel(item));
-        // }
-        // SectionInfoList s = new(string.Empty, items.Select(i => new ListItemViewModel(i)));
-        // newItems.Add(s);
+        // TODODO! are we still? ^^
         Collection<ListItemViewModel> newItems = new(items.Select(i => new ListItemViewModel(i)).ToList());
         Debug.WriteLine($"  Found {newItems.Count} items");
 
+        // THIS populates FilteredItems. If you do this off the UI thread, guess what -
+        // the list view won't update. So WATCH OUT
         ListHelpers.InPlaceUpdateList(FilteredItems, newItems);
         ListHelpers.InPlaceUpdateList(_items, newItems);
-
-        /*_items.Clear();
-        FilteredItems.Clear();
-        foreach (var i in newItems)
-        {
-            FilteredItems.Add(i);
-            _items.Add(i);
-        }*/
 
         Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
     }
 
     internal async Task<IEnumerable<ListItemViewModel>> GetFilteredItems(string query)
     {
+        // This method does NOT change any lists. It doesn't modify _items or FilteredItems...
         if (query == _query)
         {
             return FilteredItems;
@@ -112,6 +98,7 @@ public sealed class ListPageViewModel : PageViewModel
         _query = query;
         if (IsDynamic)
         {
+            // ... except here we might modify those lists. But ignore that for now, GH #77 will fix this. 
             await UpdateListItems();
             return FilteredItems;
         }
@@ -125,11 +112,12 @@ public sealed class ListPageViewModel : PageViewModel
 
             // TODO! Probably bad that this turns list view models into listitems back to NEW view models
             // TODO! make this safer
+            // TODODO! ^ still relevant?
             var newFilter = ListHelpers
                 .FilterList(_items.Select(vm => vm.ListItem.Unsafe), query)
                 .Select(li => new ListItemViewModel(li));
 
-            // ListHelpers.InPlaceUpdateList(FilteredItems, new(newFilter.ToList()));
+
             return newFilter;
         }
     }
