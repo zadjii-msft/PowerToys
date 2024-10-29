@@ -37,7 +37,10 @@ public sealed class ListPageViewModel : PageViewModel
         if (args.PropertyName == "Items")
         {
             Debug.WriteLine("Items changed");
-            _ = this.UpdateListItems();
+            _dispatcherQueue.TryEnqueue(async () =>
+            {
+                await this.UpdateListItems();
+            });
         }
     }
 
