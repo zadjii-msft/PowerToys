@@ -26,14 +26,8 @@ internal sealed partial class OpenKeyInEditorCommand : InvokableCommand
     internal OpenKeyInEditorCommand(RegistryEntry entry)
     {
         Name = Resources.OpenKeyInRegistryEditor;
-        Icon = new("\xE8A7");
+        Icon = new("\xE8A7"); // OpenInNewWindow icon
         _entry = entry;
-    }
-
-    private static bool TryToCopyToClipBoard(in string text)
-    {
-        // TODO: Have this actually use the clipboard helper
-        return true;
     }
 
     internal static bool TryToOpenInRegistryEditor(in RegistryEntry entry)
@@ -45,7 +39,7 @@ internal sealed partial class OpenKeyInEditorCommand : InvokableCommand
         }
         catch (System.ComponentModel.Win32Exception)
         {
-            // TODO: We need a convenient way to show errors to the user
+            // TODO GH #118 We need a convenient way to show errors to a user
             // MessageBox.Show(
             //    Resources.OpenInRegistryEditorAccessExceptionText,
             //    Resources.OpenInRegistryEditorAccessExceptionTitle,
@@ -56,7 +50,7 @@ internal sealed partial class OpenKeyInEditorCommand : InvokableCommand
 #pragma warning disable CS0168, IDE0059
         catch (Exception exception)
         {
-            // TODO: Logging
+            // TODO GH #108: Logging
             // Log.Exception("Error on opening Windows registry editor", exception, typeof(Main));
             return false;
         }

@@ -49,18 +49,18 @@ internal static class ResultHelper
             else if (entry.Key is null && !(entry.Exception is null))
             {
                 // on error (e.g access denied)
-                // TODO: Investigate query text display (i.e placeholder text?) --> result.QueryTextDisplay = entry.KeyPath;
+                // TODO GH #121 Investigate query text display (i.e placeholder text?) --> result.QueryTextDisplay = entry.KeyPath;
                 result.Subtitle = GetTruncatedText(entry.Exception.Message, MaxTextLength.MaximumSubTitleLengthWithTwoSymbols, TruncateSide.OnlyFromRight);
                 result.Title = GetTruncatedText(entry.KeyPath, MaxTextLength.MaximumTitleLengthWithTwoSymbols);
             }
             else
             {
-                // TODO: Investigate query text display (i.e placeholder text?) --> result.QueryTextDisplay = entry.KeyPath;
+                // TODO GH #121 Investigate query text display (i.e placeholder text?) --> result.QueryTextDisplay = entry.KeyPath;
                 result.Title = GetTruncatedText(entry.KeyPath, MaxTextLength.MaximumTitleLengthWithTwoSymbols);
             }
 
             // result.ContextData = entry;
-            // TODO: Investigate tool tips, result.ToolTipData = new ToolTipData(Resources.RegistryKey, $"{Resources.KeyName} {result.Title}");
+            // TODO GH #126 Investigate tool tips, result.ToolTipData = new ToolTipData(Resources.RegistryKey, $"{Resources.KeyName} {result.Title}");
             resultList.Add(result);
         }
 

@@ -28,12 +28,12 @@ internal static class ContextMenuHelper
 
         if (string.IsNullOrEmpty(entry.ValueName))
         {
-            list.Add(new CommandContextItem(new CopyKeyCommand(entry)));
+            list.Add(new CommandContextItem(new CopyRegistryInfoCommand(entry, CopyType.Key)));
         }
         else
         {
-            list.Add(new CommandContextItem(new CopyValueDataCommand(entry)));
-            list.Add(new CommandContextItem(new CopyValueNameCommand(entry)));
+            list.Add(new CommandContextItem(new CopyRegistryInfoCommand(entry, CopyType.ValueData)));
+            list.Add(new CommandContextItem(new CopyRegistryInfoCommand(entry, CopyType.ValueName)));
         }
 
         // list.Add(new CommandContextItem(new OpenKeyInEditorCommand(entry)));

@@ -27,8 +27,8 @@ public partial class WindowsServicesCommandsProvider : ICommandProvider
         return [
             new ListItem(new ServicesListPage())
             {
-                Title = "Manage Windows Services",
-                Subtitle = "Windows Services",
+                Title = "Search Windows Services",
+                Subtitle = "Quickly manage all Windows Services",
             }
         ];
     }

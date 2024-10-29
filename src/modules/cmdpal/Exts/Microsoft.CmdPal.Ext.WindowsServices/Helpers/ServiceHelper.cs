@@ -72,13 +72,15 @@ public static class ServiceHelper
                 Subtitle = ServiceHelper.GetResultSubTitle(s),
                 MoreCommands = moreCommands,
 
+                // TODO GH #78 we need to improve the icon story
+                // TODO GH #126 investigate tooltip story
                 // ToolTipData = new ToolTipData(serviceResult.DisplayName, serviceResult.ServiceName),
                 // IcoPath = icoPath,
             };
         });
     }
 
-    // TODO: IPublicAPI contextAPI isn't used anymore, but we need equivalent ways to show notifications and status
+    // TODO GH #118 IPublicAPI contextAPI isn't used anymore, but we need equivalent ways to show notifications and status
     public static void ChangeStatus(ServiceResult serviceResult, Action action)
     {
         ArgumentNullException.ThrowIfNull(serviceResult);
@@ -115,16 +117,19 @@ public static class ServiceHelper
 #pragma warning disable IDE0059, CS0168, SA1005
             if (exitCode == 0)
             {
+                // TODO GH #118 feedback to users
                 // contextAPI.ShowNotification(GetLocalizedMessage(action), serviceResult.DisplayName);
             }
             else
             {
+                // TODO GH #108 We need to figure out some logging
                 // contextAPI.ShowNotification(GetLocalizedErrorMessage(action), serviceResult.DisplayName);
                 // Log.Error($"The command returned {exitCode}", MethodBase.GetCurrentMethod().DeclaringType);
             }
         }
         catch (Win32Exception ex)
         {
+            // TODO GH #108 We need to figure out some logging
             // Log.Error(ex.Message, MethodBase.GetCurrentMethod().DeclaringType);
         }
     }
@@ -145,7 +150,7 @@ public static class ServiceHelper
 #pragma warning disable IDE0059, CS0168, SA1005
         catch (Exception ex)
         {
-            // TODO: We need to figure out some logging
+            // TODO GH #108 We need to figure out some logging
         }
     }
 #pragma warning restore IDE0059, CS0168, SA1005
