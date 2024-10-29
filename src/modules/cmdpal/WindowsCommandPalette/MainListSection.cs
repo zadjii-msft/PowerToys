@@ -29,7 +29,7 @@ public sealed partial class MainListSection : /*ISection, */INotifyCollectionCha
     // * OR one of:
     //   * Just the top-level actions (if there's no query)
     //   * OR the top-level actions AND the apps (if there's a query)
-    private IEnumerable<IListItem> TopLevelItemsToEnumerate => TopLevelItems.Where(i => i != null && (!_mainViewModel.IsRecentCommand(i)));
+    private IEnumerable<IListItem> TopLevelItemsToEnumerate => TopLevelItems.Where(i => i != null /*&& (!_mainViewModel.IsRecentCommand(i))*/);
 
     // Watch out future me!
     //

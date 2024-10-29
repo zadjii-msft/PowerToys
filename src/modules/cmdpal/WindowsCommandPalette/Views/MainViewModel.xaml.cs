@@ -87,9 +87,9 @@ public sealed class MainViewModel : IDisposable
         return title + subtitle;
     }
 
-    private string[] _recentCommandHashes = [];
+    /*private string[] _recentCommandHashes = [];*/
 
-    public IEnumerable<IListItem> RecentActions => TopLevelCommands
+    /*public IEnumerable<IListItem> RecentActions => TopLevelCommands
         .Select(i => i.Unsafe)
         .Where((i) =>
         {
@@ -106,7 +106,7 @@ public sealed class MainViewModel : IDisposable
             }
 
             return false;
-        }).Select(i => i!);
+        }).Select(i => i!);*/
 
     public IEnumerable<IListItem> AppItems => LoadedApps ? Apps.GetItems() : [];
 
@@ -118,7 +118,7 @@ public sealed class MainViewModel : IDisposable
             return v;
         });
 
-    public IEnumerable<ExtensionObject<IListItem>> Recent => _recentCommandHashes
+    /*public IEnumerable<ExtensionObject<IListItem>> Recent => _recentCommandHashes
         .Select(hash =>
             Everything
                 .Where(i =>
@@ -135,9 +135,9 @@ public sealed class MainViewModel : IDisposable
                 })
                 .FirstOrDefault())
         .Where(i => i != null)
-        .Select(i => i!);
+        .Select(i => i!);*/
 
-    public bool IsRecentCommand(MainListItem item)
+    /*public bool IsRecentCommand(MainListItem item)
     {
         try
         {
@@ -155,9 +155,9 @@ public sealed class MainViewModel : IDisposable
         }
 
         return false;
-    }
+    }*/
 
-    internal void PushRecentAction(ICommand action)
+    /*internal void PushRecentAction(ICommand action)
     {
         foreach (var wrapped in Everything)
         {
@@ -176,10 +176,10 @@ public sealed class MainViewModel : IDisposable
                 }
             }
             catch (COMException)
-            { /* log something */
+            { *//* log something *//*
             }
         }
-    }
+    }*/
 
     public void Dispose()
     {

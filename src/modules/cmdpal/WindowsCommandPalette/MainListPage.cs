@@ -16,8 +16,6 @@ public sealed partial class MainListPage : DynamicListPage
 {
     private readonly MainViewModel _mainViewModel;
 
-    // private readonly MainListSection _mainSection;
-    // private readonly RecentsListSection _recentsListSection;
     private readonly FilteredListSection _filteredSection;
     private readonly ObservableCollection<MainListItem> topLevelItems = new();
 
@@ -25,16 +23,19 @@ public sealed partial class MainListPage : DynamicListPage
     {
         this._mainViewModel = viewModel;
 
-        // _mainSection = new(_mainViewModel);
-        // _recentsListSection = new(_mainViewModel);
+        // wacky: "All apps" is added to _mainViewModel.TopLevelCommands before
+        // we're constructed, so we never get a
+        // TopLevelCommands_CollectionChanged callback when we're first launched
+        // that would let us add it
+        foreach (var i in _mainViewModel.TopLevelCommands)
+        {
+            this.topLevelItems.Add(new MainListItem(i.Unsafe));
+        }
+
         _filteredSection = new(_mainViewModel);
         _filteredSection.TopLevelItems = topLevelItems;
         _mainViewModel.TopLevelCommands.CollectionChanged += TopLevelCommands_CollectionChanged;
 
-        // _sections = [
-        //     _recentsListSection,
-        //     _mainSection
-        // ];
         PlaceholderText = "Search...";
         ShowDetails = true;
         Loading = false;
@@ -43,6 +44,17 @@ public sealed partial class MainListPage : DynamicListPage
     public override IListItem[] GetItems(string query)
     {
         _filteredSection.Query = query;
+
+        var fallbacks = topLevelItems
+            .Select(i => i?.FallbackHandler)
+            .Where(fb => fb != null)
+            .Select(fb => fb!);
+
+        foreach (var fb in fallbacks)
+        {
+            fb.UpdateQuery(query);
+        }
+
         if (string.IsNullOrEmpty(query))
         {
             return topLevelItems.ToArray();
