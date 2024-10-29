@@ -28,6 +28,15 @@ public sealed class ListPageViewModel : PageViewModel
     public ListPageViewModel(IListPage page)
         : base(page)
     {
+        page.PropChanged += Page_PropChanged;
+    }
+
+    private void Page_PropChanged(object sender, PropChangedEventArgs args)
+    {
+        if (args.PropertyName == "Items")
+        {
+            this.UpdateListItems().ConfigureAwait(false);
+        }
     }
 
     internal Task InitialRender()
@@ -38,7 +47,7 @@ public sealed class ListPageViewModel : PageViewModel
     internal async Task UpdateListItems()
     {
         // on main thread
-        var t = new Task<ISection[]>(() =>
+        var t = new Task<IListItem[]>(() =>
         {
             try
             {
@@ -49,16 +58,11 @@ public sealed class ListPageViewModel : PageViewModel
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
-                return [new ListSection()
-                {
-                    Title = "Error",
-                    Items = [new ErrorListItem(ex)],
-                }
-                ];
+                return [new ErrorListItem(ex)];
             }
         });
         t.Start();
-        var sections = await t;
+        var items = await t;
 
         // still on main thread
 
@@ -68,30 +72,14 @@ public sealed class ListPageViewModel : PageViewModel
         // UpdateFilter to intelligently add/remove as needed.
         // Items.Clear();
         // FilteredItems.Clear();
-        Collection<SectionInfoList> newItems = new();
+        ObservableCollection<SectionInfoList> newItems = new();
 
-        var size = sections.Length;
-        for (var sectionIndex = 0; sectionIndex < size; sectionIndex++)
-        {
-            var section = sections[sectionIndex];
-            var sectionItems = new SectionInfoList(
-                section,
-                section.Items
-                    .Where(i => i != null && !string.IsNullOrEmpty(i.Title))
-                    .Select(i => new ListItemViewModel(i)));
-
-            // var items = section.Items;
-            // for (var i = 0; i < items.Length; i++) {
-            //     ListItemViewModel vm = new(items[i]);
-            //     Items.Add(vm);
-            //     FilteredItems.Add(vm);
-            // }
-            newItems.Add(sectionItems);
-
-            // Items.Add(sectionItems);
-            // FilteredItems.Add(sectionItems);
-        }
-
+        // foreach (var item in items)
+        // {
+        //    newItems.Add(new ListItemViewModel(item));
+        // }
+        SectionInfoList s = new(string.Empty, items.Select(i => new ListItemViewModel(i)));
+        newItems.Add(s);
         ListHelpers.InPlaceUpdateList(_items, newItems);
         ListHelpers.InPlaceUpdateList(FilteredItems, newItems);
     }
@@ -127,12 +115,12 @@ public sealed class ListPageViewModel : PageViewModel
                         .Select(vm => vm.ListItem.Unsafe),
                     _query).Select(li => new ListItemViewModel(li));
 
-                var newSection = new SectionInfoList(null, allFilteredItems);
+                var newSection = new SectionInfoList(string.Empty, allFilteredItems);
                 return [newSection];
             }
             catch (COMException ex)
             {
-                return [new SectionInfoList(null, [new ListItemViewModel(new ErrorListItem(ex))])];
+                return [new SectionInfoList(string.Empty, [new ListItemViewModel(new ErrorListItem(ex))])];
             }
         }
     }

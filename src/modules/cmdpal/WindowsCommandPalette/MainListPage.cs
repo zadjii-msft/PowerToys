@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -13,48 +14,38 @@ namespace WindowsCommandPalette;
 public sealed partial class MainListPage : DynamicListPage
 {
     private readonly MainViewModel _mainViewModel;
-    private readonly MainListSection _mainSection;
-    private readonly RecentsListSection _recentsListSection;
-    private readonly FilteredListSection _filteredSection;
-    private readonly ISection[] _sections;
+
+    // private readonly MainListSection _mainSection;
+    // private readonly RecentsListSection _recentsListSection;
+    // private readonly FilteredListSection _filteredSection;
+    private readonly ObservableCollection<MainListItem> topLevelItems = new();
 
     public MainListPage(MainViewModel viewModel)
     {
         this._mainViewModel = viewModel;
 
-        _mainSection = new(_mainViewModel);
-        _recentsListSection = new(_mainViewModel);
-        _filteredSection = new(_mainViewModel);
-
+        // _mainSection = new(_mainViewModel);
+        // _recentsListSection = new(_mainViewModel);
+        // _filteredSection = new(_mainViewModel);
         _mainViewModel.TopLevelCommands.CollectionChanged += TopLevelCommands_CollectionChanged;
 
-        _sections = [
-            _recentsListSection,
-            _mainSection
-        ];
-
+        // _sections = [
+        //     _recentsListSection,
+        //     _mainSection
+        // ];
         PlaceholderText = "Search...";
         ShowDetails = true;
         Loading = false;
     }
 
-    public override ISection[] GetItems()
+    public override IListItem[] GetItems()
     {
-        return _sections;
+        return topLevelItems.ToArray();
     }
 
-    public override ISection[] GetItems(string query)
+    public override IListItem[] GetItems(string query)
     {
-        _filteredSection.Query = query;
-        _mainSection.UpdateQuery(query);
-        if (string.IsNullOrEmpty(query))
-        {
-            return _sections;
-        }
-        else
-        {
-            return [_filteredSection];
-        }
+        return topLevelItems.ToArray();
     }
 
     private void TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -65,13 +56,7 @@ public sealed partial class MainListPage : DynamicListPage
             {
                 if (item is ExtensionObject<IListItem> listItem)
                 {
-                    // Eh, it's fine to be unsafe here, we're probably tossing MainListItem
-                    if (!_mainViewModel.Recent.Contains(listItem))
-                    {
-                        _mainSection.TopLevelItems.Add(new MainListItem(listItem.Unsafe));
-                    }
-
-                    _filteredSection.TopLevelItems.Add(new MainListItem(listItem.Unsafe));
+                    topLevelItems.Add(new MainListItem(listItem.Unsafe));
                 }
             }
         }
@@ -79,25 +64,28 @@ public sealed partial class MainListPage : DynamicListPage
         {
             foreach (var item in e.OldItems)
             {
-                if (item is ExtensionObject<IListItem> listItem)
+                if (item is ExtensionObject<IListItem> _)
                 {
-                    foreach (var mainListItem in _mainSection.TopLevelItems)
-                    {
-                        if (mainListItem.Item == listItem)
-                        {
-                            _mainSection.TopLevelItems.Remove(mainListItem);
-                            break;
-                        }
-                    }
+                    // foreach (var mainListItem in _mainSection.TopLevelItems)
+                    // {
+                    //    if (mainListItem.Item == listItem)
+                    //    {
+                    //        // _mainSection.TopLevelItems.Remove(mainListItem);
+                    //        break;
+                    //    }
+                    // }
                 }
             }
         }
         else if (e.Action == NotifyCollectionChangedAction.Reset)
         {
-            _mainSection.Reset();
-            _filteredSection.Reset();
+            // _mainSection.Reset();
+            // _filteredSection.Reset();
+            topLevelItems.Clear();
         }
 
-        _recentsListSection.Reset();
+        // _recentsListSection.Reset();
+        // topLevelItems.Clear();
+        this.OnPropertyChanged("Items");
     }
 }

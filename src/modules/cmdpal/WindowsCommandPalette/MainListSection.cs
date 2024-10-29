@@ -11,7 +11,7 @@ using WindowsCommandPalette.Views;
 namespace WindowsCommandPalette;
 
 // The MainListSection is for all non-recent actions. No apps.
-public sealed partial class MainListSection : ISection, INotifyCollectionChanged
+public sealed partial class MainListSection : /*ISection, */INotifyCollectionChanged
 {
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 

@@ -15,11 +15,11 @@ public class SectionInfoList : ObservableCollection<ListItemViewModel>
 
     private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-    public SectionInfoList(ISection? section, IEnumerable<ListItemViewModel> items)
+    public SectionInfoList(string title, IEnumerable<ListItemViewModel> items)
         : base(items)
     {
-        Title = section?.Title ?? string.Empty;
-        if (section != null && section is INotifyCollectionChanged observable)
+        Title = title;
+        if (items is INotifyCollectionChanged observable)
         {
             observable.CollectionChanged -= Items_CollectionChanged;
             observable.CollectionChanged += Items_CollectionChanged;

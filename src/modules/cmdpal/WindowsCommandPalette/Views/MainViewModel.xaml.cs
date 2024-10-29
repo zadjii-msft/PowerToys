@@ -108,7 +108,7 @@ public sealed class MainViewModel : IDisposable
             return false;
         }).Select(i => i!);
 
-    public IEnumerable<IListItem> AppItems => LoadedApps ? Apps.GetItems().First().Items : [];
+    public IEnumerable<IListItem> AppItems => LoadedApps ? Apps.GetItems() : [];
 
     public IEnumerable<ExtensionObject<IListItem>> Everything => TopLevelCommands
         .Concat(AppItems.Select(i => new ExtensionObject<IListItem>(i)))

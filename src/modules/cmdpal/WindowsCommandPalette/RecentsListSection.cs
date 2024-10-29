@@ -11,7 +11,7 @@ using WindowsCommandPalette.Views;
 
 namespace WindowsCommandPalette;
 
-public sealed partial class RecentsListSection : ListSection, INotifyCollectionChanged
+public sealed partial class RecentsListSection : /*ListSection, */INotifyCollectionChanged
 {
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
@@ -24,7 +24,7 @@ public sealed partial class RecentsListSection : ListSection, INotifyCollectionC
 
     public RecentsListSection(MainViewModel viewModel)
     {
-        Title = "Recent";
+        // Title = "Recent";
         _mainViewModel = viewModel;
 
         var recent = _mainViewModel.RecentActions;
@@ -50,8 +50,7 @@ public sealed partial class RecentsListSection : ListSection, INotifyCollectionC
         });
     }
 
-    public override IListItem[] Items => _items.ToArray();
-
+    // public override IListItem[] Items => _items.ToArray();
     internal void Reset()
     {
         _items.Clear();
