@@ -32,7 +32,7 @@ internal static class WindowsSettingsPathHelper
             // Check if type value is filled. If not, then write log warning.
             if (string.IsNullOrEmpty(settings.Type))
             {
-                // TODO Logging
+                // TODO GH #108 Logging is something we have to take care of
                 // Log.Warn($"The type property is not set for setting [{settings.Name}] in json. Skipping generating of settings path.", typeof(WindowsSettingsPathHelper));
                 continue;
             }
@@ -45,6 +45,7 @@ internal static class WindowsSettingsPathHelper
 
             if (!string.IsNullOrEmpty(settings.JoinedFullSettingsPath))
             {
+                // TODO GH #108 Logging is something we have to take care of
                 // Log.Debug($"The property [JoinedFullSettingsPath] of setting [{settings.Name}] was filled from the json. This value is not used and will be overwritten.", typeof(WindowsSettingsPathHelper));
             }
 

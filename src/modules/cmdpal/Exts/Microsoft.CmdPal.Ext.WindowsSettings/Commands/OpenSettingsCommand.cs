@@ -31,12 +31,6 @@ internal sealed partial class OpenSettingsCommand : InvokableCommand
         _entry = entry;
     }
 
-    private static bool TryToCopyToClipBoard(in string text)
-    {
-        // TODO: Have this actually use the clipboard helper
-        return true;
-    }
-
     private static bool DoOpenSettingsAction(WindowsSetting entry)
     {
         ProcessStartInfo processStartInfo;
@@ -76,7 +70,7 @@ internal sealed partial class OpenSettingsCommand : InvokableCommand
 #pragma warning disable CS0168, IDE0059
         catch (Exception exception)
         {
-            // TODO --> Logging is something we have to take care of
+            // TODO GH #108 Logging is something we have to take care of
             // Log.Exception("can't open settings", exception, typeof(ResultHelper));
             return false;
         }

@@ -40,7 +40,7 @@ public partial class WindowsSettingsCommandsProvider : ICommandProvider
             new ListItem(new WindowsSettingsListPage(_windowsSettings))
             {
                 Title = "Search Windows Settings",
-                Subtitle = "Windows Settings Extension",
+                Subtitle = "Quickly navigate to specific Windows settings",
             }
         ];
     }

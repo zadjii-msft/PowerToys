@@ -38,7 +38,7 @@ internal static class ResultHelper
                 MoreCommands = ContextMenuHelper.GetContextMenu(entry).ToArray(),
             };
 
-            // TODO investigate tooltips
+            // TODO GH #126 investigate tooltips
             // AddOptionalToolTip(entry, result);
 
             // There is a case with MMC snap-ins where we don't have .msc files fort them. Then we need to show the note for this results in subtitle too.

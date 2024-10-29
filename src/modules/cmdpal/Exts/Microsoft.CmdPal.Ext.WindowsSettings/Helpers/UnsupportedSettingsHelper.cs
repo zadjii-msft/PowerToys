@@ -38,7 +38,7 @@ internal static class UnsupportedSettingsHelper
                 + $" result ({_keyNameBuild}={currentBuild}, {_keyNameBuildNumber}={currentBuildNumber})!"
                 + $" For resolving the conflict we use the value of '{usedValueName}'.";
 
-            // TODO --> Investigate Logging
+            // TODO GH #108 Logging is something we have to take care of
             // Log.Warn(warningMessage, typeof(UnsupportedSettingsHelper));
         }
 

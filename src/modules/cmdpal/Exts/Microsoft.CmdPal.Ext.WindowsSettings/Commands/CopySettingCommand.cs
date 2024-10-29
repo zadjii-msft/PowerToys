@@ -27,20 +27,14 @@ internal sealed partial class CopySettingCommand : InvokableCommand
     internal CopySettingCommand(WindowsSetting entry)
     {
         Name = Resources.CopyCommand;
-        Icon = new("\xE8C8");
+        Icon = new("\xE8C8"); // Copy icon
         _entry = entry;
-    }
-
-    private static bool TryToCopyToClipBoard(in string text)
-    {
-        // TODO: Have this actually use the clipboard helper
-        return true;
     }
 
     public override CommandResult Invoke()
     {
-        TryToCopyToClipBoard(_entry.Command);
+        ClipboardHelper.SetText(_entry.Command);
 
-        return CommandResult.KeepOpen();
+        return CommandResult.Dismiss();
     }
 }
