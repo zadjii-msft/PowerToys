@@ -40,12 +40,6 @@ internal sealed partial class CopyRegistryInfoCommand : InvokableCommand
         _entry = entry;
     }
 
-    private static bool TryToCopyToClipBoard(in string text)
-    {
-        // TODO: Have this actually use the clipboard helper
-        return true;
-    }
-
     public override CommandResult Invoke()
     {
         ClipboardHelper.SetText(_stringToCopy);

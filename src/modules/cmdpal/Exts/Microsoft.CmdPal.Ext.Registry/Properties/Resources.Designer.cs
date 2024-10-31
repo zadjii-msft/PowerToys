@@ -196,15 +196,6 @@ namespace Microsoft.CmdPal.Ext.Registry.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string test {
-            get {
-                return ResourceManager.GetString("test", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Type:.
         /// </summary>
         internal static string Type {
