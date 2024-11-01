@@ -14,9 +14,9 @@ namespace WindowsCommandPalette;
 // The FilteredListSection is for when we've got any filter at all. It starts by
 // enumerating all actions and apps, and returns the subset that matches.
 //
-// Although the concept of ISection's is vestigial, this class is still helpful 
-// for encapsulating the filtering of the main page, which has weird logic for 
-// adding apps or not. 
+// Although the concept of ISection's is vestigial, this class is still helpful
+// for encapsulating the filtering of the main page, which has weird logic for
+// adding apps or not.
 public sealed partial class FilteredListSection : INotifyCollectionChanged
 {
     public event NotifyCollectionChangedEventHandler? CollectionChanged;

@@ -42,7 +42,7 @@ public sealed partial class MainListPage : DynamicListPage
 
         // Listen for changes to the TopLevelCommands. This happens as we async
         // load them on startup. We'll use CollectionChanged as an opportunity
-        // to raise the 'Items' changed event. 
+        // to raise the 'Items' changed event.
         _mainViewModel.TopLevelCommands.CollectionChanged += TopLevelCommands_CollectionChanged;
 
         PlaceholderText = "Search...";

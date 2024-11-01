@@ -36,7 +36,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedItem)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoreCommandsAvailable)));
 
-            if (ViewModel != null && _selectedItem?.Details != null && ViewModel.Page.ShowDetails)
+            if (ViewModel != null && _selectedItem?.Details != null && ViewModel.ShowDetails)
             {
                 this.DetailsContent.Child = new DetailsControl(_selectedItem.Details);
                 this.DetailsContent.Visibility = Visibility.Visible;
@@ -297,7 +297,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         Debug.WriteLine($"  UpdateFilter after GetFilteredItems({text}) --> {items.Count()} ; {ViewModel.FilteredItems.Count}");
 
         // Here, actually populate ViewModel.FilteredItems
-        // WARNING: if you do this off the UI thread, it sure won't work right. 
+        // WARNING: if you do this off the UI thread, it sure won't work right.
         ListHelpers.InPlaceUpdateList(ViewModel.FilteredItems, new(items.ToList()));
         Debug.WriteLine($"  UpdateFilter after InPlaceUpdateList --> {ViewModel.FilteredItems.Count}");
 

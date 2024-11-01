@@ -26,6 +26,10 @@ public sealed class ListPageViewModel : PageViewModel
     private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
     private string _query = string.Empty;
 
+    private bool _forceShowDetails;
+
+    public bool ShowDetails => _forceShowDetails || Page.ShowDetails;
+
     public ListPageViewModel(IListPage page)
         : base(page)
     {
@@ -63,6 +67,7 @@ public sealed class ListPageViewModel : PageViewModel
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
+                _forceShowDetails = true;
                 return [new ErrorListItem(ex)];
             }
         });
@@ -98,7 +103,7 @@ public sealed class ListPageViewModel : PageViewModel
         _query = query;
         if (IsDynamic)
         {
-            // ... except here we might modify those lists. But ignore that for now, GH #77 will fix this. 
+            // ... except here we might modify those lists. But ignore that for now, GH #77 will fix this.
             await UpdateListItems();
             return FilteredItems;
         }
@@ -116,7 +121,6 @@ public sealed class ListPageViewModel : PageViewModel
             var newFilter = ListHelpers
                 .FilterList(_items.Select(vm => vm.ListItem.Unsafe), query)
                 .Select(li => new ListItemViewModel(li));
-
 
             return newFilter;
         }
