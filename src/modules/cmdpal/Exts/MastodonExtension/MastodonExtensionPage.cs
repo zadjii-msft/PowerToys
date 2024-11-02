@@ -4,11 +4,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -34,8 +37,21 @@ internal sealed partial class MastodonExtensionPage : ListPage
         return posts
             .Select(p => new ListItem(new NoOpCommand())
             {
-                Title = p.Content,
+                Title = p.ContentAsPlainText(),
                 Subtitle = p.Account.Username,
+                Icon = new(p.Account.Avatar),
+                Tags = [
+                    new Tag()
+                    {
+                        Icon = new("\ue734"), // FavoriteStar
+                        Text = p.Favorites.ToString(CultureInfo.CurrentCulture),
+                    },
+                    new Tag()
+                    {
+                        Icon = new("\ue8ee"), // RepeatAll
+                        Text = p.Boosts.ToString(CultureInfo.CurrentCulture),
+                    },
+                ],
             })
             .ToArray();
     }
@@ -98,6 +114,67 @@ public class MastodonStatus
 
     [JsonPropertyName("account")]
     public MastodonAccount Account { get; set; }
+
+    [JsonPropertyName("favourites_count")]
+    public int Favorites { get; set; }
+
+    [JsonPropertyName("reblogs_count")]
+    public int Boosts { get; set; }
+
+    [JsonPropertyName("replies_count")]
+    public int Replies { get; set; }
+
+    public string ContentAsPlainText()
+    {
+        HtmlDocument doc = new HtmlDocument();
+        doc.LoadHtml(Content);
+        StringBuilder plainTextBuilder = new StringBuilder();
+        foreach (var node in doc.DocumentNode.ChildNodes)
+        {
+            plainTextBuilder.Append(ParseNodeToPlaintext(node));
+        }
+
+        return plainTextBuilder.ToString();
+    }
+
+    public string ContentAsMarkdown()
+    {
+        HtmlDocument doc = new HtmlDocument();
+        doc.LoadHtml(Content);
+        StringBuilder markdownBuilder = new StringBuilder();
+        foreach (var node in doc.DocumentNode.ChildNodes)
+        {
+            markdownBuilder.Append(ParseNodeToMarkdown(node));
+        }
+
+        return markdownBuilder.ToString();
+    }
+
+    private static string ParseNodeToMarkdown(HtmlNode node)
+    {
+        switch (node.Name)
+        {
+            case "strong":
+            case "b":
+                return $"**{node.InnerText}**";
+            case "em":
+            case "i":
+                return $"*{node.InnerText}*";
+            case "a":
+                return $"[{node.InnerText}]({node.GetAttributeValue("href", "#")})";
+            case "p":
+                return $"{node.InnerText}\n\n";
+            case "#text":
+                return node.InnerText;
+            default:
+                return node.InnerText;  // For unhandled nodes, just return the text.
+        }
+    }
+
+    private static string ParseNodeToPlaintext(HtmlNode node)
+    {
+        return node.InnerText;
+    }
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
