@@ -59,6 +59,9 @@ internal sealed partial class MastodonExtensionPage : ListPage
                     // HeroImage = new(p.MediaAttachments.Count == 1 ? p.MediaAttachments[0].Url : string.Empty),
                     Body = p.ContentAsMarkdown(true, true),
                 },
+                MoreCommands = [
+                    new CommandContextItem(new OpenUrlCommand(p.Url) { Name = "Open on web" }),
+                ],
             })
             .ToArray();
     }
@@ -94,7 +97,7 @@ public partial class MastodonExtensionActionsProvider : ICommandProvider
     public IconDataType Icon => new(string.Empty);
 
     private readonly IListItem[] _actions = [
-        new ListItem(new MastodonExtensionPage()),
+        new ListItem(new MastodonExtensionPage()) { Subtitle = "Explore top posts on mastodon.social" },
     ];
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
