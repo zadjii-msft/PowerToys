@@ -59,6 +59,7 @@
 
         <Grid x:Name="FormContent" Grid.Row="1">
             <ItemsRepeater
+                x:Name="FormsRepeater"
                 ItemTemplate="{StaticResource CardTemplate}"
                 ItemsSource="{x:Bind ViewModel.Forms, Mode=OneWay}"
                 Layout="{StaticResource VerticalStackLayout}" />

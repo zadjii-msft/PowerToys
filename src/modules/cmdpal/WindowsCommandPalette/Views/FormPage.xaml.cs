@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using AdaptiveCards.Rendering.WinUI3;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -45,10 +46,13 @@ public sealed partial class FormPage : Page
             return;
         }
 
+        FormsRepeater.ItemsSource = ViewModel.Forms;
+
         ViewModel.InitialRender().ContinueWith((t) =>
         {
             DispatcherQueue.TryEnqueue(() =>
             {
+                Debug.Write($"Rendering {this.ViewModel.Forms.Count} forms");
                 foreach (var form in this.ViewModel.Forms)
                 {
                     AddCardElement(form);
