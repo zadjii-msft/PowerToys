@@ -14,6 +14,8 @@ public partial class WindowsSettingsCommandsProvider : ICommandProvider
 {
     public string DisplayName => $"Windows Services";
 
+    private readonly ListItem _searchSettingsListItem;
+
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private readonly WindowsSettings.Classes.WindowsSettings? _windowsSettings;
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
@@ -21,6 +23,11 @@ public partial class WindowsSettingsCommandsProvider : ICommandProvider
     public WindowsSettingsCommandsProvider()
     {
         _windowsSettings = JsonSettingsListHelper.ReadAllPossibleSettings();
+        _searchSettingsListItem = new ListItem(new WindowsSettingsListPage(_windowsSettings))
+        {
+            Title = "Search Windows Settings",
+            Subtitle = "Quickly navigate to specific Windows settings",
+        };
 
         UnsupportedSettingsHelper.FilterByBuild(_windowsSettings);
 
@@ -37,11 +44,7 @@ public partial class WindowsSettingsCommandsProvider : ICommandProvider
     public IListItem[] TopLevelCommands()
     {
         return [
-            new ListItem(new WindowsSettingsListPage(_windowsSettings))
-            {
-                Title = "Search Windows Settings",
-                Subtitle = "Quickly navigate to specific Windows settings",
-            }
+            _searchSettingsListItem
         ];
     }
 }
