@@ -81,6 +81,6 @@ internal sealed partial class OpenSettingsCommand : InvokableCommand
     {
         DoOpenSettingsAction(_entry);
 
-        return CommandResult.KeepOpen();
+        return CommandResult.Dismiss();
     }
 }
