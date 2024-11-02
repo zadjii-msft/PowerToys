@@ -57,7 +57,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
                 {
                     // It was a cool idea to have a single image as the HeroImage, but the scaling is terrible
                     // HeroImage = new(p.MediaAttachments.Count == 1 ? p.MediaAttachments[0].Url : string.Empty),
-                    Body = p.ContentAsMarkdown(),
+                    Body = p.ContentAsMarkdown(true, true),
                 },
             })
             .ToArray();
@@ -123,7 +123,7 @@ public partial class MastodonPostForm : IForm
 {
     "author_display_name": {{JsonSerializer.Serialize(post.Account.DisplayName)}},
     "author_username": {{JsonSerializer.Serialize(post.Account.Username)}},
-    "post_content": {{JsonSerializer.Serialize(post.ContentAsMarkdown())}},
+    "post_content": {{JsonSerializer.Serialize(post.ContentAsMarkdown(false, false))}},
     "author_avatar_url": "{{post.Account.Avatar}}",
     "timestamp": "2017-02-14T06:08:39Z",
     "post_url": "{{post.Url}}"
@@ -291,18 +291,18 @@ public class MastodonStatus
         return plainTextBuilder.ToString();
     }
 
-    public string ContentAsMarkdown()
+    public string ContentAsMarkdown(bool escapeHashtags, bool addMedia)
     {
         HtmlDocument doc = new HtmlDocument();
         doc.LoadHtml(Content.Replace("<br>", "\n\n").Replace("<br />", "\n\n"));
         StringBuilder markdownBuilder = new StringBuilder();
         foreach (var node in doc.DocumentNode.ChildNodes)
         {
-            markdownBuilder.Append(ParseNodeToMarkdown(node));
+            markdownBuilder.Append(ParseNodeToMarkdown(node, escapeHashtags));
         }
 
         // change this to >1 if you want to try the HeroImage thing
-        if (MediaAttachments.Count > 0)
+        if (addMedia && MediaAttachments.Count > 0)
         {
             foreach (var mediaAttachment in MediaAttachments)
             {
@@ -314,8 +314,9 @@ public class MastodonStatus
         return markdownBuilder.ToString();
     }
 
-    private static string ParseNodeToMarkdown(HtmlNode node)
+    private static string ParseNodeToMarkdown(HtmlNode node, bool escapeHashtags)
     {
+        var innerText = escapeHashtags ? node.InnerText.Replace("#", "\\#") : node.InnerText;
         switch (node.Name)
         {
             case "strong":
@@ -327,13 +328,13 @@ public class MastodonStatus
             case "a":
                 return $"[{node.InnerText}]({node.GetAttributeValue("href", "#")})";
             case "p":
-                return $"{node.InnerText.Replace("#", "\\#")}\n\n";
+                return $"{innerText}\n\n";
             case "li":
-                return $"{node.InnerText}\n";
+                return $"{innerText}\n";
             case "#text":
-                return node.InnerText.Replace("#", "\\#");
+                return innerText;
             default:
-                return node.InnerText.Replace("#", "\\#");  // For unhandled nodes, just return the text.
+                return innerText;  // For unhandled nodes, just return the text.
         }
     }
 
