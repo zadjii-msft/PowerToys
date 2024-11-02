@@ -55,6 +55,8 @@ internal sealed partial class MastodonExtensionPage : ListPage
                 ],
                 Details = new Details()
                 {
+                    // It was a cool idea to have a single image as the HeroImage, but the scaling is terrible
+                    // HeroImage = new(p.MediaAttachments.Count == 1 ? p.MediaAttachments[0].Url : string.Empty),
                     Body = p.ContentAsMarkdown(),
                 },
             })
@@ -129,6 +131,9 @@ public class MastodonStatus
     [JsonPropertyName("replies_count")]
     public int Replies { get; set; }
 
+    [JsonPropertyName("media_attachments")]
+    public List<MediaAttachment> MediaAttachments { get; set; }
+
     public string ContentAsPlainText()
     {
         HtmlDocument doc = new HtmlDocument();
@@ -152,6 +157,16 @@ public class MastodonStatus
             markdownBuilder.Append(ParseNodeToMarkdown(node));
         }
 
+        // change this to >1 if you want to try the HeroImage thing
+        if (MediaAttachments.Count > 0)
+        {
+            foreach (var mediaAttachment in MediaAttachments)
+            {
+                var img = $"\n![{mediaAttachment.Description}]({mediaAttachment.Url})";
+                markdownBuilder.Append(img);
+            }
+        }
+
         return markdownBuilder.ToString();
     }
 
@@ -168,13 +183,13 @@ public class MastodonStatus
             case "a":
                 return $"[{node.InnerText}]({node.GetAttributeValue("href", "#")})";
             case "p":
-                return $"{node.InnerText}\n\n";
+                return $"{node.InnerText.Replace("#", "\\#")}\n\n";
             case "li":
                 return $"{node.InnerText}\n";
             case "#text":
-                return node.InnerText;
+                return node.InnerText.Replace("#", "\\#");
             default:
-                return node.InnerText;  // For unhandled nodes, just return the text.
+                return node.InnerText.Replace("#", "\\#");  // For unhandled nodes, just return the text.
         }
     }
 
@@ -195,4 +210,23 @@ public class MastodonAccount
 
     [JsonPropertyName("avatar")]
     public string Avatar { get; set; }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+public class MediaAttachment
+{
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+
+    [JsonPropertyName("type")]
+    public string Type { get; set; } // e.g., "image", "video", "gifv", etc.
+
+    [JsonPropertyName("url")]
+    public string Url { get; set; }
+
+    [JsonPropertyName("preview_url")]
+    public string PreviewUrl { get; set; }
+
+    [JsonPropertyName("description")]
+    public string Description { get; set; }
 }
