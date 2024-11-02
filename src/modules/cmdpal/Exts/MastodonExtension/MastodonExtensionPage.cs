@@ -306,7 +306,9 @@ public class MastodonStatus
         {
             foreach (var mediaAttachment in MediaAttachments)
             {
-                var img = $"\n![{mediaAttachment.Description}]({mediaAttachment.Url})";
+                // A newline in a img tag blows up the image parser :upside_down:
+                var desc = mediaAttachment.Description ?? string.Empty;
+                var img = $"\n![{desc.Replace("\n", " ")}]({mediaAttachment.Url})";
                 markdownBuilder.Append(img);
             }
         }
@@ -373,5 +375,5 @@ public class MediaAttachment
     public string PreviewUrl { get; set; }
 
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
 }
