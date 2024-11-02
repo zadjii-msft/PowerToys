@@ -17,10 +17,8 @@ namespace WindowsCommandPalette;
 // Although the concept of ISection's is vestigial, this class is still helpful
 // for encapsulating the filtering of the main page, which has weird logic for
 // adding apps or not.
-public sealed partial class FilteredListSection : INotifyCollectionChanged
+public sealed partial class FilteredListSection
 {
-    public event NotifyCollectionChangedEventHandler? CollectionChanged;
-
     public string Title => string.Empty;
 
     private readonly MainViewModel _mainViewModel;
@@ -89,18 +87,6 @@ public sealed partial class FilteredListSection : INotifyCollectionChanged
     {
         this._mainViewModel = viewModel;
         this.TopLevelItems = topLevelItems;
-
-        // TODO: We should probably just get rid of MainListItem entirely, so I'm leaveing these uncaught
-        TopLevelItems = new(_mainViewModel.TopLevelCommands.Where(wrapper => wrapper.Unsafe != null).Select(wrapper => new MainListItem(wrapper.Unsafe!)));
-        TopLevelItems.CollectionChanged += Bubble_CollectionChanged;
-    }
-
-    private void Bubble_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        _dispatcherQueue.TryEnqueue(() =>
-        {
-            CollectionChanged?.Invoke(this, e);
-        });
     }
 
     internal void Reset()
