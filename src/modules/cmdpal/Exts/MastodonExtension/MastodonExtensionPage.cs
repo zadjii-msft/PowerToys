@@ -150,7 +150,7 @@ public class MastodonStatus
     public string ContentAsMarkdown()
     {
         HtmlDocument doc = new HtmlDocument();
-        doc.LoadHtml(Content.Replace("<br />", "\n\n"));
+        doc.LoadHtml(Content.Replace("<br>", "\n\n").Replace("<br />", "\n\n"));
         StringBuilder markdownBuilder = new StringBuilder();
         foreach (var node in doc.DocumentNode.ChildNodes)
         {
@@ -186,9 +186,6 @@ public class MastodonStatus
                 return $"{node.InnerText.Replace("#", "\\#")}\n\n";
             case "li":
                 return $"{node.InnerText}\n";
-            case "br":
-            case "br/":
-                return $"\n\n";
             case "#text":
                 return node.InnerText.Replace("#", "\\#");
             default:
