@@ -36,7 +36,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
         postsAsync.ConfigureAwait(false);
         var posts = postsAsync.Result;
         return posts
-            .Select(p => new ListItem(new NoOpCommand())
+            .Select(p => new ListItem(new MastodonPostPage(p))
             {
                 Title = p.Account.DisplayName, // p.ContentAsPlainText(),
                 Subtitle = $"@{p.Account.Username}",
@@ -108,6 +108,144 @@ public partial class MastodonExtensionActionsProvider : ICommandProvider
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+public partial class MastodonPostForm : IForm
+{
+    private readonly MastodonStatus post;
+
+    public MastodonPostForm(MastodonStatus post)
+    {
+        this.post = post;
+    }
+
+    public string DataJson()
+    {
+        return $$"""
+{
+    "author_display_name": {{JsonSerializer.Serialize(post.Account.DisplayName)}},
+    "author_username": {{JsonSerializer.Serialize(post.Account.Username)}},
+    "post_content": {{JsonSerializer.Serialize(post.ContentAsMarkdown())}},
+    "author_avatar_url": "{{post.Account.Avatar}}",
+    "timestamp": "2017-02-14T06:08:39Z",
+    "post_url": "{{post.Url}}"
+}
+""";
+    }
+
+    public string StateJson() => throw new NotImplementedException();
+
+    public ICommandResult SubmitForm(string payload)
+    {
+        return CommandResult.Dismiss();
+    }
+
+    public string TemplateJson()
+    {
+/*        var image_block = """
+,
+{
+    "type": "ImageSet",
+    "images": [
+        {
+            "type": "Image",
+            "url": "{media_url_1}",
+            "size": "Medium"
+        },
+        {
+            "type": "Image",
+            "url": "{media_url_2}",
+            "size": "Medium"
+        }
+    ],
+    "imageSize": "Medium"
+}
+""";*/
+
+        return $$"""
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.5",
+    "body": [
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": "auto",
+                            "items": [
+                                {
+                                    "type": "Image",
+                                    "url": "${author_avatar_url}",
+                                    "size": "Small",
+                                    "style": "Person"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": "stretch",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "weight": "Bolder",
+                                    "wrap": true,
+                                    "spacing": "small",
+                                    "text": "${author_display_name}"
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "weight": "Lighter",
+                                    "wrap": true,
+                                    "text": "@${author_username}",
+                                    "spacing": "Small",
+                                    "isSubtle": true,
+                                    "size": "Small"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "TextBlock",
+                    "text": "${post_content}",
+                    "wrap": true
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.OpenUrl",
+            "title": "View on Mastodon",
+            "url": "${post_url}"
+        }
+    ]
+}
+""";
+    }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+public partial class MastodonPostPage : FormPage
+{
+    private readonly MastodonStatus post;
+
+    public MastodonPostPage(MastodonStatus post)
+    {
+        Name = "View post";
+        this.post = post;
+    }
+
+    public override IForm[] Forms()
+    {
+        return [new MastodonPostForm(post)];
+    }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
 public class MastodonStatus
 {
     [JsonPropertyName("id")]
@@ -115,6 +253,12 @@ public class MastodonStatus
 
     [JsonPropertyName("content")]
     public string Content { get; set; }
+
+    [JsonPropertyName("url")]
+    public string Url { get; set; }
+
+    [JsonPropertyName("uri")]
+    public string Uri { get; set; }
 
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; }
