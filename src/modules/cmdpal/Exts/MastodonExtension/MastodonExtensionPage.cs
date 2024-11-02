@@ -14,14 +14,15 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Windows.Media.Protection.PlayReady;
 
 namespace MastodonExtension;
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
 internal sealed partial class MastodonExtensionPage : ListPage
 {
-    private static readonly HttpClient Client = new();
-    private static readonly JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true };
+    internal static readonly HttpClient Client = new();
+    internal static readonly JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true };
 
     public MastodonExtensionPage()
     {
@@ -231,7 +232,40 @@ public partial class MastodonPostPage : FormPage
 
     public override IForm[] Forms()
     {
-        return [new MastodonPostForm(post)];
+        var postsAsync = GetRepliesAsync();
+        postsAsync.ConfigureAwait(false);
+        var posts = postsAsync.Result;
+        return posts.Select(p => new MastodonPostForm(p)).ToArray();
+    }
+
+    private async Task<List<MastodonStatus>> GetRepliesAsync()
+    {
+        // Start with our post...
+        var replies = new List<MastodonStatus>([this.post]);
+        try
+        {
+            // Make a GET request to the Mastodon context API endpoint
+            var url = $"https://mastodon.social/api/v1/statuses/{post.Id}/context";
+            HttpResponseMessage response = await MastodonExtensionPage.Client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            // Read and deserialize the response JSON into a MastodonContext object
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var context = JsonSerializer.Deserialize<MastodonContext>(responseBody, MastodonExtensionPage.Options);
+
+            // Extract the list of replies (descendants)
+            if (context?.Descendants != null)
+            {
+                // Add others if we need them
+                replies.AddRange(context.Descendants);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"An error occurred: {e.Message}");
+        }
+
+        return replies;
     }
 }
 
@@ -366,4 +400,14 @@ public class MediaAttachment
 
     [JsonPropertyName("description")]
     public string Description { get; set; } = string.Empty;
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+public class MastodonContext
+{
+    [JsonPropertyName("ancestors")]
+    public List<MastodonStatus> Ancestors { get; set; }
+
+    [JsonPropertyName("descendants")]
+    public List<MastodonStatus> Descendants { get; set; }
 }

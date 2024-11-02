@@ -46,13 +46,13 @@ public sealed partial class FormPage : Page
             return;
         }
 
-        FormsRepeater.ItemsSource = ViewModel.Forms;
-
         ViewModel.InitialRender().ContinueWith((t) =>
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                Debug.Write($"Rendering {this.ViewModel.Forms.Count} forms");
+                FormsRepeater.ItemsSource = ViewModel.Forms;
+
+                Debug.WriteLine($"Rendering {this.ViewModel.Forms.Count} forms");
                 foreach (var form in this.ViewModel.Forms)
                 {
                     AddCardElement(form);
