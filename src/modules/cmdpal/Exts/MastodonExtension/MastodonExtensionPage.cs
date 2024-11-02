@@ -27,6 +27,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
     {
         Icon = new("https://mastodon.social/packs/media/icons/android-chrome-36x36-4c61fdb42936428af85afdbf8c6a45a8.png");
         Name = "Mastodon";
+        ShowDetails = true;
     }
 
     public override IListItem[] GetItems()
@@ -37,8 +38,8 @@ internal sealed partial class MastodonExtensionPage : ListPage
         return posts
             .Select(p => new ListItem(new NoOpCommand())
             {
-                Title = p.ContentAsPlainText(),
-                Subtitle = p.Account.Username,
+                Title = p.Account.DisplayName, // p.ContentAsPlainText(),
+                Subtitle = $"@{p.Account.Username}",
                 Icon = new(p.Account.Avatar),
                 Tags = [
                     new Tag()
@@ -52,6 +53,10 @@ internal sealed partial class MastodonExtensionPage : ListPage
                         Text = p.Boosts.ToString(CultureInfo.CurrentCulture),
                     },
                 ],
+                Details = new Details()
+                {
+                    Body = p.ContentAsMarkdown(),
+                },
             })
             .ToArray();
     }
@@ -164,6 +169,8 @@ public class MastodonStatus
                 return $"[{node.InnerText}]({node.GetAttributeValue("href", "#")})";
             case "p":
                 return $"{node.InnerText}\n\n";
+            case "li":
+                return $"{node.InnerText}\n";
             case "#text":
                 return node.InnerText;
             default:
