@@ -140,25 +140,12 @@ public partial class MastodonPostForm : IForm
 
     public string TemplateJson()
     {
-/*        var image_block = """
-,
-{
-    "type": "ImageSet",
-    "images": [
+        var img_block = string.Empty;
+        if (post.MediaAttachments.Count > 0)
         {
-            "type": "Image",
-            "url": "{media_url_1}",
-            "size": "Medium"
-        },
-        {
-            "type": "Image",
-            "url": "{media_url_2}",
-            "size": "Medium"
+            img_block = string.Join(',', post.MediaAttachments
+                .Select(media => $$""",{"type": "Image","url":"{{media.Url}}","size": "stretch"}""").ToArray());
         }
-    ],
-    "imageSize": "Medium"
-}
-""";*/
 
         return $$"""
 {
@@ -212,7 +199,7 @@ public partial class MastodonPostForm : IForm
                     "type": "TextBlock",
                     "text": "${post_content}",
                     "wrap": true
-                }
+                }{{img_block}}
             ]
         }
     ],

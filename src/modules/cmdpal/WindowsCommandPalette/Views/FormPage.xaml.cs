@@ -175,9 +175,9 @@ public sealed partial class FormPage : Page
     }
   },
   "imageSizes": {
-    "small": 12,
-    "medium": 16,
-    "large": 20
+    "small": 16,
+    "medium": 24,
+    "large": 32
   },
   "actions": {
     "maxActions": 5,
@@ -336,9 +336,9 @@ public sealed partial class FormPage : Page
     }
   },
   "imageSizes": {
-    "small": 12,
-    "medium": 16,
-    "large": 20
+    "small": 16,
+    "medium": 24,
+    "large": 32
   },
   "actions": {
     "maxActions": 5,
