@@ -178,9 +178,10 @@ In order for users to interact with your extension in the Command Palette, **you
 ```csharp
 public class SSHKeychainCommandsProvider : CommandProvider
 {
-    public string DisplayName => $"SSH Keychain Commands";
-
-    public IconDataType Icon => new(string.Empty);
+    public SSHKeychainCommandsProvider()
+    {
+        DisplayName = "SSH Keychain Commands";
+    }
 
     private readonly IListItem[] _commands = [
        new ListItem(new NoOpCommand())
@@ -190,11 +191,7 @@ public class SSHKeychainCommandsProvider : CommandProvider
         },
     ];
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-    public void Dispose() => throw new NotImplementedException();
-#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
-
-    public IListItem[] TopLevelCommands()
+    public override IListItem[] TopLevelCommands()
     {
         return _commands;
     }
