@@ -14,7 +14,9 @@ public sealed partial class CommandPaletteHost : IExtensionHost
     // Post MVVM - this should probably be like, a dependency injection thing.
     public static CommandPaletteHost Instance { get; } = new();
 
-    public ulong HostingHwnd => 12345u;
+    private ulong _hostHwnd;
+
+    public ulong HostingHwnd => _hostHwnd;
 
     public string LanguageOverride => string.Empty;
 
@@ -33,5 +35,10 @@ public sealed partial class CommandPaletteHost : IExtensionHost
     {
         Debug.WriteLine(message.Message);
         return Task.CompletedTask.AsAsyncAction();
+    }
+
+    public void SetHostHwnd(ulong hostHwnd)
+    {
+        _hostHwnd = hostHwnd;
     }
 }

@@ -21,8 +21,6 @@ public partial class HackerNewsCommandsProvider : CommandProvider
 
     public override IListItem[] TopLevelCommands()
     {
-        ExtensionHost.LogMessage(new LogMessage() { Message = "This is a test, from the HackerNews sample" });
-
         return _actions;
     }
 }
