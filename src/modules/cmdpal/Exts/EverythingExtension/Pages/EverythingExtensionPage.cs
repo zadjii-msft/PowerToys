@@ -30,6 +30,7 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
         Everything_SetMax(20);
     }
 
+    /*
     public override ISection[] GetItems(string query)
     {
         Everything_SetSearchW(query);
@@ -106,4 +107,5 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
         // Return the ListSection with the items
         return [section];
     }
+    */
 }
