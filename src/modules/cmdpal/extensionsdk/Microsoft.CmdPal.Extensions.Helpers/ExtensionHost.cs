@@ -10,4 +10,21 @@ public class ExtensionHost
     {
         _host = host;
     }
+
+    public static void LogMessage(ILogMessage message)
+    {
+        // TODO this feels like bad async
+        if (Host != null)
+        {
+            // really just fire-and-forget
+            new Task(async () => 
+            {
+                try
+                {
+                    await Host.LogMessage(message);
+                }
+                catch (Exception) { }
+            }).Start();
+        }
+    }
 }

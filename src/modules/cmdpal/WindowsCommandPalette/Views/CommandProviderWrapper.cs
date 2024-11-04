@@ -40,6 +40,7 @@ public sealed class CommandProviderWrapper
 
         CommandProvider = provider;
 
+        // Hook the extension back into us
         CommandProvider.InitializeWithHost(CommandPaletteHost.Instance);
 
         isValid = true;

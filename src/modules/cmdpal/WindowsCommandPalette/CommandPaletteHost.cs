@@ -3,20 +3,35 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
-using Windows.Win32;
+using Windows.Foundation;
 
 namespace WindowsCommandPalette;
 
 public sealed partial class CommandPaletteHost : IExtensionHost
 {
+    // Static singleton, so that we can access this from anywhere
+    // Post MVVM - this should probably be like, a dependency injection thing.
     public static CommandPaletteHost Instance { get; } = new();
 
     public ulong HostingHwnd => 12345u;
 
-    public string LanguageOverride => throw new NotImplementedException();
+    public string LanguageOverride => string.Empty;
 
-    public void LogMessage(ILogMessage message) => throw new NotImplementedException();
+    public IAsyncAction ShowStatus(IStatusMessage message)
+    {
+        Debug.WriteLine(message.Message);
+        return Task.CompletedTask.AsAsyncAction();
+    }
+
+    public IAsyncAction HideStatus(IStatusMessage message)
+    {
+        return Task.CompletedTask.AsAsyncAction();
+    }
+
+    public IAsyncAction LogMessage(ILogMessage message)
+    {
+        Debug.WriteLine(message.Message);
+        return Task.CompletedTask.AsAsyncAction();
+    }
 }
