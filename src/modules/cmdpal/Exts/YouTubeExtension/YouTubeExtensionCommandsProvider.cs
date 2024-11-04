@@ -17,7 +17,7 @@ using YouTubeExtension.Pages;
 
 namespace YouTubeExtension;
 
-public partial class YouTubeExtensionActionsProvider : ICommandProvider
+public partial class YouTubeExtensionActionsProvider : CommandProvider
 {
     public string DisplayName => $"YouTube";
 

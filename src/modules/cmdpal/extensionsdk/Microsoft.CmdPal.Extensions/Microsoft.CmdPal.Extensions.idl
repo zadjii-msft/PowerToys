@@ -122,6 +122,32 @@ namespace Microsoft.CmdPal.Extensions
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IDetailsSeparator requires IDetailsData {}
     
+    enum LogState
+    {
+        Info = 0,
+        InProgress,
+        Success,
+        Warning,
+        Error,
+    };
+    
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface ILogMessage
+    {
+        LogState State { get; };
+        String Message { get; };
+        // TODO! Icon maybe? Work with design on this
+    };
+    
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface IExtensionHost
+    {
+        UInt64 HostingHwnd { get; };
+        String LanguageOverride { get; };
+    
+        void LogMessage(ILogMessage message);
+    };
+    
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IPage requires ICommand {
         String Title { get; };
@@ -212,6 +238,8 @@ namespace Microsoft.CmdPal.Extensions
         // TODO! IFormPage SettingsPage { get; };
     
         IListItem[] TopLevelCommands();
+    
+        void InitializeWithHost(IExtensionHost host);
     };
     
 

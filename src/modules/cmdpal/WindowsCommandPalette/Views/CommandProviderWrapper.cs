@@ -39,6 +39,9 @@ public sealed class CommandProviderWrapper
         }
 
         CommandProvider = provider;
+
+        CommandProvider.InitializeWithHost(CommandPaletteHost.Instance);
+
         isValid = true;
     }
 

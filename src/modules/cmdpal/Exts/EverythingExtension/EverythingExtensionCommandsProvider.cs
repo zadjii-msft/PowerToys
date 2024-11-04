@@ -12,7 +12,7 @@ using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace EverythingExtension;
 
-public partial class EverythingExtensionActionsProvider : ICommandProvider
+public partial class EverythingExtensionActionsProvider : CommandProvider
 {
     public string DisplayName => $"Everything extension for cmdpal";
 

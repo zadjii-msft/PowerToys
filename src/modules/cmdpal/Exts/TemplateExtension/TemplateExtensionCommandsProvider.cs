@@ -12,7 +12,7 @@ using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace TemplateExtension;
 
-public partial class TemplateExtensionActionsProvider : ICommandProvider
+public partial class TemplateExtensionActionsProvider : CommandProvider
 {
     public string DisplayName => $"TemplateDisplayName Commands";
 

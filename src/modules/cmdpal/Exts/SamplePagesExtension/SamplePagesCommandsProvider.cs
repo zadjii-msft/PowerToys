@@ -8,7 +8,7 @@ using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace SamplePagesExtension;
 
-public partial class SamplePagesCommandsProvider : ICommandProvider
+public partial class SamplePagesCommandsProvider : CommandProvider
 {
     public string DisplayName => $"Sample Pages Commands";
 

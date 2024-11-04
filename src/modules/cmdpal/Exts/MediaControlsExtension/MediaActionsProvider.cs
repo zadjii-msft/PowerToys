@@ -7,7 +7,7 @@ using Microsoft.CmdPal.Extensions;
 
 namespace MediaControlsExtension;
 
-public partial class MediaActionsProvider : ICommandProvider
+public partial class MediaActionsProvider : CommandProvider
 {
     public string DisplayName => $"Media controls actions";
 

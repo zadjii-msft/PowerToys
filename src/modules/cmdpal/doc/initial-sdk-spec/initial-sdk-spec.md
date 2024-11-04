@@ -1,7 +1,7 @@
 ---
 author: Mike Griese
 created on: 2024-07-19
-last updated: 2024-10-22
+last updated: 2024-11-04
 issue id: n/a
 ---
 
@@ -62,6 +62,7 @@ functionality.
       - [`INotifyPropChanged`](#inotifypropchanged)
       - [`ICommandProvider`](#icommandprovider)
     - [Settings](#settings)
+    - [Retrieving info from the host](#retrieving-info-from-the-host)
   - [Helper SDK Classes](#helper-sdk-classes)
     - [Default implementations](#default-implementations)
     - [Using the Clipboard](#using-the-clipboard)
@@ -869,7 +870,7 @@ public class SpongebotPage : Microsoft.Windows.Run.Extensions.MarkdownPage, IFal
         return t.Result;
     }
 }
-internal sealed class SpongebotCommandsProvider : ICommandProvider
+internal sealed class SpongebotCommandsProvider : CommandProvider
 {
     public IListItem[] TopLevelCommands()
     {
@@ -1125,6 +1126,8 @@ interface ICommandProvider requires Windows.Foundation.IClosable
     // TODO! IFormPage SettingsPage { get; };
 
     IListItem[] TopLevelCommands();
+
+    void InitializeWithHost(IExtensionHost host);
 };
 ```
 
@@ -1149,6 +1152,36 @@ Cards is great for real-time saving of settings though.
 We probably also want to provide a helper class for storing settings, so that
 apps don't need to worry too much about mucking around with that. I'm especially
 thinking about storing credentials securely.
+
+### Retrieving info from the host
+
+TODO! write me
+
+```c#
+enum LogState
+{
+    Info = 0,
+    InProgress,
+    Success,
+    Warning,
+    Error,
+};
+
+interface ILogMessage
+{
+    LogState State { get; };
+    String Message { get; };
+    // TODO! Icon maybe? Work with design on this
+};
+
+interface IExtensionHost
+{
+    UInt64 HostingHwnd { get; };
+    String LanguageOverride { get; };
+
+    void LogMessage(ILogMessage message);
+};
+```
 
 ## Helper SDK Classes
 

@@ -8,7 +8,7 @@ using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace SSHKeychainExtension;
 
-public partial class SSHKeychainCommandsProvider : ICommandProvider
+public partial class SSHKeychainCommandsProvider : CommandProvider
 {
     public string DisplayName => $"SSH Keychain Commands";
 

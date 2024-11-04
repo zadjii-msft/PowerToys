@@ -26,7 +26,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
-public partial class MastodonExtensionActionsProvider : ICommandProvider
+public partial class MastodonExtensionActionsProvider : CommandProvider
 {
     public string DisplayName => $"Mastodon extension for cmdpal Commands";
 
