@@ -7,7 +7,13 @@ using System.Text.Json.Nodes;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public abstract class Setting<T>
+internal interface ISettingsForm
+{
+    public string ToForm();
+    public void Update(JsonObject payload);
+}
+
+public abstract class Setting<T> : ISettingsForm
 {
     private readonly T? _value;
     private readonly string _key;
@@ -195,8 +201,8 @@ public sealed class Settings
     public IForm[] ToForms() {
         var forms = _settings
             .Values
-            .Where(s => s is Setting<object>)
-            .Select(s => s as Setting<object>)
+            .Where(s => s is ISettingsForm)
+            .Select(s => s as ISettingsForm)
             .Where(s => s != null)
             .Select(s => s!)
             .Select(s => new SettingForm(s))
@@ -207,9 +213,9 @@ public sealed class Settings
 
 public partial class SettingForm : Form
 {
-    private readonly Setting<object> setting;
+    private readonly ISettingsForm setting;
 
-    public SettingForm(Setting<object> setting)
+    internal SettingForm(ISettingsForm setting)
     {
         this.setting = setting;
         Template = setting.ToForm();

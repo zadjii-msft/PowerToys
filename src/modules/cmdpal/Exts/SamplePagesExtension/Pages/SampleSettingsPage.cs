@@ -13,7 +13,8 @@ internal sealed partial class SampleSettingsPage : FormPage
 
     public override IForm[] Forms()
     {
-        return _settings.ToForms();
+        var s = _settings.ToForms();
+        return s;
     }
 
     public SampleSettingsPage()

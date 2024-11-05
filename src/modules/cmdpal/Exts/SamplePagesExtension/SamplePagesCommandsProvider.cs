@@ -43,8 +43,8 @@ public partial class SamplePagesCommandsProvider : CommandProvider
        },
        new ListItem(new SampleSettingsPage())
        {
-           Title = "Dynamic List Page Command",
-           Subtitle = "SamplePages Extension",
+           Title = "Sample settings page",
+           Subtitle = "A demo of the settings helpers",
        }
     ];
 
