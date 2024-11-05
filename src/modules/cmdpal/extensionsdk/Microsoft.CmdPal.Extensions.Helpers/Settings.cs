@@ -4,6 +4,7 @@
 
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
@@ -15,7 +16,6 @@ internal interface ISettingsForm
 
 public abstract class Setting<T> : ISettingsForm
 {
-    private readonly T? _value;
     private readonly string _key;
     
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new() { WriteIndented = true };
@@ -28,18 +28,18 @@ public abstract class Setting<T> : ISettingsForm
     public string Description { get; set; } = string.Empty;
 
     protected Setting() {
-        _value = default;
+        Value = default;
         _key = string.Empty;
     }
 
     public Setting(string key, T defaultValue) {
         _key = key;
-        _value = defaultValue;
+        Value = defaultValue;
     }
 
     public Setting(string key, string label, string description, T defaultValue) {
         _key = key;
-        _value = defaultValue;
+        Value = defaultValue;
         Label = label;
         Description = description;
     }
@@ -127,13 +127,18 @@ public sealed class ToggleSetting : Setting<bool>
     }
     public override void Update(JsonObject payload)
     {
-        Value = payload[Key]?.GetValue<bool>() ?? false;
+        // Adaptive cards returns boolean values as a string "true"/"false", cause of course. 
+        var strFromJson = payload[Key]?.GetValue<string>() ?? string.Empty;
+        var val = strFromJson switch { "true" => true, "false" => false, _ => false };
+        Value = val;
     }
 }
 
 public class TextSetting : Setting<string>
 {
-    private TextSetting() : base() { }
+    private TextSetting() : base() {
+        Value = string.Empty;
+    }
 
     public TextSetting(string key, string defaultValue) : base(key, defaultValue) { }
 
@@ -150,7 +155,7 @@ public class TextSetting : Setting<string>
             { "title", Label },
             { "id", Key },
             { "label", Description },
-            { "value", JsonSerializer.Serialize(Value) },
+            { "value", Value ?? string.Empty },
             { "isRequired", IsRequired },
             { "errorMessage", ErrorMessage }
         };
@@ -228,7 +233,7 @@ public partial class SettingForm : Form
             return CommandResult.KeepOpen();
         }
         setting.Update(formInput);
-        return CommandResult.GoHome();
+        return CommandResult.KeepOpen();
     }
 
 }

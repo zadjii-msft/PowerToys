@@ -21,7 +21,7 @@ internal sealed partial class SampleSettingsPage : FormPage
     {
         Name = "Sample Settings";
         Icon = new(string.Empty);
-        _settings.Add(new ToggleSetting("onOff", false)
+        _settings.Add(new ToggleSetting("onOff", true)
             {
                 Label = "This is a toggle",
                 Description = "It produces a simple checkbox",
