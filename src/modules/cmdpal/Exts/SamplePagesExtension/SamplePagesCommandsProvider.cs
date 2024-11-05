@@ -39,6 +39,11 @@ public partial class SamplePagesCommandsProvider : ICommandProvider
        {
            Title = "Dynamic List Page Command",
            Subtitle = "SamplePages Extension",
+       },
+       new ListItem(new SampleSettingsPage())
+       {
+           Title = "Dynamic List Page Command",
+           Subtitle = "SamplePages Extension",
        }
     ];
 

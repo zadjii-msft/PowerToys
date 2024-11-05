@@ -1118,6 +1118,10 @@ prevent confusion with the XAML version.
 This is the interface that an extension must implement to provide commands to DevPal.
 
 ```csharp
+interface ICommandSettings {
+    IFormPage SettingsPage { get; };
+};
+
 interface ICommandProvider requires Windows.Foundation.IClosable
 {
     String DisplayName { get; };
@@ -1127,10 +1131,6 @@ interface ICommandProvider requires Windows.Foundation.IClosable
 
     IListItem[] TopLevelCommands();
 };
-
-interface ICommandSettings {
-    IFormPage SettingsPage { get; };
-}
 ```
 
 `TopLevelCommands` is the method that DevPal will call to get the list of actions
@@ -1247,37 +1247,60 @@ in their extensions.
 
 ### Settings helpers
 
+The DevPal helpers library also includes a set of helpers for building settings pages for you. 
+
 ```cs
-class MySettingsPage : Microsoft.Windows.Run.Extensions.FormPage {
+class MyAppSettings {
+    private readonly Helpers.Settings _settings = new();
+    public Helpers.Settings Settings => _settings;
 
-    private Microsoft.Windows.Run.Extensions.Settings _settings;
-
-    public MySettingsPage() {
-        var onOffSetting = new Microsoft.Windows.Run.Extensions.ToggleSetting("onOff", "Enable feature", "This feature will do something cool", true);
-        var textSetting = new Microsoft.Windows.Run.Extensions.TextSetting("whatever", "Text setting", "This is a text setting", "Default text");
-
-        this._settings = new(onOffSetting, textSetting);
+    public MyAppSettings() {
+        // Define the structure of your settings here. 
+        var onOffSetting = new Helpers.ToggleSetting("onOff", "Enable feature", "This feature will do something cool", true);
+        var textSetting = new Helpers.TextSetting("whatever", "Text setting", "This is a text setting", "Default text");
+        _settings.Add(onOffSetting);
+        _settings.Add(onOffSetting);
     }
-
-    public override IForm[] Forms() {
+    public void LoadSavedData()
+    {
         // Possibly, load the settings from a file or something
         var persistedData = /* load the settings from file */;
-        this._settings.LoadState(persistedData);
-        return this._settings.ToForm();
+        _settings.LoadState(persistedData);
     }
+    public void SaveSettings()
+    {
+        /* You can save the settings to the file here */
+        var mySettingsFilePath = /* whatever */;
+        string mySettingsJson = mySettings.Settings.GetState();
 
-    public override ICommandResult SubmitForm(String payload) {
-        this._settings.Update(payload);
-
-        // Do something with the value from the user
-        var onOff = this._settings.Get("onOff");
-
-        /* Also, you can save the settings to the file here */
-        Helpers.SaveSettingsToFile(this._settings.GetState()); // (or whatever)
-
-        return new Microsoft.Windows.Run.Extensions.CommandResult(Microsoft.Windows.Run.Extensions.CommandResultKind.KeepOpen);
+        // Or you could raise a event to indicate to the rest of your app that settings have changed. 
     }
 }
+
+class MySettingsPage : Microsoft.Windows.Run.Extensions.FormPage 
+{
+    private readonly MyAppSettings mySettings;
+    public MySettingsPage(MyAppSettings s) {
+        mySettings = s;
+    }
+    public override IForm[] Forms() {
+        // If you haven't already: 
+        mySettings.Settings.LoadSavedData();
+        return mySettings.Settings.ToForms();
+    }
+    public override ICommandResult SubmitForm(String payload) {
+        mySettings.Settings.Update(payload);
+        mySettings.SaveSettings();
+        return CommandResult.KeepOpen();
+    }
+}
+
+// elsewhere in your app:
+
+MyAppSettings instance = /* Up to you how you want to pass this around. 
+                            Singleton, dependency injection, whatever. */ 
+var onOff = instance.Settings.Get("onOff");
+
 ```
 
 ## Advanced scenarios
