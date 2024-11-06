@@ -31,5 +31,14 @@ internal sealed partial class SampleSettingsPage : FormPage
                 Label = "This is a text box",
                 Description = "For some string of text",
             });
+
+        _settings.SettingsChanged += SettingsChanged;
+    }
+
+    private void SettingsChanged(object sender, Settings args)
+    {
+        /* Do something with the new settings here */
+        var onOff = _settings.GetSetting<bool>("onOff");
+        ExtensionHost.LogMessage(new LogMessage() { Message = $"SampleSettingsPage: Changed the value of onOff to {onOff}" });
     }
 }

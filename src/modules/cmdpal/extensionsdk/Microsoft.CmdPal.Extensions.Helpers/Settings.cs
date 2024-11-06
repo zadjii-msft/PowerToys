@@ -5,6 +5,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
@@ -182,6 +183,8 @@ public sealed class Settings
     private readonly Dictionary<string, object> _settings = new();
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new() { WriteIndented = true };
 
+    public event TypedEventHandler<object, Settings>? SettingsChanged;
+
     public void Add<T>(Setting<T> s) {
         _settings.Add(s.Key, s);
     }
@@ -246,15 +249,6 @@ public sealed class Settings
         return json;
     }
     public IForm[] ToForms() {
-        /*var forms = _settings
-            .Values
-            .Where(s => s is ISettingsForm)
-            .Select(s => s as ISettingsForm)
-            .Where(s => s != null)
-            .Select(s => s!)
-            .Select(s => new SettingForm(s))
-            .ToArray();*/
-
         return [new SettingsForm(this)];
     }
     public void Update(string data)
@@ -272,6 +266,12 @@ public sealed class Settings
                 f.Update(formInput);
             }
         }
+    }
+
+    internal void RaiseSettingsChanged()
+    {
+        var handlers = SettingsChanged;
+        handlers?.Invoke(this, this);
     }
 }
 
@@ -292,30 +292,9 @@ public partial class SettingsForm : Form
         }
 
         _settings.Update(payload);
+        _settings.RaiseSettingsChanged();
 
         return CommandResult.KeepOpen();
     }
 
 }
-
-/*public partial class SettingaForm : Form
-{
-    private readonly ISettingsForm setting;
-
-    internal SettingaForm(ISettingsForm setting)
-    {
-        this.setting = setting;
-        Template = setting.ToForm();
-    }
-    public override ICommandResult SubmitForm(string payload)
-    {
-        var formInput = JsonNode.Parse(payload)?.AsObject();
-        if (formInput == null)
-        {
-            return CommandResult.KeepOpen();
-        }
-        setting.Update(formInput);
-        return CommandResult.KeepOpen();
-    }
-}
-*/
