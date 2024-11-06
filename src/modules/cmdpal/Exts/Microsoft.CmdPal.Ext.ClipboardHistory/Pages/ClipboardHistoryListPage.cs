@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Models;
@@ -68,7 +69,7 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         }
     }
 
-    private async void LoadClipboardHistoryAsync()
+    private async Task LoadClipboardHistoryAsync()
     {
         try
         {
@@ -94,57 +95,43 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
                 }
             }
 
-            _dispatcherQueue.TryEnqueue(async () =>
+            clipboardHistory.Clear();
+
+            foreach (var item in items)
             {
-                // Clear to avoid leaks due to Garbage Collection not clearing the bitmap from memory. Fix for https://github.com/microsoft/PowerToys/issues/33423
-                clipboardHistory.Where(x => x.Image is not null)
-                                .ToList()
-                                .ForEach(x => x.Image.ClearValue(BitmapImage.UriSourceProperty));
-
-                clipboardHistory.Clear();
-
-                foreach (var item in items)
+                if (item.Item.Content.Contains(StandardDataFormats.Bitmap))
                 {
-                    if (item.Item.Content.Contains(StandardDataFormats.Bitmap))
-                    {
-                        IRandomAccessStreamReference imageReceived = null;
-                        imageReceived = await item.Item.Content.GetBitmapAsync();
-                        if (imageReceived != null)
-                        {
-                            using var imageStream = await imageReceived.OpenReadAsync();
-                            var bitmapImage = new BitmapImage();
-                            bitmapImage.SetSource(imageStream);
-                            item.Image = bitmapImage;
-                        }
-                    }
+                    IRandomAccessStreamReference imageReceived = await item.Item.Content.GetBitmapAsync();
 
-                    clipboardHistory.Add(item);
+                    if (imageReceived != null)
+                    {
+                        using var imageStream = await imageReceived.OpenReadAsync();
+                        using var memoryStream = new MemoryStream();
+                        await imageStream.AsStreamForRead().CopyToAsync(memoryStream);
+                        item.ImageData = memoryStream.ToArray();
+                    }
                 }
-            });
+
+                clipboardHistory.Add(item);
+            }
         }
-#pragma warning disable CS0168 // Variable is declared but never used
+#pragma warning disable CS0168, IDE0059
         catch (Exception ex)
         {
             // TODO GH #108 We need to figure out some logging
             // Logger.LogError("Loading clipboard history failed", ex);
         }
-#pragma warning restore CS0168 // Variable is declared but never used
+#pragma warning restore CS0168, IDE0059
     }
 
-    private ListItem[] GetClipboardHistoryListItems()
+    private async Task<ListItem[]> GetClipboardHistoryListItems()
     {
-        LoadClipboardHistoryAsync();
+        await LoadClipboardHistoryAsync();
         ListItem[] listItems = new ListItem[clipboardHistory.Count];
         for (var i = 0; i < clipboardHistory.Count; i++)
         {
             var item = clipboardHistory[i];
-            var listItem = new ListItem(this)
-            {
-                Title = item.Content,
-                Icon = new IconDataType("ClipboardHistory"),
-                Details = new Details { Title = "Text", Body = item.Content },
-            };
-            listItems[i] = listItem;
+            listItems[i] = item.ToListItem();
         }
 
         return listItems;
@@ -152,6 +139,13 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
 
     public override IListItem[] GetItems()
     {
-        return GetClipboardHistoryListItems();
+        var t = DoGetItems();
+        t.ConfigureAwait(false);
+        return t.Result;
+    }
+
+    private async Task<IListItem[]> DoGetItems()
+    {
+        return await GetClipboardHistoryListItems();
     }
 }
