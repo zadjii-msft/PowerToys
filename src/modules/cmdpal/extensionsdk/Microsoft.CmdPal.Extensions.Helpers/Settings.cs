@@ -12,6 +12,9 @@ internal interface ISettingsForm
 {
     public string ToForm();
     public void Update(JsonObject payload);
+    public Dictionary<string, object> ToDictionary();
+    public string ToDataIdentifier();
+
 }
 
 public abstract class Setting<T> : ISettingsForm
@@ -45,6 +48,10 @@ public abstract class Setting<T> : ISettingsForm
     }
 
     public abstract Dictionary<string, object> ToDictionary();
+    public string ToDataIdentifier()
+    {
+        return $"\"{_key}\": \"{_key}\"";
+    }
 
     public string ToForm()
     {
@@ -173,6 +180,7 @@ public class TextSetting : Setting<string>
 public sealed class Settings
 {
     private readonly Dictionary<string, object> _settings = new();
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new() { WriteIndented = true };
 
     public void Add<T>(Setting<T> s) {
         _settings.Add(s.Key, s);
@@ -202,25 +210,99 @@ public sealed class Settings
         val = default;
         return false;
     }
+    internal string ToFormJson()
+    {
+        var settings = _settings
+            .Values
+            .Where(s => s is ISettingsForm)
+            .Select(s => s as ISettingsForm)
+            .Where(s => s != null)
+            .Select(s => s!);
 
+        var bodies = string.Join(",", settings
+            .Select(s => JsonSerializer.Serialize(s.ToDictionary(), _jsonSerializerOptions)));
+        var datas = string.Join(",", settings
+            .Select(s => s.ToDataIdentifier()));
+
+        var json = $$"""
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+      {{bodies}} 
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Save",
+      "data": {
+        {{datas}}
+      }
+    }
+  ]
+}
+""";
+        return json;
+    }
     public IForm[] ToForms() {
-        var forms = _settings
+        /*var forms = _settings
             .Values
             .Where(s => s is ISettingsForm)
             .Select(s => s as ISettingsForm)
             .Where(s => s != null)
             .Select(s => s!)
             .Select(s => new SettingForm(s))
-            .ToArray();
-        return forms;
+            .ToArray();*/
+
+        return [new SettingsForm(this)];
+    }
+    public void Update(string data)
+    {
+        var formInput = JsonNode.Parse(data)?.AsObject();
+        if (formInput == null)
+        {
+            return;
+        }
+        foreach (var key in _settings.Keys)
+        {
+            var value = _settings[key];
+            if (value is ISettingsForm f)
+            {
+                f.Update(formInput);
+            }
+        }
     }
 }
 
-public partial class SettingForm : Form
+public partial class SettingsForm : Form
+{
+    private readonly Settings _settings;
+    internal SettingsForm(Settings settings)
+    {
+        _settings = settings;
+        Template = _settings.ToFormJson();
+    }
+    public override ICommandResult SubmitForm(string payload)
+    {
+        var formInput = JsonNode.Parse(payload)?.AsObject();
+        if (formInput == null)
+        {
+            return CommandResult.KeepOpen();
+        }
+
+        _settings.Update(payload);
+
+        return CommandResult.KeepOpen();
+    }
+
+}
+
+/*public partial class SettingaForm : Form
 {
     private readonly ISettingsForm setting;
 
-    internal SettingForm(ISettingsForm setting)
+    internal SettingaForm(ISettingsForm setting)
     {
         this.setting = setting;
         Template = setting.ToForm();
@@ -235,5 +317,5 @@ public partial class SettingForm : Form
         setting.Update(formInput);
         return CommandResult.KeepOpen();
     }
-
 }
+*/
