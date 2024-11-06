@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Ext.Bookmarks;
 using Microsoft.CmdPal.Ext.Calc;
+using Microsoft.CmdPal.Ext.ClipboardHistory;
 using Microsoft.CmdPal.Ext.Registry;
 using Microsoft.CmdPal.Ext.Settings;
 using Microsoft.CmdPal.Ext.WindowsServices;
@@ -59,6 +60,7 @@ public sealed class MainViewModel : IDisposable
         BuiltInCommands.Add(new WindowsServicesCommandsProvider());
         BuiltInCommands.Add(new RegistryCommandsProvider());
         BuiltInCommands.Add(new WindowsSettingsCommandsProvider());
+        BuiltInCommands.Add(new ClipboardHistoryCommandsProvider());
 
         ResetTopLevel();
 
