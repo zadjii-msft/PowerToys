@@ -92,6 +92,7 @@ internal sealed partial class EverythingExtensionPage : DynamicListPage
             });
         }
 
+        // Convert the List to an array and assign it to the Items property
         return itemList.ToArray();
     }
 }
