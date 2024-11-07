@@ -4,6 +4,19 @@
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public class DynamicListPage : ListPage, IDynamicListPage
+public abstract class DynamicListPage : ListPage, IDynamicListPage
 {
+    public override string SearchText
+    {
+        get => base.SearchText;
+        set
+        {
+            var oldSearch = base.SearchText;
+            base.SearchText = value;
+            UpdateSearchText(oldSearch, value);
+        }
+    }
+
+    public abstract void UpdateSearchText(string oldSearch, string newSearch);
+
 }

@@ -50,14 +50,9 @@ public sealed partial class MainListPage : DynamicListPage
         Loading = false;
     }
 
-    public override string SearchText
+    public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        get => base.SearchText;
-        set
-        {
-            base.SearchText = value;
-            UpdateQuery();
-        }
+        UpdateQuery();
     }
 
     private void UpdateQuery()

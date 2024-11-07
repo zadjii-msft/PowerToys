@@ -70,14 +70,9 @@ internal sealed partial class RegistryListPage : DynamicListPage
         return new List<ListItem>();
     }
 
-    public override string SearchText
+    public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        get => base.SearchText;
-        set
-        {
-            base.SearchText = value;
-            RaiseItemsChanged(0); // TODO! Maybe this is too goofy after all
-        }
+        RaiseItemsChanged(0);
     }
 
     public override IListItem[] GetItems()
