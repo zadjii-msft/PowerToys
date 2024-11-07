@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using WindowsCommandPalette;
 
@@ -67,7 +68,68 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
     public ListPage()
     {
         this.InitializeComponent();
+
+        // this.ItemsList.EffectiveViewportChanged += ItemsList_EffectiveViewportChanged;
+        // this.ItemsList.LayoutUpdated += ItemsList_LayoutUpdated;
+        this.ItemsList.Loaded += ItemsList_Loaded;
     }
+
+    private void ItemsList_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Find the ScrollViewer in the ListView
+        var listViewScrollViewer = FindScrollViewer(this.ItemsList);
+
+        if (listViewScrollViewer != null)
+        {
+            listViewScrollViewer.ViewChanged += ListViewScrollViewer_ViewChanged;
+        }
+    }
+
+    private void ListViewScrollViewer_ViewChanged(object? sender, ScrollViewerViewChangedEventArgs e)
+    {
+        var scrollView = sender as ScrollViewer;
+        if (scrollView == null)
+        {
+            return;
+        }
+
+        // Check if scrolled to the bottom
+        if (scrollView.VerticalOffset >= scrollView.ScrollableHeight)
+        {
+            // ListView is at the bottom
+            Debug.WriteLine("Scrolled to the bottom");
+        }
+    }
+
+    private ScrollViewer? FindScrollViewer(DependencyObject parent)
+    {
+        if (parent is ScrollViewer)
+        {
+            return (ScrollViewer)parent;
+        }
+
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            var result = FindScrollViewer(child);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    /*private void ItemsList_LayoutUpdated(object? sender, object e)
+    {
+        Debug.WriteLine($"ItemsList_LayoutUpdated");
+    }*/
+
+    /*private void ItemsList_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
+    {
+        Debug.WriteLine($"VP changed {args.EffectiveViewport}\n\t\t{args.MaxViewport}");
+    }*/
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
