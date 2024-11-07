@@ -30,11 +30,14 @@ public sealed class ListPageViewModel : PageViewModel
 
     public bool ShowDetails => _forceShowDetails || Page.ShowDetails;
 
+    public bool HasMore { get; private set; }
+
     public ListPageViewModel(IListPage page)
         : base(page)
     {
         page.PropChanged += Page_PropChanged;
         page.ItemsChanged += Page_ItemsChanged;
+        HasMore = page.HasMore;
     }
 
     private void Page_ItemsChanged(object sender, ItemsChangedEventArgs args)
@@ -48,6 +51,14 @@ public sealed class ListPageViewModel : PageViewModel
 
     private void Page_PropChanged(object sender, PropChangedEventArgs args)
     {
+        switch (args.PropertyName)
+        {
+            case nameof(HasMore):
+            {
+                HasMore = Page.HasMore;
+                break;
+            }
+        }
     }
 
     internal Task InitialRender()

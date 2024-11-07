@@ -65,12 +65,12 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         }
     }
 
+    private bool _loadingMore;
+
     public ListPage()
     {
         this.InitializeComponent();
 
-        // this.ItemsList.EffectiveViewportChanged += ItemsList_EffectiveViewportChanged;
-        // this.ItemsList.LayoutUpdated += ItemsList_LayoutUpdated;
         this.ItemsList.Loaded += ItemsList_Loaded;
     }
 
@@ -94,10 +94,19 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         }
 
         // Check if scrolled to the bottom
-        if (scrollView.VerticalOffset >= scrollView.ScrollableHeight)
+        if (scrollView.VerticalOffset >= (scrollView.ScrollableHeight * .8))
         {
             // ListView is at the bottom
             Debug.WriteLine("Scrolled to the bottom");
+            if (!_loadingMore && (ViewModel?.HasMore ?? false))
+            {
+                ViewModel.Page.LoadMore();
+                _loadingMore = true;
+            }
+        }
+        else
+        {
+            _loadingMore = false;
         }
     }
 
@@ -120,16 +129,6 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
 
         return null;
     }
-
-    /*private void ItemsList_LayoutUpdated(object? sender, object e)
-    {
-        Debug.WriteLine($"ItemsList_LayoutUpdated");
-    }*/
-
-    /*private void ItemsList_EffectiveViewportChanged(FrameworkElement sender, EffectiveViewportChangedEventArgs args)
-    {
-        Debug.WriteLine($"VP changed {args.EffectiveViewport}\n\t\t{args.MaxViewport}");
-    }*/
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
