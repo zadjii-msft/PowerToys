@@ -1,7 +1,7 @@
 ---
 author: Mike Griese
 created on: 2024-07-19
-last updated: 2024-11-04
+last updated: 2024-11-07
 issue id: n/a
 ---
 
@@ -62,7 +62,6 @@ functionality.
       - [`INotifyPropChanged`](#inotifypropchanged)
       - [`ICommandProvider`](#icommandprovider)
     - [Settings](#settings)
-    - [Retrieving info from the host](#retrieving-info-from-the-host)
   - [Helper SDK Classes](#helper-sdk-classes)
     - [Default implementations](#default-implementations)
     - [Using the Clipboard](#using-the-clipboard)
@@ -1171,10 +1170,6 @@ We're then additionally going to provide a collection of settings helpers for
 developers in the helper SDK. This should allow developers to quickly work to
 add settings, without mucking around in building the form JSON themselves.
 
-### Retrieving info from the host
-
-TODO! write me
-
 ## Helper SDK Classes
 
 As a part of the `Microsoft.CmdPal.Extensions` namespace, we'll provide a set of
@@ -1264,7 +1259,21 @@ in their extensions.
 
 ### Settings helpers
 
-The DevPal helpers library also includes a set of helpers for building settings pages for you. 
+The DevPal helpers library also includes a set of helpers for building settings
+pages for you. This lets you define a `Settings` object as a collection of
+properties, controlled by how they're presented in the UI. The helpers library
+will then handle the process of turning those properties into a `IForm` for you.
+
+As a complete example: Here's a sample of an app which defines a pair of
+settings (`onOff` and `whatever`) in their `MyAppSettings` class.
+`MyAppSettings` can be responsible for loading or saving the settings however
+the developer best sees fit. They then pass an instance of that object to the
+`MySettingsPage` class they define. In `MySettingsPage.Forms`, the developer
+doesn't need to do any work to build up the Adaptive Card JSON at all. Just call
+`Settings.ToForms()`. The generated form will call back to the extension's code
+in `SettingsChanged` when the user submits the `IForm`. At that point, the
+extension author is again free to do whatever they'd like - store the json
+wherever they want, use the updated values, whatever.
 
 ```cs
 class MyAppSettings {
@@ -1289,7 +1298,6 @@ class MyAppSettings {
         /* You can save the settings to the file here */
         var mySettingsFilePath = /* whatever */;
         string mySettingsJson = mySettings.Settings.GetState();
-
         // Or you could raise a event to indicate to the rest of your app that settings have changed. 
     }
 }
@@ -1299,16 +1307,22 @@ class MySettingsPage : Microsoft.Windows.Run.Extensions.FormPage
     private readonly MyAppSettings mySettings;
     public MySettingsPage(MyAppSettings s) {
         mySettings = s;
+        mySettings.Settings.SettingsChanged += SettingsChanged;
     }
     public override IForm[] Forms() {
         // If you haven't already: 
         mySettings.Settings.LoadSavedData();
         return mySettings.Settings.ToForms();
     }
-    public override ICommandResult SubmitForm(String payload) {
-        mySettings.Settings.Update(payload);
+    
+    private void SettingsChanged(object sender, Settings args)
+    {
+        /* Do something with the new settings here */
+        var onOff = _settings.GetSetting<bool>("onOff");
+        ExtensionHost.LogMessage(new LogMessage() { Message = $"MySettingsPage: Changed the value of onOff to {onOff}" });
+
+        // Possibly even: 
         mySettings.SaveSettings();
-        return CommandResult.KeepOpen();
     }
 }
 
