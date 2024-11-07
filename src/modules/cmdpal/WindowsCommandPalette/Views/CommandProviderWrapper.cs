@@ -27,6 +27,7 @@ public sealed class CommandProviderWrapper
     {
         CommandProvider = provider;
         isValid = true;
+        CommandProvider.InitializeWithHost(CommandPaletteHost.Instance);
     }
 
     public CommandProviderWrapper(IExtensionWrapper extension)
