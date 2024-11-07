@@ -1,12 +1,18 @@
-﻿namespace Microsoft.CmdPal.Extensions.Helpers;
+﻿using Windows.Foundation;
+using Windows.System.Profile;
+
+namespace Microsoft.CmdPal.Extensions.Helpers;
 
 public class ListPage : Page, IListPage
 {
     private string _placeholderText = string.Empty;
     private string _searchText = string.Empty;
     private bool _showDetails;
+    private bool _hasMore;
     private IFilters? _filters;
     private IGridProperties? _gridProperties;
+
+    public event TypedEventHandler<object, ItemsChangedEventArgs>? ItemsChanged;
 
     public string PlaceholderText
     {
@@ -18,7 +24,7 @@ public class ListPage : Page, IListPage
         }
     }
 
-    public string SearchText
+    public virtual string SearchText
     {
         get => _searchText;
         set
@@ -35,6 +41,16 @@ public class ListPage : Page, IListPage
         {
             _showDetails = value;
             OnPropertyChanged(nameof(ShowDetails));
+        }
+    }
+
+    public bool HasMore
+    {
+        get => _hasMore;
+        set
+        {
+            _hasMore = value;
+            OnPropertyChanged(nameof(HasMore));
         }
     }
 
@@ -58,5 +74,14 @@ public class ListPage : Page, IListPage
         }
     }
 
-    public virtual IListItem[] GetItems() => throw new NotImplementedException();
+    public virtual IListItem[] GetItems() => [];
+    public virtual void LoadMore() { }
+
+    protected void RaiseItemsChanged(int totalItems)
+    {
+        if (ItemsChanged != null)
+        {
+            ItemsChanged.Invoke(this, new ItemsChangedEventArgs(totalItems));
+        }
+    }
 }

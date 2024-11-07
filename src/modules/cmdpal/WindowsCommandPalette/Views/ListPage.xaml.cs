@@ -82,12 +82,12 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         {
             ViewModel.InitialRender().ContinueWith((t) =>
             {
-                DispatcherQueue.TryEnqueue(async () => { await UpdateFilter(FilterBox.Text); });
+                DispatcherQueue.TryEnqueue(() => { UpdateFilter(FilterBox.Text); });
             });
         }
         else
         {
-            DispatcherQueue.TryEnqueue(async () => { await UpdateFilter(FilterBox.Text); });
+            DispatcherQueue.TryEnqueue(() => { UpdateFilter(FilterBox.Text); });
         }
 
         this.ItemsList.SelectedIndex = 0;
@@ -276,10 +276,10 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         }
 
         // on the UI thread
-        _ = UpdateFilter(FilterBox.Text);
+        UpdateFilter(FilterBox.Text);
     }
 
-    private async Task UpdateFilter(string text)
+    private void UpdateFilter(string text)
     {
         if (ViewModel == null)
         {
@@ -292,7 +292,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         // * do an async request to the extension (fixme after GH #77)
         // * just return already filtered items.
         // * return a subset of items matching the filter text
-        var items = await ViewModel.GetFilteredItems(text);
+        var items = ViewModel.GetFilteredItems(text);
 
         Debug.WriteLine($"  UpdateFilter after GetFilteredItems({text}) --> {items.Count()} ; {ViewModel.FilteredItems.Count}");
 

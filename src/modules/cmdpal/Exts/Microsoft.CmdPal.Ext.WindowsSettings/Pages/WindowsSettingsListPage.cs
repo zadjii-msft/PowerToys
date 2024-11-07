@@ -101,9 +101,19 @@ internal sealed partial class WindowsSettingsListPage : DynamicListPage
         }
     }
 
-    public override IListItem[] GetItems(string query)
+    public override string SearchText
     {
-        ListItem[] items = Query(query).ToArray();
+        get => base.SearchText;
+        set
+        {
+            base.SearchText = value;
+            RaiseItemsChanged(0); // TODO! Maybe this is too goofy after all
+        }
+    }
+
+    public override IListItem[] GetItems()
+    {
+        ListItem[] items = Query(SearchText).ToArray();
 
         return items;
     }

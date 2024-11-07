@@ -6,5 +6,4 @@ namespace Microsoft.CmdPal.Extensions.Helpers;
 
 public class DynamicListPage : ListPage, IDynamicListPage
 {
-    public virtual IListItem[] GetItems(string query) => throw new NotImplementedException();
 }

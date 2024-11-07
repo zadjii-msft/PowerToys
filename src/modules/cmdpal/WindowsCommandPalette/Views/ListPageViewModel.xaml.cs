@@ -34,18 +34,20 @@ public sealed class ListPageViewModel : PageViewModel
         : base(page)
     {
         page.PropChanged += Page_PropChanged;
+        page.ItemsChanged += Page_ItemsChanged;
+    }
+
+    private void Page_ItemsChanged(object sender, ItemsChangedEventArgs args)
+    {
+        Debug.WriteLine("Items changed");
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await this.UpdateListItems();
+        });
     }
 
     private void Page_PropChanged(object sender, PropChangedEventArgs args)
     {
-        if (args.PropertyName == "Items")
-        {
-            Debug.WriteLine("Items changed");
-            _dispatcherQueue.TryEnqueue(async () =>
-            {
-                await this.UpdateListItems();
-            });
-        }
     }
 
     internal Task InitialRender()
@@ -60,9 +62,7 @@ public sealed class ListPageViewModel : PageViewModel
         {
             try
             {
-                return IsDynamicPage != null ?
-                    IsDynamicPage.GetItems(_query) :
-                    this.Page.GetItems();
+                return this.Page.GetItems();
             }
             catch (Exception ex)
             {
@@ -92,7 +92,7 @@ public sealed class ListPageViewModel : PageViewModel
         Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
     }
 
-    internal async Task<IEnumerable<ListItemViewModel>> GetFilteredItems(string query)
+    internal IEnumerable<ListItemViewModel> GetFilteredItems(string query)
     {
         // This method does NOT change any lists. It doesn't modify _items or FilteredItems...
         if (query == _query)
@@ -101,10 +101,11 @@ public sealed class ListPageViewModel : PageViewModel
         }
 
         _query = query;
-        if (IsDynamic)
+        if (IsDynamicPage != null)
         {
-            // ... except here we might modify those lists. But ignore that for now, GH #77 will fix this.
-            await UpdateListItems();
+            // Tell the dynamic page the new search text. If they need to update, they will.
+            IsDynamicPage.SearchText = _query;
+
             return FilteredItems;
         }
         else

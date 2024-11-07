@@ -532,7 +532,7 @@ Lists can be either "static" or "dynamic":
 * A **dynamic** list leaves the extension in charge of filtering the list of
   items.
   * These are implementations of the `IDynamicListPage` interface.
-  * In this case, `GetItems` will be called every time the query
+  * TODO! NO THIS CHANGED ~In this case, `GetItems` will be called every time the query~
     changes, and the extension is responsible for filtering the list of items.
     * Ex: The GitHub extension may want to allow the user to type `is:issue
       is:open`, then return a list of open issues, without string matching on
@@ -572,18 +572,22 @@ interface IGridProperties  {
     Windows.Foundation.Size TileSize { get; };
 }
 
-interface IListPage requires IPage {
+interface IListPage requires IPage, INotifyItemsChanged {
+    // DevPal will be responsible for filtering the list of items, unless the 
+    // class implements IDynamicListPage
     String SearchText { get; };
     String PlaceholderText { get; };
     Boolean ShowDetails{ get; };
     IFilters Filters { get; };
     IGridProperties GridProperties { get; };
+    Boolean HasMore { get; };
 
-    IListItem[] GetItems(); // DevPal will be responsible for filtering the list of items
+    IListItem[] GetItems();     
+    void LoadMore();
 }
 
 interface IDynamicListPage requires IListPage {
-    IListItem[] GetItems(String query); // DevPal will do no filtering of these items
+    String SearchText { set; };
 }
 ```
 
@@ -1106,6 +1110,12 @@ interface INotifyPropChanged {
 }
 runtimeclass PropChangedEventArgs {
     String PropName { get; };
+}
+interface INotifyItemsChanged {
+    event Windows.Foundation.TypedEventHandler<Object, ItemsChangedEventArgs> ItemsChanged;
+}
+runtimeclass ItemsChangedEventArgs {
+    Int32 TotalItems { get; };
 }
 ```
 

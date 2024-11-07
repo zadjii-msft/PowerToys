@@ -27,9 +27,19 @@ internal sealed partial class ServicesListPage : DynamicListPage
         Name = "Windows Services";
     }
 
-    public override IListItem[] GetItems(string query)
+    public override string SearchText
     {
-        ListItem[] items = ServiceHelper.Search(query).ToArray();
+        get => base.SearchText;
+        set
+        {
+            base.SearchText = value;
+            RaiseItemsChanged(0); // TODO! Maybe this is too goofy after all
+        }
+    }
+
+    public override IListItem[] GetItems()
+    {
+        ListItem[] items = ServiceHelper.Search(SearchText).ToArray();
 
         return items;
     }
