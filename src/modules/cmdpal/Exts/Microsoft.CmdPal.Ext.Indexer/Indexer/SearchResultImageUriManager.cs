@@ -75,7 +75,7 @@ internal sealed class SearchResultImageUriManager
 
     public bool InitThumbnail(string path, bool isFolder)
     {
-        try
+        /*try
         {
             // Create the storage folder from the item
             StorageFolder folder = StorageFolder.GetFolderFromPathAsync(path).GetResults();
@@ -105,7 +105,7 @@ internal sealed class SearchResultImageUriManager
         catch
         {
         }
-
+*/
         return false;
     }
 }
