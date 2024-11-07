@@ -143,20 +143,22 @@ public sealed class ListPageViewModel : PageViewModel
         }
     }
 
-    public void LoadMoreIfNeeded()
+    public async void LoadMoreIfNeeded()
     {
         if (!_loadingMore && HasMore)
         {
-            // TODO GH #73: When we have a real prototype, this should be an async call
-            // A thought: maybe the ExtensionObject.Unsafe could be an async
-            // call, so that you _know_ you need to wrap it up when you call it?
-            Page.LoadMore();
-
             // This is kinda a hack, to prevent us from over-requesting
             // more at the bottom.
             // We'll set this flag after we've requested more. We will clear it
             // on the new ItemsChanged
             _loadingMore = true;
+
+            // TODO GH #73: When we have a real prototype, this should be an async call
+            // A thought: maybe the ExtensionObject.Unsafe could be an async
+            // call, so that you _know_ you need to wrap it up when you call it?
+            var t = new Task(() => Page.LoadMore());
+            t.Start();
+            await t;
         }
     }
 }
