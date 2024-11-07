@@ -65,8 +65,6 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         }
     }
 
-    private bool _loadingMore;
-
     public ListPage()
     {
         this.InitializeComponent();
@@ -99,21 +97,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         // extension a bit of a heads-up before the user actually gets there.
         if (scrollView.VerticalOffset >= (scrollView.ScrollableHeight * .8))
         {
-            // ListView is at the bottom
-            Debug.WriteLine("Scrolled to the bottom");
-            if (!_loadingMore && (ViewModel?.HasMore ?? false))
-            {
-                ViewModel.Page.LoadMore();
-
-                // This is kinda a hack, to prevent us from over-requesting
-                // more at the bottom.
-                // We'll set this flag after we've requested more. We _should_ clear it on the new ItemsChanged, but we dont' know that. 
-                _loadingMore = true;
-            }
-        }
-        else
-        {
-            _loadingMore = false;
+            ViewModel?.LoadMoreIfNeeded();
         }
     }
 
