@@ -11,8 +11,6 @@ using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Models;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Win32;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.Streams;
@@ -23,7 +21,6 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
 {
     private readonly ObservableCollection<ClipboardItem> clipboardHistory;
     private readonly string _defaultIconPath;
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
     public ClipboardHistoryListPage()
     {

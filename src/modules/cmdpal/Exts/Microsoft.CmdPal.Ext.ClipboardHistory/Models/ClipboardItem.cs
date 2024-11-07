@@ -70,7 +70,6 @@ public class ClipboardItem
             listItem = new(new CopyCommand(this))
             {
                 Title = Content,
-                Subtitle = GetDataType(),
                 Tags = [new Tag()
                 {
                     Text = GetDataType(),
