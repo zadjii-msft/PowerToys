@@ -565,6 +565,7 @@ interface IListItem requires INotifyPropChanged {
     IDetails Details{ get; };
     IFallbackHandler FallbackHandler{ get; };
     String Section { get; };
+    String TextToSuggest { get; };
 }
 
 interface IGridProperties  {
@@ -698,6 +699,8 @@ actions (if it sets `Details`).
   bodies to show their details by default. So it would set `ShowDetails =
   false`. If the user activates the automatic "Show details" action, then the
   github action can then fetch the body and show it.
+
+TODO!: write a section on TextToSuggest
 
 An example list page for the Hacker News extension:
 

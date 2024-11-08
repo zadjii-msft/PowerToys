@@ -225,6 +225,14 @@
                 PlaceholderText="Type here to search..."
                 Style="{StaticResource SearchTextBoxStyle}"
                 TextChanged="FilterBox_TextChanged" />
+            <TextBlock x:Name="SuggestionPreview"
+                       Text="{x:Bind SelectedItem.TextToSuggest, Mode=OneWay}"
+                Grid.Column="2"
+                MinHeight="32"
+                VerticalAlignment="Stretch"
+                FontSize="18">
+                
+            </TextBlock>
         </Grid>
         <Grid
             Grid.Row="2"
