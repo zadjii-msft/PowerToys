@@ -214,33 +214,17 @@
             </Button>
 
             <!--  Search box  -->
-            <StackPanel Orientation="Horizontal" 
-                        Grid.Column="2"
-                        VerticalAlignment="Stretch">
-                <TextBox
-                    x:Name="FilterBox"
-                    MinHeight="32"
-                    VerticalAlignment="Stretch"
-                    VerticalContentAlignment="Stretch"
-                    FontSize="18"
-                    KeyDown="FilterBox_KeyDown"
-                    PlaceholderText="Type here to search..."
-                    Style="{StaticResource SearchTextBoxStyle}"
-                    TextChanged="FilterBox_TextChanged" />
-                
-                <TextBlock x:Name="SuggestionPreview"
-                           Text="{x:Bind SelectedItem.TextToSuggest, Mode=OneWay}"
-                           Grid.Column="2"
-                           MinHeight="32"
-                           Padding="{ThemeResource TextControlThemePadding}"
-                           Foreground="{ThemeResource TextControlPlaceholderForeground}"
-                           VerticalAlignment="Center"
-                           FontStyle="Italic"
-                           FontSize="16">
-                </TextBlock>
-
-            </StackPanel>
-                
+            <TextBox
+                x:Name="FilterBox"
+                Grid.Column="2"
+                MinHeight="32"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                FontSize="18"
+                KeyDown="FilterBox_KeyDown"
+                PlaceholderText="Type here to search..."
+                Style="{StaticResource SearchTextBoxStyle}"
+                TextChanged="FilterBox_TextChanged" />
         </Grid>
         <Grid
             Grid.Row="2"
