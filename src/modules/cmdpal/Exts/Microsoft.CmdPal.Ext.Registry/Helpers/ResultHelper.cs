@@ -42,7 +42,6 @@ internal static class ResultHelper
             if (entry.Exception is null && !(entry.Key is null))
             {
                 // when key contains keys or fields
-                // TODO: Investigate query text display (i.e. placholder text?) --> result.QueryTextDisplay = entry.Key.Name;
                 result.TextToSuggest = entry.Key.Name;
                 result.Subtitle = RegistryHelper.GetSummary(entry.Key);
                 result.Title = GetTruncatedText(entry.Key.Name, MaxTextLength.MaximumTitleLengthWithTwoSymbols);
@@ -50,14 +49,12 @@ internal static class ResultHelper
             else if (entry.Key is null && !(entry.Exception is null))
             {
                 // on error (e.g access denied)
-                // TODO GH #121 Investigate query text display (i.e placeholder text?) --> result.QueryTextDisplay = entry.KeyPath;
                 result.TextToSuggest = entry.KeyPath;
                 result.Subtitle = GetTruncatedText(entry.Exception.Message, MaxTextLength.MaximumSubTitleLengthWithTwoSymbols, TruncateSide.OnlyFromRight);
                 result.Title = GetTruncatedText(entry.KeyPath, MaxTextLength.MaximumTitleLengthWithTwoSymbols);
             }
             else
             {
-                // TODO GH #121 Investigate query text display (i.e placeholder text?) --> result.QueryTextDisplay = entry.KeyPath;
                 result.TextToSuggest = entry.KeyPath;
                 result.Title = GetTruncatedText(entry.KeyPath, MaxTextLength.MaximumTitleLengthWithTwoSymbols);
             }
