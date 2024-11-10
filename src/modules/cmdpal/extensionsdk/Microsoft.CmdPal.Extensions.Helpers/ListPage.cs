@@ -1,5 +1,8 @@
-﻿using Windows.Foundation;
-using Windows.System.Profile;
+// Copyright (c) Microsoft Corporation
+// The Microsoft Corporation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
@@ -75,7 +78,10 @@ public class ListPage : Page, IListPage
     }
 
     public virtual IListItem[] GetItems() => [];
-    public virtual void LoadMore() { }
+
+    public virtual void LoadMore()
+    {
+    }
 
     protected void RaiseItemsChanged(int totalItems)
     {

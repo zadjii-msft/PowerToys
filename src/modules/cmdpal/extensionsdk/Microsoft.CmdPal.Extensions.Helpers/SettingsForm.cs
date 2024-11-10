@@ -9,11 +9,13 @@ namespace Microsoft.CmdPal.Extensions.Helpers;
 public partial class SettingsForm : Form
 {
     private readonly Settings _settings;
+
     internal SettingsForm(Settings settings)
     {
         _settings = settings;
         Template = _settings.ToFormJson();
     }
+
     public override ICommandResult SubmitForm(string payload)
     {
         var formInput = JsonNode.Parse(payload)?.AsObject();
@@ -27,5 +29,4 @@ public partial class SettingsForm : Form
 
         return CommandResult.KeepOpen();
     }
-
 }
