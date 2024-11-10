@@ -9,15 +9,21 @@ namespace Microsoft.CmdPal.Extensions.Helpers;
 
 public sealed class ToggleSetting : Setting<bool>
 {
-    private ToggleSetting() : base() { }
-
-    public ToggleSetting(string key, bool defaultValue) : base(key, defaultValue) { }
-    
-    public ToggleSetting(string key, string label, string description, bool defaultValue) :
-        base(key, label, description, defaultValue)
+    private ToggleSetting()
+        : base()
     {
     }
-    
+
+    public ToggleSetting(string key, bool defaultValue)
+        : base(key, defaultValue)
+    {
+    }
+
+    public ToggleSetting(string key, string label, string description, bool defaultValue)
+        : base(key, label, description, defaultValue)
+    {
+    }
+
     public override Dictionary<string, object> ToDictionary()
     {
         return new Dictionary<string, object>
@@ -28,7 +34,7 @@ public sealed class ToggleSetting : Setting<bool>
             { "label", Description },
             { "value", JsonSerializer.Serialize(Value) },
             { "isRequired", IsRequired },
-            { "errorMessage", ErrorMessage }
+            { "errorMessage", ErrorMessage },
         };
     }
 
@@ -36,9 +42,10 @@ public sealed class ToggleSetting : Setting<bool>
     {
         return new ToggleSetting() { Value = jsonObject["value"]?.GetValue<bool>() ?? false };
     }
+
     public override void Update(JsonObject payload)
     {
-        // Adaptive cards returns boolean values as a string "true"/"false", cause of course. 
+        // Adaptive cards returns boolean values as a string "true"/"false", cause of course.
         var strFromJson = payload[Key]?.GetValue<string>() ?? string.Empty;
         var val = strFromJson switch { "true" => true, "false" => false, _ => false };
         Value = val;

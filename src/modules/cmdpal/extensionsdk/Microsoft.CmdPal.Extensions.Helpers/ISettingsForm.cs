@@ -9,8 +9,10 @@ namespace Microsoft.CmdPal.Extensions.Helpers;
 internal interface ISettingsForm
 {
     public string ToForm();
-    public void Update(JsonObject payload);
-    public Dictionary<string, object> ToDictionary();
-    public string ToDataIdentifier();
 
+    public void Update(JsonObject payload);
+
+    public Dictionary<string, object> ToDictionary();
+
+    public string ToDataIdentifier();
 }
