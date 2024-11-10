@@ -13,6 +13,7 @@ namespace Microsoft.CmdPal.Extensions.Helpers;
 public class BaseObservable : INotifyPropChanged
 {
     public event TypedEventHandler<object, PropChangedEventArgs>? PropChanged;
+
     protected void OnPropertyChanged(string propertyName)
     {
         if (PropChanged != null)
