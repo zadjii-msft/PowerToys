@@ -18,5 +18,4 @@ public abstract class DynamicListPage : ListPage, IDynamicListPage
     }
 
     public abstract void UpdateSearchText(string oldSearch, string newSearch);
-
 }
