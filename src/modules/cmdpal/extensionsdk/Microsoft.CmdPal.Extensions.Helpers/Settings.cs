@@ -4,7 +4,6 @@
 
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using Windows.Foundation;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
@@ -16,16 +15,14 @@ public sealed class Settings
 
     public event TypedEventHandler<object, Settings>? SettingsChanged;
 
-    public void Add<T>(Setting<T> s) {
+    public void Add<T>(Setting<T> s)
+    {
         _settings.Add(s.Key, s);
     }
 
-    public T? GetSetting<T>(string key) {
-        if (_settings[key] is Setting<T> s)
-        {
-            return s.Value;
-        }
-        return default(T);
+    public T? GetSetting<T>(string key)
+    {
+        return _settings[key] is Setting<T> s ? s.Value : default;
     }
 
     public bool TryGetSetting<T>(string key, out T? val)
@@ -38,12 +35,12 @@ public sealed class Settings
                 val = s.Value;
                 return true;
             }
-
         }
 
         val = default;
         return false;
     }
+
     internal string ToFormJson()
     {
         var settings = _settings
@@ -79,9 +76,12 @@ public sealed class Settings
 """;
         return json;
     }
-    public IForm[] ToForms() {
+
+    public IForm[] ToForms()
+    {
         return [new SettingsForm(this)];
     }
+
     public void Update(string data)
     {
         var formInput = JsonNode.Parse(data)?.AsObject();
@@ -89,6 +89,7 @@ public sealed class Settings
         {
             return;
         }
+
         foreach (var key in _settings.Keys)
         {
             var value = _settings[key];

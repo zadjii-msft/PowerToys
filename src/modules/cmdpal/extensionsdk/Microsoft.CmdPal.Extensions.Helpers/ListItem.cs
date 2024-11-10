@@ -30,6 +30,7 @@ public class ListItem : BaseObservable, IListItem
     public string Title
     {
         get => !string.IsNullOrEmpty(this._title) ? _title : _command?.Name ?? string.Empty;
+
         set
         {
             _title = value;
