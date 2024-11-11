@@ -277,6 +277,11 @@ Here are some TODO!naming bad names for the caching levels:
     to update the title and icon for the playing music. It would never make
     sense to use the previous value.
 
+How do we actually cache this frozen list?
+
+We want initial startup to be fast, even faster than hitting the package catalog. So we need to remember all the toplevel commands, and the COM class they came from, and probably the PFN. 
+Then we also need to know the static list of commands - I guess by Index/Title/Subtitle
+
 #### Disposing
 
 > [!IMPORTANT]
