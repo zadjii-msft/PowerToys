@@ -282,6 +282,78 @@ How do we actually cache this frozen list?
 We want initial startup to be fast, even faster than hitting the package catalog. So we need to remember all the toplevel commands, and the COM class they came from, and probably the PFN. 
 Then we also need to know the static list of commands - I guess by Index/Title/Subtitle
 
+We need to 
+
+1. First we start up
+2. FAST: We load builtin extensions
+3. FAST: We load our cache of extensions, and note which are frozen vs fresh
+   * We needs this to know which extensions have classes we need to instantiate
+     (fresh), vs ones we can lazy-start (frozen)
+   * We'll create stub extension objects here, with the CLSID ~and commandline~ stored.
+     * note: we don't need the executable/commandline. Just the clsid. We still
+       want to leave it to COM to deal with actually starting the COM server.
+       That's not our job, and we don't need the package catalog loaded to get
+       that - only the clsid.
+4. FAST: We open up our cached list of commands, and add those items as "stub" list items
+   * These items don't have an actual extension object backing them.
+   * Stubs refer to the stub extension object we created in 3
+   * If the user clicks on them, we'll need to {LOAD THE STUB} 
+5. SLOW: We open the package catalog for more commands
+   * Extensions that we've seen before in our cache:
+     * If it's fresh, we'll start it, and fill in commands from `TopLevelCommands` into the palette
+     * If it's frozen, we'll leave it be. We've already got stubs for it. 
+   * Extensions we've never seen before: 
+     * Start it up.
+     * Check if it's fresh or frozen. 
+     * Call `TopLevelCommands`, and put all of them in the list
+     * Create a extension cache entry for that app.
+     * If the provider is frozen: we can actually realease the
+       `ICommandProvider` instance at this point.
+   * And of course, if we don't find all the packages we had cached, then delete
+     entries for the missing ones. Those apps were uninstalled.
+6. We start a package catalog change watcher
+
+After 1, we can display the UI. It won't have any commands though, so maybe we should wait. 
+After 2, we'd have some commands, but nothing from extensions
+After 4, the palette is ready to be used, with all the frozen extension commands. This is probably good enough for most use cases. 
+
+```json
+{
+    "extensions": [
+        {
+            "pfn": "TemplateExtension_0.0.1.0_x64__8wekyb3d8bbwe",
+            "clsid": "{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}",
+
+            "DisplayName": "TemplateDisplayName",
+            "frozen": true,
+            "commands":[
+                {
+                    "icon": "",
+                    "title": "",
+                    "subtitle": "",
+                    "name": ""
+                }
+            ]
+        }
+    ]
+
+}
+```
+
+{LOAD THE STUB} - The user activated a top-level list item, which didn't have an active extension object backing it
+
+1. Get the extension stub out of that item
+2. Get the CLSID, and CoCreateInstance it
+   * If that fails: display an error message 
+3. Call `TopLevelItems` on that `CommandProvider`
+   * You know, that seems rather contrived. 
+   * We already know exactly which command we want - the provider shouldn't need
+     to construct all of them. It only needs to construct _the one_ item.  
+4. Iterate over those, find the one that matches, and navigate to it. 
+
+{NOTE HERE}
+
+
 #### Disposing
 
 > [!IMPORTANT]
