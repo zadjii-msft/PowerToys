@@ -236,50 +236,41 @@ apps to lazily load their "UI content" as needed.
 
 #### Caching
 
-> [!IMPORTANT]
-> this section is a draft, TODO!
+A key goal of DevPal is to have it start as fast as possible, and have the
+footprint while it's running be minimal. If DevPal needed to instantiate every
+extension just to get the top-level list of commands, the impact on startup
+would grow as the user installed more extensions. Additionally, each extension
+installed would result in another process starting and running for the lifetime
+of DevPal.
 
+To avoid this, DevPal can "cache" the toplevel commands for an extension. This
+will allow DevPal to display these commands to the user on startup, without
+needing to keep the extension process running.
 
-* We will cache the list of commands for each extension. This allows us to
-  quickly load the list of commands on subsequent cold launches.
-* We should have a way to let extensions opt into more agressive caching of
-  their actions. So something that has a static list of top-level actions
-  doesn't even need to be `CoCreateInstance`'d on launch.
-  * The "Hacker News" extension, for example, only has a single top-level
-    action. Once we load that once, we don't need to CreateProcess just to find
-    it. We could just CoCreateInstance when the user selects it, and immediately
-    load the page.
-  * The "Quick Links" extension has a dynamic list of top-level actions. These
-    aren't something that can be added to the appxmanifest at packaging time.
-    But once we have them, we can cache them.
-  * The "Media Controls" extension only has a single top-level action, but it
-    needs to be running to be able to update it's title and icon. So we can't
-    just cache the state of it.
-  * Similarly, any top-level `IFallbackAction` need to be running to get
-    real-time updates to their name.
+Command Providers which can have their commands cached are called "**frozen**",
+and have `Frozen=true` set in `ICommandProvider`. This is the _default_ for apps
+using the helpers library. For the large majority of extensions, the list of
+commands won't change over time. These extensions can be cached to save
+resources.
 
-Here are some TODO!naming bad names for the caching levels:
+Command providers can opt out of this behavior by setting `Frozen=false` in
+their extension. We'll call these extensions "**fresh, never frozen**". 
 
-* "Frozen" (**default**) - After the first launch, cache the list of top-level
-  actions. When we're launched, don't create the COM object, just use the cached
-  list of actions. Most apps which provide a static list of top-level actions
-  can use this mode.
-  * For example: any app that just provides a single top level action, like the
-    Hacker News extension.
-<!-- * "Microwavable" - After the first launch, cache the list of top-level actions.
-  When we're launched, still create the COM object, and update that list of
-  commands as needed. Useful for things who's list of commands may change with
-  some frequency.
-  * an example of this is the "Quick Links" extension. It needs to be running to
-    update the list of actions, but the list of commands doesn't change that
-    often. -->
-* "Fresh, never frozen" - always create a new instance of the COM object and
-  query the list of actions. Never cache the results from the last launch. This
-  is for extensions that want to provide real-time info in the top level, or
-  who's list of commands changes frequently.
-  * an example of this is the "Media Controls" extension. It needs to be running
-    to update the title and icon for the playing music. It would never make
-    sense to use the previous value.
+As some examples:
+* The "Hacker News" extension, only has a single top-level action. Once we load
+  that once, we don't need to `CreateProcess` just to find that command title.
+  This is a **frozen** extension.
+* Similarly for something like the GitHub extension - it's got multiple
+  top-level commands (My issues, Issue search, Repo search, etc), but these
+  top-level commands never change. This is a **frozen** extension.
+* The "Quick Links" extension has a dynamic list of top-level actions. 
+  This is a **fresh** extension.[^3]
+* The "Media Controls" extension only has a single top-level action, but it
+  needs to be running to be able to update it's title and icon. So we can't just
+  cache the state of it. This is a **fresh** extension.
+* Similarly, any top-level `IFallbackHandler` need to be running to get
+  real-time updates to their name. Any extension with a top-level
+  `IFallbackHandler` will be treated as **fresh** extension.
 
 How do we actually cache this frozen list?
 
@@ -425,16 +416,16 @@ the memory usage as much.
 > that provider. Silently doing nothing seemed less user friendly than silently
 > doing What's Expected.
 
-
 #### Disposing
 
-> [!IMPORTANT]
-> this section is a draft, TODO!
-
-* We shouldn't have all the extensions loaded if we don't need them.
-* When we're dismissed at the home page, we should close out the extension classes we've loaded.
-* Should we close out the reference to the package entirely? So that the store has a chance to update it?
-* Should FreshNeverFrozen extensions be left open even while dismissed?
+As implied by the above section, all the extensions for DevPal won't be loaded
+and running all at once. We'll only keep the "fresh never frozen" extensions
+running, as well as the last N most recently used commands. Once we've exceeded
+that limit of recent commands, we'll release our reference to the COM object for
+that extension, and re-mark commands from it as "stubs". Upon the release of
+that reference, the extension is free to clean itself up. For extensions that
+use the helpers library, they can override  `CommandProvider.Dispose` to do
+cleanup in there.  
 
 ## Installing extensions
 
@@ -1953,6 +1944,11 @@ Or, to generate straight to the place I'm consuming it from:
     However, by making the `FallbackHandler` a property of the ListItem itself,
     then the extension itself can cast between the types, without the need for
     MBM. Thanks to Mano for helping me figure this one out.
+
+[^3]: You know, I bet we could make this a frozen provider too. I be if we added
+    `INotifyItemsChanged` to `ICommandProvider`, then when the "add bookmark"
+    command is activated, we could raise `provider.ItemsChanged`, and have the
+    palette re-cache the results of `TopLevelItems`.
 
 [Dev Home Extension]: https://learn.microsoft.com/en-us/windows/dev-home/extensions
 [`ISupportIncrementalLoading`]: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.isupportincrementalloading
