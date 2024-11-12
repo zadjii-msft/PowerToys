@@ -13,23 +13,29 @@ namespace Microsoft.CmdPal.Ext.WindowsTerminal;
 public partial class WindowsTerminalCommandsProvider : CommandProvider
 {
     private readonly Settings _settings = new();
+    private readonly TerminalTopLevelListItem _terminalCommand;
     private readonly ListItem _settingsCommand;
     public const string ShowHiddenProfiles = nameof(ShowHiddenProfiles);
+    public const string OpenNewTab = nameof(OpenNewTab);
+    public const string OpenQuake = nameof(OpenQuake);
 
     public Settings TerminalSettings => _settings;
 
     public WindowsTerminalCommandsProvider()
     {
         DisplayName = $"Windows Terminal";
-        var showHiddenProfiles = new ToggleSetting(ShowHiddenProfiles, "Show hidden profiles", "Show hidden profiles", true);
-        var textSetting = new TextSetting("whatever", "Text setting", "This is a text setting", "Default text");
+        var showHiddenProfiles = new ToggleSetting(ShowHiddenProfiles, "Show hidden profiles", "Show hidden profiles", false);
+        var openNewTab = new ToggleSetting(OpenNewTab, "Open profiles in a new tab", "Open profiles in a new tab", false);
+        var openQuake = new ToggleSetting(OpenQuake, "Open terminal in quake mode", "Open terminal in quake mode", false);
         _settings.Add(showHiddenProfiles);
-        _settings.Add(textSetting);
+        _settings.Add(openNewTab);
+        _settings.Add(openQuake);
         _settingsCommand = new ListItem(new SettingsPage(TerminalSettings));
+        _terminalCommand = new TerminalTopLevelListItem(TerminalSettings);
     }
 
     public override IListItem[] TopLevelCommands()
     {
-        return [new TerminalTopLevelListItem(this), _settingsCommand];
+        return [_terminalCommand, _settingsCommand];
     }
 }

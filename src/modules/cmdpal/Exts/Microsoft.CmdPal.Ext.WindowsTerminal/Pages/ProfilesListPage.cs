@@ -26,36 +26,47 @@ namespace Microsoft.CmdPal.Ext.WindowsTerminal.Pages;
 internal sealed partial class ProfilesListPage : ListPage
 {
     private readonly TerminalQuery _terminalQuery = new();
-    private readonly bool _showHiddenProfiles;
+    private readonly Settings _terminalSettings;
     private readonly Dictionary<string, BitmapImage> _logoCache = new();
 
-    public ProfilesListPage(WindowsTerminalCommandsProvider commandProvider)
+    private bool showHiddenProfiles;
+    private bool openNewTab;
+    private bool openQuake;
+
+    public ProfilesListPage(Settings terminalSettings)
     {
         Icon = new(string.Empty);
         Name = "Windows Terminal Profiles";
-        _showHiddenProfiles = commandProvider.TerminalSettings.GetSetting<bool>(nameof(commandProvider.ShowHiddenProfiles));
+        showHiddenProfiles = terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.ShowHiddenProfiles));
+        openNewTab = terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.OpenNewTab));
+        openQuake = terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.OpenQuake));
+        _terminalSettings = terminalSettings;
     }
 
 #pragma warning disable SA1108
     public List<ListItem> Query()
     {
+        showHiddenProfiles = _terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.ShowHiddenProfiles));
+        openNewTab = _terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.OpenNewTab));
+        openQuake = _terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.OpenQuake));
+
         var profiles = _terminalQuery.GetProfiles();
 
         var result = new List<ListItem>();
 
         foreach (var profile in profiles)
         {
-            if (profile.Hidden && !_showHiddenProfiles) // TODO: hmmm, probably need settings to do this --> && !_showHiddenProfiles)
+            if (profile.Hidden && !showHiddenProfiles) // TODO: hmmm, probably need settings to do this --> && !_showHiddenProfiles)
             {
                 continue;
             }
 
-            result.Add(new ListItem(new LaunchProfileCommand(profile.Terminal.AppUserModelId, profile.Name, profile.Terminal.LogoPath, true, false))
+            result.Add(new ListItem(new LaunchProfileCommand(profile.Terminal.AppUserModelId, profile.Name, profile.Terminal.LogoPath, openNewTab, openQuake))
             {
                 Title = profile.Name,
                 Subtitle = profile.Terminal.DisplayName,
                 MoreCommands = [
-                    new CommandContextItem(new LaunchProfileAsAdminCommand(profile.Terminal.AppUserModelId, profile.Name, true, false)),
+                    new CommandContextItem(new LaunchProfileAsAdminCommand(profile.Terminal.AppUserModelId, profile.Name, openNewTab, openQuake)),
                 ],
 
                 // Icon = () => GetLogo(profile.Terminal),

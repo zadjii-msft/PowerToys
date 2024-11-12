@@ -12,8 +12,8 @@ namespace Microsoft.CmdPal.Ext.WindowsTerminal;
 
 public partial class TerminalTopLevelListItem : ListItem
 {
-    public TerminalTopLevelListItem(WindowsTerminalCommandsProvider terminalCommandProvider)
-        : base(new ProfilesListPage(terminalCommandProvider))
+    public TerminalTopLevelListItem(Settings terminalSettings)
+        : base(new ProfilesListPage(terminalSettings))
     {
         Title = "Open WT Profiles";
         Subtitle = "Windows Terminal";
