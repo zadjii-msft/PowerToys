@@ -7,6 +7,7 @@ using System.Globalization;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Commands;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage.Streams;
 
 namespace Microsoft.CmdPal.Ext.ClipboardHistory.Models;
 
@@ -18,12 +19,12 @@ public class ClipboardItem
 
     public DateTimeOffset Timestamp => Item?.Timestamp ?? DateTimeOffset.MinValue;
 
-    public byte[] ImageData { get; set; }
+    public RandomAccessStreamReference ImageData { get; set; }
 
     public string GetDataType()
     {
         // Check if there is valid image data
-        if (ImageData != null && ImageData.Length > 0)
+        if (ImageData != null)
         {
             return "Image";
         }
@@ -53,7 +54,7 @@ public class ClipboardItem
 
         if (IsImage())
         {
-            listItem = new(new NoOpCommand())
+            listItem = new(new CopyCommand(this, ClipboardFormat.Image))
             {
                 // Placeholder subtitle as there’s no BitmapImage dimensions to retrieve
                 Title = "Image Data",
@@ -63,21 +64,24 @@ public class ClipboardItem
                 }
                 ],
                 Details = new Details { HeroImage = new("\uF0E3"), Title = GetDataType(), Body = Timestamp.ToString(CultureInfo.InvariantCulture) },
+                MoreCommands = [
+                    new CommandContextItem(new PasteCommand(this, ClipboardFormat.Image))
+                ],
             };
         }
         else if (IsText())
         {
-            listItem = new(new CopyCommand(this))
+            listItem = new(new CopyCommand(this, ClipboardFormat.Text))
             {
-                Title = Content,
+                Title = Content.Length > 20 ? string.Concat(Content.AsSpan(0, 20), "...") : Content,
                 Tags = [new Tag()
                 {
                     Text = GetDataType(),
                 }
                 ],
-                Details = new Details { Title = GetDataType(), Body = Content },
+                Details = new Details { Title = GetDataType(), Body = $"```text\n{Content}\n```" },
                 MoreCommands = [
-                    new CommandContextItem(new PasteCommand(this)),
+                    new CommandContextItem(new PasteCommand(this, ClipboardFormat.Text)),
                 ],
             };
         }

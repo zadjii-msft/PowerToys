@@ -29,6 +29,8 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         Icon = new("\uF0E3"); // ClipboardList icon
         Name = "Clipboard History";
         ShowDetails = true;
+
+        // Clipboard.ContentChanged += Clipboard_ContentChanged; TODO GH #131 -- fixed in PR #142 -- need to raise the event here and handle clipboard change
     }
 
     private bool IsClipboardHistoryEnabled()
@@ -98,14 +100,11 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
             {
                 if (item.Item.Content.Contains(StandardDataFormats.Bitmap))
                 {
-                    IRandomAccessStreamReference imageReceived = await item.Item.Content.GetBitmapAsync();
+                    RandomAccessStreamReference imageReceived = await item.Item.Content.GetBitmapAsync();
 
                     if (imageReceived != null)
                     {
-                        using var imageStream = await imageReceived.OpenReadAsync();
-                        using var memoryStream = new MemoryStream();
-                        await imageStream.AsStreamForRead().CopyToAsync(memoryStream);
-                        item.ImageData = memoryStream.ToArray();
+                        item.ImageData = imageReceived;
                     }
                 }
 

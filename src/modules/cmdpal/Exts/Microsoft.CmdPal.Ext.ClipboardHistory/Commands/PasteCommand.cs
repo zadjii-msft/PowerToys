@@ -28,57 +28,17 @@ internal sealed partial class PasteCommand : InvokableCommand
     private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
     private readonly ClipboardItem _clipboardItem;
+    private readonly ClipboardFormat _clipboardFormat;
 
     private const int HIDE = 0;
     private const int SHOW = 5;
 
-    internal PasteCommand(ClipboardItem clipboardItem)
+    internal PasteCommand(ClipboardItem clipboardItem, ClipboardFormat clipboardFormat)
     {
         _clipboardItem = clipboardItem;
+        _clipboardFormat = clipboardFormat;
         Name = "Paste";
         Icon = new("\xE8C8"); // Copy icon
-    }
-
-    private static void SendSingleKeyboardInput(short keyCode, uint keyStatus)
-    {
-        var ignoreKeyEventFlag = (UIntPtr)0x5555;
-
-        NativeMethods.INPUT inputShift = new NativeMethods.INPUT
-        {
-            type = NativeMethods.INPUTTYPE.INPUT_KEYBOARD,
-            data = new NativeMethods.InputUnion
-            {
-                ki = new NativeMethods.KEYBDINPUT
-                {
-                    wVk = keyCode,
-                    dwFlags = keyStatus,
-
-                    // Any keyevent with the extraInfo set to this value will be ignored by the keyboard hook and sent to the system instead.
-                    dwExtraInfo = ignoreKeyEventFlag,
-                },
-            },
-        };
-
-        NativeMethods.INPUT[] inputs = new NativeMethods.INPUT[] { inputShift };
-        _ = NativeMethods.SendInput(1, inputs, NativeMethods.INPUT.Size);
-    }
-
-    internal static void SendPasteKeyCombination()
-    {
-        SendSingleKeyboardInput((short)VirtualKey.LeftControl, (uint)NativeMethods.KeyEventF.KeyUp);
-        SendSingleKeyboardInput((short)VirtualKey.RightControl, (uint)NativeMethods.KeyEventF.KeyUp);
-        SendSingleKeyboardInput((short)VirtualKey.LeftWindows, (uint)NativeMethods.KeyEventF.KeyUp);
-        SendSingleKeyboardInput((short)VirtualKey.RightWindows, (uint)NativeMethods.KeyEventF.KeyUp);
-        SendSingleKeyboardInput((short)VirtualKey.LeftShift, (uint)NativeMethods.KeyEventF.KeyUp);
-        SendSingleKeyboardInput((short)VirtualKey.RightShift, (uint)NativeMethods.KeyEventF.KeyUp);
-        SendSingleKeyboardInput((short)VirtualKey.LeftMenu, (uint)NativeMethods.KeyEventF.KeyUp);
-        SendSingleKeyboardInput((short)VirtualKey.RightMenu, (uint)NativeMethods.KeyEventF.KeyUp);
-
-        // Send Ctrl + V
-        SendSingleKeyboardInput((short)VirtualKey.Control, (uint)NativeMethods.KeyEventF.KeyDown);
-        SendSingleKeyboardInput((short)VirtualKey.V, (uint)NativeMethods.KeyEventF.KeyDown);
-        SendSingleKeyboardInput((short)VirtualKey.V, (uint)NativeMethods.KeyEventF.KeyUp);
-        SendSingleKeyboardInput((short)VirtualKey.Control, (uint)NativeMethods.KeyEventF.KeyUp);
     }
 
     private void HideWindow()
@@ -97,9 +57,10 @@ internal sealed partial class PasteCommand : InvokableCommand
 
     public override CommandResult Invoke()
     {
+        ClipboardHelper.SetClipboardContent(_clipboardItem, _clipboardFormat);
         HideWindow();
-        SendPasteKeyCombination();
-        ShowWindow();
+        ClipboardHelper.SendPasteKeyCombination();
+        Clipboard.DeleteItemFromHistory(_clipboardItem.Item);
 
         return CommandResult.Dismiss();
     }

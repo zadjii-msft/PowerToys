@@ -21,17 +21,19 @@ namespace Microsoft.CmdPal.Ext.ClipboardHistory.Commands;
 internal sealed partial class CopyCommand : InvokableCommand
 {
     private readonly ClipboardItem _clipboardItem;
+    private readonly ClipboardFormat _clipboardFormat;
 
-    internal CopyCommand(ClipboardItem clipboardItem)
+    internal CopyCommand(ClipboardItem clipboardItem, ClipboardFormat clipboardFormat)
     {
         _clipboardItem = clipboardItem;
+        _clipboardFormat = clipboardFormat;
         Name = "Copy";
         Icon = new("\xE8C8"); // Copy icon
     }
 
     public override CommandResult Invoke()
     {
-        ClipboardHelper.SetText(_clipboardItem.Content);
+        ClipboardHelper.SetClipboardContent(_clipboardItem, _clipboardFormat);
 
         return CommandResult.Dismiss();
     }
