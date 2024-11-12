@@ -630,7 +630,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EtwTrace", "src\common\Tele
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MouseWithoutBorders.UnitTests", "src\modules\MouseWithoutBorders\MouseWithoutBorders.UnitTests\MouseWithoutBorders.UnitTests.csproj", "{66614C26-314C-4B91-9071-76133422CFEF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CmdPal", "CmdPal", "{3846508C-77EB-4034-A702-F8BB263C4F79}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommandPallete", "CommandPallete", "{3846508C-77EB-4034-A702-F8BB263C4F79}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.UI.Poc", "src\modules\cmdpal\WindowsCommandPalette\Microsoft.CmdPal.UI.Poc.csproj", "{A60CB091-3E95-49F3-8315-18EA3B4334B9}"
 EndProject
