@@ -21,17 +21,19 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media.Imaging;
 using static System.Formats.Asn1.AsnWriter;
 
-namespace Microsoft.CmdPal.Ext.WindowsTerminal;
+namespace Microsoft.CmdPal.Ext.WindowsTerminal.Pages;
 
 internal sealed partial class ProfilesListPage : ListPage
 {
     private readonly TerminalQuery _terminalQuery = new();
+    private readonly bool _showHiddenProfiles;
     private readonly Dictionary<string, BitmapImage> _logoCache = new();
 
-    public ProfilesListPage()
+    public ProfilesListPage(WindowsTerminalCommandsProvider commandProvider)
     {
         Icon = new(string.Empty);
         Name = "Windows Terminal Profiles";
+        _showHiddenProfiles = commandProvider.TerminalSettings.GetSetting<bool>(nameof(commandProvider.ShowHiddenProfiles));
     }
 
 #pragma warning disable SA1108
@@ -43,7 +45,7 @@ internal sealed partial class ProfilesListPage : ListPage
 
         foreach (var profile in profiles)
         {
-            if (profile.Hidden) // TODO: hmmm, probably need settings to do this --> && !_showHiddenProfiles)
+            if (profile.Hidden && !_showHiddenProfiles) // TODO: hmmm, probably need settings to do this --> && !_showHiddenProfiles)
             {
                 continue;
             }
