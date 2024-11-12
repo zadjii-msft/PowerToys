@@ -359,15 +359,22 @@ On a cold launch, DevPal will do the following:
        `ICommandProvider` instance at this point.
    * And of course, if we don't find all the packages we had cached, then delete
      entries for the missing ones. Those apps were uninstalled.
-6. We start a package catalog change watcher
+6. We start a package catalog change watcher to be notified by the OS for
+   changes to the list of installed extensions
 
 After 1, we can display the UI. It won't have any commands though, so maybe we should wait. 
 After 2, we'd have some commands, but nothing from extensions
 After 4, the palette is ready to be used, with all the frozen extension commands. This is probably good enough for most use cases. 
 
+Most of the time, when the user "launches" devPal, we won't run through this
+whole process. The slowest part of startup is standing up WASDK and WinUI. After
+the first launch, we will keep our window will be hidden, running silently in
+the background. When the user presses the global hotkey, or otherwise launches
+the app, we'll just activate our existing process. This is a "warm launch".
 
-Most of the time, we won't run through this whole process. The slowest part of startup is standing up WASDK and WinUI. MOst of the time, our window will be hidden, and we'll be running silently in the background. When the user presses the global hotkey, or otherwise launches the app, we'll just activate our existing process. This is a "warm launch". 
-On a warm launch, we already have all the stubs in memory. We're listening for package installs/unistalls already. So we're basically just in the post-step 5 state already. 
+On a warm launch, we already have all the stubs in memory. We're listening for
+package installs/unistalls already. So we're basically just in the post-step 5
+state already.
 
 ##### Loading commands from stub items
 
@@ -383,7 +390,7 @@ command), we need to quickly load that app and get the command for it.
 3. Check if the extension is already in the warm extension cache. If it is, we
    recently reheated a command from this provider. We can skip step 4 and go
    straight to step 5
-4. Use the CLSID from the cache to CoCreateInstance this extension, and get it's `ICommandProvider`.  
+4. Use the CLSID from the cache to `CoCreateInstance` this extension, and get its `ICommandProvider`.  
    * If that fails: display an error message.
 5. Try to load the command from the provider. This is done in two steps:
    1. If the cached command had an `id`, try to look up the command with
@@ -397,21 +404,26 @@ command), we need to quickly load that app and get the command for it.
 
 ##### Microwaved commands
 
-DevPal will likely want to keep the last N extensions that were activated
-"warm", so that they are ready to be re-activated again. Once a command provider
-is reheated, we'll keep it around in a warm extension cache. Stubs that have
-been activated by reheating them can then skip a `CommandProvider` lookup
+DevPal will want to keep the last N extensions that were activated "warm", so
+that they are ready to be re-activated again. Once a command provider is
+reheated, we'll keep it around in a warm extension cache. Stubs that have been
+activated by reheating them can then skip a `CommandProvider` lookup
 (`GetCommand` or `TopLevelItems`).
 
-Configuration options:
-* We may want to have a certain number of commands that are kept warm. Probably like, the last 5 used top-level commands's extensions. We could make that a setting. 
-* We could even have a setting for how many 
+We'll give the user options to control how many of the most recent commands we
+keep warm at a given time. We'll probably also want to offer an option like
+"always warm up {this command} / {all commands}", if the user doesn't care about
+the memory usage as much.
 
-If a command provider returns a `IListItem` which implements `IFallbackHandler`, and that provider is marked `frozen`, what should we do? 
-* Treat that provider as fresh?
-* Ignore it, and display a warning when we load it?
-  * that would annoy users - the extension developer would be at fault here, but might not be able to fix it
-IMO we should gracefully ignore `frozen` in that case and do What's Expected. We may just write to the debugging log. 
+> [WARNING!]
+> If your command provider returns a `IListItem` which implements
+> `IFallbackHandler`, and that provider is marked `frozen`, DevPal will always
+> treat your provider as "fresh". Otherwise, devpal wouldn't be able to call
+> into the extension to have the `IFallbackHandler` respond to the search query.
+> 
+> The alternative would be to have DevPal just ignore the fallback handler from
+> that provider. Silently doing nothing seemed less user friendly than silently
+> doing What's Expected.
 
 
 #### Disposing
