@@ -24,6 +24,8 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    public SolidColorBrush AccentColorBrush { get; set; } = new();
+
     private ListItemViewModel? _selectedItem;
 
     public ListItemViewModel? SelectedItem
@@ -117,6 +119,9 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         {
             return;
         }
+
+        this.AccentColorBrush = new SolidColorBrush(ViewModel.AccentColor);
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AccentColorBrush)));
 
         if (e.NavigationMode == NavigationMode.New)
         {
@@ -391,5 +396,17 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
     private void BackButton_Tapped(object sender, TappedRoutedEventArgs e)
     {
         ViewModel?.GoBack();
+    }
+
+    private void ToggleButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (InstallationDialog.Visibility == Visibility.Visible)
+        {
+            InstallationDialog.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            InstallationDialog.Visibility = Visibility.Visible;
+        }
     }
 }

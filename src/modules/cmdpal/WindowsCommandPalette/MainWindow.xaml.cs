@@ -127,8 +127,8 @@ public sealed partial class MainWindow : Window
 
     private void PositionCentered()
     {
-        _appWindow.Resize(new SizeInt32 { Width = 860, Height = 560 });
-        var displayArea = DisplayArea.GetFromWindowId(_appWindow.Id, DisplayAreaFallback.Nearest);
+        _appWindow.Resize(new SizeInt32 { Width = 1000, Height = 680 });
+        DisplayArea displayArea = DisplayArea.GetFromWindowId(_appWindow.Id, DisplayAreaFallback.Nearest);
         if (displayArea is not null)
         {
             var centeredPosition = AppWindow.Position;

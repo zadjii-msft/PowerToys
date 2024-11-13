@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Windows.UI;
 
 namespace MastodonExtension;
 
@@ -31,6 +32,9 @@ internal sealed partial class MastodonExtensionPage : ListPage
         Name = "Mastodon";
         ShowDetails = true;
         HasMore = true;
+
+        // #6364ff
+        AccentColor = Color.FromArgb(255, 99, 100, 255);
     }
 
     private void AddPosts(List<MastodonStatus> posts)
