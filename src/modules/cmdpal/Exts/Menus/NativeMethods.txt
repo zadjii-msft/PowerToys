@@ -8,3 +8,5 @@ GetWindowTextW
 GetWindowTextLength
 GetMenuItemCount
 GetSubMenu
+PostMessage
+WM_COMMAND

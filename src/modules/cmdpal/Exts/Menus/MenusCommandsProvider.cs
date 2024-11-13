@@ -9,7 +9,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -34,21 +33,21 @@ public partial class MenusActionsProvider : CommandProvider
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
-internal sealed class SafeMenu : SafeHandleZeroOrMinusOneIsInvalid
+internal sealed partial class MenuItemCommand : InvokableCommand
 {
-    public SafeMenu()
-        : base(true)
+    private readonly MenuData _menuData;
+    private readonly HWND _hwnd;
+
+    public MenuItemCommand(MenuData data, HWND hwnd)
     {
+        _menuData = data;
+        _hwnd = hwnd;
     }
 
-    public void SetHandle(HMENU h)
+    public override ICommandResult Invoke()
     {
-        this.handle = h;
-    }
-
-    protected override bool ReleaseHandle()
-    {
-        return true;
+        PInvoke.PostMessage(_hwnd, 273/*WM_COMMAND*/, _menuData.WID, 0);
+        return CommandResult.Dismiss();
     }
 }
 
@@ -70,6 +69,8 @@ internal sealed class WindowData
     private readonly string title = string.Empty;
 
     public string Title => title;
+
+    public HWND Handle => handle;
 
     internal WindowData(HWND hWnd)
     {
@@ -178,7 +179,7 @@ internal sealed partial class WindowMenusPage : ListPage
 
     public override IListItem[] GetItems()
     {
-        return _window.GetMenuItems().Select(menuData => new ListItem(new NoOpCommand()) { Title = menuData.ItemText, Subtitle = menuData.PathText }).ToArray();
+        return _window.GetMenuItems().Select(menuData => new ListItem(new MenuItemCommand(menuData, _window.Handle)) { Title = menuData.ItemText, Subtitle = menuData.PathText }).ToArray();
     }
 }
 
