@@ -5,6 +5,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using WindowsCommandPalette.Models;
@@ -216,5 +217,21 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable, IEq
     public static bool operator !=(ListItemViewModel? l, ListItemViewModel? r)
     {
         return !(l == r);
+    }
+
+    private struct ScoredListItemViewModel
+    {
+        public int Score;
+        public ListItemViewModel ViewModel;
+    }
+
+    public static IEnumerable<ListItemViewModel> FilterList(IEnumerable<ListItemViewModel> items, string query)
+    {
+        var scores = items
+            .Select(li => new ScoredListItemViewModel() { ViewModel = li, Score = ListHelpers.ScoreListItem(query, li.ListItem.Unsafe) })
+            .Where(score => score.Score > 0)
+            .OrderByDescending(score => score.Score);
+        return scores
+            .Select(score => score.ViewModel);
     }
 }

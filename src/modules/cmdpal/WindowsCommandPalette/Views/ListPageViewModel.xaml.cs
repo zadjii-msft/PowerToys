@@ -4,7 +4,6 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.UI.Dispatching;
@@ -59,10 +58,10 @@ public sealed class ListPageViewModel : PageViewModel
         switch (args.PropertyName)
         {
             case nameof(HasMore):
-            {
-                HasMore = Page.HasMore;
-                break;
-            }
+                {
+                    HasMore = Page.HasMore;
+                    break;
+                }
         }
     }
 
@@ -92,11 +91,10 @@ public sealed class ListPageViewModel : PageViewModel
 
         // still on main thread
 
-        // TODO! For dynamic lists, we're clearing out the whole list of items
-        // we already have, then rebuilding it. We shouldn't do that. We should
-        // still use the results from GetItems and put them into the code in
-        // UpdateFilter to intelligently add/remove as needed.
-        // TODODO! are we still? ^^
+        // This creates an entirely new list of ListItemViewModels, and we're
+        // really hoping that the equality check in `InPlaceUpdateList`
+        // properly uses ListItemViewModel.Equals to compare if the objects
+        // are literally the same.
         Collection<ListItemViewModel> newItems = new(items.Select(i => new ListItemViewModel(i)).ToList());
         Debug.WriteLine($"  Found {newItems.Count} items");
 
@@ -132,12 +130,8 @@ public sealed class ListPageViewModel : PageViewModel
                 return _items;
             }
 
-            // TODO! Probably bad that this turns list view models into listitems back to NEW view models
-            // TODO! make this safer
-            // TODODO! ^ still relevant?
-            var newFilter = ListHelpers
-                .FilterList(_items.Select(vm => vm.ListItem.Unsafe), query)
-                .Select(li => new ListItemViewModel(li));
+            var newFilter = ListItemViewModel
+                .FilterList(_items, query);
 
             return newFilter;
         }
