@@ -12,7 +12,7 @@ using WindowsCommandPalette.Views;
 
 namespace WindowsCommandPalette;
 
-public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
+public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable, IEquatable<ListItemViewModel>
 {
     private readonly DispatcherQueue _dispatcherQueue;
 
@@ -191,5 +191,30 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
         {
             /* log something */
         }
+    }
+
+    public bool Equals(ListItemViewModel? other)
+    {
+        return other == null ? false : other.ListItem.Unsafe == this.ListItem.Unsafe;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as ListItemViewModel);
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public static bool operator ==(ListItemViewModel? l, ListItemViewModel? r)
+    {
+        return l is null ? r is null : l.Equals(r);
+    }
+
+    public static bool operator !=(ListItemViewModel? l, ListItemViewModel? r)
+    {
+        return !(l == r);
     }
 }
