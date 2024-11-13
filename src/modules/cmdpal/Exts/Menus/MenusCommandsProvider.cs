@@ -127,14 +127,21 @@ internal sealed class WindowData
                     if (PInvoke.GetMenuItemInfo(hMenu, (uint)i, true, ref mii))
                     {
                         var itemText = mii.dwTypeData.ToString();
-                        var itemPath = $"{menuPath}{itemText}";
+
+                        // Sanitize it. If it's got a tab, grab the text before that:
+                        var withoutShortcut = itemText.Split("\t").First();
+
+                        // Now remove a `&`
+                        var sanitized = withoutShortcut.Replace("&", string.Empty);
+
+                        var itemPath = $"{menuPath}{sanitized}";
 
                         // Leaf item
                         if (mii.hSubMenu == IntPtr.Zero)
                         {
                             // Console.WriteLine($"- Leaf Item: {itemText}");
                             // TriggerMenuItem(hWnd, mii.wID);
-                            var data = new MenuData() { ItemText = itemText, PathText = itemPath, WID = mii.wID };
+                            var data = new MenuData() { ItemText = sanitized, PathText = itemPath, WID = mii.wID };
                             results.Add(data);
                         }
                         else
@@ -143,7 +150,7 @@ internal sealed class WindowData
                             var subMenuTest = PInvoke.GetSubMenu(hMenu, i);
                             var otherTest = mii.hSubMenu;
                             _ = otherTest == subMenuTest.DangerousGetHandle();
-                            var newPath = $"{itemPath} > ";
+                            var newPath = $"{sanitized} > ";
                             var subItems = GetMenuItems(subMenuTest, newPath);
                             results.AddRange(subItems);
                         }
