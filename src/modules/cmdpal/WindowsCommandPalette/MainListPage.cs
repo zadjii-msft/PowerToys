@@ -5,6 +5,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using WindowsCommandPalette.Models;
@@ -68,7 +69,15 @@ public sealed partial class MainListPage : DynamicListPage
 
         foreach (var fb in fallbacks)
         {
-            fb.UpdateQuery(SearchText);
+            try
+            {
+                fb.UpdateQuery(SearchText);
+            }
+            catch (COMException ex)
+            {
+                Debug.WriteLine("Failed to update fallback handler:");
+                Debug.WriteLine(ex);
+            }
         }
 
         var count = string.IsNullOrEmpty(SearchText) ? topLevelItems.Count : _filteredSection.Count;
@@ -77,14 +86,7 @@ public sealed partial class MainListPage : DynamicListPage
 
     public override IListItem[] GetItems()
     {
-        if (string.IsNullOrEmpty(SearchText))
-        {
-            return topLevelItems.ToArray();
-        }
-        else
-        {
-            return _filteredSection.Items;
-        }
+        return string.IsNullOrEmpty(SearchText) ? topLevelItems.ToArray() : _filteredSection.Items;
     }
 
     private void TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

@@ -16,7 +16,9 @@ public class ListHelpers
         if (listItem.FallbackHandler != null)
         {
             isFallback = true;
-            listItem.FallbackHandler.UpdateQuery(query);
+
+            // TODO! I don't think we need to do this anymore. But I don't know!
+            // listItem.FallbackHandler.UpdateQuery(query);
             if (string.IsNullOrWhiteSpace(listItem.Title))
             {
                 return 0;
