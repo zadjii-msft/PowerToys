@@ -11,8 +11,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using WindowsCommandPalette;
 
 namespace WindowsCommandPalette.Views;
 
@@ -51,22 +51,62 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         }
     }
 
-    private bool MoreCommandsAvailable
-    {
-        get
-        {
-            if (ItemsList.SelectedItem is not ListItemViewModel li)
-            {
-                return false;
-            }
-
-            return li.HasMoreCommands;
-        }
-    }
+    private bool MoreCommandsAvailable => ItemsList.SelectedItem is not ListItemViewModel li ? false : li.HasMoreCommands;
 
     public ListPage()
     {
         this.InitializeComponent();
+
+        this.ItemsList.Loaded += ItemsList_Loaded;
+    }
+
+    private void ItemsList_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Find the ScrollViewer in the ListView
+        var listViewScrollViewer = FindScrollViewer(this.ItemsList);
+
+        if (listViewScrollViewer != null)
+        {
+            listViewScrollViewer.ViewChanged += ListViewScrollViewer_ViewChanged;
+        }
+    }
+
+    private void ListViewScrollViewer_ViewChanged(object? sender, ScrollViewerViewChangedEventArgs e)
+    {
+        var scrollView = sender as ScrollViewer;
+        if (scrollView == null)
+        {
+            return;
+        }
+
+        // When we get to the bottom, request more from the extension, if they
+        // have more to give us.
+        // We're checking when we get to 80% of the scroll height, to give the
+        // extension a bit of a heads-up before the user actually gets there.
+        if (scrollView.VerticalOffset >= (scrollView.ScrollableHeight * .8))
+        {
+            ViewModel?.LoadMoreIfNeeded();
+        }
+    }
+
+    private ScrollViewer? FindScrollViewer(DependencyObject parent)
+    {
+        if (parent is ScrollViewer)
+        {
+            return (ScrollViewer)parent;
+        }
+
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            var result = FindScrollViewer(child);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -82,12 +122,12 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         {
             ViewModel.InitialRender().ContinueWith((t) =>
             {
-                DispatcherQueue.TryEnqueue(async () => { await UpdateFilter(FilterBox.Text); });
+                DispatcherQueue.TryEnqueue(() => { UpdateFilter(FilterBox.Text); });
             });
         }
         else
         {
-            DispatcherQueue.TryEnqueue(async () => { await UpdateFilter(FilterBox.Text); });
+            DispatcherQueue.TryEnqueue(() => { UpdateFilter(FilterBox.Text); });
         }
 
         this.ItemsList.SelectedIndex = 0;
@@ -121,7 +161,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
 
     private void MoreCommandsButton_Tapped(object sender, TappedRoutedEventArgs e)
     {
-        FlyoutShowOptions options = new FlyoutShowOptions
+        var options = new FlyoutShowOptions
         {
             ShowMode = FlyoutShowMode.Standard,
         };
@@ -231,6 +271,15 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
 
             e.Handled = true;
         }
+        else if (e.Key == Windows.System.VirtualKey.Right)
+        {
+            if (!string.IsNullOrEmpty(SelectedItem?.TextToSuggest))
+            {
+                FilterBox.Text = SelectedItem.TextToSuggest;
+                FilterBox.Select(SelectedItem.TextToSuggest.Length, 0);
+                FilterBox.Focus(FocusState.Keyboard);
+            }
+        }
         else if (e.Key == Windows.System.VirtualKey.Enter /* && ItemsList.SelectedItem != null */)
         {
             if (ItemsList.SelectedItem is ListItemViewModel li)
@@ -258,7 +307,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         } // ctrl+k
         else if (ctrlPressed && e.Key == Windows.System.VirtualKey.K && ActionsDropdown.Items.Count > 0)
         {
-            FlyoutShowOptions options = new FlyoutShowOptions
+            var options = new FlyoutShowOptions
             {
                 ShowMode = FlyoutShowMode.Standard,
             };
@@ -276,10 +325,10 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         }
 
         // on the UI thread
-        _ = UpdateFilter(FilterBox.Text);
+        UpdateFilter(FilterBox.Text);
     }
 
-    private async Task UpdateFilter(string text)
+    private void UpdateFilter(string text)
     {
         if (ViewModel == null)
         {
@@ -292,7 +341,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         // * do an async request to the extension (fixme after GH #77)
         // * just return already filtered items.
         // * return a subset of items matching the filter text
-        var items = await ViewModel.GetFilteredItems(text);
+        var items = ViewModel.GetFilteredItems(text);
 
         Debug.WriteLine($"  UpdateFilter after GetFilteredItems({text}) --> {items.Count()} ; {ViewModel.FilteredItems.Count}");
 
