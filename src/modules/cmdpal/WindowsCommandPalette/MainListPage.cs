@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.UI.Dispatching;
 using WindowsCommandPalette.Models;
 using WindowsCommandPalette.Views;
 
@@ -20,8 +21,12 @@ public sealed partial class MainListPage : DynamicListPage
     private readonly FilteredListSection _filteredSection;
     private readonly ObservableCollection<MainListItem> topLevelItems = new();
 
+    private readonly DispatcherQueue _dispatcherQueue;
+
     public MainListPage(MainViewModel viewModel)
     {
+        this._dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
         this._mainViewModel = viewModel;
 
         // wacky: "All apps" is added to _mainViewModel.TopLevelCommands before
@@ -91,6 +96,14 @@ public sealed partial class MainListPage : DynamicListPage
     }
 
     private void TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        this._dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+        {
+            this.Handle_TopLevelCommands_CollectionChanged(sender, e);
+        });
+    }
+
+    private void Handle_TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         Debug.WriteLine("TopLevelCommands_CollectionChanged");
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
