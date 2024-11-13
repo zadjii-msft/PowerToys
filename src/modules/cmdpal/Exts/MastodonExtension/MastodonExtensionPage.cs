@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Windows.Media.Protection.PlayReady;
 
 namespace MastodonExtension;
 
@@ -73,7 +72,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
 
     public override IListItem[] GetItems()
     {
-        if (_posts.Count == 0)
+        if (_items.Count == 0)
         {
             var postsAsync = FetchExplorePage();
             postsAsync.ConfigureAwait(false);
@@ -87,11 +86,16 @@ internal sealed partial class MastodonExtensionPage : ListPage
 
     public override void LoadMore()
     {
+        this.Loading = true;
+        ExtensionHost.LogMessage(new LogMessage() { Message = $"Loading 20 posts, starting with {_items.Count}..." });
         var postsAsync = FetchExplorePage(20, this._items.Count);
         postsAsync.ContinueWith((res) =>
         {
             var posts = postsAsync.Result;
             this.AddPosts(posts);
+            ExtensionHost.LogMessage(new LogMessage() { Message = $"... got {posts.Count} new posts" });
+
+            this.Loading = false;
             this.RaiseItemsChanged(this._items.Count);
         }).ConfigureAwait(false);
     }
@@ -108,7 +112,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
         try
         {
             // Make a GET request to the Mastodon trends API endpoint
-            HttpResponseMessage response = await Client
+            var response = await Client
                 .GetAsync($"https://mastodon.social/api/v1/trends/statuses?limit={limit}&offset={offset}");
             response.EnsureSuccessStatusCode();
 
@@ -278,7 +282,7 @@ public partial class MastodonPostPage : FormPage
         {
             // Make a GET request to the Mastodon context API endpoint
             var url = $"https://mastodon.social/api/v1/statuses/{post.Id}/context";
-            HttpResponseMessage response = await MastodonExtensionPage.Client.GetAsync(url);
+            var response = await MastodonExtensionPage.Client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             // Read and deserialize the response JSON into a MastodonContext object
@@ -336,9 +340,9 @@ public class MastodonStatus
 
     public string ContentAsPlainText()
     {
-        HtmlDocument doc = new HtmlDocument();
+        var doc = new HtmlDocument();
         doc.LoadHtml(Content);
-        StringBuilder plainTextBuilder = new StringBuilder();
+        var plainTextBuilder = new StringBuilder();
         foreach (var node in doc.DocumentNode.ChildNodes)
         {
             plainTextBuilder.Append(ParseNodeToPlaintext(node));
@@ -349,9 +353,9 @@ public class MastodonStatus
 
     public string ContentAsMarkdown(bool escapeHashtags, bool addMedia)
     {
-        HtmlDocument doc = new HtmlDocument();
+        var doc = new HtmlDocument();
         doc.LoadHtml(Content.Replace("<br>", "\n\n").Replace("<br />", "\n\n"));
-        StringBuilder markdownBuilder = new StringBuilder();
+        var markdownBuilder = new StringBuilder();
         foreach (var node in doc.DocumentNode.ChildNodes)
         {
             markdownBuilder.Append(ParseNodeToMarkdown(node, escapeHashtags));
