@@ -8,14 +8,20 @@
 #include <common/SettingsAPI/settings_helpers.h>
 #include <common/SettingsAPI/settings_objects.h>
 #include <common/utils/resources.h>
+#include <common/utils/package.h>
+#include <common/utils/process_path.h>
 
-BOOL APIENTRY DllMain(HMODULE,
+HINSTANCE g_hInst_cmdPal = 0;
+
+BOOL APIENTRY DllMain(HMODULE hInstance,
                       DWORD ul_reason_for_call,
                       LPVOID)
 {
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
+        g_hInst_cmdPal = hInstance;
+        break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
@@ -112,6 +118,19 @@ public:
     virtual void enable()
     {
         Logger::trace("CmdPal::enable()");
+
+
+        if (package::IsWin11OrGreater())
+        {
+            std::wstring path = get_module_folderpath(g_hInst_cmdPal);
+            std::wstring packageUri = path + L"\\WinUI3Apps\\CmdPal\\AppPackages\\Microsoft.CmdPal.UI.Poc_0.0.1.0_Debug_Test\\Microsoft.CmdPal.UI.Poc_0.0.1.0_x64_Debug.msix";
+
+            if (!package::IsPackageRegistered(L"CmdPal"))
+            {
+                package::RegisterPackage(packageUri);
+            }
+        }
+
         m_enabled = true;
     };
 
