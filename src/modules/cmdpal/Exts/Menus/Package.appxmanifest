@@ -9,7 +9,7 @@
   IgnorableNamespaces="uap uap3 rescap">
 
   <Identity
-    Name="Menus"
+    Name="MenusExtension"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="0.0.1.0" />
 
@@ -44,7 +44,7 @@
       <Extensions>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="Menus.exe" Arguments="-RegisterProcessAsComServer" DisplayName="ClementineExtensionApp">
+            <com:ExeServer Executable="MenusExtension.exe" Arguments="-RegisterProcessAsComServer" DisplayName="ClementineExtensionApp">
               <com:Class Id="9db16200-5579-4a62-9050-d67469316bba" DisplayName="Menus from the open windows" />
             </com:ExeServer>
           </com:ComServer>

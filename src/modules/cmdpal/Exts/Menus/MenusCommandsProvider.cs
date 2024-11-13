@@ -6,35 +6,49 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Menus;
 
-public partial class MenusActionsProvider : ICommandProvider
+public partial class MenusActionsProvider : CommandProvider
 {
-    public string DisplayName => $"Menus from the open windows Commands";
-
-    public IconDataType Icon => new(string.Empty);
+    public MenusActionsProvider()
+    {
+        DisplayName = $"Menus from the open windows Commands";
+    }
 
     private readonly IListItem[] _commands = [
         new ListItem(new AllWindowsPage()),
     ];
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-    public void Dispose() => throw new NotImplementedException();
-#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
-
-    public IListItem[] TopLevelCommands()
+    public override IListItem[] TopLevelCommands()
     {
         return _commands;
+    }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+internal sealed class SafeMenu : SafeHandleZeroOrMinusOneIsInvalid
+{
+    public SafeMenu()
+        : base(true)
+    {
+    }
+
+    public void SetHandle(HMENU h)
+    {
+        this.handle = h;
+    }
+
+    protected override bool ReleaseHandle()
+    {
+        return true;
     }
 }
 
@@ -75,14 +89,16 @@ internal sealed class WindowData
         }
     }
 
-    /*private List<string> GetMenuItems()
+    public List<string> GetMenuItems()
     {
+        var s = new SafeMenu();
         var hMenu = PInvoke.GetMenu(handle);
+        s.SetHandle(hMenu);
         List<string> results = new();
         var menuItemCount = PInvoke.GetMenuItemCount(hMenu);
         for (var i = 0; i < menuItemCount; i++)
         {
-            MENUITEMINFOW mii = default(MENUITEMINFOW);
+            var mii = default(MENUITEMINFOW);
             mii.cbSize = (uint)Marshal.SizeOf<MENUITEMINFOW>();
             mii.fMask = MENU_ITEM_MASK.MIIM_STRING | MENU_ITEM_MASK.MIIM_ID | MENU_ITEM_MASK.MIIM_SUBMENU;
             mii.cch = 256;
@@ -93,10 +109,12 @@ internal sealed class WindowData
                 {
                     mii.dwTypeData = new PWSTR(menuTextBuffer); // Allocate memory for string
 
-                    if (PInvoke.GetMenuItemInfo(hMenu, (uint)i, true, ref mii))
+                    if (PInvoke.GetMenuItemInfo(s, (uint)i, true, ref mii))
                     {
                         var itemText = mii.dwTypeData.ToString();
-                        if (mii.hSubMenu == IntPtr.Zero) // Leaf item
+
+                        // Leaf item
+                        if (mii.hSubMenu == IntPtr.Zero)
                         {
                             // Console.WriteLine($"- Leaf Item: {itemText}");
                             // TriggerMenuItem(hWnd, mii.wID);
@@ -111,8 +129,28 @@ internal sealed class WindowData
                 }
             }
         }
+
         return results;
-    }*/
+    }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+internal sealed partial class WindowMenusPage : ListPage
+{
+    private readonly WindowData _window;
+
+    public WindowMenusPage(WindowData window)
+    {
+        _window = window;
+        Icon = new(string.Empty);
+        Name = window.Title;
+        ShowDetails = false;
+    }
+
+    public override IListItem[] GetItems()
+    {
+        return _window.GetMenuItems().Select(caption => new ListItem(new NoOpCommand()) { Title = caption }).ToArray();
+    }
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
@@ -124,7 +162,7 @@ internal sealed partial class AllWindowsPage : ListPage
     {
         Icon = new(string.Empty);
         Name = "Open Windows";
-        ShowDetails = true;
+        ShowDetails = false;
     }
 
     public override IListItem[] GetItems()
@@ -133,7 +171,7 @@ internal sealed partial class AllWindowsPage : ListPage
 
         return windows
             .Where(w => !string.IsNullOrEmpty(w.Title))
-            .Select(w => new ListItem(new NoOpCommand())
+            .Select(w => new ListItem(new WindowMenusPage(w))
             {
                 Title = w.Title,
             })
