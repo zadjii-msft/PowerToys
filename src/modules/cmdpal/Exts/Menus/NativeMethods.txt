@@ -9,4 +9,5 @@ GetWindowTextLength
 GetMenuItemCount
 GetSubMenu
 PostMessage
-WM_COMMAND
+SetActiveWindow
+SetForegroundWindow 

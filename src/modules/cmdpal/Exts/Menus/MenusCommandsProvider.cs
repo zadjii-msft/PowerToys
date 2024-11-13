@@ -46,8 +46,10 @@ internal sealed partial class MenuItemCommand : InvokableCommand
 
     public override ICommandResult Invoke()
     {
+        PInvoke.SetForegroundWindow(_hwnd);
+        PInvoke.SetActiveWindow(_hwnd);
         PInvoke.PostMessage(_hwnd, 273/*WM_COMMAND*/, _menuData.WID, 0);
-        return CommandResult.Dismiss();
+        return CommandResult.KeepOpen();
     }
 }
 
