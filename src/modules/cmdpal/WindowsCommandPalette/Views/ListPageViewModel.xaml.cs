@@ -150,6 +150,13 @@ public sealed class ListPageViewModel : PageViewModel
             // Tell the dynamic page the new search text. If they need to update, they will.
             IsDynamicPage.SearchText = _query;
         }
+        else
+        {
+            var filtered = ListItemViewModel
+                .FilterList(_items, query);
+            Collection<ListItemViewModel> newItems = new(filtered.ToList());
+            ListHelpers.InPlaceUpdateList(FilteredItems, newItems);
+        }
     }
 
     public async void LoadMoreIfNeeded()

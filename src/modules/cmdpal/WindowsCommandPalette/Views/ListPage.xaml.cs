@@ -141,6 +141,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
 
     private void FilteredItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
+        /*// Debug.WriteLine($"FilteredItems_CollectionChanged");
         // Try to maintain the selected item, if we can.
         if (ItemsList.SelectedItem != null &&
             ItemsList.SelectedItem is ListItemViewModel li)
@@ -151,6 +152,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
                 var index = ItemsList.IndexFromContainer(xamlListItem);
                 if (index >= 0)
                 {
+                    // Debug.WriteLine("Found original selected item");
                     this.ItemsList.SelectedIndex = index;
                     return;
                 }
@@ -159,8 +161,9 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             {
                 // Debug.WriteLine($"Didn't find {li.Title} in new list");
             }
-        }
+        }*/
 
+        // Debug.WriteLine($"Selecting index 0");
         this.ItemsList.SelectedIndex = 0;
     }
 
@@ -328,6 +331,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         {
             if (FilterBox.Text.Length > 0)
             {
+                Debug.WriteLine("Clear seearch text");
                 FilterBox.Text = string.Empty;
                 ItemsList.SelectedIndex = 0;
             }
