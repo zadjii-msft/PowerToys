@@ -58,9 +58,6 @@ public sealed partial class MainListPage : DynamicListPage
 
     private void UpdateQuery()
     {
-        // Let our filtering wrapper know the newly typed search text:
-        _filteredSection.Query = SearchText;
-
         // Update all the top-level commands which are fallback providers:
         var fallbacks = topLevelItems
             .Select(i => i?.FallbackHandler)
@@ -79,6 +76,10 @@ public sealed partial class MainListPage : DynamicListPage
                 Debug.WriteLine(ex);
             }
         }
+
+        // Let our filtering wrapper know the newly typed search text.
+        // Do this _after_ updating our fallback handlers.
+        _filteredSection.Query = SearchText;
 
         var count = string.IsNullOrEmpty(SearchText) ? topLevelItems.Count : _filteredSection.Count;
         RaiseItemsChanged(count);
