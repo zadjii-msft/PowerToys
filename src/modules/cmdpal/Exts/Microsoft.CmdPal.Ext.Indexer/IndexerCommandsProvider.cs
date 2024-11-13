@@ -18,12 +18,17 @@ public partial class IndexerActionsProvider : ICommandProvider
         new ListItem(new IndexerPage()),
     ];
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-    public void Dispose() => throw new NotImplementedException();
-#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
 
     public IListItem[] TopLevelCommands()
     {
         return _commands;
+    }
+
+    public void InitializeWithHost(IExtensionHost host)
+    {
     }
 }

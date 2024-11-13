@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,14 +32,14 @@ internal sealed partial class IndexerPage : DynamicListPage
         Name = "Indexer";
     }
 
-    public override ISection[] GetItems(string query)
+    public override IListItem[] GetItems(string query)
     {
         var t = DoGetItems(query);
         t.ConfigureAwait(false);
         return t.Result;
     }
 
-    public override ISection[] GetItems()
+    public override IListItem[] GetItems()
     {
         var t = DoGetItems(string.Empty);
         t.ConfigureAwait(false);
@@ -49,8 +50,13 @@ internal sealed partial class IndexerPage : DynamicListPage
 
     public async Task<uint> Query(string searchText)
     {
-        queryCookie++;
+        if (searchText == string.Empty)
+        {
+            searchResults.Clear();
+            return queryCookie;
+        }
 
+        queryCookie++;
         await Task.Run(() =>
         {
             lock (_lockObject)
@@ -115,37 +121,32 @@ internal sealed partial class IndexerPage : DynamicListPage
         }
     }
 
-    private async Task<ISection[]> DoGetItems(string query)
+    private async Task<IListItem[]> DoGetItems(string query)
     {
-        var items = new List<IndexerItem>();
+        var items = new List<IndexerListItem>();
         await Task.Run(() => Query(query));
 
-        if (searchResults == null)
+        lock (_lockObject)
         {
-            return Array.Empty<ISection>();
-        }
-
-        foreach (var result in searchResults)
-        {
-            items.Add(new IndexerItem()
+            if (searchResults != null)
             {
-                FileName = result.ItemDisplayName,
-                FullPath = result.LaunchUri,
-            });
+                foreach (var result in searchResults)
+                {
+                    items.Add(new IndexerListItem(new IndexerItem
+                    {
+                        FileName = result.ItemDisplayName,
+                        FullPath = result.LaunchUri,
+                    }));
+                }
+            }
         }
 
-        var s = new ListSection()
-        {
-            Title = "Files",
-            Items = items.Select((item) => new IndexerListItem(item)).ToArray(),
-        };
-
-        return [s];
+        return items.ToArray();
     }
 
     private bool CanReuseQuery(string oldQuery, string newQuery)
     {
-        if (newQuery.Length == 0 || oldQuery.Length > newQuery.Length)
+        if (newQuery.Length == 0 || oldQuery == null || oldQuery.Length > newQuery.Length)
         {
             return false;
         }
