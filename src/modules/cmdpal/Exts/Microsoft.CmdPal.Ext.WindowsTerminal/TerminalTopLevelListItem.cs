@@ -4,6 +4,7 @@
 
 using System;
 using System.Data;
+using Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Pages;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -12,8 +13,8 @@ namespace Microsoft.CmdPal.Ext.WindowsTerminal;
 
 public partial class TerminalTopLevelListItem : ListItem
 {
-    public TerminalTopLevelListItem(Settings terminalSettings)
-        : base(new ProfilesListPage(terminalSettings))
+    public TerminalTopLevelListItem(SettingsManager settingsManager)
+        : base(new ProfilesListPage(settingsManager.GetSettings()))
     {
         Title = "Open WT Profiles";
         Subtitle = "Windows Terminal";
