@@ -53,6 +53,16 @@ internal sealed class SafeMenu : SafeHandleZeroOrMinusOneIsInvalid
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+internal sealed class MenuData
+{
+    public string ItemText { get; set; }
+
+    public string PathText { get; set; }
+
+    public uint WID { get; set; }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
 internal sealed class WindowData
 {
     private readonly HWND handle;
@@ -89,12 +99,17 @@ internal sealed class WindowData
         }
     }
 
-    public List<string> GetMenuItems()
+    public List<MenuData> GetMenuItems()
     {
-        var s = new SafeMenu();
-        var hMenu = PInvoke.GetMenu(handle);
-        s.SetHandle(hMenu);
-        List<string> results = new();
+        var hMenu = PInvoke.GetMenu_SafeHandle(handle);
+        return GetMenuItems(hMenu, string.Empty);
+    }
+
+    public List<MenuData> GetMenuItems(DestroyMenuSafeHandle hMenu, string menuPath)
+    {
+        // var s = new SafeMenu();
+        // s.SetHandle(hMenu);
+        List<MenuData> results = new();
         var menuItemCount = PInvoke.GetMenuItemCount(hMenu);
         for (var i = 0; i < menuItemCount; i++)
         {
@@ -109,21 +124,28 @@ internal sealed class WindowData
                 {
                     mii.dwTypeData = new PWSTR(menuTextBuffer); // Allocate memory for string
 
-                    if (PInvoke.GetMenuItemInfo(s, (uint)i, true, ref mii))
+                    if (PInvoke.GetMenuItemInfo(hMenu, (uint)i, true, ref mii))
                     {
                         var itemText = mii.dwTypeData.ToString();
+                        var itemPath = $"{menuPath}{itemText}";
 
                         // Leaf item
                         if (mii.hSubMenu == IntPtr.Zero)
                         {
                             // Console.WriteLine($"- Leaf Item: {itemText}");
                             // TriggerMenuItem(hWnd, mii.wID);
-                            results.Add(itemText);
+                            var data = new MenuData() { ItemText = itemText, PathText = itemPath, WID = mii.wID };
+                            results.Add(data);
                         }
                         else
                         {
                             // Recursively list submenu items
-                            // ListMenuItems(hWnd, mii.hSubMenu);
+                            var subMenuTest = PInvoke.GetSubMenu(hMenu, i);
+                            var otherTest = mii.hSubMenu;
+                            _ = otherTest == subMenuTest.DangerousGetHandle();
+                            var newPath = $"{itemPath} > ";
+                            var subItems = GetMenuItems(subMenuTest, newPath);
+                            results.AddRange(subItems);
                         }
                     }
                 }
@@ -149,7 +171,7 @@ internal sealed partial class WindowMenusPage : ListPage
 
     public override IListItem[] GetItems()
     {
-        return _window.GetMenuItems().Select(caption => new ListItem(new NoOpCommand()) { Title = caption }).ToArray();
+        return _window.GetMenuItems().Select(menuData => new ListItem(new NoOpCommand()) { Title = menuData.ItemText, Subtitle = menuData.PathText }).ToArray();
     }
 }
 
