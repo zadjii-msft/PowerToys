@@ -329,6 +329,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             if (FilterBox.Text.Length > 0)
             {
                 FilterBox.Text = string.Empty;
+                ItemsList.SelectedIndex = 0;
             }
             else
             {
@@ -400,13 +401,6 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
 
     private void ToggleButton_Click(object sender, RoutedEventArgs e)
     {
-        if (InstallationDialog.Visibility == Visibility.Visible)
-        {
-            InstallationDialog.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            InstallationDialog.Visibility = Visibility.Visible;
-        }
+        InstallationDialog.Visibility = InstallationDialog.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
     }
 }
