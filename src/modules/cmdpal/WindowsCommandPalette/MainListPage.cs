@@ -92,7 +92,10 @@ public sealed partial class MainListPage : DynamicListPage
 
     public override IListItem[] GetItems()
     {
-        return string.IsNullOrEmpty(SearchText) ? topLevelItems.ToArray() : _filteredSection.Items;
+        return string.IsNullOrEmpty(SearchText) ? topLevelItems
+            .Where(item => !string.IsNullOrEmpty(item.Title))
+            .ToArray()
+            : _filteredSection.Items;
     }
 
     private void TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
