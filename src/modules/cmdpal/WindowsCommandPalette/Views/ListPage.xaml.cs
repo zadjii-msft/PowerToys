@@ -362,4 +362,16 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
     {
         ViewModel?.GoBack();
     }
+
+    private void ToggleButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (InstallationDialog.Visibility == Visibility.Visible)
+        {
+            InstallationDialog.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            InstallationDialog.Visibility = Visibility.Visible;
+        }
+    }
 }
