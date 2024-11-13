@@ -491,6 +491,8 @@ information that the host application will then use to render the page.
 interface IPage requires ICommand {
     String Title { get; };
     Boolean Loading { get; };
+    
+    Windows.UI.Color AccentColor { get; };
 }
 ```
 

@@ -12,6 +12,8 @@
     xmlns:mtu="using:Microsoft.Terminal.UI"
     xmlns:rsdk="using:Microsoft.CmdPal.Extensions"
     Background="Transparent"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    Background="{x:Bind AccentColorBrush, Mode=OneWay}"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 
