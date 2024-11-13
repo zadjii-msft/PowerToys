@@ -136,6 +136,26 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
 
     private void FilteredItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
+        // Try to maintain the selected item, if we can.
+        if (ItemsList.SelectedItem != null &&
+            ItemsList.SelectedItem is ListItemViewModel li)
+        {
+            var xamlListItem = ItemsList.ContainerFromItem(li);
+            if (xamlListItem != null)
+            {
+                var index = ItemsList.IndexFromContainer(xamlListItem);
+                if (index >= 0)
+                {
+                    this.ItemsList.SelectedIndex = index;
+                    return;
+                }
+            }
+            else
+            {
+                // Debug.WriteLine($"Didn't find {li.Title} in new list");
+            }
+        }
+
         this.ItemsList.SelectedIndex = 0;
     }
 
