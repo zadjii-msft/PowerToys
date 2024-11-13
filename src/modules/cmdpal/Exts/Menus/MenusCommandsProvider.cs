@@ -19,11 +19,11 @@ public partial class MenusActionsProvider : CommandProvider
 {
     public MenusActionsProvider()
     {
-        DisplayName = $"Menus from the open windows Commands";
+        DisplayName = $"Menus from the open windows";
     }
 
     private readonly IListItem[] _commands = [
-        new ListItem(new AllWindowsPage()),
+        new ListItem(new AllWindowsPage()) { Subtitle = "Search menus in open windows" },
     ];
 
     public override IListItem[] TopLevelCommands()
@@ -192,7 +192,7 @@ internal sealed partial class AllWindowsPage : ListPage
 
     public AllWindowsPage()
     {
-        Icon = new(string.Empty);
+        Icon = new("\uf0b5"); // ChecklistMirrored
         Name = "Open Windows";
         ShowDetails = false;
     }
