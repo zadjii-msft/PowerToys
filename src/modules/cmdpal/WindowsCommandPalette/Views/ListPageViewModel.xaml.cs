@@ -106,7 +106,7 @@ public sealed class ListPageViewModel : PageViewModel
         Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
     }
 
-    internal IEnumerable<ListItemViewModel> GetFilteredItems(string query)
+    /*internal IEnumerable<ListItemViewModel> GetFilteredItems(string query)
     {
         // This method does NOT change any lists. It doesn't modify _items or FilteredItems...
         if (query == _query)
@@ -134,6 +134,21 @@ public sealed class ListPageViewModel : PageViewModel
                 .FilterList(_items, query);
 
             return newFilter;
+        }
+    }*/
+
+    public void UpdateSearchText(string query)
+    {
+        if (query == _query)
+        {
+            return;
+        }
+
+        _query = query;
+        if (IsDynamicPage != null)
+        {
+            // Tell the dynamic page the new search text. If they need to update, they will.
+            IsDynamicPage.SearchText = _query;
         }
     }
 
