@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.ComponentModel;
+using System.Diagnostics;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -32,7 +33,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         get => _selectedItem;
         set
         {
-            // Debug.WriteLine($"      Selected: {SelectedItem?.Title}");
+            Debug.WriteLine($"      Selected: {SelectedItem?.Title}");
             _selectedItem = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedItem)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoreCommandsAvailable)));
@@ -228,7 +229,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
 
     private void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // Debug.WriteLine($"    ItemsList_SelectionChanged");
+        Debug.WriteLine($"    ItemsList_SelectionChanged");
         if (sender is not ListView lv)
         {
             return;
@@ -330,7 +331,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         {
             if (FilterBox.Text.Length > 0)
             {
-                // Debug.WriteLine("Clear seearch text");
+                Debug.WriteLine("Clear seearch text");
                 FilterBox.Text = string.Empty;
                 ItemsList.SelectedIndex = 0;
             }
@@ -371,7 +372,8 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             return;
         }
 
-        // Debug.WriteLine($"UpdateFilter({text})");
+        Debug.WriteLine($"UpdateFilter({text})");
+
         ViewModel.UpdateSearchText(text);
 
         /*// Go ask the ViewModel for the items to display. This might:
@@ -380,19 +382,19 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         // * return a subset of items matching the filter text
         var items = ViewModel.GetFilteredItems(text);*/
 
-        /*        // Debug.WriteLine($"  UpdateFilter after GetFilteredItems({text}) --> {items.Count()} ; {ViewModel.FilteredItems.Count}");
+        /*        Debug.WriteLine($"  UpdateFilter after GetFilteredItems({text}) --> {items.Count()} ; {ViewModel.FilteredItems.Count}");
 
                 // Here, actually populate ViewModel.FilteredItems
                 // WARNING: if you do this off the UI thread, it sure won't work right.
                 ListHelpers.InPlaceUpdateList(ViewModel.FilteredItems, new(items.ToList()));
-                // Debug.WriteLine($"  UpdateFilter after InPlaceUpdateList --> {ViewModel.FilteredItems.Count}");
+                Debug.WriteLine($"  UpdateFilter after InPlaceUpdateList --> {ViewModel.FilteredItems.Count}");
 
                 // set the selected index to the first item in the list
                 if (ItemsList.Items.Count > 0)
                 {
                     ItemsList.SelectedIndex = 0;
                     ItemsList.ScrollIntoView(ItemsList.SelectedItem);
-                    // Debug.WriteLine($"  Selecting item 0 in list view");
+                    Debug.WriteLine($"  Selecting item 0 in list view");
                 }*/
     }
 

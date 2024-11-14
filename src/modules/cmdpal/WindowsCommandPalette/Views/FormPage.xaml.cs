@@ -52,7 +52,7 @@ public sealed partial class FormPage : Page
             {
                 FormsRepeater.ItemsSource = ViewModel.Forms;
 
-                // Debug.WriteLine($"Rendering {this.ViewModel.Forms.Count} forms");
+                Debug.WriteLine($"Rendering {this.ViewModel.Forms.Count} forms");
                 foreach (var form in this.ViewModel.Forms)
                 {
                     AddCardElement(form);
