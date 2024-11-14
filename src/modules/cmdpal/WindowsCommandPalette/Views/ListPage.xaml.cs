@@ -141,7 +141,8 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
 
     private void FilteredItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        /*// Debug.WriteLine($"FilteredItems_CollectionChanged");
+        // *
+        // Debug.WriteLine($"FilteredItems_CollectionChanged");
         // Try to maintain the selected item, if we can.
         if (ItemsList.SelectedItem != null &&
             ItemsList.SelectedItem is ListItemViewModel li)
@@ -161,7 +162,9 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             {
                 // Debug.WriteLine($"Didn't find {li.Title} in new list");
             }
-        }*/
+        }
+
+        // */
 
         // Debug.WriteLine($"Selecting index 0");
         this.ItemsList.SelectedIndex = 0;
@@ -333,7 +336,6 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             {
                 Debug.WriteLine("Clear seearch text");
                 FilterBox.Text = string.Empty;
-                ItemsList.SelectedIndex = 0;
             }
             else
             {
@@ -375,6 +377,8 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         Debug.WriteLine($"UpdateFilter({text})");
 
         ViewModel.UpdateSearchText(text);
+
+        // ItemsList.SelectedIndex = 0;
 
         /*// Go ask the ViewModel for the items to display. This might:
         // * do an async request to the extension (fixme after GH #77)
