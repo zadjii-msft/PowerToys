@@ -19,21 +19,23 @@
                 Spacing="8" />
 
             <DataTemplate x:Key="CardTemplate" x:DataType="local:FormViewModel">
-                <Border
-                    x:Name="DetailsContent"
-                    Margin="0,0,0,0"
-                    Padding="8"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    Child="{x:Bind RenderedChildElement, Mode=OneWay}"
-                    CornerRadius="{StaticResource OverlayCornerRadius}"
-                    TabFocusNavigation="Cycle"
-                    Visibility="{x:Bind ShouldDisplay, Mode=OneWay}" />
+                <!--<ItemContainer>-->
+                    <Border
+                        x:Name="DetailsContent"
+                        Margin="0, 4, 0, 4"
+                        Padding="8"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        Child="{x:Bind RenderedChildElement, Mode=OneWay}"
+                        CornerRadius="{StaticResource OverlayCornerRadius}"
+                        TabFocusNavigation="Cycle"
+                        Visibility="{x:Bind ShouldDisplay, Mode=OneWay}" />
+                    <!--</ItemContainer>-->
             </DataTemplate>
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Padding="12" RowSpacing="16">
+    <Grid Padding="4, 4, 0, 0" RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -57,16 +59,12 @@
                 Text="{x:Bind ViewModel.Page.Name}" />
         </StackPanel>
 
-        <ScrollViewer
-            x:Name="ScrollViewer"
-            Grid.Row="1">
-            <Grid x:Name="FormContent">
-                <ItemsRepeater
-                    x:Name="FormsRepeater"
-                    ItemTemplate="{StaticResource CardTemplate}"
-                    ItemsSource="{x:Bind ViewModel.Forms, Mode=OneWay}"
-                    Layout="{StaticResource VerticalStackLayout}" />
-            </Grid>
-        </ScrollViewer>
+        <ListView x:Name="FormItems" 
+                  Grid.Row="1"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch"
+                  SelectionMode="None"
+                  ItemTemplate="{StaticResource CardTemplate}"
+                  ItemsSource="{x:Bind ViewModel.Forms, Mode=OneWay}"/>
     </Grid>
 </Page>
