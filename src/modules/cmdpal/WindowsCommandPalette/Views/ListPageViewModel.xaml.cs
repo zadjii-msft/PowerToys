@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.UI.Dispatching;
@@ -43,8 +42,7 @@ public sealed class ListPageViewModel : PageViewModel
 
     private void Page_ItemsChanged(object sender, ItemsChangedEventArgs args)
     {
-        Debug.WriteLine("Items changed");
-
+        // Debug.WriteLine("Items changed");
         _loadingMore = false;
 
         _dispatcherQueue.TryEnqueue(async () =>
@@ -96,14 +94,14 @@ public sealed class ListPageViewModel : PageViewModel
         // properly uses ListItemViewModel.Equals to compare if the objects
         // are literally the same.
         Collection<ListItemViewModel> newItems = new(items.Select(i => new ListItemViewModel(i)).ToList());
-        Debug.WriteLine($"  Found {newItems.Count} items");
 
+        // Debug.WriteLine($"  Found {newItems.Count} items");
         // THIS populates FilteredItems. If you do this off the UI thread, guess what -
         // the list view won't update. So WATCH OUT
         ListHelpers.InPlaceUpdateList(FilteredItems, newItems);
         ListHelpers.InPlaceUpdateList(_items, newItems);
 
-        Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
+        // Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
     }
 
     /*internal IEnumerable<ListItemViewModel> GetFilteredItems(string query)

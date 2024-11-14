@@ -22,7 +22,7 @@ public sealed partial class CommandPaletteHost : IExtensionHost
 
     public IAsyncAction ShowStatus(IStatusMessage message)
     {
-        Debug.WriteLine(message.Message);
+        // Debug.WriteLine(message.Message);
         return Task.CompletedTask.AsAsyncAction();
     }
 
@@ -33,7 +33,7 @@ public sealed partial class CommandPaletteHost : IExtensionHost
 
     public IAsyncAction LogMessage(ILogMessage message)
     {
-        Debug.WriteLine(message.Message);
+        // Debug.WriteLine(message.Message);
         return Task.CompletedTask.AsAsyncAction();
     }
 

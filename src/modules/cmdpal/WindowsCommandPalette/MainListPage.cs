@@ -108,7 +108,7 @@ public sealed partial class MainListPage : DynamicListPage
 
     private void Handle_TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        Debug.WriteLine("TopLevelCommands_CollectionChanged");
+        // Debug.WriteLine("TopLevelCommands_CollectionChanged");
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
             foreach (var item in e.NewItems)

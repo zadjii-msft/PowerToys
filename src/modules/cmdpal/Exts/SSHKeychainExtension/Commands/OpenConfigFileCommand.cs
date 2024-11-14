@@ -40,7 +40,7 @@ internal sealed partial class OpenConfigFileCommand : InvokableCommand
         }
         catch
         {
-            Debug.WriteLine("Failed to open config file");
+            // Debug.WriteLine("Failed to open config file");
         }
 
         return CommandResult.KeepOpen();
