@@ -11,7 +11,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mtu="using:Microsoft.Terminal.UI"
     xmlns:rsdk="using:Microsoft.CmdPal.Extensions"
-    Background="Transparent"
     Loaded="Page_Loaded"
     mc:Ignorable="d">
 

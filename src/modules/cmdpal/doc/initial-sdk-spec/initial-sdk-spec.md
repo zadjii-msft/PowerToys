@@ -517,6 +517,9 @@ Pages are `ICommands`, which means they also are observable via the
 `INotifyPropChanged` interface. This allows the page to set `Loading` as needed
 and change the value once the results are loaded.
 
+Pages may also specify an `AccentColor`. DevPal will use this color to stylize
+elements of the page with that color.
+
 #### List Pages
 
 Lists are the most common type of page. They represent a collection of items
