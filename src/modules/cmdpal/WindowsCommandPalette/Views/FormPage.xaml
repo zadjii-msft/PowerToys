@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="WindowsCommandPalette.Views.FormPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -57,9 +57,7 @@
                 Text="{x:Bind ViewModel.Page.Name}" />
         </StackPanel>
 
-        <ScrollViewer
-            x:Name="ScrollViewer"
-            Grid.Row="1">
+        <ScrollViewer x:Name="ScrollViewer" Grid.Row="1">
             <Grid x:Name="FormContent">
                 <ItemsRepeater
                     x:Name="FormsRepeater"
