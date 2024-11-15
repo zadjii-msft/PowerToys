@@ -96,46 +96,16 @@ public sealed class ListPageViewModel : PageViewModel
         // properly uses ListItemViewModel.Equals to compare if the objects
         // are literally the same.
         Collection<ListItemViewModel> newItems = new(items.Select(i => new ListItemViewModel(i)).ToList());
-        Debug.WriteLine($"  Found {newItems.Count} items");
+
+        // Debug.WriteLine($"  Found {newItems.Count} items");
 
         // THIS populates FilteredItems. If you do this off the UI thread, guess what -
         // the list view won't update. So WATCH OUT
         ListHelpers.InPlaceUpdateList(FilteredItems, newItems);
         ListHelpers.InPlaceUpdateList(_items, newItems);
 
-        Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
+        // Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
     }
-
-    /*internal IEnumerable<ListItemViewModel> GetFilteredItems(string query)
-    {
-        // This method does NOT change any lists. It doesn't modify _items or FilteredItems...
-        if (query == _query)
-        {
-            return FilteredItems;
-        }
-
-        _query = query;
-        if (IsDynamicPage != null)
-        {
-            // Tell the dynamic page the new search text. If they need to update, they will.
-            IsDynamicPage.SearchText = _query;
-
-            return FilteredItems;
-        }
-        else
-        {
-            // Static lists don't need to re-fetch the items
-            if (string.IsNullOrEmpty(query))
-            {
-                return _items;
-            }
-
-            var newFilter = ListItemViewModel
-                .FilterList(_items, query);
-
-            return newFilter;
-        }
-    }*/
 
     public void UpdateSearchText(string query)
     {

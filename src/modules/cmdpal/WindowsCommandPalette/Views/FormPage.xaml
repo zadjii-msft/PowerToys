@@ -19,18 +19,16 @@
                 Spacing="8" />
 
             <DataTemplate x:Key="CardTemplate" x:DataType="local:FormViewModel">
-                <!--<ItemContainer>-->
-                    <Border
-                        x:Name="DetailsContent"
-                        Margin="0, 4, 0, 4"
-                        Padding="8"
-                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                        Child="{x:Bind RenderedChildElement, Mode=OneWay}"
-                        CornerRadius="{StaticResource OverlayCornerRadius}"
-                        TabFocusNavigation="Cycle"
-                        Visibility="{x:Bind ShouldDisplay, Mode=OneWay}" />
-                    <!--</ItemContainer>-->
+                <Border
+                    x:Name="DetailsContent"
+                    Margin="0, 4, 0, 4"
+                    Padding="8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    Child="{x:Bind RenderedChildElement, Mode=OneWay}"
+                    CornerRadius="{StaticResource OverlayCornerRadius}"
+                    TabFocusNavigation="Cycle"
+                    Visibility="{x:Bind ShouldDisplay, Mode=OneWay}" />
             </DataTemplate>
         </ResourceDictionary>
     </Page.Resources>

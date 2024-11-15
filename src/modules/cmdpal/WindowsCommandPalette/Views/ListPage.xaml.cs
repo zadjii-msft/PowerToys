@@ -374,32 +374,8 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             return;
         }
 
-        Debug.WriteLine($"UpdateFilter({text})");
-
+        // Debug.WriteLine($"UpdateFilter({text})");
         ViewModel.UpdateSearchText(text);
-
-        // ItemsList.SelectedIndex = 0;
-
-        /*// Go ask the ViewModel for the items to display. This might:
-        // * do an async request to the extension (fixme after GH #77)
-        // * just return already filtered items.
-        // * return a subset of items matching the filter text
-        var items = ViewModel.GetFilteredItems(text);*/
-
-        /*        Debug.WriteLine($"  UpdateFilter after GetFilteredItems({text}) --> {items.Count()} ; {ViewModel.FilteredItems.Count}");
-
-                // Here, actually populate ViewModel.FilteredItems
-                // WARNING: if you do this off the UI thread, it sure won't work right.
-                ListHelpers.InPlaceUpdateList(ViewModel.FilteredItems, new(items.ToList()));
-                Debug.WriteLine($"  UpdateFilter after InPlaceUpdateList --> {ViewModel.FilteredItems.Count}");
-
-                // set the selected index to the first item in the list
-                if (ItemsList.Items.Count > 0)
-                {
-                    ItemsList.SelectedIndex = 0;
-                    ItemsList.ScrollIntoView(ItemsList.SelectedItem);
-                    Debug.WriteLine($"  Selecting item 0 in list view");
-                }*/
     }
 
     private void BackButton_Tapped(object sender, TappedRoutedEventArgs e)

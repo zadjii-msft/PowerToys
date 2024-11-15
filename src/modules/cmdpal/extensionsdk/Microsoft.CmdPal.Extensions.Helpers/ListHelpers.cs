@@ -9,7 +9,6 @@ namespace Microsoft.CmdPal.Extensions.Helpers;
 public class ListHelpers
 {
     // Generate a score for a list item.
-    // TODO! This has side effects! This calls UpdateQuery on fallback handlers and that's async
     public static int ScoreListItem(string query, IListItem listItem)
     {
         var isFallback = false;
@@ -17,8 +16,6 @@ public class ListHelpers
         {
             isFallback = true;
 
-            // TODO! I don't think we need to do this anymore. But I don't know!
-            // listItem.FallbackHandler.UpdateQuery(query);
             if (string.IsNullOrWhiteSpace(listItem.Title))
             {
                 return 0;
@@ -83,10 +80,6 @@ public class ListHelpers
             if (areEqual)
             {
                 // It is already in the list
-                // if (og is Collection<T> og && newContents[i] is Collection<T> newG)
-                // {
-                //    InPlaceUpdateList(og, newG);
-                // }
             }
             else
             {
