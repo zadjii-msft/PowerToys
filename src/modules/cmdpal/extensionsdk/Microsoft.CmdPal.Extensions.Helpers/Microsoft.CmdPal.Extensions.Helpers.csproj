@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-      <CsWinRTIncludes>Microsoft.CmdPal.Extensions</CsWinRTIncludes>
-      <CsWinRTGeneratedFilesDir>$(OutDir)</CsWinRTGeneratedFilesDir>
+    <CsWinRTIncludes>Microsoft.CmdPal.Extensions</CsWinRTIncludes>
+    <CsWinRTGeneratedFilesDir>$(OutDir)</CsWinRTGeneratedFilesDir>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
@@ -26,7 +26,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsAppSDK" />
-    <PackageReference Include="Microsoft.Web.WebView2" /> <!-- This line forces the WebView2 version used by Windows App SDK to be the one we expect from Directory.Packages.props . -->
+    <PackageReference Include="Microsoft.Web.WebView2" />
+    <!-- This line forces the WebView2 version used by Windows App SDK to be the one we expect from Directory.Packages.props . -->
   </ItemGroup>
 
   <ItemGroup>

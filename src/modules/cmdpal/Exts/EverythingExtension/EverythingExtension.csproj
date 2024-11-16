@@ -28,6 +28,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\common\Common.UI\Common.UI.csproj" />
     <ProjectReference Include="..\..\extensionsdk\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj" />
   </ItemGroup>
 
@@ -49,9 +50,9 @@
   <ItemGroup>
     <Content Include="$(TargetDir)\Everything64.dll" Link="Everything64.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-   <Target Name="Everything64ToTargetDir" BeforeTargets="BeforeBuild">
-     <Copy SourceFiles="Everything64.dll" DestinationFolder="$(TargetDir)" />
-   </Target>
+  <Target Name="Everything64ToTargetDir" BeforeTargets="BeforeBuild">
+    <Copy SourceFiles="Everything64.dll" DestinationFolder="$(TargetDir)" />
+  </Target>
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
