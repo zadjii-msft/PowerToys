@@ -27,11 +27,12 @@ internal sealed partial class VirtualDesktopExtensionPage : ListPage
         desktopsTask.ConfigureAwait(false);
         var desktops = desktopsTask.Result;
         return desktops.Count > 0
-            ? desktops.AsEnumerable().Select(d => new ListItem(new NoOpCommand())
+            ? desktops.AsEnumerable().Select(d => new ListItem(new SwitchToDesktopCommand(d))
             {
                 Title = d.Name,
-                Subtitle = d.IsVisible ? "current" : string.Empty,
+                Subtitle = $"Desktop {d.Index + 1}",
                 Icon = new(d.Wallpaper),
+                Tags = d.IsVisible ? [new Tag() { Text = "Current" }] : [],
             }).ToArray()
             : (IListItem[])[
                 new ListItem(new NoOpCommand()) { Title = "Failed to load the list of desktops" }
@@ -68,7 +69,7 @@ internal sealed partial class VirtualDesktopExtensionPage : ListPage
         }
     }
 
-    private string GetExePath()
+    public static string GetExePath()
     {
         return "VirtualDesktop11.exe";
     }
@@ -113,6 +114,7 @@ internal sealed partial class VirtualDesktopExtensionPage : ListPage
                     Name = match.Groups["Name"].Value.Trim(),
                     Wallpaper = match.Groups["Wallpaper"].Value,
                     IsVisible = match.Groups["Visible"].Success,
+                    Index = i - 2,
                 });
             }
         }
@@ -130,8 +132,38 @@ public sealed class Desktop
 
     public bool IsVisible { get; set; }
 
+    public int Index { get; set; }
+
     public override string ToString()
     {
         return $"Name: {Name}, Wallpaper: {Wallpaper}, IsVisible: {IsVisible}";
+    }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+public sealed partial class SwitchToDesktopCommand : InvokableCommand
+{
+    private readonly Desktop _desktop;
+
+    public SwitchToDesktopCommand(Desktop desktop)
+    {
+        _desktop = desktop;
+        Name = "Switch";
+    }
+
+    public override ICommandResult Invoke()
+    {
+        var exePath = VirtualDesktopExtensionPage.GetExePath();
+        var processInfo = new ProcessStartInfo
+        {
+            FileName = exePath,
+            Arguments = $"/s:{_desktop.Index}",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), // Set a valid working directory
+        };
+        using var process = Process.Start(processInfo);
+        return CommandResult.KeepOpen();
     }
 }
