@@ -1296,6 +1296,10 @@ EXHIBIT A -Mozilla Public License.
 
 ## NuGet Packages used by PowerToys
 
+
+- AdaptiveCards.ObjectModel.WinUI3 2.0.0-beta
+- AdaptiveCards.Rendering.WinUI3 2.1.0-beta
+- AdaptiveCards.Templating 2.0.2
 - Appium.WebDriver 4.4.5
 - Azure.AI.OpenAI 1.0.0-beta.12
 - CommunityToolkit.Mvvm 8.2.2
@@ -1312,6 +1316,7 @@ EXHIBIT A -Mozilla Public License.
 - ControlzEx 6.0.0
 - HelixToolkit 2.24.0
 - HelixToolkit.Core.Wpf 2.24.0
+- HtmlAgilityPack 1.11.70
 - hyjiacan.pinyin4net 4.1.1
 - Interop.Microsoft.Office.Interop.OneNote 1.1.0.2
 - LazyCache 2.4.0
@@ -1333,7 +1338,7 @@ EXHIBIT A -Mozilla Public License.
 - Microsoft.Windows.CsWin32 0.2.46-beta
 - Microsoft.Windows.CsWinRT 2.1.5
 - Microsoft.Windows.SDK.BuildTools 10.0.22621.2428
-- Microsoft.WindowsAppSDK 1.6.240923002
+- Microsoft.WindowsAppSDK 1.6.241106002
 - Microsoft.Xaml.Behaviors.WinUI.Managed 2.0.9
 - Microsoft.Xaml.Behaviors.Wpf 1.1.39
 - ModernWpfUI 0.9.4
@@ -1353,16 +1358,18 @@ EXHIBIT A -Mozilla Public License.
 - System.Data.OleDb 9.0.0
 - System.Data.SqlClient 4.8.6
 - System.Diagnostics.EventLog 9.0.0
-- System.Diagnostics.PerformanceCounter 9.0.0
 - System.Drawing.Common 9.0.0
 - System.IO.Abstractions 21.0.29
 - System.IO.Abstractions.TestingHelpers 21.0.29
 - System.Management 9.0.0
+- System.Net.Http 4.3.4
+- System.Private.Uri 4.3.2
 - System.Reactive 6.0.1
 - System.Runtime.Caching 9.0.0
 - System.ServiceProcess.ServiceController 9.0.0
 - System.Text.Encoding.CodePages 9.0.0
 - System.Text.Json 9.0.0
+- System.Text.RegularExpressions 4.3.1
 - UnicodeInformation 2.6.0
 - UnitsNet 5.56.0
 - UTF.Unknown 2.5.1
