@@ -81,25 +81,6 @@ internal sealed partial class VirtualDesktopExtensionPage : ListPage
         // Regex to match the desktop details
         var pattern = @"(?<Name>[^\(]+)\s*(?<Visible>\(visible\))?\s*\(Wallpaper:\s(?<Wallpaper>.+?)\)";
 
-        // var matches = Regex.Matches(output, pattern);
-        // var pattern = @"^(?<Name>[^\(]+)\s*(?<Visible>\(visible\))?\s*\(Wallpaper:\s(?<Wallpaper>.+?)\)$";
-        // var matches = Regex.Matches(output, pattern, RegexOptions.Multiline);
-        /*foreach (Match match in matches)
-        {
-            try
-            {
-                desktops.Add(new Desktop
-                {
-                    Name = match.Groups["Name"].Value.Trim(),
-                    Wallpaper = match.Groups["Wallpaper"].Value,
-                    IsVisible = match.Groups["Visible"].Success,
-                });
-            }
-            catch
-            {
-            }
-        }*/
-
         var lines = output.Split('\n');
         for (var i = 2; i < lines.Length; i++)
         {
