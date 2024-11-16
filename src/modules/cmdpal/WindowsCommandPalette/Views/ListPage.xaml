@@ -98,11 +98,12 @@
                                 TextWrapping="NoWrap"
                                 Visibility="{x:Bind Subtitle, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}" />
                         </StackPanel>
-                        <ItemsRepeater ItemTemplate="{StaticResource TagTemplate}"
-                                       ItemsSource="{x:Bind Tags}"
-                                       Grid.Column="2"
-                                       Visibility="{x:Bind HasTags}"
-                                       Layout="{StaticResource HorizontalStackLayout}" />
+                        <ItemsRepeater
+                            Grid.Column="2"
+                            ItemTemplate="{StaticResource TagTemplate}"
+                            ItemsSource="{x:Bind Tags}"
+                            Layout="{StaticResource HorizontalStackLayout}"
+                            Visibility="{x:Bind HasTags}" />
                     </Grid>
                 </ListViewItem>
             </DataTemplate>
@@ -241,8 +242,8 @@
             Grid.Row="2"
             Padding="24,12,0,0"
             Orientation="Horizontal"
-            Visibility="Collapsed"
-            Spacing="16">
+            Spacing="16"
+            Visibility="Collapsed">
             <TextBlock
                 FontSize="12"
                 FontWeight="SemiBold"
