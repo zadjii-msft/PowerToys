@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.Ext.Calc;
 
@@ -37,6 +38,7 @@ public partial class CalculatorCommandProvider : CommandProvider
 public sealed partial class CalculatorListPage : DynamicListPage
 {
     private readonly List<ListItem> _items = new();
+    private readonly SaveAction _saveAction = new();
 
     public CalculatorListPage()
     {
@@ -45,8 +47,23 @@ public sealed partial class CalculatorListPage : DynamicListPage
         PlaceholderText = "Type an equation...";
         Id = "com.microsoft.cmdpal.calculator";
 
-        _items.Add(new(new NoOpCommand()));
+        _items.Add(new(_saveAction));
         UpdateSearchText(string.Empty, string.Empty);
+
+        _saveAction.SaveRequested += HandeSave;
+    }
+
+    private void HandeSave(object sender, object args)
+    {
+        var lastResult = _items[0].Title;
+        if (!string.IsNullOrEmpty(lastResult))
+        {
+            var li = new ListItem(new NoOpCommand()) { Title = _items[0].Title, Subtitle = _items[0].Subtitle };
+            _items.Insert(1, li);
+            _items[0].Subtitle = string.Empty;
+            SearchText = lastResult;
+            this.RaiseItemsChanged(this._items.Count);
+        }
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
@@ -57,7 +74,7 @@ public sealed partial class CalculatorListPage : DynamicListPage
         }
         else
         {
-            ParseQuery(newSearch, out var result);
+            _items[0].TextToSuggest = ParseQuery(newSearch, out var result) ? result : string.Empty;
             _items[0].Title = result;
             _items[0].Subtitle = newSearch;
         }
@@ -81,5 +98,22 @@ public sealed partial class CalculatorListPage : DynamicListPage
     public override IListItem[] GetItems()
     {
         return _items.ToArray();
+    }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+public sealed partial class SaveAction : InvokableCommand
+{
+    public event TypedEventHandler<object, object> SaveRequested;
+
+    public SaveAction()
+    {
+        Name = "Save";
+    }
+
+    public override ICommandResult Invoke()
+    {
+        SaveRequested?.Invoke(this, this);
+        return CommandResult.KeepOpen();
     }
 }
