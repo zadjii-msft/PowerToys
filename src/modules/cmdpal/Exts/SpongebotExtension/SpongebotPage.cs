@@ -14,7 +14,7 @@ namespace SpongebotExtension;
 
 public partial class SpongebotPage : MarkdownPage, IFallbackHandler
 {
-    public CopyTextAction CopyTextAction { get; set; } = new(string.Empty);
+    public CopyTextCommand CopyCommand { get; set; } = new(string.Empty);
 
     // Name, Icon, IPropertyChanged: all those are defined in the MarkdownPage base class
     public SpongebotPage()
@@ -22,7 +22,7 @@ public partial class SpongebotPage : MarkdownPage, IFallbackHandler
         Name = string.Empty;
 
         Icon = new("https://imgflip.com/s/meme/Mocking-Spongebob.jpg");
-        Commands = [new CommandContextItem(CopyTextAction)];
+        Commands = [new CommandContextItem(CopyCommand)];
     }
 
     public void UpdateQuery(string query)

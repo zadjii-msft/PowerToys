@@ -47,7 +47,11 @@ public sealed partial class CalculatorListPage : DynamicListPage
         PlaceholderText = "Type an equation...";
         Id = "com.microsoft.cmdpal.calculator";
 
-        _items.Add(new(_saveAction));
+        _items.Add(new(_saveAction)
+        {
+            MoreCommands = [new CommandContextItem(new CopyTextCommand(string.Empty))],
+        });
+
         UpdateSearchText(string.Empty, string.Empty);
 
         _saveAction.SaveRequested += HandeSave;
@@ -58,7 +62,12 @@ public sealed partial class CalculatorListPage : DynamicListPage
         var lastResult = _items[0].Title;
         if (!string.IsNullOrEmpty(lastResult))
         {
-            var li = new ListItem(new NoOpCommand()) { Title = _items[0].Title, Subtitle = _items[0].Subtitle };
+            var li = new ListItem(new CopyTextCommand(lastResult))
+            {
+                Title = _items[0].Title,
+                Subtitle = _items[0].Subtitle,
+                TextToSuggest = lastResult,
+            };
             _items.Insert(1, li);
             _items[0].Subtitle = string.Empty;
             SearchText = lastResult;
