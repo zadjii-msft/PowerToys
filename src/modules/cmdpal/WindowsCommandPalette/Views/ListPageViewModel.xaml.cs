@@ -34,6 +34,8 @@ public sealed class ListPageViewModel : PageViewModel, INotifyPropertyChanged
 
     public string PlaceholderText { get; private set; } = "Type here to search...";
 
+    public string SearchText { get; set; } = string.Empty;
+
     private bool _loadingMore;
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -70,6 +72,10 @@ public sealed class ListPageViewModel : PageViewModel, INotifyPropertyChanged
             case nameof(PlaceholderText):
                 PlaceholderText = Page.PlaceholderText;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaceholderText)));
+                break;
+            case nameof(SearchText):
+                SearchText = Page.SearchText;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SearchText)));
                 break;
         }
     }

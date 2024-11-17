@@ -71,6 +71,7 @@ public sealed partial class CalculatorListPage : DynamicListPage
         if (string.IsNullOrEmpty(newSearch))
         {
             _items[0].Title = "Type an equation...";
+            _items[0].Subtitle = string.Empty;
         }
         else
         {
