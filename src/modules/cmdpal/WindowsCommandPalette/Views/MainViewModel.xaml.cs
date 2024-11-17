@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Ext.Bookmarks;
 using Microsoft.CmdPal.Ext.Calc;
@@ -47,6 +45,8 @@ public sealed class MainViewModel : IDisposable
     public event TypedEventHandler<object, object?>? SummonRequested;
 
     public event TypedEventHandler<object, object?>? AppsReady;
+
+    public event TypedEventHandler<object, ICommand?>? GoToCommandRequested;
 
     internal MainViewModel()
     {
@@ -109,5 +109,38 @@ public sealed class MainViewModel : IDisposable
     {
         _quitCommandProvider.Dispose();
         _reloadCommandProvider.Dispose();
+    }
+
+    public bool CheckAlias(string searchText)
+    {
+        var foundAliias = searchText == "vd";
+        var aliasTarget = "com.zadjii.VirtualDesktopsList";
+
+        if (foundAliias)
+        {
+            try
+            {
+                foreach (var listItemWrapper in this.TopLevelCommands)
+                {
+                    var li = listItemWrapper.Unsafe;
+                    if (li == null)
+                    {
+                        continue;
+                    }
+
+                    var id = li.Command?.Id;
+                    if (!string.IsNullOrEmpty(id) && id == aliasTarget)
+                    {
+                        GoToCommandRequested?.Invoke(this, li.Command);
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        return false;
     }
 }
