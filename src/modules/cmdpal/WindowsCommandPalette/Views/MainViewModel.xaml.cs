@@ -157,5 +157,6 @@ public sealed class MainViewModel : IDisposable
         this.AddAlias(new CommandAlias("vd", "com.zadjii.VirtualDesktopsList", true));
         this.AddAlias(new CommandAlias(":", "com.microsoft.cmdpal.registry", true));
         this.AddAlias(new CommandAlias("$", "com.microsoft.cmdpal.windowsSettings", true));
+        this.AddAlias(new CommandAlias("=", "com.microsoft.cmdpal.calculator", true));
     }
 }
