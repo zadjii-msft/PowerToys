@@ -64,20 +64,23 @@ public sealed class ListPageViewModel : PageViewModel, INotifyPropertyChanged
 
     private void Page_PropChanged(object sender, PropChangedEventArgs args)
     {
-        switch (args.PropertyName)
+        _dispatcherQueue.TryEnqueue(() =>
         {
-            case nameof(HasMore):
-                HasMore = Page.HasMore;
-                break;
-            case nameof(PlaceholderText):
-                PlaceholderText = Page.PlaceholderText;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaceholderText)));
-                break;
-            case nameof(SearchText):
-                SearchText = Page.SearchText;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SearchText)));
-                break;
-        }
+            switch (args.PropertyName)
+            {
+                case nameof(HasMore):
+                    HasMore = Page.HasMore;
+                    break;
+                case nameof(PlaceholderText):
+                    PlaceholderText = Page.PlaceholderText;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaceholderText)));
+                    break;
+                case nameof(SearchText):
+                    SearchText = Page.SearchText;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SearchText)));
+                    break;
+            }
+        });
     }
 
     internal Task InitialRender()

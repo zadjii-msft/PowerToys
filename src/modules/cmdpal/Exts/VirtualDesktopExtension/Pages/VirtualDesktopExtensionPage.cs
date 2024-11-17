@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Windows.Foundation;
 
 namespace VirtualDesktopExtension;
 
@@ -27,17 +27,35 @@ internal sealed partial class VirtualDesktopExtensionPage : ListPage
         var desktopsTask = GetDesktopsAsync();
         desktopsTask.ConfigureAwait(false);
         var desktops = desktopsTask.Result;
-        return desktops.Count > 0
-            ? desktops.AsEnumerable().Select(d => new ListItem(new SwitchToDesktopCommand(d))
+
+        if (desktops.Count == 0)
+        {
+            return [
+                new ListItem(new NoOpCommand()) { Title = "Failed to load the list of desktops" }
+            ];
+        }
+
+        var items = new List<ListItem>();
+        foreach (var d in desktops)
+        {
+            var command = new SwitchToDesktopCommand(d);
+            command.SwitchDesktopRequested += HandleSwitchDesktop;
+            var li = new ListItem(command)
             {
                 Title = d.Name,
                 Subtitle = $"Desktop {d.Index + 1}",
                 Icon = new(d.Wallpaper),
                 Tags = d.IsVisible ? [new Tag() { Text = "Current" }] : [],
-            }).ToArray()
-            : (IListItem[])[
-                new ListItem(new NoOpCommand()) { Title = "Failed to load the list of desktops" }
-            ];
+            };
+            items.Add(li);
+        }
+
+        return items.ToArray();
+    }
+
+    private void HandleSwitchDesktop(object sender, object args)
+    {
+        this.SearchText = string.Empty;
     }
 
     private async Task<List<Desktop>> GetDesktopsAsync()
@@ -55,9 +73,6 @@ internal sealed partial class VirtualDesktopExtensionPage : ListPage
                 CreateNoWindow = true,
                 WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), // Set a valid working directory
             };
-
-            // Returns a string like:
-            // Count of desktops: 5
             using var process = Process.Start(processInfo);
             var output = await process.StandardOutput.ReadToEndAsync();
             process.WaitForExit();
@@ -127,6 +142,8 @@ public sealed partial class SwitchToDesktopCommand : InvokableCommand
 {
     private readonly Desktop _desktop;
 
+    public event TypedEventHandler<object, object> SwitchDesktopRequested;
+
     public SwitchToDesktopCommand(Desktop desktop)
     {
         _desktop = desktop;
@@ -146,6 +163,7 @@ public sealed partial class SwitchToDesktopCommand : InvokableCommand
             WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), // Set a valid working directory
         };
         using var process = Process.Start(processInfo);
+        SwitchDesktopRequested?.Invoke(this, null);
         return CommandResult.KeepOpen();
     }
 }
