@@ -33,7 +33,7 @@ internal sealed partial class SampleDynamicListPage : DynamicListPage
 
     public override IListItem[] GetItems()
     {
-        var items = SearchText.ToCharArray().Select(ch => new ListItem(new NoOpCommand()) { Title = ch.ToString() }).ToArray();
+        var items = SearchText.ToCharArray().Select(ch => new ListItem(new NoOpCommand()) { Icon = new("\ue91B"), Title = ch.ToString() }).ToArray();
         if (items.Length == 0)
         {
             items = [new ListItem(new NoOpCommand()) { Title = "Start typing in the search box" }];
@@ -42,6 +42,7 @@ internal sealed partial class SampleDynamicListPage : DynamicListPage
         if (items.Length > 0)
         {
             items[0].Subtitle = "Notice how the number of items changes for this page when you type in the filter box";
+            items[0].Icon = items.Length % 2 == 0 ? new("\ue91B") : new("\ue8D2");
         }
 
         return items;
