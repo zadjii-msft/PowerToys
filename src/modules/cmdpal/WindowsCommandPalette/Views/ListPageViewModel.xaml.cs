@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -10,7 +11,7 @@ using Microsoft.UI.Dispatching;
 
 namespace WindowsCommandPalette.Views;
 
-public sealed class ListPageViewModel : PageViewModel
+public sealed class ListPageViewModel : PageViewModel, INotifyPropertyChanged
 {
     private readonly ObservableCollection<ListItemViewModel> _items = [];
 
@@ -31,14 +32,20 @@ public sealed class ListPageViewModel : PageViewModel
 
     public bool HasMore { get; private set; }
 
+    public string PlaceholderText { get; private set; } = "Type here to search...";
+
     private bool _loadingMore;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public ListPageViewModel(IListPage page)
         : base(page)
     {
         page.PropChanged += Page_PropChanged;
         page.ItemsChanged += Page_ItemsChanged;
+
         HasMore = page.HasMore;
+        PlaceholderText = page.PlaceholderText;
     }
 
     private void Page_ItemsChanged(object sender, ItemsChangedEventArgs args)
@@ -58,10 +65,12 @@ public sealed class ListPageViewModel : PageViewModel
         switch (args.PropertyName)
         {
             case nameof(HasMore):
-                {
-                    HasMore = Page.HasMore;
-                    break;
-                }
+                HasMore = Page.HasMore;
+                break;
+            case nameof(PlaceholderText):
+                PlaceholderText = Page.PlaceholderText;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaceholderText)));
+                break;
         }
     }
 

@@ -42,17 +42,18 @@ public sealed partial class CalculatorListPage : DynamicListPage
     {
         Icon = new("\ue8ef"); // Calculator
         Name = "Calculator";
-        PlaceholderText = "Type an equation";
+        PlaceholderText = "Type an equation...";
         Id = "com.microsoft.cmdpal.calculator";
 
         _items.Add(new(new NoOpCommand()));
+        UpdateSearchText(string.Empty, string.Empty);
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
         if (string.IsNullOrEmpty(newSearch))
         {
-            _items[0].Subtitle = "Type an equation";
+            _items[0].Title = "Type an equation...";
         }
         else
         {

@@ -225,7 +225,7 @@
                 VerticalContentAlignment="Stretch"
                 FontSize="18"
                 KeyDown="FilterBox_KeyDown"
-                PlaceholderText="Type here to search..."
+                PlaceholderText="{x:Bind ViewModel.PlaceholderText, Mode=OneWay}"
                 Style="{StaticResource SearchTextBoxStyle}"
                 TextChanged="FilterBox_TextChanged" />
 
