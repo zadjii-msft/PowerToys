@@ -19,7 +19,7 @@ internal sealed partial class VirtualDesktopExtensionPage : ListPage
     {
         Icon = new(string.Empty);
         Name = "Virtual Desktops";
-        this.Id = "com.zadjii.VirtualDesktopsList";
+        Id = "com.zadjii.VirtualDesktopsList";
     }
 
     public override IListItem[] GetItems()
