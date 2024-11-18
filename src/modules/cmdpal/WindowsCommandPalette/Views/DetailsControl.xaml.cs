@@ -14,5 +14,16 @@ public sealed partial class DetailsControl : UserControl
     {
         ViewModel = vm;
         InitializeComponent();
+        UpdateHeroImageIcon();
+    }
+
+    private async void UpdateHeroImageIcon()
+    {
+        var brush = await ViewModel.IcoElement();
+        if (brush != null)
+        {
+            // HeroImageIcon.IconSource = source;
+            HeroIcon.Fill = brush;
+        }
     }
 }

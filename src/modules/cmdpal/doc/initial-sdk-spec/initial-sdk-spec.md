@@ -1032,6 +1032,7 @@ allows extensions to specify apps in a variety of ways, including:
 struct IconDataType {
     IconDataType(String iconString);
     String Icon { get; };
+    Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
 }
 ```
 

@@ -23,13 +23,13 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Viewbox
-            Width="64"
             Height="64"
-            Visibility="{x:Bind ViewModel.HeroImage.Icon, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}"
-            HorizontalAlignment="Center">
-            <ContentControl
+            HorizontalAlignment="Stretch">
+            <!--<ContentControl
                 Margin="4,0,8,0"
-                Content="{x:Bind ViewModel.IcoElement}" />
+                Content="{x:Bind ViewModel.IcoElement}" />-->
+            <Rectangle HorizontalAlignment="Stretch" MinWidth="64" Height="64" x:Name="HeroIcon" />
+
         </Viewbox>
         <TextBlock
             Grid.Row="1"
