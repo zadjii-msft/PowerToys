@@ -2,7 +2,10 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -13,6 +16,7 @@ namespace Microsoft.CmdPal.Ext.OOBE;
 internal sealed partial class WelcomeListPage : DynamicListPage
 {
     private readonly ItemToComplete[] _listItems;
+    private IEnumerable<ListItem> _filteredItems;
 
     public WelcomeListPage()
     {
@@ -115,6 +119,8 @@ internal sealed partial class WelcomeListPage : DynamicListPage
                 },
             }
         ];
+
+        _filteredItems = _listItems;
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
@@ -126,11 +132,14 @@ internal sealed partial class WelcomeListPage : DynamicListPage
 
         var filterItem = _listItems[0];
 
+        _filteredItems = ListHelpers.FilterList(_listItems, newSearch).OfType<ListItem>();
+
         if (!filterItem.CompletionStatus && newSearch.Length != oldSearch.Length)
         {
             filterItem.ToggleCompletion();
-            RaiseItemsChanged(newSearch.Length);
         }
+
+        RaiseItemsChanged(0);
     }
 
     public sealed partial class ItemToComplete : ListItem
@@ -198,6 +207,6 @@ internal sealed partial class WelcomeListPage : DynamicListPage
 
     public override IListItem[] GetItems()
     {
-        return _listItems;
+        return _filteredItems.ToArray();
     }
 }
