@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Linq;
 using System.Runtime.Versioning;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Pages;
@@ -15,7 +16,6 @@ public partial class WindowsTerminalCommandsProvider : CommandProvider
 {
     private readonly Settings _settings = new();
     private readonly TerminalTopLevelListItem _terminalCommand;
-    private readonly ListItem _settingsCommand;
     private readonly SettingsManager _settingsManager;
 
     public const string ShowHiddenProfiles = nameof(ShowHiddenProfiles);
@@ -37,12 +37,12 @@ public partial class WindowsTerminalCommandsProvider : CommandProvider
         _settings.Add(openQuake);
         _settingsManager = new("C:\\Users\\jordiadoumie\\tmp\\test.json", _settings);
 
-        _settingsCommand = new ListItem(new SettingsPage(_settingsManager));
         _terminalCommand = new TerminalTopLevelListItem(_settingsManager);
+        _terminalCommand.MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))];
     }
 
     public override IListItem[] TopLevelCommands()
     {
-        return [_terminalCommand, _settingsCommand];
+        return [_terminalCommand];
     }
 }
