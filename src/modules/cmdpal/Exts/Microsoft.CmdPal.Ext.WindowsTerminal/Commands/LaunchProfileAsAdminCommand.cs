@@ -95,6 +95,6 @@ internal sealed partial class LaunchProfileAsAdminCommand : InvokableCommand
             // TODO GH #108 We need to figure out some logging
         }
 
-        return CommandResult.KeepOpen();
+        return CommandResult.Dismiss();
     }
 }
