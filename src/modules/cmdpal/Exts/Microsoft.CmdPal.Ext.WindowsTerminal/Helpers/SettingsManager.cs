@@ -109,7 +109,7 @@ public class SettingsManager
                         // Create a new JsonObject from the key-value pair to avoid parent conflicts
                         var updatePayload = new JsonObject
                         {
-                            [key] = keyValue.Value?["value"],
+                            [key] = keyValue.Value?["value"]?.DeepClone(),
                         };
 
                         // Pass this JsonObject to the Update method
