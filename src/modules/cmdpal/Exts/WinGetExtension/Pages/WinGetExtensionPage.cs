@@ -39,6 +39,7 @@ internal sealed partial class WinGetExtensionPage : ListPage
             {
                 Title = p.Name,
                 Subtitle = p.Id,
+                Tags = [new Tag() { Text = p.AvailableVersions[0].Version }],
             }).ToArray();
     }
 
