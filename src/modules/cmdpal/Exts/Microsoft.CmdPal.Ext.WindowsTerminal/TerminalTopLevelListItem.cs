@@ -4,6 +4,7 @@
 
 using System;
 using System.Data;
+using System.IO;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Pages;
 using Microsoft.CmdPal.Extensions;
@@ -16,6 +17,7 @@ public partial class TerminalTopLevelListItem : ListItem
     public TerminalTopLevelListItem(SettingsManager settingsManager)
         : base(new ProfilesListPage(settingsManager.GetSettings()))
     {
+        Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WindowsTerminal.dark.png"));
         Title = "Open WT Profiles";
         Subtitle = "Windows Terminal";
     }

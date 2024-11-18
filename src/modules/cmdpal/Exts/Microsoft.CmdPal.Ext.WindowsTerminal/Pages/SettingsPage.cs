@@ -32,9 +32,5 @@ internal sealed partial class SettingsPage : FormPage
     private void SettingsChanged(object sender, Settings args)
     {
         _settingsManager.SaveSettings();
-        /* Do something with the new settings here */
-
-        // var onOff = _settings.GetSetting<bool>("onOff");
-        // ExtensionHost.LogMessage(new LogMessage() { Message = $"SampleSettingsPage: Changed the value of onOff to {onOff}" });
     }
 }
