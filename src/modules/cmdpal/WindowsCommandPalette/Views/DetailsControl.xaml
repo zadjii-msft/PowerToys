@@ -22,15 +22,12 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Viewbox
-            Height="64"
-            HorizontalAlignment="Stretch">
-            <!--<ContentControl
+        <ContentControl
+                x:Name="HeroIconContent" 
                 Margin="4,0,8,0"
-                Content="{x:Bind ViewModel.IcoElement}" />-->
-            <Rectangle HorizontalAlignment="Stretch" MinWidth="64" Height="64" x:Name="HeroIcon" />
-
-        </Viewbox>
+                HorizontalAlignment="Center"
+                MinWidth="64"
+                Grid.Row="0" />
         <TextBlock
             Grid.Row="1"
             HorizontalAlignment="Center"
