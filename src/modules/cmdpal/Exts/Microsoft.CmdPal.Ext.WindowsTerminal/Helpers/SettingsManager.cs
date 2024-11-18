@@ -51,7 +51,7 @@ public class SettingsManager
             var settingsDict = new Dictionary<string, object>();
 
             // Access all settings using the new GetAllSettings method
-            var allSettings = _settings.GetAllSettings();
+            var allSettings = _settings.GetSettingsDictionary();
 
             foreach (var (key, setting) in allSettings)
             {
@@ -92,10 +92,34 @@ public class SettingsManager
 
         try
         {
+            // Read the JSON content from the file
             var jsonContent = File.ReadAllText(_filePath);
-            if (JsonNode.Parse(jsonContent) is JsonObject jsonObject)
+
+            // Parse the JSON content into a JsonObject
+            if (JsonNode.Parse(jsonContent) is JsonObject savedSettings)
             {
-                _settings.Update(jsonObject.ToJsonString());
+                foreach (KeyValuePair<string, JsonNode?> keyValue in savedSettings)
+                {
+                    var key = keyValue.Key;
+
+                    // Check if the key exists in the settings dictionary
+                    if (_settings.GetSettingsDictionary().TryGetValue(key, out var settingObject) &&
+                        settingObject is Setting<bool> setting)
+                    {
+                        // Create a new JsonObject from the key-value pair to avoid parent conflicts
+                        var updatePayload = new JsonObject
+                        {
+                            [key] = keyValue.Value?["value"],
+                        };
+
+                        // Pass this JsonObject to the Update method
+                        setting.Update(updatePayload);
+                    }
+                }
+            }
+            else
+            {
+                ExtensionHost.LogMessage(new LogMessage() { Message = "Failed to parse settings file as JsonObject." });
             }
         }
         catch (Exception ex)

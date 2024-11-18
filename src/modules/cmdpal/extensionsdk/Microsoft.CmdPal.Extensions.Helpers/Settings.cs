@@ -20,7 +20,7 @@ public sealed class Settings
         _settings.Add(s.Key, s);
     }
 
-    public Dictionary<string, object> GetAllSettings()
+    public Dictionary<string, object> GetSettingsDictionary()
     {
         return _settings;
     }
