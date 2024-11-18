@@ -35,7 +35,7 @@ internal sealed partial class ProfilesListPage : ListPage
 
     public ProfilesListPage(Settings terminalSettings)
     {
-        Icon = new(string.Empty);
+        Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WindowsTerminal.dark.png"));
         Name = "Windows Terminal Profiles";
         showHiddenProfiles = terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.ShowHiddenProfiles));
         openNewTab = terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.OpenNewTab));
