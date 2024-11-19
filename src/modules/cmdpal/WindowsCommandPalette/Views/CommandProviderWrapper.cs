@@ -77,7 +77,7 @@ public sealed class CommandProviderWrapper
         // On a BG thread here
         if (commands != null)
         {
-            _topLevelItems = (IListItem[])commands;
+            _topLevelItems = commands;
         }
     }
 
