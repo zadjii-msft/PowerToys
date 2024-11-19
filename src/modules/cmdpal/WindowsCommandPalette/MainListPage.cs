@@ -5,8 +5,10 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.UI.Dispatching;
 using WindowsCommandPalette.Models;
 using WindowsCommandPalette.Views;
 
@@ -19,8 +21,12 @@ public sealed partial class MainListPage : DynamicListPage
     private readonly FilteredListSection _filteredSection;
     private readonly ObservableCollection<MainListItem> topLevelItems = new();
 
+    private readonly DispatcherQueue _dispatcherQueue;
+
     public MainListPage(MainViewModel viewModel)
     {
+        this._dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
         this._mainViewModel = viewModel;
 
         // wacky: "All apps" is added to _mainViewModel.TopLevelCommands before
@@ -57,28 +63,50 @@ public sealed partial class MainListPage : DynamicListPage
 
     private void UpdateQuery()
     {
-        // Let our filtering wrapper know the newly typed search text:
-        _filteredSection.Query = SearchText;
-
-        //// Update all the top-level commands which are fallback providers:
+        // // Update all the top-level commands which are fallback providers:
         // var fallbacks = topLevelItems
-        //    .Select(i => i?.FallbackHandler)
-        //    .Where(fb => fb != null)
-        //    .Select(fb => fb!);
+        //     .Select(i => i?.FallbackHandler)
+        //     .Where(fb => fb != null)
+        //     .Select(fb => fb!);
+
         // foreach (var fb in fallbacks)
         // {
-        //    fb.UpdateQuery(SearchText);
+        //     try
+        //     {
+        //         fb.UpdateQuery(SearchText);
+        //     }
+        //     catch (COMException ex)
+        //     {
+        //         Debug.WriteLine("Failed to update fallback handler:");
+        //         Debug.WriteLine(ex);
+        //     }
         // }
+
+        // Let our filtering wrapper know the newly typed search text.
+        // Do this _after_ updating our fallback handlers.
+        _filteredSection.Query = SearchText;
+
         var count = string.IsNullOrEmpty(SearchText) ? topLevelItems.Count : _filteredSection.Count;
         RaiseItemsChanged(count);
     }
 
     public override IListItem[] GetItems()
     {
-        return string.IsNullOrEmpty(SearchText) ? topLevelItems.ToArray() : _filteredSection.Items;
+        return string.IsNullOrEmpty(SearchText) ? topLevelItems
+            .Where(item => !string.IsNullOrEmpty(item.Title))
+            .ToArray()
+            : _filteredSection.Items;
     }
 
     private void TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        this._dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+        {
+            this.Handle_TopLevelCommands_CollectionChanged(sender, e);
+        });
+    }
+
+    private void Handle_TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         Debug.WriteLine("TopLevelCommands_CollectionChanged");
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)

@@ -184,6 +184,8 @@ namespace Microsoft.CmdPal.Extensions
     interface IPage requires ICommand {
         String Title { get; };
         Boolean Loading { get; };
+        
+        Windows.UI.Color AccentColor { get; };
     }
     
     
