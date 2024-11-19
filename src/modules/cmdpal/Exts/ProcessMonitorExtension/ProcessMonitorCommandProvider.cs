@@ -22,7 +22,7 @@ internal sealed partial class ProcessMonitorCommandProvider : CommandProvider
         },
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _actions;
     }

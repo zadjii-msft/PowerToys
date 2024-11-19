@@ -23,7 +23,7 @@ public partial class SSHKeychainCommandsProvider : CommandProvider
         },
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _commands;
     }

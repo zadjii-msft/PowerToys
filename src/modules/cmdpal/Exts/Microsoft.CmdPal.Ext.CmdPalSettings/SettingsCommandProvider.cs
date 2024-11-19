@@ -17,7 +17,7 @@ public partial class SettingsCommandProvider : CommandProvider
         DisplayName = $"Settings";
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [new ListItem(settingsPage) { Subtitle = "CmdPal settings" }];
     }

@@ -78,7 +78,7 @@ public partial class BookmarksCommandProvider : CommandProvider
         _commands.AddRange(collected);
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         if (_commands.Count == 0)
         {

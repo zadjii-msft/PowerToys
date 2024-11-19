@@ -1838,10 +1838,12 @@ classDiagram
         IconDataType Icon
         Boolean Frozen
 
-        IListItem[] TopLevelCommands()
+        ICommandItem[] TopLevelCommands()
+        IFallbackCommandItem[] FallbackCommands()
         IListItem GetCommand(String id)
     }
-    IListItem "*" *-- ICommandProvider
+    ICommandItem "*" *-- ICommandProvider
+    IFallbackCommandItem "*" *-- ICommandProvider
 ```
 
 

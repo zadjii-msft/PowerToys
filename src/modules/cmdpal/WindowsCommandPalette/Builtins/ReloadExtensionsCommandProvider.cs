@@ -12,7 +12,7 @@ public partial class ReloadExtensionsCommandProvider : CommandProvider
 {
     private readonly ReloadExtensionsAction reloadAction = new();
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [new ListItem(reloadAction) { Subtitle = "Reload Command Palette extensions" }];
     }

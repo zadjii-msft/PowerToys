@@ -19,7 +19,7 @@ public partial class MediaActionsProvider : CommandProvider
         new MediaListItem()
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _actions;
     }

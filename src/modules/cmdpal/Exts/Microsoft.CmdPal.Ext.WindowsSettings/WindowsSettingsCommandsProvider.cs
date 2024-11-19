@@ -33,7 +33,7 @@ public partial class WindowsSettingsCommandsProvider : CommandProvider
         WindowsSettingsPathHelper.GenerateSettingsPathValues(_windowsSettings);
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [
             _searchSettingsListItem

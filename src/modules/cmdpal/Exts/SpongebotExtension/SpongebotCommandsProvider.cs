@@ -20,7 +20,7 @@ internal sealed partial class SpongebotCommandsProvider : CommandProvider
 
     private readonly SpongebotSettingsPage settingsPage = new();
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         var settingsPath = SpongebotPage.StateJsonPath();
         if (!File.Exists(settingsPath))

@@ -14,7 +14,7 @@ public partial class QuitCommandProvider : CommandProvider
 
     public event TypedEventHandler<object?, object?>? QuitRequested { add => quitAction.QuitRequested += value; remove => quitAction.QuitRequested -= value; }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [new ListItem(quitAction) { Subtitle = "Exit Command Palette" }];
     }

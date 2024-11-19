@@ -49,7 +49,7 @@ public partial class YouTubeExtensionActionsProvider : CommandProvider
 
     private readonly YouTubeAPIPage apiPage = new();
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return TopLevelCommandsAsync().GetAwaiter().GetResult();
     }

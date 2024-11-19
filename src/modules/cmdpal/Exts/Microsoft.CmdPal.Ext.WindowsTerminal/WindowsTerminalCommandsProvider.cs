@@ -17,7 +17,7 @@ public partial class WindowsTerminalCommandsProvider : CommandProvider
         DisplayName = $"Windows Terminal";
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [terminalCommand];
     }

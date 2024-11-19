@@ -22,7 +22,7 @@ public partial class SamplePagesCommandsProvider : CommandProvider
        },
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _commands;
     }

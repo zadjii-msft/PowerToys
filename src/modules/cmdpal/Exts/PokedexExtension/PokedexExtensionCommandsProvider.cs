@@ -18,7 +18,7 @@ public partial class PokedexExtensionActionsProvider : CommandProvider
         new ListItem(new PokedexExtensionPage()) { Subtitle = "Search your favorite pocket monsters" },
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _commands;
     }

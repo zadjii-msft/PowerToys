@@ -19,7 +19,7 @@ public partial class HackerNewsCommandsProvider : CommandProvider
         new ListItem(new HackerNewsPage()),
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _actions;
     }

@@ -145,7 +145,7 @@ public partial class MastodonExtensionActionsProvider : CommandProvider
         new ListItem(new MastodonExtensionPage()) { Subtitle = "Explore top posts on mastodon.social" },
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _actions;
     }

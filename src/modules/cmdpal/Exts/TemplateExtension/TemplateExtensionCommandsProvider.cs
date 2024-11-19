@@ -23,7 +23,7 @@ public partial class TemplateExtensionActionsProvider : CommandProvider
         new ListItem(new TemplateExtensionPage()),
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _commands;
     }

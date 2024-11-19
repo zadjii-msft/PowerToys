@@ -26,7 +26,7 @@ public partial class MenusActionsProvider : CommandProvider
         new ListItem(new AllWindowsPage()) { Subtitle = "Search menus in open windows" },
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _commands;
     }

@@ -14,7 +14,7 @@ public partial class WindowsServicesCommandsProvider : CommandProvider
         DisplayName = $"Windows Services";
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [
             new ListItem(new ServicesListPage())

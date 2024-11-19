@@ -17,7 +17,7 @@ public partial class CalculatorCommandProvider : CommandProvider
         DisplayName = "Calculator";
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [calculatorCommand];
     }

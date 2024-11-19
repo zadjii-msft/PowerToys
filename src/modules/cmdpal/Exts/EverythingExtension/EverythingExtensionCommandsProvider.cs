@@ -27,7 +27,7 @@ public partial class EverythingExtensionActionsProvider : CommandProvider
         },
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _commands;
     }

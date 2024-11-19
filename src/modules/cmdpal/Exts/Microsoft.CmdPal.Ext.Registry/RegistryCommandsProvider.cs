@@ -14,7 +14,7 @@ public partial class RegistryCommandsProvider : CommandProvider
         DisplayName = $"Windows Registry";
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [
             new ListItem(new RegistryListPage())
