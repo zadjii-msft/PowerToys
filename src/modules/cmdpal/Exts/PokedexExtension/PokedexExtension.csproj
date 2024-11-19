@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\Common.Dotnet.CsWinRT.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>SamplePagesExtension</RootNamespace>
+    <RootNamespace>PokedexExtension</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>false</UseWinUI>
@@ -40,8 +40,9 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands\" />
     <Folder Include="Data\" />
+    <Folder Include="Forms\" />
+    <Folder Include="Commands\" />
   </ItemGroup>
 
   <!--
