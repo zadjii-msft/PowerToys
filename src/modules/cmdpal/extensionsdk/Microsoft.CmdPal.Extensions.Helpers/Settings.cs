@@ -20,11 +20,6 @@ public sealed class Settings
         _settings.Add(s.Key, s);
     }
 
-    public Dictionary<string, object> GetSettingsDictionary()
-    {
-        return _settings;
-    }
-
     public T? GetSetting<T>(string key)
     {
         return _settings[key] is Setting<T> s ? s.Value : default;

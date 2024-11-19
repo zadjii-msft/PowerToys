@@ -37,18 +37,15 @@ internal sealed partial class ProfilesListPage : ListPage
     {
         Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WindowsTerminal.dark.png"));
         Name = "Windows Terminal Profiles";
-        showHiddenProfiles = terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.ShowHiddenProfiles));
-        openNewTab = terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.OpenNewTab));
-        openQuake = terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.OpenQuake));
         _terminalSettings = terminalSettings;
     }
 
 #pragma warning disable SA1108
     public List<ListItem> Query()
     {
-        showHiddenProfiles = _terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.ShowHiddenProfiles));
-        openNewTab = _terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.OpenNewTab));
-        openQuake = _terminalSettings.GetSetting<bool>(nameof(WindowsTerminalCommandsProvider.OpenQuake));
+        showHiddenProfiles = _terminalSettings.GetSetting<bool>(nameof(SettingsManager.ShowHiddenProfiles));
+        openNewTab = _terminalSettings.GetSetting<bool>(nameof(SettingsManager.OpenNewTab));
+        openQuake = _terminalSettings.GetSetting<bool>(nameof(SettingsManager.OpenQuake));
 
         var profiles = _terminalQuery.GetProfiles();
 

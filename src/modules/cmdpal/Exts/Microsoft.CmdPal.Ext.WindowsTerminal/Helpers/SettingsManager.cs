@@ -22,7 +22,17 @@ namespace Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
 public class SettingsManager
 {
     private readonly string _filePath;
-    private readonly Settings _settings;
+    private readonly Settings _settings = new();
+
+    private readonly ToggleSetting _showHiddenProfiles = new(ShowHiddenProfiles, "Show hidden profiles", "Show hidden profiles", false);
+    private readonly ToggleSetting _openNewTab = new(OpenNewTab, "Open profiles in a new tab", "Open profiles in a new tab", false);
+    private readonly ToggleSetting _openQuake = new(OpenQuake, "Open terminal in quake mode", "Open terminal in quake mode", false);
+
+    private readonly Dictionary<string, object> settingsDict = new();
+
+    public const string ShowHiddenProfiles = nameof(ShowHiddenProfiles);
+    public const string OpenNewTab = nameof(OpenNewTab);
+    public const string OpenQuake = nameof(OpenQuake);
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
@@ -42,10 +52,17 @@ public class SettingsManager
         return Path.Combine(directory, "state.json");
     }
 
-    public SettingsManager(string filePath, Settings settings)
+    public SettingsManager()
     {
-        _filePath = filePath;
-        _settings = settings;
+        _filePath = SettingsJsonPath();
+
+        _settings.Add(_showHiddenProfiles);
+        _settings.Add(_openNewTab);
+        _settings.Add(_openQuake);
+
+        settingsDict[ShowHiddenProfiles] = _showHiddenProfiles.ToDictionary();
+        settingsDict[OpenNewTab] = _openNewTab.ToDictionary();
+        settingsDict[OpenQuake] = _openQuake.ToDictionary();
 
         // Load settings from file upon initialization
         LoadSettings();
@@ -60,29 +77,9 @@ public class SettingsManager
     {
         try
         {
-            var settingsDict = new Dictionary<string, object>();
-
-            // Access all settings using the new GetAllSettings method
-            var allSettings = _settings.GetSettingsDictionary();
-
-            foreach (var (key, setting) in allSettings)
-            {
-                // Call ToDictionary on each setting if the method exists
-                var toDictionaryMethod = setting.GetType().GetMethod("ToDictionary");
-                if (toDictionaryMethod != null)
-                {
-                    // Invoke ToDictionary on the setting and add the result to settingsDict
-                    if (toDictionaryMethod.Invoke(setting, null) is Dictionary<string, object> settingDict)
-                    {
-                        settingsDict[key] = settingDict;
-                    }
-                }
-                else
-                {
-                    // If ToDictionary is not available, save the raw value
-                    settingsDict[key] = setting;
-                }
-            }
+            settingsDict[ShowHiddenProfiles] = _showHiddenProfiles.ToDictionary();
+            settingsDict[OpenNewTab] = _openNewTab.ToDictionary();
+            settingsDict[OpenQuake] = _openQuake.ToDictionary();
 
             // Serialize the main dictionary to JSON and save it to the file
             var settingsJson = JsonSerializer.Serialize(settingsDict, _serializerOptions);
@@ -114,18 +111,22 @@ public class SettingsManager
                 {
                     var key = keyValue.Key;
 
-                    // Check if the key exists in the settings dictionary
-                    if (_settings.GetSettingsDictionary().TryGetValue(key, out var settingObject) &&
-                        settingObject is Setting<bool> setting)
+                    var updatePayload = new JsonObject
                     {
-                        // Create a new JsonObject from the key-value pair to avoid parent conflicts
-                        var updatePayload = new JsonObject
-                        {
-                            [key] = keyValue.Value?["value"]?.DeepClone(),
-                        };
+                        [key] = keyValue.Value?["value"]?.DeepClone(),
+                    };
 
-                        // Pass this JsonObject to the Update method
-                        setting.Update(updatePayload);
+                    if (key == ShowHiddenProfiles)
+                    {
+                        _showHiddenProfiles.Update(updatePayload);
+                    }
+                    else if (key == OpenNewTab)
+                    {
+                        _openNewTab.Update(updatePayload);
+                    }
+                    else if (key == OpenQuake)
+                    {
+                        _openQuake.Update(updatePayload);
                     }
                 }
             }
