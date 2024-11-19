@@ -36,22 +36,10 @@ public partial class WindowsTerminalCommandsProvider : CommandProvider
         _settings.Add(showHiddenProfiles);
         _settings.Add(openNewTab);
         _settings.Add(openQuake);
-        _settingsManager = new(WindowsTerminalCommandsProvider.SettingsJsonPath(), _settings);
+        _settingsManager = new(SettingsManager.SettingsJsonPath(), _settings);
 
         _terminalCommand = new TerminalTopLevelListItem(_settingsManager);
         _terminalCommand.MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))];
-    }
-
-    internal static string SettingsJsonPath()
-    {
-        // Get the path to our exe
-        var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-
-        // Get the directory of the exe
-        var directory = Path.GetDirectoryName(path) ?? string.Empty;
-
-        // now, the state is just next to the exe
-        return Path.Combine(directory, "state.json");
     }
 
     public override IListItem[] TopLevelCommands()

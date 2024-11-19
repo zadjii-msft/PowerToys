@@ -30,6 +30,18 @@ public class SettingsManager
         Converters = { new JsonStringEnumConverter() },
     };
 
+    internal static string SettingsJsonPath()
+    {
+        // Get the path to our exe
+        var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+
+        // Get the directory of the exe
+        var directory = Path.GetDirectoryName(path) ?? string.Empty;
+
+        // now, the state is just next to the exe
+        return Path.Combine(directory, "state.json");
+    }
+
     public SettingsManager(string filePath, Settings settings)
     {
         _filePath = filePath;
