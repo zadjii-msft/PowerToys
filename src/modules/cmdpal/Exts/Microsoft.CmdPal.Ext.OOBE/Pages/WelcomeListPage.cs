@@ -45,7 +45,13 @@ internal sealed partial class WelcomeListPage : DynamicListPage
                 Details = new Details()
                 {
                     Title = "Filtering Items",
-                    Body = "You can filter items in the command palette by typing into the search box. To mark this item as completed, begin typing",
+                    Body = @"
+You can filter items in the command palette by typing into the search box:
+
+![Command Palette Search](C:/Users/jordiadoumie/source/repos/PowerToys/src/settings-ui/Settings.UI/Assets/Settings/Modules/OOBE/AdvancedPaste.gif)
+
+> **To mark this item as completed, begin typing.**
+",
                 },
             },
             new ItemToComplete(this)
@@ -157,7 +163,7 @@ internal sealed partial class WelcomeListPage : DynamicListPage
 
         public IconDataType GetIcon()
         {
-            return CompletionStatus ? new("\ue91B") : new("\ue8D2");
+            return CompletionStatus ? new("\uEC61") : new("\uEA3A"); // CompletedSolid and CircleRing Icons
         }
 
         public ItemToComplete(WelcomeListPage welcomeListPage)
