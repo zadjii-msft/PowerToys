@@ -60,31 +60,22 @@ public sealed partial class MainListPage : DynamicListPage
         // Let our filtering wrapper know the newly typed search text:
         _filteredSection.Query = SearchText;
 
-        // Update all the top-level commands which are fallback providers:
-        var fallbacks = topLevelItems
-            .Select(i => i?.FallbackHandler)
-            .Where(fb => fb != null)
-            .Select(fb => fb!);
-
-        foreach (var fb in fallbacks)
-        {
-            fb.UpdateQuery(SearchText);
-        }
-
+        //// Update all the top-level commands which are fallback providers:
+        // var fallbacks = topLevelItems
+        //    .Select(i => i?.FallbackHandler)
+        //    .Where(fb => fb != null)
+        //    .Select(fb => fb!);
+        // foreach (var fb in fallbacks)
+        // {
+        //    fb.UpdateQuery(SearchText);
+        // }
         var count = string.IsNullOrEmpty(SearchText) ? topLevelItems.Count : _filteredSection.Count;
         RaiseItemsChanged(count);
     }
 
     public override IListItem[] GetItems()
     {
-        if (string.IsNullOrEmpty(SearchText))
-        {
-            return topLevelItems.ToArray();
-        }
-        else
-        {
-            return _filteredSection.Items;
-        }
+        return string.IsNullOrEmpty(SearchText) ? topLevelItems.ToArray() : _filteredSection.Items;
     }
 
     private void TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

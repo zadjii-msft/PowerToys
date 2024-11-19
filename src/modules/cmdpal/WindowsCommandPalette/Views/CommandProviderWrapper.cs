@@ -19,9 +19,9 @@ public sealed class CommandProviderWrapper
     private ICommandProvider CommandProvider { get; }
 
     private readonly IExtensionWrapper? extensionWrapper;
-    private IListItem[] _topLevelItems = [];
+    private ICommandItem[] _topLevelItems = [];
 
-    public IListItem[] TopLevelItems => _topLevelItems;
+    public ICommandItem[] TopLevelItems => _topLevelItems;
 
     public CommandProviderWrapper(ICommandProvider provider)
     {
@@ -53,7 +53,7 @@ public sealed class CommandProviderWrapper
             return;
         }
 
-        var t = new Task<IListItem[]>(() =>
+        var t = new Task<ICommandItem[]>(() =>
         {
             try
             {
@@ -77,7 +77,7 @@ public sealed class CommandProviderWrapper
         // On a BG thread here
         if (commands != null)
         {
-            _topLevelItems = commands;
+            _topLevelItems = (IListItem[])commands;
         }
     }
 

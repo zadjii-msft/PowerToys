@@ -20,7 +20,8 @@ public sealed partial class MainListItem : ListItem
         Title = Item.Title ?? Item.Command.Name;
         Subtitle = Item.Subtitle;
         MoreCommands = Item.MoreCommands;
-        FallbackHandler = Item.FallbackHandler;
+
+        // FallbackHandler = Item.FallbackHandler;
         Tags = Item.Tags;
 
         if (Command != null)

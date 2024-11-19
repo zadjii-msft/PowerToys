@@ -687,18 +687,19 @@ Lists can be either "static" or "dynamic":
 
 
 ```csharp
-interface IFallbackHandler {
-    void UpdateQuery(String query);
-}
 
 [uuid("c78b9851-e76b-43ee-8f76-da5ba14e69a4")]
 interface IContextItem {}
 
-interface ICommandContextItem requires IContextItem {
-    ICommand Command { get; };
+interface ICommandItem requires INotifyPropChanged {
+    ICommand Command{ get; };
+    IContextItem[] MoreCommands{ get; };
     IconDataType Icon{ get; };
     String Title{ get; };
-    String Tooltip { get; };
+    String Subtitle{ get; };
+} 
+
+interface ICommandContextItem requires ICommandItem, IContextItem {
     Boolean IsCritical { get; }; // READ: "make this red"
     // TODO-future: we should allow app developers to specify a default keybinding for each of these actions
 }
@@ -706,24 +707,9 @@ interface ICommandContextItem requires IContextItem {
 [uuid("924a87fc-32fe-4471-9156-84b3b30275a6")]
 interface ISeparatorContextItem requires IContextItem {}
 
-interface ISubMenuContextItem requires IContextItem {
-    IContextItem[] MoreCommands{ get; };
-    IconDataType Icon{ get; };
-    String Title{ get; };
-    String Tooltip { get; };
-    Boolean IsCritical { get; }; // READ: "make this red"
-    // TODO-future: we should allow app developers to specify a default keybinding for each of these actions
-}
-
-interface IListItem requires INotifyPropChanged {
-    IconDataType Icon{ get; };
-    String Title{ get; };
-    String Subtitle{ get; };
-    ICommand Command{ get; };
-    IContextItem[] MoreCommands{ get; };
+interface IListItem requires ICommandItem {
     ITag[] Tags{ get; };
     IDetails Details{ get; };
-    IFallbackHandler FallbackHandler{ get; };
     String Section { get; };
     String TextToSuggest { get; };
 }
@@ -762,15 +748,15 @@ when the user selects the item. If the IListItem has a non-null `Icon`, that
 icon will be displayed in the list. If the `Icon` is null, DevPal will display
 the `Icon` of the list item's `Command` instead.
 
-ListItems may also have a list of `MoreCommands`.
-These are additional commands that the user can take on the item. These will be
-displayed to the user in the "More commands" flyout when the user has that item
-selected. As the user moves focus through the list to select different items, we
-will update the UI to show the commands for the currently selected item.
+ListItems may also have a list of `MoreCommands`. These are additional commands
+that the user can take on the item. These will be displayed to the user in the
+"More commands" flyout when the user has that item selected. As the user moves
+focus through the list to select different items, we will update the UI to show
+the commands for the currently selected item.
 
 ![A prototype of the ListItem context menu with commands](./context-actions-prototype.png)
 
-For more details on the structure of the `Actions` property, see the
+For more details on the structure of the `MoreCommands` property, see the
 [`ContextItem`s](#contextitems) section below.
 
 As an example, here's how the Media Controls extension adds play/pause, next &
@@ -1257,6 +1243,8 @@ The following are additional type definitions that are used throughout the SDK.
 This represents a collection of items that might appear in the `MoreCommands`
 flyout. Mostly, these are just commands and seperators.
 
+Additionally, a context item may be a `ISubMenuContextItem`. This is a special type of context entry which represents a nested command item. 
+
 #### `IconDataType`
 
 This is a wrapper type for passing information about an icon to DevPal. This
@@ -1378,6 +1366,14 @@ interface ICommandSettings {
     IFormPage SettingsPage { get; };
 };
 
+interface IFallbackHandler {
+    void UpdateQuery(String query);
+};
+
+interface IFallbackCommandItem requires ICommandItem {
+    IFallbackHandler FallbackHandler{ get; };
+};
+
 interface ICommandProvider requires Windows.Foundation.IClosable
 {
     String DisplayName { get; };
@@ -1385,7 +1381,8 @@ interface ICommandProvider requires Windows.Foundation.IClosable
     ICommandSettings Settings { get; };
     Boolean Frozen { get; };
 
-    IListItem[] TopLevelCommands();
+    ICommandItem[] TopLevelCommands();
+    IFallbackCommandItem[] FallbackCommands();
 
     ICommand GetCommand(String id);
 
