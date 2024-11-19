@@ -53,7 +53,7 @@ internal sealed partial class ProfilesListPage : ListPage
 
         foreach (var profile in profiles)
         {
-            if (profile.Hidden && !showHiddenProfiles) // TODO: hmmm, probably need settings to do this --> && !_showHiddenProfiles)
+            if (profile.Hidden && !showHiddenProfiles)
             {
                 continue;
             }
