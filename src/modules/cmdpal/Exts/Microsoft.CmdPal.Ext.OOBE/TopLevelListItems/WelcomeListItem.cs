@@ -14,7 +14,14 @@ public partial class WelcomeListItem : ListItem
     public WelcomeListItem()
         : base(new WelcomeListPage())
     {
+        Icon = new("\uF133");
         Title = "Welcome to the Command Palette";
+        Subtitle = "3/12 complete";
         Section = "Welcome Jordi";
+        Tags = [new Tag()
+        {
+            Text = "Tutorial",
+        }
+        ];
     }
 }

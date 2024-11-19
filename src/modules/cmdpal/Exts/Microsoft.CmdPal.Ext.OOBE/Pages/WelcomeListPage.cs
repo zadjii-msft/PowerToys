@@ -16,11 +16,11 @@ namespace Microsoft.CmdPal.Ext.OOBE;
 internal sealed partial class WelcomeListPage : DynamicListPage
 {
     private readonly ItemToComplete[] _listItems;
-    private IEnumerable<ListItem> _filteredItems;
+    private IEnumerable<ItemToComplete> _filteredItems;
 
     public WelcomeListPage()
     {
-        Icon = new(string.Empty);
+        Icon = new("\uF133");
         Name = "Getting Started";
         PlaceholderText = "Type here to filter the results";
         ShowDetails = true;
@@ -48,9 +48,9 @@ internal sealed partial class WelcomeListPage : DynamicListPage
                     Body = @"
 You can filter items in the command palette by typing into the search box:
 
-![Command Palette Search](C:/Users/jordiadoumie/source/repos/PowerToys/src/settings-ui/Settings.UI/Assets/Settings/Modules/OOBE/AdvancedPaste.gif)
+![Command Palette Search](C:/Users/jordiadoumie/source/repos/PowerToys/src/settings-ui/Settings.UI/Assets/Settings/Modules/OOBE/AdvancedPaste.gif) 
 
-> **To mark this item as completed, begin typing.**
+**To mark this item as completed, begin typing.**
 ",
                 },
             },
@@ -138,7 +138,14 @@ You can filter items in the command palette by typing into the search box:
 
         var filterItem = _listItems[0];
 
-        _filteredItems = ListHelpers.FilterList(_listItems, newSearch).OfType<ListItem>();
+        _filteredItems = ListHelpers.FilterList(_listItems, newSearch).OfType<ItemToComplete>();
+
+        // Separate incomplete and completed items
+        var incompleteItems = _filteredItems.Where(item => !item.CompletionStatus);
+        var completedItems = _filteredItems.Where(item => item.CompletionStatus);
+
+        // Combine incomplete items first, followed by completed items
+        _filteredItems = incompleteItems.Concat(completedItems).OfType<ItemToComplete>();
 
         if (!filterItem.CompletionStatus && newSearch.Length != oldSearch.Length)
         {
