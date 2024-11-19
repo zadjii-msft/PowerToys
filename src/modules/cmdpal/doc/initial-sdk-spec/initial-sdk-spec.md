@@ -1254,19 +1254,28 @@ allows extensions to specify apps in a variety of ways, including:
 * A URL to an image on the web or filesystem
 * A string for an emoji or Segoe Fluent icon
 * A path to an exe, dll or lnk file, to extract the icon from
-* A `IRandomAccessStream` to an image... [TODO!api-review] This is how DevHome does it but _why_
+* A `IRandomAccessStreamReference` to raw image data. This would be for
+  extensions that want to pass us raw image data, which isn't necessarily a file
+  which DevPal can load itself.
 
-[TODO!]: actually define this.
 <!-- In .CS because it's manually added to the idl -->
 ```cs
 struct IconDataType {
     IconDataType(String iconString);
+    static IconDataType FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
+
     String Icon { get; };
+    Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
 }
 ```
 
 Terminal already has a robust arbitrary string -> icon loader that we can easily
-reuse for this.
+reuse for this. DevPal will only fall back to the `Data` member if the `Icon`
+member is null or the empty string.
+
+As a future consideration, we may also consider supporting a base64 encoded
+image in the `Icon` member. Base64 doesn't include `:`, `.` or `\`, the presence
+of any of which would indicate the string is probably a URI, not base64 data.
 
 #### `Details`
 
