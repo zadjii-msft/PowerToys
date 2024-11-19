@@ -696,13 +696,24 @@ interface IContextItem {}
 
 interface ICommandContextItem requires IContextItem {
     ICommand Command { get; };
+    IconDataType Icon{ get; };
+    String Title{ get; };
     String Tooltip { get; };
-    Boolean IsCritical { get; }; // todo: better name for "make this red"
-
+    Boolean IsCritical { get; }; // READ: "make this red"
     // TODO-future: we should allow app developers to specify a default keybinding for each of these actions
 }
+
 [uuid("924a87fc-32fe-4471-9156-84b3b30275a6")]
 interface ISeparatorContextItem requires IContextItem {}
+
+interface ISubMenuContextItem requires IContextItem {
+    IContextItem[] MoreCommands{ get; };
+    IconDataType Icon{ get; };
+    String Title{ get; };
+    String Tooltip { get; };
+    Boolean IsCritical { get; }; // READ: "make this red"
+    // TODO-future: we should allow app developers to specify a default keybinding for each of these actions
+}
 
 interface IListItem requires INotifyPropChanged {
     IconDataType Icon{ get; };
