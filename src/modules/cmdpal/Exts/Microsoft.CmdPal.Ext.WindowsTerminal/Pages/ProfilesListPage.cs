@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Commands;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
+using Microsoft.CmdPal.Ext.WindowsTerminal.Properties;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.UI.Windowing;
@@ -36,7 +37,7 @@ internal sealed partial class ProfilesListPage : ListPage
     public ProfilesListPage(Settings terminalSettings)
     {
         Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WindowsTerminal.dark.png"));
-        Name = "Windows Terminal Profiles";
+        Name = Resources.profiles_list_page_name;
         _terminalSettings = terminalSettings;
     }
 

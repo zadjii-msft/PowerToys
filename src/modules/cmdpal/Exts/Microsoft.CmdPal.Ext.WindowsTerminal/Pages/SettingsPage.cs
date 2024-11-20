@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
+using Microsoft.CmdPal.Ext.WindowsTerminal.Properties;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -21,8 +22,8 @@ internal sealed partial class SettingsPage : FormPage
 
     public SettingsPage(SettingsManager settingsManager)
     {
-        Name = "Sample Terminal Settings";
-        Icon = new(string.Empty);
+        Name = Resources.settings_page_name;
+        Icon = new("\uE713"); // Settings icon
         _settings = settingsManager.GetSettings();
         _settingsManager = settingsManager;
 

@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.CmdPal.Ext.WindowsTerminal.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
 
 #nullable enable
@@ -24,9 +25,9 @@ public class SettingsManager
     private readonly string _filePath;
     private readonly Settings _settings = new();
 
-    private readonly ToggleSetting _showHiddenProfiles = new(ShowHiddenProfiles, "Show hidden profiles", "Show hidden profiles", false);
-    private readonly ToggleSetting _openNewTab = new(OpenNewTab, "Open profiles in a new tab", "Open profiles in a new tab", false);
-    private readonly ToggleSetting _openQuake = new(OpenQuake, "Open terminal in quake mode", "Open terminal in quake mode", false);
+    private readonly ToggleSetting _showHiddenProfiles = new(ShowHiddenProfiles, Resources.show_hidden_profiles, Resources.show_hidden_profiles, false);
+    private readonly ToggleSetting _openNewTab = new(OpenNewTab, Resources.open_new_tab, Resources.open_new_tab, false);
+    private readonly ToggleSetting _openQuake = new(OpenQuake, Resources.open_quake, Resources.open_quake_description, false);
 
     private readonly Dictionary<string, object> settingsDict = new();
 

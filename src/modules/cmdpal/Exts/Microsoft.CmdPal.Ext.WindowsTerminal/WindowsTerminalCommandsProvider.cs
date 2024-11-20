@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.Versioning;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Pages;
+using Microsoft.CmdPal.Ext.WindowsTerminal.Properties;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -20,7 +21,7 @@ public partial class WindowsTerminalCommandsProvider : CommandProvider
 
     public WindowsTerminalCommandsProvider()
     {
-        DisplayName = $"Windows Terminal Profiles";
+        DisplayName = Resources.extension_name;
 
         _terminalCommand = new TerminalTopLevelListItem(_settingsManager);
         _terminalCommand.MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))];
