@@ -46,7 +46,11 @@ public class TextSetting : Setting<string>
 
     public override void Update(JsonObject payload)
     {
-        Value = payload[Key]?.GetValue<string>() ?? string.Empty;
+        // If the key doesn't exist in the payload, don't do anything
+        if (payload[Key] != null)
+        {
+            Value = payload[Key]?.GetValue<string>();
+        }
     }
 
     public override string ToState()
