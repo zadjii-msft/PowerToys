@@ -10,6 +10,7 @@ using Microsoft.CmdPal.Ext.Bookmarks;
 using Microsoft.CmdPal.Ext.Calc;
 using Microsoft.CmdPal.Ext.Registry;
 using Microsoft.CmdPal.Ext.Settings;
+using Microsoft.CmdPal.Ext.Shell;
 using Microsoft.CmdPal.Ext.WindowsServices;
 using Microsoft.CmdPal.Ext.WindowsSettings;
 using Microsoft.CmdPal.Ext.WindowsTerminal;
@@ -59,6 +60,7 @@ public sealed class MainViewModel : IDisposable
         BuiltInCommands.Add(new WindowsServicesCommandsProvider());
         BuiltInCommands.Add(new RegistryCommandsProvider());
         BuiltInCommands.Add(new WindowsSettingsCommandsProvider());
+        BuiltInCommands.Add(new ShellCommandsProvider());
 
         ResetTopLevel();
 
