@@ -22,8 +22,5 @@
             "name": "New PR",
             "description": "Create a new PR targeting the right fork.\nReplace {branch} with the actual branch you want to merge."
         }
-
-        
-
     ]
 }
