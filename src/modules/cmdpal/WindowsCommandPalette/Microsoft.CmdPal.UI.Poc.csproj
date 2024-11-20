@@ -13,8 +13,6 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
-    <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
-    <ProjectPriFileName>WindowsCommandPalette.pri</ProjectPriFileName>
   </PropertyGroup>
 
   <ItemGroup>
