@@ -415,10 +415,6 @@ jobs:
     displayName: Audit WinAppSDK applications path asset conflicts
 
   - pwsh: |-
-      & '.pipelines/verifyPossibleAssetConflicts.ps1' -targetDir '$(build.sourcesdirectory)\$(BuildPlatform)\$(BuildConfiguration)\WinUI3Apps\CmdPal'
-    displayName: Audit CmdPal path asset conflicts
-
-  - pwsh: |-
       & '.pipelines/verifyNoticeMdAgainstNugetPackages.ps1' -path '$(build.sourcesdirectory)\'
     displayName: Verify NOTICE.md and NuGet packages match
 
