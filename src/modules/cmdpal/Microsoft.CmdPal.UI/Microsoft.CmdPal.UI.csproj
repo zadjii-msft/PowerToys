@@ -83,6 +83,7 @@
       <Private>True</Private>
       <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\common\Common.UI\Common.UI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
