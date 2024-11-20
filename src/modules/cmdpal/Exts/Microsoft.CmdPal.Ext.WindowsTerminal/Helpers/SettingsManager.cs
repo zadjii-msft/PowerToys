@@ -3,16 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -25,15 +19,15 @@ public class SettingsManager
     private readonly string _filePath;
     private readonly Settings _settings = new();
 
-    private readonly ToggleSetting _showHiddenProfiles = new(ShowHiddenProfiles, Resources.show_hidden_profiles, Resources.show_hidden_profiles, false);
-    private readonly ToggleSetting _openNewTab = new(OpenNewTab, Resources.open_new_tab, Resources.open_new_tab, false);
-    private readonly ToggleSetting _openQuake = new(OpenQuake, Resources.open_quake, Resources.open_quake_description, false);
+    private readonly ToggleSetting _showHiddenProfiles = new(nameof(ShowHiddenProfiles), Resources.show_hidden_profiles, Resources.show_hidden_profiles, false);
+    private readonly ToggleSetting _openNewTab = new(nameof(OpenNewTab), Resources.open_new_tab, Resources.open_new_tab, false);
+    private readonly ToggleSetting _openQuake = new(nameof(OpenQuake), Resources.open_quake, Resources.open_quake_description, false);
 
-    private readonly Dictionary<string, object> settingsDict = new();
+    public bool ShowHiddenProfiles => _showHiddenProfiles.Value;
 
-    public const string ShowHiddenProfiles = nameof(ShowHiddenProfiles);
-    public const string OpenNewTab = nameof(OpenNewTab);
-    public const string OpenQuake = nameof(OpenQuake);
+    public bool OpenNewTab => _openNewTab.Value;
+
+    public bool OpenQuake => _openQuake.Value;
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
@@ -61,10 +55,6 @@ public class SettingsManager
         _settings.Add(_openNewTab);
         _settings.Add(_openQuake);
 
-        settingsDict[ShowHiddenProfiles] = _showHiddenProfiles.ToDictionary();
-        settingsDict[OpenNewTab] = _openNewTab.ToDictionary();
-        settingsDict[OpenQuake] = _openQuake.ToDictionary();
-
         // Load settings from file upon initialization
         LoadSettings();
     }
@@ -78,12 +68,9 @@ public class SettingsManager
     {
         try
         {
-            settingsDict[ShowHiddenProfiles] = _showHiddenProfiles.ToDictionary();
-            settingsDict[OpenNewTab] = _openNewTab.ToDictionary();
-            settingsDict[OpenQuake] = _openQuake.ToDictionary();
-
             // Serialize the main dictionary to JSON and save it to the file
-            var settingsJson = JsonSerializer.Serialize(settingsDict, _serializerOptions);
+            var settingsJson = _settings.ToJson();
+
             File.WriteAllText(_filePath, settingsJson);
         }
         catch (Exception ex)
@@ -105,31 +92,10 @@ public class SettingsManager
             // Read the JSON content from the file
             var jsonContent = File.ReadAllText(_filePath);
 
-            // Parse the JSON content into a JsonObject
+            // Is it valid JSON?
             if (JsonNode.Parse(jsonContent) is JsonObject savedSettings)
             {
-                foreach (KeyValuePair<string, JsonNode?> keyValue in savedSettings)
-                {
-                    var key = keyValue.Key;
-
-                    var updatePayload = new JsonObject
-                    {
-                        [key] = keyValue.Value?["value"]?.DeepClone(),
-                    };
-
-                    if (key == ShowHiddenProfiles)
-                    {
-                        _showHiddenProfiles.Update(updatePayload);
-                    }
-                    else if (key == OpenNewTab)
-                    {
-                        _openNewTab.Update(updatePayload);
-                    }
-                    else if (key == OpenQuake)
-                    {
-                        _openQuake.Update(updatePayload);
-                    }
-                }
+                _settings.Update(jsonContent);
             }
             else
             {

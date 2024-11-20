@@ -50,4 +50,10 @@ public sealed class ToggleSetting : Setting<bool>
         var val = strFromJson switch { "true" => true, "false" => false, _ => false };
         Value = val;
     }
+
+    public override string ToState()
+    {
+        var adaptiveCardsUsesStringsForBools = Value ? "true" : "false";
+        return $"\"{Key}\": \"{adaptiveCardsUsesStringsForBools}\"";
+    }
 }

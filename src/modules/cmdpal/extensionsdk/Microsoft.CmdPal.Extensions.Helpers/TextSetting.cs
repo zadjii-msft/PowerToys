@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
@@ -46,5 +47,10 @@ public class TextSetting : Setting<string>
     public override void Update(JsonObject payload)
     {
         Value = payload[Key]?.GetValue<string>() ?? string.Empty;
+    }
+
+    public override string ToState()
+    {
+        return $"\"{Key}\": {JsonSerializer.Serialize(Value)}";
     }
 }
