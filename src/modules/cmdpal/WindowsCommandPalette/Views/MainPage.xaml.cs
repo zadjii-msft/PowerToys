@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Common.Extensions;
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -296,7 +295,7 @@ public sealed partial class MainPage : Microsoft.UI.Xaml.Controls.Page
         await commandProvider.LoadTopLevelCommands().ConfigureAwait(false);
         foreach (var commandItem in commandProvider.TopLevelItems)
         {
-            ViewModel.TopLevelCommands.Add(new(new ListItem(commandItem)));
+            ViewModel.TopLevelCommands.Add(new(commandItem));
         }
     }
 

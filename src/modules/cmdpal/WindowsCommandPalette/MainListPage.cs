@@ -63,24 +63,24 @@ public sealed partial class MainListPage : DynamicListPage
 
     private void UpdateQuery()
     {
-        // // Update all the top-level commands which are fallback providers:
-        // var fallbacks = topLevelItems
-        //     .Select(i => i?.FallbackHandler)
-        //     .Where(fb => fb != null)
-        //     .Select(fb => fb!);
+        var fallbacks = topLevelItems.Select(mainItem => mainItem.Item)
+            .Where(commandItem => commandItem is IFallbackCommandItem)
+            .Select(commandItem => commandItem as IFallbackCommandItem)
+            .Where(fb => fb != null)
+            .Select(fb => fb!);
 
-        // foreach (var fb in fallbacks)
-        // {
-        //     try
-        //     {
-        //         fb.UpdateQuery(SearchText);
-        //     }
-        //     catch (COMException ex)
-        //     {
-        //         Debug.WriteLine("Failed to update fallback handler:");
-        //         Debug.WriteLine(ex);
-        //     }
-        // }
+        foreach (var fb in fallbacks)
+        {
+            try
+            {
+                fb.FallbackHandler.UpdateQuery(SearchText);
+            }
+            catch (COMException ex)
+            {
+                Debug.WriteLine("Failed to update fallback handler:");
+                Debug.WriteLine(ex);
+            }
+        }
 
         // Let our filtering wrapper know the newly typed search text.
         // Do this _after_ updating our fallback handlers.
@@ -113,7 +113,7 @@ public sealed partial class MainListPage : DynamicListPage
         {
             foreach (var item in e.NewItems)
             {
-                if (item is ExtensionObject<IListItem> listItem)
+                if (item is ExtensionObject<ICommandItem> listItem)
                 {
                     topLevelItems.Add(new MainListItem(listItem.Unsafe));
                 }
@@ -123,7 +123,7 @@ public sealed partial class MainListPage : DynamicListPage
         {
             foreach (var item in e.OldItems)
             {
-                if (item is ExtensionObject<IListItem> _)
+                if (item is ExtensionObject<ICommandItem> _)
                 {
                     // If we were maintaining the POC project we'd remove the items here.
                 }

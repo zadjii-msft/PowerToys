@@ -4,7 +4,6 @@
 
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Windows.Foundation;
 
 namespace WindowsCommandPalette.BuiltinCommands;
 
@@ -14,6 +13,11 @@ public partial class ReloadExtensionsCommandProvider : CommandProvider
 
     public override ICommandItem[] TopLevelCommands()
     {
-        return [new CommandItem(reloadAction) { Subtitle = "Reload Command Palette extensions" }];
+        return [];
+    }
+
+    public override IFallbackCommandItem[] FallbackCommands()
+    {
+        return [new FallbackCommandItem(reloadAction) { Subtitle = "Reload Command Palette extensions" }];
     }
 }

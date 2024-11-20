@@ -10,9 +10,9 @@ namespace WindowsCommandPalette;
 
 public sealed partial class MainListItem : ListItem
 {
-    public IListItem Item { get; set; }
+    public ICommandItem Item { get; set; }
 
-    internal MainListItem(IListItem listItem)
+    internal MainListItem(ICommandItem listItem)
         : base(listItem.Command)
     {
         Item = listItem;
@@ -22,8 +22,7 @@ public sealed partial class MainListItem : ListItem
         MoreCommands = Item.MoreCommands;
 
         // FallbackHandler = Item.FallbackHandler;
-        Tags = Item.Tags;
-
+        // Tags = Item.Tags;
         if (Command != null)
         {
             Command.PropChanged += Action_PropertyChanged;
