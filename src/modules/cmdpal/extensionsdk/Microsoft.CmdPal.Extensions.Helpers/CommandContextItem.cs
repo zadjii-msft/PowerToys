@@ -8,6 +8,8 @@ public partial class CommandContextItem : CommandItem, ICommandContextItem
 {
     public bool IsCritical { get; set; }
 
+    public KeyChord? RequestedShortcut { get; set; }
+
     public CommandContextItem(ICommand command)
         : base(command)
     {

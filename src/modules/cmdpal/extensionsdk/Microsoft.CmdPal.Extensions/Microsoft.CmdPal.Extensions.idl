@@ -22,6 +22,19 @@ namespace Microsoft.CmdPal.Extensions
         String Icon { get; };
         Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
     };
+    
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    runtimeclass KeyChord
+    {
+        KeyChord();
+        KeyChord(Windows.System.VirtualKeyModifiers modifiers, Int32 vkey, Int32 scanCode);
+        KeyChord(Boolean ctrl, Boolean alt, Boolean shift, Boolean win, Int32 vkey, Int32 scanCode);
+        UInt64 Hash();
+        Boolean Equals(KeyChord other);
+        Windows.System.VirtualKeyModifiers Modifiers;
+        Int32 Vkey;
+        Int32 ScanCode;
+    };
 
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface INotifyPropChanged {
@@ -55,6 +68,7 @@ namespace Microsoft.CmdPal.Extensions
     enum CommandResultKind {
         Dismiss,    // Reset the palette to the main page and dismiss
         GoHome,     // Go back to the main page, but keep it open
+        Hide,       // Keep this page open, but hide the palette. 
         KeepOpen,   // Do nothing.
         GoToPage,   // Go to another page. GoToPageArgs will tell you where.
     };
@@ -188,7 +202,6 @@ namespace Microsoft.CmdPal.Extensions
         Windows.UI.Color AccentColor { get; };
     }
     
-    
     [uuid("c78b9851-e76b-43ee-8f76-da5ba14e69a4")]
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IContextItem {}
@@ -205,7 +218,7 @@ namespace Microsoft.CmdPal.Extensions
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface ICommandContextItem requires ICommandItem, IContextItem {
         Boolean IsCritical { get; }; // READ: "make this red"
-        // TODO-future: we should allow app developers to specify a default keybinding for each of these actions
+        KeyChord RequestedShortcut { get; };
     }
     
     [uuid("924a87fc-32fe-4471-9156-84b3b30275a6")]

@@ -72,6 +72,19 @@ namespace Microsoft.CmdPal.Extensions
         String Icon { get; };
         Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
     };
+    
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    runtimeclass KeyChord
+    {
+        KeyChord();
+        KeyChord(Windows.System.VirtualKeyModifiers modifiers, Int32 vkey, Int32 scanCode);
+        KeyChord(Boolean ctrl, Boolean alt, Boolean shift, Boolean win, Int32 vkey, Int32 scanCode);
+        UInt64 Hash();
+        Boolean Equals(KeyChord other);
+        Windows.System.VirtualKeyModifiers Modifiers;
+        Int32 Vkey;
+        Int32 ScanCode;
+    };
 
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface INotifyPropChanged {
