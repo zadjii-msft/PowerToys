@@ -13,6 +13,10 @@ If ($Items.Count -Le 0) {
 }
 
 $Items | ForEach-Object {
+	if ($_.Directory.FullName -like "*cmdpal*") {
+		# Skip the en-US directory, as it's already in the correct format.
+		return
+	}
 	# Move each resw file's parent folder into its parent's parent's folder.
 	Move-Item -Verbose $_.Directory.FullName $_.Directory.Parent.Parent.FullName -EA:Ignore
 }

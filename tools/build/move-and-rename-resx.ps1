@@ -21,6 +21,10 @@ If ($Items.Count -Le 0) {
 }
 
 ForEach($Item in $Items) {
+	if ($Item.FullName -like "*cmdpal*") {
+		# Skip the en-US directory, as it's already in the correct format.
+		continue
+	}
 	$PropertiesRoot = $Item.Directory.Parent
 	$Language = $Item.Directory.Name
 	$Destination = Join-Path $PropertiesRoot.FullName ("{0}.{1}{2}" -F ($Item.BaseName, $Language, $Item.Extension))
