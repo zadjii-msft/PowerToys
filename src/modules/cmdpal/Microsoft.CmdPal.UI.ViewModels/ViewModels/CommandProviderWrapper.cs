@@ -4,7 +4,6 @@
 
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -17,9 +16,9 @@ public sealed class CommandProviderWrapper
     private readonly ICommandProvider _commandProvider;
 
     private readonly IExtensionWrapper? extensionWrapper;
-    private CommandItem[] _topLevelItems = [];
+    private ICommandItem[] _topLevelItems = [];
 
-    public CommandItem[] TopLevelItems => _topLevelItems;
+    public ICommandItem[] TopLevelItems => _topLevelItems;
 
     public CommandProviderWrapper(ICommandProvider provider)
     {
@@ -54,7 +53,7 @@ public sealed class CommandProviderWrapper
         // On a BG thread here
         if (commands != null)
         {
-            _topLevelItems = (CommandItem[])commands;
+            _topLevelItems = commands;
         }
     }
 
