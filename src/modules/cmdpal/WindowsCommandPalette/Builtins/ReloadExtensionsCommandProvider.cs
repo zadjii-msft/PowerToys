@@ -14,6 +14,6 @@ public partial class ReloadExtensionsCommandProvider : CommandProvider
 
     public override ICommandItem[] TopLevelCommands()
     {
-        return [new ListItem(reloadAction) { Subtitle = "Reload Command Palette extensions" }];
+        return [new CommandItem(reloadAction) { Subtitle = "Reload Command Palette extensions" }];
     }
 }

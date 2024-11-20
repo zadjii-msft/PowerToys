@@ -9,7 +9,7 @@ using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.WindowsTerminal;
 
-public partial class TerminalTopLevelListItem : ListItem
+public partial class TerminalTopLevelListItem : CommandItem
 {
     public TerminalTopLevelListItem()
         : base(new ProfilesListPage())

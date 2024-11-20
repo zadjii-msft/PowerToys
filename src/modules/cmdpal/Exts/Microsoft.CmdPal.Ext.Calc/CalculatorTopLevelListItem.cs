@@ -9,7 +9,7 @@ using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.Calc;
 
-public partial class CalculatorTopLevelListItem : ListItem, IFallbackHandler
+public partial class CalculatorTopLevelListItem : CommandItem, IFallbackHandler
 {
     public CalculatorTopLevelListItem()
         : base(new CalculatorAction())

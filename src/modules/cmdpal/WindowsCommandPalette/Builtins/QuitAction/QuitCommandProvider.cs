@@ -16,6 +16,6 @@ public partial class QuitCommandProvider : CommandProvider
 
     public override ICommandItem[] TopLevelCommands()
     {
-        return [new ListItem(quitAction) { Subtitle = "Exit Command Palette" }];
+        return [new CommandItem(quitAction) { Subtitle = "Exit Command Palette" }];
     }
 }

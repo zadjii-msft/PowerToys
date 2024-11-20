@@ -1078,8 +1078,10 @@ public class SpongebotPage : Microsoft.Windows.Run.Extensions.MarkdownPage, IFal
 }
 internal sealed class SpongebotCommandsProvider : CommandProvider
 {
-    public IListItem[] TopLevelCommands()
+    public ICommandItem[] TopLevelCommands()
     {
+        TODO! rewrite me!
+        
         var spongebotPage = new SpongebotPage();
         var listItem = new Microsoft.Windows.Run.Extensions.ListItem(spongebotPage);
         // ^ The ListItem ctor will automatically set its FallbackHandler to the

@@ -17,7 +17,7 @@ public partial class WindowsServicesCommandsProvider : CommandProvider
     public override ICommandItem[] TopLevelCommands()
     {
         return [
-            new ListItem(new ServicesListPage())
+            new CommandItem(new ServicesListPage())
             {
                 Title = "Windows Services",
                 Subtitle = "Manage Windows Services",

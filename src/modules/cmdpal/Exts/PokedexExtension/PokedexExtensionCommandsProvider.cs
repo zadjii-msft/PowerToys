@@ -14,8 +14,8 @@ public partial class PokedexExtensionActionsProvider : CommandProvider
         DisplayName = "Pocket Monsters for the Command Palette";
     }
 
-    private readonly IListItem[] _commands = [
-        new ListItem(new PokedexExtensionPage()) { Subtitle = "Search your favorite pocket monsters" },
+    private readonly ICommandItem[] _commands = [
+        new CommandItem(new PokedexExtensionPage()) { Subtitle = "Search your favorite pocket monsters" },
     ];
 
     public override ICommandItem[] TopLevelCommands()

@@ -9,7 +9,6 @@ public class ListItem : CommandItem, IListItem
     private ITag[] _tags = [];
     private IDetails? _details;
 
-    // private IFallbackHandler? _fallbackHandler;
     private string _section = string.Empty;
     private string _textToSuggest = string.Empty;
 
@@ -33,11 +32,6 @@ public class ListItem : CommandItem, IListItem
         }
     }
 
-    // public IFallbackHandler? FallbackHandler
-    // {
-    //    get => _fallbackHandler ?? _command as IFallbackHandler;
-    //    init => _fallbackHandler = value;
-    // }
     public string Section
     {
         get => _section;

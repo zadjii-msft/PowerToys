@@ -4,7 +4,7 @@
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public class CommandContextItem : CommandItem, ICommandContextItem
+public partial class CommandContextItem : CommandItem, ICommandContextItem
 {
     public bool IsCritical { get; set; }
 

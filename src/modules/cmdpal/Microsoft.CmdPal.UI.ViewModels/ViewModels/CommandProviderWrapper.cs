@@ -4,6 +4,7 @@
 
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -16,9 +17,9 @@ public sealed class CommandProviderWrapper
     private readonly ICommandProvider _commandProvider;
 
     private readonly IExtensionWrapper? extensionWrapper;
-    private IListItem[] _topLevelItems = [];
+    private CommandItem[] _topLevelItems = [];
 
-    public IListItem[] TopLevelItems => _topLevelItems;
+    public CommandItem[] TopLevelItems => _topLevelItems;
 
     public CommandProviderWrapper(ICommandProvider provider)
     {
@@ -46,14 +47,14 @@ public sealed class CommandProviderWrapper
             return;
         }
 
-        var t = new Task<IListItem[]>(() => _commandProvider.TopLevelCommands());
+        var t = new Task<ICommandItem[]>(() => _commandProvider.TopLevelCommands());
         t.Start();
         var commands = await t.ConfigureAwait(false);
 
         // On a BG thread here
         if (commands != null)
         {
-            _topLevelItems = commands;
+            _topLevelItems = (CommandItem[])commands;
         }
     }
 

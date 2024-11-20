@@ -17,7 +17,7 @@ public partial class RegistryCommandsProvider : CommandProvider
     public override ICommandItem[] TopLevelCommands()
     {
         return [
-            new ListItem(new RegistryListPage())
+            new CommandItem(new RegistryListPage())
             {
                 Title = "Registry",
                 Subtitle = "Navigate the Windows registry",

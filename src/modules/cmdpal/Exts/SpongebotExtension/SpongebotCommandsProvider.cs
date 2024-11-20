@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.IO;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -14,6 +13,7 @@ internal sealed partial class SpongebotCommandsProvider : CommandProvider
     public SpongebotCommandsProvider()
     {
         DisplayName = "Spongebob, mocking";
+        Frozen = false;
     }
 
     private readonly SpongebotPage mainPage = new();
@@ -23,12 +23,20 @@ internal sealed partial class SpongebotCommandsProvider : CommandProvider
     public override ICommandItem[] TopLevelCommands()
     {
         var settingsPath = SpongebotPage.StateJsonPath();
+        return !File.Exists(settingsPath)
+            ? [new CommandItem(settingsPage) { Title = "Spongebot settings", Subtitle = "Enter your imgflip credentials" }]
+            : [];
+    }
+
+    public override IFallbackCommandItem[] FallbackCommands()
+    {
+        var settingsPath = SpongebotPage.StateJsonPath();
         if (!File.Exists(settingsPath))
         {
-            return [new ListItem(settingsPage) { Title = "Spongebot settings", Subtitle = "Enter your imgflip credentials" }];
+            return null;
         }
 
-        var listItem = new ListItem(mainPage)
+        var listItem = new FallbackCommandItem(mainPage)
         {
             MoreCommands = [
                 new CommandContextItem(mainPage.CopyTextAction),
