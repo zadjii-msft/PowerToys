@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -18,6 +19,12 @@ public class SettingsManager
 {
     private readonly string _filePath;
     private readonly Settings _settings = new();
+
+    public List<object> Choices { get; set; } = new List<object>
+{
+    new { title = "Choice 1", value = "Choice 1" },
+    new { title = "Choice 2", value = "Choice 2" },
+};
 
     private readonly ToggleSetting _showHiddenProfiles = new(nameof(ShowHiddenProfiles), Resources.show_hidden_profiles, Resources.show_hidden_profiles, false);
     private readonly ToggleSetting _openNewTab = new(nameof(OpenNewTab), Resources.open_new_tab, Resources.open_new_tab, false);
@@ -54,6 +61,13 @@ public class SettingsManager
         _settings.Add(_showHiddenProfiles);
         _settings.Add(_openNewTab);
         _settings.Add(_openQuake);
+
+        var choiceOne = new ChoiceSetSetting.Choice("This should be the first choice");
+        var choiceTwo = new ChoiceSetSetting.Choice("This should be the second choice");
+        var choiceThree = new ChoiceSetSetting.Choice("This should be the third choice");
+        var defaultChoice = new ChoiceSetSetting.Choice("This should be the default choice");
+
+        _settings.Add(new ChoiceSetSetting("test", "This is the description", [choiceOne, choiceTwo, choiceThree], "This is the description", defaultChoice));
 
         // Load settings from file upon initialization
         LoadSettings();
