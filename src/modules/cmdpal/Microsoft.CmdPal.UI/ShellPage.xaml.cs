@@ -49,6 +49,6 @@ public sealed partial class ShellPage :
     public void Receive(NavigateToListMessage message)
     {
         RootFrame.Navigate(typeof(ListPage), message.ViewModel, _slideRightTransition);
-        this.SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+        SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
     }
 }
