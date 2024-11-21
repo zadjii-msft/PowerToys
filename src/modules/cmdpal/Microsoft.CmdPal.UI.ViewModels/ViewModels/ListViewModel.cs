@@ -46,4 +46,13 @@ public partial class ListViewModel : ObservableObject
             WeakReferenceMessenger.Default.Send<NavigateToDetailsMessage>(new(item));
         }
     }
+
+    [RelayCommand]
+    private void UpdateSelectedItem(ListItemViewModel item)
+    {
+        // if (item.HasMoreCommands)
+        // {
+        // }
+        WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
+    }
 }

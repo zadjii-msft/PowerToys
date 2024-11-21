@@ -10,6 +10,9 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public partial class ActionBarViewModel : ObservableObject
 {
     [ObservableProperty]
+    private ListItemViewModel? _selectedItem;
+
+    [ObservableProperty]
     private string _actionName = string.Empty;
 
     [ObservableProperty]
@@ -25,5 +28,17 @@ public partial class ActionBarViewModel : ObservableObject
         MoreCommandsAvailable = true;
         ContextActions.Add(new ActionBarContextItemViewModel("Action1", true));
         ContextActions.Add(new ActionBarContextItemViewModel("Action2", true));
+    }
+
+    partial void OnSelectedItemChanged(global::Microsoft.CmdPal.UI.ViewModels.ListItemViewModel? value)
+    {
+        if (value != null)
+        {
+            ActionName = value.Command.Name;
+        }
+        else
+        {
+            ActionName = string.Empty;
+        }
     }
 }

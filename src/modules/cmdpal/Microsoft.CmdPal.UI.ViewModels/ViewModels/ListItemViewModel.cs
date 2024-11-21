@@ -27,6 +27,8 @@ public partial class ListItemViewModel : ObservableObject
 
     public bool HasTags => Tags.Length > 0;
 
+    public bool HasMoreCommands => _listItemModel.Unsafe.MoreCommands.Length > 0;
+
     public ListItemViewModel(IListItem model)
     {
         _listItemModel = new(model);

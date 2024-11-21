@@ -32,7 +32,10 @@ public sealed partial class ListPage : Page,
             ViewModel = lvm;
         }
 
-        WeakReferenceMessenger.Default.RegisterAll(this);
+        // RegisterAll isn't AOT compatible
+        WeakReferenceMessenger.Default.Register<NavigateNextCommand>(this);
+        WeakReferenceMessenger.Default.Register<NavigatePreviousCommand>(this);
+        WeakReferenceMessenger.Default.Register<ActivateSelectedListItemMessage>(this);
 
         base.OnNavigatedTo(e);
     }
@@ -41,7 +44,9 @@ public sealed partial class ListPage : Page,
     {
         base.OnNavigatingFrom(e);
 
-        WeakReferenceMessenger.Default.UnregisterAll(this);
+        WeakReferenceMessenger.Default.Unregister<NavigateNextCommand>(this);
+        WeakReferenceMessenger.Default.Unregister<NavigatePreviousCommand>(this);
+        WeakReferenceMessenger.Default.Unregister<ActivateSelectedListItemMessage>(this);
     }
 
     private void ListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -79,6 +84,14 @@ public sealed partial class ListPage : Page,
         if (ItemsList.SelectedItem is ListItemViewModel item)
         {
             ViewModel?.InvokeItemCommand.Execute(item);
+        }
+    }
+
+    private void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ItemsList.SelectedItem is ListItemViewModel item)
+        {
+            ViewModel?.UpdateSelectedItemCommand.Execute(item);
         }
     }
 }
