@@ -4,6 +4,10 @@
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.UI.ViewModels.Messages;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -23,14 +27,9 @@ public partial class ActionBarViewModel : ObservableObject
 
     public ActionBarViewModel()
     {
-        // Just for fun
-        ActionName = "My Action";
-        MoreCommandsAvailable = true;
-        ContextActions.Add(new ActionBarContextItemViewModel("Action1", true));
-        ContextActions.Add(new ActionBarContextItemViewModel("Action2", true));
     }
 
-    partial void OnSelectedItemChanged(global::Microsoft.CmdPal.UI.ViewModels.ListItemViewModel? value)
+    partial void OnSelectedItemChanged(ListItemViewModel? value)
     {
         if (value != null)
         {
@@ -40,7 +39,7 @@ public partial class ActionBarViewModel : ObservableObject
             {
                 MoreCommandsAvailable = true;
                 ContextActions = new(value.AllCommands
-                    .Select(command => new ActionBarContextItemViewModel(command.Title, true)));
+                    .Select(command => new ActionBarContextItemViewModel(command)));
             }
             else
             {
@@ -51,5 +50,21 @@ public partial class ActionBarViewModel : ObservableObject
         {
             ActionName = string.Empty;
         }
+    }
+
+    // InvokeItemCommand is what this will be in Xaml due to source generator
+    [RelayCommand]
+    private void InvokeItem(ActionBarContextItemViewModel item)
+    {
+        // TODO: we should probably just have the shell handle a "NavigateToCommand" message
+        if (item.Command is IListPage listPage)
+        {
+            WeakReferenceMessenger.Default.Send<NavigateToListMessage>(new(new(listPage)));
+        }
+
+        // else
+        // {
+        //    WeakReferenceMessenger.Default.Send<NavigateToDetailsMessage>(new(item));
+        // }
     }
 }

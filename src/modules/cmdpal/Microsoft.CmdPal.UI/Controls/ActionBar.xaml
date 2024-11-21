@@ -33,7 +33,7 @@
                                 <SymbolIcon Symbol="Emoji" />
                             </ContentControl>
                         </Viewbox>
-                        <TextBlock Grid.Column="1" Text="{x:Bind Name}" />
+                        <TextBlock Grid.Column="1" Text="{x:Bind Title}" />
                     </Grid>
                 </ListViewItem>
             </DataTemplate>
