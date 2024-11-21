@@ -39,7 +39,7 @@ internal sealed partial class SpongebotCommandsProvider : CommandProvider
         var listItem = new FallbackCommandItem(mainPage)
         {
             MoreCommands = [
-                new CommandContextItem(mainPage.CopyTextAction),
+                new CommandContextItem(mainPage.CopyCommand),
                 new CommandContextItem(settingsPage),
             ],
         };
