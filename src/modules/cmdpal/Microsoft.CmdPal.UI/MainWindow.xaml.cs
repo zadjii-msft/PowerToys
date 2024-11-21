@@ -33,10 +33,16 @@ public sealed partial class MainWindow : Window
         // Hide our titlebar.
         // We need to both ExtendsContentIntoTitleBar, then set the height to Collapsed
         // to hide the old caption buttons. Then, in UpdateRegionsForCustomTitleBar,
-        // we'll make the top drag-able again.
+        // we'll make the top drag-able again. (after our content loads)
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
         SizeChanged += WindowSizeChanged;
+        RootShellPage.Loaded += RootShellPage_Loaded;
+    }
+
+    private void RootShellPage_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Now that our content has loaded, we can update our dragable regions
         UpdateRegionsForCustomTitleBar();
     }
 
@@ -141,19 +147,15 @@ public sealed partial class MainWindow : Window
             RootShellPage.ActualHeight));
         var contentRect = GetRect(bounds, scaleAdjustment);
         var rectArray = new RectInt32[] { contentRect };
-        var nonClientInputSrc =
-            InputNonClientPointerSource.GetForWindowId(this.AppWindow.Id);
+        var nonClientInputSrc = InputNonClientPointerSource.GetForWindowId(this.AppWindow.Id);
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Passthrough, rectArray);
 
-        // Add four drag-able regions, around the sides of our content
+        // Add a drag-able region on top
         var w = RootShellPage.ActualWidth;
-        var h = RootShellPage.ActualHeight;
+        _ = RootShellPage.ActualHeight;
         var dragSides = new RectInt32[]
         {
             GetRect(new Rect(0, 0, w, 24), scaleAdjustment), // the top, 24 tall
-            GetRect(new Rect(0, h - 24, RootShellPage.ActualWidth, 24), scaleAdjustment), // the bottom
-            GetRect(new Rect(0, 0, 24, h), scaleAdjustment), // the left, 24xh
-            GetRect(new Rect(w - 24, 0, 24, h), scaleAdjustment), // the right
         };
         nonClientInputSrc.SetRegionRects(NonClientRegionKind.Caption, dragSides);
     }
