@@ -15,15 +15,14 @@ namespace Microsoft.CmdPal.UI;
 /// </summary>
 public sealed partial class ListPage : Page,
     IRecipient<NavigateNextCommand>,
-    IRecipient<NavigatePreviousCommand>
+    IRecipient<NavigatePreviousCommand>,
+    IRecipient<ActivateSelectedListItemMessage>
 {
-    public ListViewModel? ViewModel { get; set;  }
+    public ListViewModel? ViewModel { get; set; }
 
     public ListPage()
     {
         this.InitializeComponent();
-
-        WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -33,7 +32,16 @@ public sealed partial class ListPage : Page,
             ViewModel = lvm;
         }
 
+        WeakReferenceMessenger.Default.RegisterAll(this);
+
         base.OnNavigatedTo(e);
+    }
+
+    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+    {
+        base.OnNavigatingFrom(e);
+
+        WeakReferenceMessenger.Default.UnregisterAll(this);
     }
 
     private void ListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -63,6 +71,14 @@ public sealed partial class ListPage : Page,
         {
             ItemsList.SelectedIndex--;
             ItemsList.ScrollIntoView(ItemsList.SelectedItem);
+        }
+    }
+
+    public void Receive(ActivateSelectedListItemMessage message)
+    {
+        if (ItemsList.SelectedItem is ListItemViewModel item)
+        {
+            ViewModel?.InvokeItemCommand.Execute(item);
         }
     }
 }
