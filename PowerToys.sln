@@ -698,6 +698,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokedexExtension", "src\mod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MenusExtension", "src\modules\cmdpal\Exts\Menus\MenusExtension.csproj", "{8ABE2195-7514-425E-9A89-685FA42CEFC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkspacesCsharpLibrary", "src\modules\Workspaces\WorkspacesCsharpLibrary\WorkspacesCsharpLibrary.csproj", "{89D0E199-B17A-418C-B2F8-7375B6708357}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -3266,6 +3268,18 @@ Global
 		{8ABE2195-7514-425E-9A89-685FA42CEFC3}.Release|x86.ActiveCfg = Release|x64
 		{8ABE2195-7514-425E-9A89-685FA42CEFC3}.Release|x86.Build.0 = Release|x64
 		{8ABE2195-7514-425E-9A89-685FA42CEFC3}.Release|x86.Deploy.0 = Release|x64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Debug|ARM64.Build.0 = Debug|ARM64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Debug|x64.ActiveCfg = Debug|x64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Debug|x64.Build.0 = Debug|x64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Debug|x86.ActiveCfg = Debug|x64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Debug|x86.Build.0 = Debug|x64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Release|ARM64.ActiveCfg = Release|ARM64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Release|ARM64.Build.0 = Release|ARM64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Release|x64.ActiveCfg = Release|x64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Release|x64.Build.0 = Release|x64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Release|x86.ActiveCfg = Release|x64
+		{89D0E199-B17A-418C-B2F8-7375B6708357}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3531,6 +3545,7 @@ Global
 		{0ADEB797-C8C7-4FFA-ACD5-2AF6CAD7ECD8} = {3846508C-77EB-4034-A702-F8BB263C4F79}
 		{D8DD2E06-7956-4673-95E7-F395AB5A5485} = {071E18A4-A530-46B8-AB7D-B862EE55E24E}
 		{8ABE2195-7514-425E-9A89-685FA42CEFC3} = {071E18A4-A530-46B8-AB7D-B862EE55E24E}
+		{89D0E199-B17A-418C-B2F8-7375B6708357} = {A2221D7E-55E7-4BEA-90D1-4F162D670BBF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C3A2F9D1-7930-4EF4-A6FC-7EE0A99821D0}
