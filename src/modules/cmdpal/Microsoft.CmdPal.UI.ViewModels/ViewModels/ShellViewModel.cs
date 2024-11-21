@@ -18,7 +18,7 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public partial class ShellViewModel(IServiceProvider _serviceProvider) : ObservableObject
 {
     [ObservableProperty]
-    private bool _isLoaded = false;
+    public partial bool IsLoaded { get; set; } = false;
 
     public ObservableCollection<CommandProviderWrapper> ActionsProvider { get; set; } = [];
 
