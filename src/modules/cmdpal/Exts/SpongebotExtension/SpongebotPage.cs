@@ -27,21 +27,14 @@ public partial class SpongebotPage : MarkdownPage, IFallbackHandler
 
     public void UpdateQuery(string query)
     {
-        if (string.IsNullOrEmpty(query))
-        {
-            this.Name = string.Empty;
-        }
-        else
-        {
-            this.Name = ConvertToAlternatingCase(query);
-        }
+        this.Name = string.IsNullOrEmpty(query) ? string.Empty : ConvertToAlternatingCase(query);
 
-        CopyTextAction.Text = this.Name;
+        CopyCommand.Text = this.Name;
     }
 
     private static string ConvertToAlternatingCase(string input)
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         for (var i = 0; i < input.Length; i++)
         {
             var c = input[i];
