@@ -39,8 +39,8 @@ public partial class ActionBarViewModel : ObservableObject
             if (value.HasMoreCommands)
             {
                 MoreCommandsAvailable = true;
-                ContextActions = new(value.MoreCommands
-                    .Select(command => new ActionBarContextItemViewModel(command.Command.Name, true)));
+                ContextActions = new(value.AllCommands
+                    .Select(command => new ActionBarContextItemViewModel(command.Title, true)));
             }
             else
             {
