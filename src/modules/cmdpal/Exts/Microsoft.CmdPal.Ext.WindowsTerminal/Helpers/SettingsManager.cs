@@ -44,7 +44,7 @@ public class SettingsManager
         var directory = Path.GetDirectoryName(path) ?? string.Empty;
 
         // now, the state is just next to the exe
-        return Path.Combine(directory, "state.json");
+        return Path.Combine(directory, "wt_state.json");
     }
 
     public SettingsManager()
