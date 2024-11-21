@@ -17,6 +17,7 @@ namespace Microsoft.CmdPal.Ext.Shell;
 public partial class ShellCommandsProvider : CommandProvider
 {
     private readonly ListItem _shellPageItem;
+    private readonly SettingsManager _settingsManager = new();
 
     public ShellCommandsProvider()
     {
@@ -24,6 +25,7 @@ public partial class ShellCommandsProvider : CommandProvider
         _shellPageItem = new ListItem(new ShellListPage())
         {
             Title = "testing this out",
+            MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))],
         };
     }
 

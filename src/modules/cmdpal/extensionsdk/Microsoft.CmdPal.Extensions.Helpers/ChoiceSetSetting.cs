@@ -18,10 +18,10 @@ public sealed class ChoiceSetSetting : Setting<string>
         [JsonPropertyName("title")]
         public string Title { get; set; }
 
-        public Choice(string value)
+        public Choice(string title, string value)
         {
             Value = value;
-            Title = value;
+            Title = title;
         }
     }
 
@@ -39,7 +39,7 @@ public sealed class ChoiceSetSetting : Setting<string>
         Choices = choices;
     }
 
-    public ChoiceSetSetting(string key, string label, List<Choice> choices, string description, Choice defaultValue)
+    public ChoiceSetSetting(string key, string label, string description, List<Choice> choices, Choice defaultValue)
         : base(key, label, description, defaultValue.Value)
     {
         Choices = choices;

@@ -17,7 +17,7 @@ namespace Microsoft.CmdPal.Ext.Shell.Pages;
 
 internal sealed partial class ShellListPage : DynamicListPage
 {
-    private readonly ShellListPageHelpers _helper = new();
+    private readonly ShellListPageHelpers _helper = new(new SettingsManager());
 
     public ShellListPage()
     {

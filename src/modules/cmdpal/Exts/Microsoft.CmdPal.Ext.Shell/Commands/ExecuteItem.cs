@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CmdPal.Ext.Shell.Helpers;
 using Microsoft.CmdPal.Ext.Shell.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Windows.UI;
@@ -18,12 +19,12 @@ namespace Microsoft.CmdPal.Ext.Shell.Commands;
 
 internal sealed partial class ExecuteItem : InvokableCommand
 {
-    private readonly ShellPluginSettings _settings;
+    private readonly SettingsManager _settings;
     private readonly string _cmd;
 
     private static readonly char[] Separator = new[] { ' ' };
 
-    public ExecuteItem(string cmd, ShellPluginSettings settings)
+    public ExecuteItem(string cmd, SettingsManager settings, RunAsType type = RunAsType.None)
     {
         _cmd = cmd;
         _settings = settings;
@@ -97,13 +98,6 @@ internal sealed partial class ExecuteItem : InvokableCommand
         return info;
     }
 
-    private enum RunAsType
-    {
-        None,
-        Administrator,
-        OtherUser,
-    }
-
     private ProcessStartInfo PrepareProcessStartInfo(string command, RunAsType runAs = RunAsType.None)
     {
         command = Environment.ExpandEnvironmentVariables(command);
@@ -121,13 +115,13 @@ internal sealed partial class ExecuteItem : InvokableCommand
         }
 
         ProcessStartInfo info;
-        if (_settings.Shell == ExecutionShell.Cmd)
+        if (_settings.ShellCommandExecution == ExecutionShell.Cmd.ToString())
         {
             var arguments = _settings.LeaveShellOpen ? $"/k \"{command}\"" : $"/c \"{command}\" & pause";
 
             info = SetProcessStartInfo("cmd.exe", workingDirectory, arguments, runAsVerbArg);
         }
-        else if (_settings.Shell == ExecutionShell.Powershell)
+        else if (_settings.ShellCommandExecution == ExecutionShell.Powershell.ToString())
         {
             string arguments;
             if (_settings.LeaveShellOpen)
@@ -141,7 +135,7 @@ internal sealed partial class ExecuteItem : InvokableCommand
 
             info = SetProcessStartInfo("powershell.exe", workingDirectory, arguments, runAsVerbArg);
         }
-        else if (_settings.Shell == ExecutionShell.PowerShellSeven)
+        else if (_settings.ShellCommandExecution == ExecutionShell.PowerShellSeven.ToString())
         {
             string arguments;
             if (_settings.LeaveShellOpen)
@@ -155,7 +149,7 @@ internal sealed partial class ExecuteItem : InvokableCommand
 
             info = SetProcessStartInfo("pwsh.exe", workingDirectory, arguments, runAsVerbArg);
         }
-        else if (_settings.Shell == ExecutionShell.WindowsTerminalCmd)
+        else if (_settings.ShellCommandExecution == ExecutionShell.WindowsTerminalCmd.ToString())
         {
             string arguments;
             if (_settings.LeaveShellOpen)
@@ -169,7 +163,7 @@ internal sealed partial class ExecuteItem : InvokableCommand
 
             info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
         }
-        else if (_settings.Shell == ExecutionShell.WindowsTerminalPowerShell)
+        else if (_settings.ShellCommandExecution == ExecutionShell.WindowsTerminalPowerShell.ToString())
         {
             string arguments;
             if (_settings.LeaveShellOpen)
@@ -183,7 +177,7 @@ internal sealed partial class ExecuteItem : InvokableCommand
 
             info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
         }
-        else if (_settings.Shell == ExecutionShell.WindowsTerminalPowerShellSeven)
+        else if (_settings.ShellCommandExecution == ExecutionShell.WindowsTerminalPowerShellSeven.ToString())
         {
             string arguments;
             if (_settings.LeaveShellOpen)
@@ -197,7 +191,7 @@ internal sealed partial class ExecuteItem : InvokableCommand
 
             info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
         }
-        else if (_settings.Shell == ExecutionShell.RunCommand)
+        else if (_settings.ShellCommandExecution == ExecutionShell.RunCommand.ToString())
         {
             // Open explorer if the path is a file or directory
             if (Directory.Exists(command) || File.Exists(command))

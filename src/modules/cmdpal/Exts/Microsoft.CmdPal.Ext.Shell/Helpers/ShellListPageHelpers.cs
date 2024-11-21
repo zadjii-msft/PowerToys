@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Shell.Commands;
@@ -16,11 +17,11 @@ namespace Microsoft.CmdPal.Ext.Shell.Helpers;
 public class ShellListPageHelpers
 {
     private static readonly CompositeFormat WoxPluginCmdCmdHasBeenExecutedTimes = System.Text.CompositeFormat.Parse(Properties.Resources.wox_plugin_cmd_cmd_has_been_executed_times);
-    private readonly ShellPluginSettings _settings;
+    private readonly SettingsManager _settings;
 
-    public ShellListPageHelpers()
+    public ShellListPageHelpers(SettingsManager settings)
     {
-        _settings = new ShellPluginSettings();
+        _settings = settings;
     }
 
     private ListItem GetCurrentCmd(string cmd)
@@ -69,7 +70,7 @@ public class ShellListPageHelpers
         var cmd = query;
         if (string.IsNullOrEmpty(cmd))
         {
-            return ResultsFromlHistory();
+            results = ResultsFromlHistory();
         }
         else
         {
@@ -77,9 +78,26 @@ public class ShellListPageHelpers
             results.Add(queryCmd);
             var history = GetHistoryCmds(cmd, queryCmd);
             results.AddRange(history);
-
-            return results;
         }
+
+        for (var i = 0; i < results.Count; i++)
+        {
+            var currItem = results[i];
+            currItem.MoreCommands = LoadContextMenus(currItem).ToArray();
+        }
+
+        return results;
+    }
+
+    public List<CommandContextItem> LoadContextMenus(ListItem listItem)
+    {
+        var resultlist = new List<CommandContextItem>
+            {
+                new(new ExecuteItem(listItem.Title, _settings, RunAsType.Administrator)),
+                new(new ExecuteItem(listItem.Title, _settings, RunAsType.OtherUser )),
+            };
+
+        return resultlist;
     }
 
     private List<ListItem> ResultsFromlHistory()
@@ -93,6 +111,7 @@ public class ShellListPageHelpers
                 Subtitle = Properties.Resources.wox_plugin_cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, WoxPluginCmdCmdHasBeenExecutedTimes, m.Value),
                 Icon = new(string.Empty), // TODO GH #125 -- revisit Icons
             }).Take(5);
+
         return history.ToList();
     }
 }
