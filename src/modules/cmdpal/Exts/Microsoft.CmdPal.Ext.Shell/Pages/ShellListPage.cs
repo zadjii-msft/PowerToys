@@ -17,12 +17,13 @@ namespace Microsoft.CmdPal.Ext.Shell.Pages;
 
 internal sealed partial class ShellListPage : DynamicListPage
 {
-    private readonly ShellListPageHelpers _helper = new(new SettingsManager());
+    private readonly ShellListPageHelpers _helper;
 
-    public ShellListPage()
+    public ShellListPage(SettingsManager settingsManager)
     {
         Icon = new(string.Empty);
         Name = Resources.wox_plugin_cmd_plugin_name;
+        _helper = new(settingsManager);
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)

@@ -5,9 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Shell.Helpers;
@@ -114,107 +116,122 @@ internal sealed partial class ExecuteItem : InvokableCommand
             runAsVerbArg = "runAs";
         }
 
-        ProcessStartInfo info;
-        if (_settings.ShellCommandExecution == ExecutionShell.Cmd.ToString())
+        if (Enum.TryParse<ExecutionShell>(_settings.ShellCommandExecution, out var executionShell))
         {
-            var arguments = _settings.LeaveShellOpen ? $"/k \"{command}\"" : $"/c \"{command}\" & pause";
+            ProcessStartInfo info;
+            if (executionShell == ExecutionShell.Cmd)
+            {
+                var arguments = _settings.LeaveShellOpen ? $"/k \"{command}\"" : $"/c \"{command}\" & pause";
 
-            info = SetProcessStartInfo("cmd.exe", workingDirectory, arguments, runAsVerbArg);
-        }
-        else if (_settings.ShellCommandExecution == ExecutionShell.Powershell.ToString())
-        {
-            string arguments;
-            if (_settings.LeaveShellOpen)
-            {
-                arguments = $"-NoExit \"{command}\"";
+                info = SetProcessStartInfo("cmd.exe", workingDirectory, arguments, runAsVerbArg);
             }
-            else
+            else if (executionShell == ExecutionShell.Powershell)
             {
-                arguments = $"\"{command} ; Read-Host -Prompt \\\"{Resources.run_plugin_cmd_wait_message}\\\"\"";
-            }
-
-            info = SetProcessStartInfo("powershell.exe", workingDirectory, arguments, runAsVerbArg);
-        }
-        else if (_settings.ShellCommandExecution == ExecutionShell.PowerShellSeven.ToString())
-        {
-            string arguments;
-            if (_settings.LeaveShellOpen)
-            {
-                arguments = $"-NoExit -C \"{command}\"";
-            }
-            else
-            {
-                arguments = $"-C \"{command} ; Read-Host -Prompt \\\"{Resources.run_plugin_cmd_wait_message}\\\"\"";
-            }
-
-            info = SetProcessStartInfo("pwsh.exe", workingDirectory, arguments, runAsVerbArg);
-        }
-        else if (_settings.ShellCommandExecution == ExecutionShell.WindowsTerminalCmd.ToString())
-        {
-            string arguments;
-            if (_settings.LeaveShellOpen)
-            {
-                arguments = $"cmd.exe /k \"{command}\"";
-            }
-            else
-            {
-                arguments = $"cmd.exe /c \"{command}\" & pause";
-            }
-
-            info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
-        }
-        else if (_settings.ShellCommandExecution == ExecutionShell.WindowsTerminalPowerShell.ToString())
-        {
-            string arguments;
-            if (_settings.LeaveShellOpen)
-            {
-                arguments = $"powershell -NoExit -C \"{command}\"";
-            }
-            else
-            {
-                arguments = $"powershell -C \"{command}\"";
-            }
-
-            info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
-        }
-        else if (_settings.ShellCommandExecution == ExecutionShell.WindowsTerminalPowerShellSeven.ToString())
-        {
-            string arguments;
-            if (_settings.LeaveShellOpen)
-            {
-                arguments = $"pwsh.exe -NoExit -C \"{command}\"";
-            }
-            else
-            {
-                arguments = $"pwsh.exe -C \"{command}\"";
-            }
-
-            info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
-        }
-        else if (_settings.ShellCommandExecution == ExecutionShell.RunCommand.ToString())
-        {
-            // Open explorer if the path is a file or directory
-            if (Directory.Exists(command) || File.Exists(command))
-            {
-                info = SetProcessStartInfo("explorer.exe", arguments: command, verb: runAsVerbArg);
-            }
-            else
-            {
-                var parts = command.Split(Separator, 2);
-                if (parts.Length == 2)
+                string arguments;
+                if (_settings.LeaveShellOpen)
                 {
-                    var filename = parts[0];
-                    if (ExistInPath(filename))
+                    arguments = $"-NoExit \"{command}\"";
+                }
+                else
+                {
+                    arguments = $"\"{command} ; Read-Host -Prompt \\\"{Resources.run_plugin_cmd_wait_message}\\\"\"";
+                }
+
+                info = SetProcessStartInfo("powershell.exe", workingDirectory, arguments, runAsVerbArg);
+            }
+            else if (executionShell == ExecutionShell.PowerShellSeven)
+            {
+                string arguments;
+                if (_settings.LeaveShellOpen)
+                {
+                    arguments = $"-NoExit -C \"{command}\"";
+                }
+                else
+                {
+                    arguments = $"-C \"{command} ; Read-Host -Prompt \\\"{Resources.run_plugin_cmd_wait_message}\\\"\"";
+                }
+
+                info = SetProcessStartInfo("pwsh.exe", workingDirectory, arguments, runAsVerbArg);
+            }
+            else if (executionShell == ExecutionShell.WindowsTerminalCmd)
+            {
+                string arguments;
+                if (_settings.LeaveShellOpen)
+                {
+                    arguments = $"cmd.exe /k \"{command}\"";
+                }
+                else
+                {
+                    arguments = $"cmd.exe /c \"{command}\" & pause";
+                }
+
+                info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
+            }
+            else if (executionShell == ExecutionShell.WindowsTerminalPowerShell)
+            {
+                string arguments;
+                if (_settings.LeaveShellOpen)
+                {
+                    arguments = $"powershell -NoExit -C \"{command}\"";
+                }
+                else
+                {
+                    arguments = $"powershell -C \"{command}\"";
+                }
+
+                info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
+            }
+            else if (executionShell == ExecutionShell.WindowsTerminalPowerShellSeven)
+            {
+                string arguments;
+                if (_settings.LeaveShellOpen)
+                {
+                    arguments = $"pwsh.exe -NoExit -C \"{command}\"";
+                }
+                else
+                {
+                    arguments = $"pwsh.exe -C \"{command}\"";
+                }
+
+                info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
+            }
+            else if (executionShell == ExecutionShell.RunCommand)
+            {
+                // Open explorer if the path is a file or directory
+                if (Directory.Exists(command) || File.Exists(command))
+                {
+                    info = SetProcessStartInfo("explorer.exe", arguments: command, verb: runAsVerbArg);
+                }
+                else
+                {
+                    var parts = command.Split(Separator, 2);
+                    if (parts.Length == 2)
                     {
-                        var arguments = parts[1];
-                        if (_settings.LeaveShellOpen)
+                        var filename = parts[0];
+                        if (ExistInPath(filename))
                         {
-                            // Wrap the command in a cmd.exe process
-                            info = SetProcessStartInfo("cmd.exe", workingDirectory, $"/k \"{filename} {arguments}\"", runAsVerbArg);
+                            var arguments = parts[1];
+                            if (_settings.LeaveShellOpen)
+                            {
+                                // Wrap the command in a cmd.exe process
+                                info = SetProcessStartInfo("cmd.exe", workingDirectory, $"/k \"{filename} {arguments}\"", runAsVerbArg);
+                            }
+                            else
+                            {
+                                info = SetProcessStartInfo(filename, workingDirectory, arguments, runAsVerbArg);
+                            }
                         }
                         else
                         {
-                            info = SetProcessStartInfo(filename, workingDirectory, arguments, runAsVerbArg);
+                            if (_settings.LeaveShellOpen)
+                            {
+                                // Wrap the command in a cmd.exe process
+                                info = SetProcessStartInfo("cmd.exe", workingDirectory, $"/k \"{command}\"", runAsVerbArg);
+                            }
+                            else
+                            {
+                                info = SetProcessStartInfo(command, verb: runAsVerbArg);
+                            }
                         }
                     }
                     else
@@ -230,30 +247,23 @@ internal sealed partial class ExecuteItem : InvokableCommand
                         }
                     }
                 }
-                else
-                {
-                    if (_settings.LeaveShellOpen)
-                    {
-                        // Wrap the command in a cmd.exe process
-                        info = SetProcessStartInfo("cmd.exe", workingDirectory, $"/k \"{command}\"", runAsVerbArg);
-                    }
-                    else
-                    {
-                        info = SetProcessStartInfo(command, verb: runAsVerbArg);
-                    }
-                }
             }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            info.UseShellExecute = true;
+
+            _settings.AddCmdHistory(command);
+
+            return info;
         }
         else
         {
+            ExtensionHost.LogMessage(new LogMessage() { Message = "Error extracting setting" });
             throw new NotImplementedException();
         }
-
-        info.UseShellExecute = true;
-
-        _settings.AddCmdHistory(command);
-
-        return info;
     }
 
     public override CommandResult Invoke()

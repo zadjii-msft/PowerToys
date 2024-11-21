@@ -22,7 +22,7 @@ public partial class ShellCommandsProvider : CommandProvider
     public ShellCommandsProvider()
     {
         DisplayName = Resources.wox_plugin_cmd_plugin_name;
-        _shellPageItem = new ListItem(new ShellListPage())
+        _shellPageItem = new ListItem(new ShellListPage(_settingsManager))
         {
             Title = "testing this out",
             MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))],
