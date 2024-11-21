@@ -29,6 +29,11 @@ public partial class ListItemViewModel : ObservableObject
 
     public bool HasMoreCommands => _listItemModel.Unsafe.MoreCommands.Length > 0;
 
+    // TODO this may also be separators, but good enough for now.
+    public IEnumerable<ICommandContextItem> MoreCommands => _listItemModel.Unsafe.MoreCommands
+        .Where(item => item is ICommandContextItem)
+        .Select(i => (i as ICommandContextItem)!);
+
     public ListItemViewModel(IListItem model)
     {
         _listItemModel = new(model);
