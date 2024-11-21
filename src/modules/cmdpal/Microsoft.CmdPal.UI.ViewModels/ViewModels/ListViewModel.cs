@@ -36,6 +36,7 @@ public partial class ListViewModel : ObservableObject
     [RelayCommand]
     private void InvokeItem(ListItemViewModel item)
     {
+        // TODO: we should probably just have the shell handle a "NavigateToCommand" message
         if (item.Command is IListPage listPage)
         {
             WeakReferenceMessenger.Default.Send<NavigateToListMessage>(new(new(listPage)));
