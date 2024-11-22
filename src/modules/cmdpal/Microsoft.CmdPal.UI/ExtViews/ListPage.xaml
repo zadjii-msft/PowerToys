@@ -22,7 +22,7 @@
         <!--  https://learn.microsoft.com/windows/apps/design/controls/itemsview#specify-the-look-of-the-items  -->
         <DataTemplate x:Key="ListItemViewModelTemplate" x:DataType="viewmodels:ListItemViewModel">
 
-            <!--TODO: collapse item if it's empty -->
+            <!--  TODO: collapse item if it's empty  -->
             <ListViewItem MinHeight="56">
                 <Grid ColumnSpacing="12">
                     <Grid.ColumnDefinitions>
@@ -31,10 +31,11 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Viewbox Width="20"
+                    <Viewbox
+                        Width="20"
                         Height="20"
                         VerticalAlignment="Center">
-                        <!--TODO: Icon 
+                        <!--TODO: Icon
                         <ContentControl Content="{x:Bind IcoElement, Mode=OneWay}" />
                         -->
                     </Viewbox>
@@ -59,9 +60,9 @@
                             Text="{x:Bind Subtitle, Mode=OneWay}"
                             TextTrimming="CharacterEllipsis"
                             TextWrapping="NoWrap" />
-                        <!--TODO: collapse subtitle if it's empty -->
+                        <!--  TODO: collapse subtitle if it's empty  -->
                     </StackPanel>
-                    <!--TODO: Add tags again -->
+                    <!--  TODO: Add tags again  -->
                     <!--<ItemsRepeater ItemTemplate="{StaticResource TagTemplate}"
                        ItemsSource="{x:Bind Tags}"
                        Grid.Column="2"

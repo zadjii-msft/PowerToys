@@ -227,8 +227,8 @@
                 FontSize="18"
                 KeyDown="FilterBox_KeyDown"
                 PlaceholderText="{x:Bind ViewModel.PlaceholderText, Mode=OneWay}"
-                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}"
                 Style="{StaticResource SearchTextBoxStyle}"
+                Text="{x:Bind ViewModel.SearchText, Mode=TwoWay}"
                 TextChanged="FilterBox_TextChanged" />
 
         </Grid>
