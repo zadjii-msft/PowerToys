@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
@@ -56,15 +55,6 @@ public partial class ActionBarViewModel : ObservableObject
     [RelayCommand]
     private void InvokeItem(ActionBarContextItemViewModel item)
     {
-        // TODO: we should probably just have the shell handle a "NavigateToCommand" message
-        if (item.Command is IListPage listPage)
-        {
-            WeakReferenceMessenger.Default.Send<NavigateToListMessage>(new(new(listPage)));
-        }
-
-        // else
-        // {
-        //    WeakReferenceMessenger.Default.Send<NavigateToDetailsMessage>(new(item));
-        // }
+        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
     }
 }
