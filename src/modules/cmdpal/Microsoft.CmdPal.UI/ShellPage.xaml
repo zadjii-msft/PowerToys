@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="Microsoft.CmdPal.UI.ShellPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -17,7 +17,10 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <controls:SearchBar x:Name="SearchBox" Grid.Row="0" VerticalAlignment="Top" />
+        <controls:SearchBar
+            x:Name="SearchBox"
+            Grid.Row="0"
+            VerticalAlignment="Top" />
 
         <Frame
             Name="RootFrame"
