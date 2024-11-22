@@ -7,31 +7,30 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.Models;
 using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ShellViewModel : ObservableObject
+public partial class ShellViewModel(IServiceProvider _serviceProvider) : ObservableObject
 {
     [ObservableProperty]
-    private bool _isLoaded = false;
+    public partial bool IsLoaded { get; set; } = false;
 
     public ObservableCollection<CommandProviderWrapper> ActionsProvider { get; set; } = [];
 
     public ObservableCollection<ExtensionObject<IListItem>> TopLevelCommands { get; set; } = [];
 
-    private readonly IEnumerable<ICommandProvider> _builtInCommands;
-
-    public ShellViewModel(IEnumerable<ICommandProvider> builtInCommands)
-    {
-        _builtInCommands = builtInCommands;
-    }
+    private IEnumerable<ICommandProvider>? _builtInCommands;
 
     [RelayCommand]
     public async Task<bool> LoadAsync()
     {
+        _builtInCommands = _serviceProvider.GetServices<ICommandProvider>();
+
         // Load Built In Commands First
         foreach (var provider in _builtInCommands)
         {
@@ -53,7 +52,7 @@ public partial class ShellViewModel : ObservableObject
         await commandProvider.LoadTopLevelCommands();
         foreach (var i in commandProvider.TopLevelItems)
         {
-            TopLevelCommands.Add(new(i));
+            TopLevelCommands.Add(new(new ListItem(i)));
         }
     }
 }
