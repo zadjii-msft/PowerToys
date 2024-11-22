@@ -50,7 +50,7 @@ Try {
   foreach ($config in $Configuration.Split(",")) {
     foreach ($platform in $buildPlatforms) {
       $msbuildArgs = @(
-        ("$PSScriptRoot\..\Microsoft.CmdPal.Extensions\Microsoft.CmdPal.Extensions.vcxproj"),
+        ("$PSScriptRoot\..\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj"),
         ("/p:Platform="+$platform),
         ("/p:Configuration="+$config),
         ("/binaryLogger:CmdPal.Extensions.$platform.$config.binlog"),
@@ -60,16 +60,6 @@ Try {
       & $msbuildPath $msbuildArgs
     }
   }
-
-  $msbuildArgs = @(
-    ("$PSScriptRoot\..\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj"),
-    ("/p:Platform=x64"),
-    ("/p:Configuration="+$config),
-    ("/binaryLogger:CmdPal.Extensions.Helpers.$platform.$config.binlog"),
-    ("/p:VersionNumber="+$VersionOfSDK)
-  )
-
-  & $msbuildPath $msbuildArgs
 } Catch {
   $formatString = "`n{0}`n`n{1}`n`n"
   $fields = $_, $_.ScriptStackTrace
