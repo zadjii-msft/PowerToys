@@ -220,7 +220,7 @@
                 "WinUI3Apps\\PowerToys.Settings.exe",
 
                 "PowerToys.CmdPalModuleInterface.dll",
-                "WinUI3Apps\\CmdPal.POC\\AppPackages\\Microsoft.CmdPal.UI.Poc_0.0.1.0_Test\\Microsoft.CmdPal.UI.Poc_0.0.1.0_x64.msix"
+                "WinUI3Apps\\CmdPal.Poc\\AppPackages\\Microsoft.CmdPal.UI.Poc_0.0.1.0_Test\\Microsoft.CmdPal.UI.Poc_0.0.1.0_x64.msix"
             ],
             "SigningInfo": {
                 "Operations": [
