@@ -1,6 +1,6 @@
 Param(
   [string]$Configuration = "release",
-  [string]$VersionOfSDK,
+  [string]$VersionOfSDK = "0.0.0",
   [bool]$IsAzurePipelineBuild = $false,
   [switch]$BypassWarning = $false,
   [switch]$Help = $false
@@ -17,7 +17,7 @@ Syntax:
       Build.cmd [options]
 
 Description:
-      Builds Dev Home SDK.
+      Builds the Command Pallete SDK
 
 Options:
 
@@ -32,42 +32,44 @@ Options:
   Exit
 }
 
-if (-not $BypassWarning) {
-  Write-Host @"
-This script is not meant to be run directly.  To build the sdk, please run the following from the root directory:
-build -BuildStep "sdk"
-"@ -ForegroundColor RED
-  Exit
-}
-
 $ErrorActionPreference = "Stop"
 
-$buildPlatforms = "x64","x86","arm64","AnyCPU"
+$buildPlatforms = "x64","arm64"
 
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
 if ($IsAzurePipelineBuild) {
   $nugetPath = "nuget.exe";
 } else {
-  $nugetPath = (Join-Path $PSScriptRoot "..\build\NugetWrapper.cmd")
+  $nugetPath = (Join-Path $PSScriptRoot "NugetWrapper.cmd")
 }
 
-New-Item -ItemType Directory -Force -Path "$PSScriptRoot\_build"
-& $nugetPath restore (Join-Path $PSScriptRoot DevHomeSDK.sln)
+New-Item -ItemType Directory -Force -Path "$PSScriptRoot\..\_build"
+& $nugetPath restore (Join-Path $PSScriptRoot "..\..\..\..\..\PowerToys.sln")
 
 Try {
-  foreach ($platform in $buildPlatforms) {
-    foreach ($config in $Configuration.Split(",")) {
+  foreach ($config in $Configuration.Split(",")) {
+    foreach ($platform in $buildPlatforms) {
       $msbuildArgs = @(
-        ("$PSScriptRoot\DevHomeSDK.sln"),
+        ("$PSScriptRoot\..\Microsoft.CmdPal.Extensions\Microsoft.CmdPal.Extensions.vcxproj"),
         ("/p:Platform="+$platform),
         ("/p:Configuration="+$config),
-        ("/binaryLogger:DevHome.SDK.$platform.$config.binlog"),
+        ("/binaryLogger:CmdPal.Extensions.$platform.$config.binlog"),
         ("/p:VersionNumber="+$VersionOfSDK)
       )
 
       & $msbuildPath $msbuildArgs
     }
   }
+
+  $msbuildArgs = @(
+    ("$PSScriptRoot\..\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj"),
+    ("/p:Platform=x64"),
+    ("/p:Configuration="+$config),
+    ("/binaryLogger:CmdPal.Extensions.Helpers.$platform.$config.binlog"),
+    ("/p:VersionNumber="+$VersionOfSDK)
+  )
+
+  & $msbuildPath $msbuildArgs
 } Catch {
   $formatString = "`n{0}`n`n{1}`n`n"
   $fields = $_, $_.ScriptStackTrace
@@ -78,11 +80,11 @@ Try {
 foreach ($config in $Configuration.Split(",")) {
   if ($config -eq "release")
   {
-    & $nugetPath pack (Join-Path $PSScriptRoot "nuget\Microsoft.Windows.DevHome.SDK.nuspec") -Version $VersionOfSDK -OutputDirectory "$PSScriptRoot\_build"
+    & $nugetPath pack (Join-Path $PSScriptRoot "Microsoft.CmdPal.Extensions.SDK.nuspec") -Version $VersionOfSDK -OutputDirectory "$PSScriptRoot\..\_build"
   } else {
 Write-Host @"
 WARNING: You are currently building as '$config' configuration.
-DevHomeSDK nuget creation only supports 'release' configuration right now.
+CmdPalSDK nuget creation only supports 'release' configuration right now.
 "@ -ForegroundColor YELLOW
   }
 }
