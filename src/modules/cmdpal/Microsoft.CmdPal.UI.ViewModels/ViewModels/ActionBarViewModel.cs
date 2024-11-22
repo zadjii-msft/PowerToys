@@ -12,23 +12,30 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class ActionBarViewModel : ObservableObject
 {
-    [ObservableProperty]
-    private ListItemViewModel? _selectedItem;
+    public ListItemViewModel? SelectedItem
+    {
+        get => field;
+        set
+        {
+            field = value;
+            SetSelectedItem(value);
+        }
+    }
 
     [ObservableProperty]
-    private string _actionName = string.Empty;
+    public partial string ActionName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    private bool _moreCommandsAvailable = false;
+    public partial bool MoreCommandsAvailable { get; set; } = false;
 
     [ObservableProperty]
-    private ObservableCollection<ActionBarContextItemViewModel> _contextActions = [];
+    public partial ObservableCollection<ActionBarContextItemViewModel> ContextActions { get; set; } = [];
 
     public ActionBarViewModel()
     {
     }
 
-    partial void OnSelectedItemChanged(ListItemViewModel? value)
+    private void SetSelectedItem(ListItemViewModel? value)
     {
         if (value != null)
         {

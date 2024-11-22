@@ -33,7 +33,10 @@ public sealed partial class ShellPage :
         this.InitializeComponent();
 
         // how we are doing navigation around
-        WeakReferenceMessenger.Default.RegisterAll(this);
+        WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
+        WeakReferenceMessenger.Default.Register<NavigateToDetailsMessage>(this);
+        WeakReferenceMessenger.Default.Register<NavigateToListMessage>(this);
+        WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
 
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
     }

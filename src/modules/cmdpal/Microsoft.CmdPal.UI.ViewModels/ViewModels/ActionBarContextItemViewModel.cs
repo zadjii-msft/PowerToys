@@ -12,7 +12,7 @@ public partial class ActionBarContextItemViewModel : ObservableObject
     private readonly ICommandItem _commandItem;
 
     [ObservableProperty]
-    private string _title;
+    public partial string Title { get; set; }
 
     ////private IconDataType Icon => Command.Icon;
 
