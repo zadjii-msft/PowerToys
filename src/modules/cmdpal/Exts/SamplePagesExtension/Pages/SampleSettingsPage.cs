@@ -18,7 +18,8 @@ internal sealed partial class SampleSettingsPage : FormPage
         new ChoiceSetSetting.Choice("The first choice in the list is the default choice", "0"),
         new ChoiceSetSetting.Choice("Choices have titles and values", "1"),
         new ChoiceSetSetting.Choice("Title", "Value"),
-        new ChoiceSetSetting.Choice("So many choices", "3"),
+        new ChoiceSetSetting.Choice("The options are endless", "3"),
+        new ChoiceSetSetting.Choice("So many choices", "4"),
     };
 
     public override IForm[] Forms()
