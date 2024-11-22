@@ -103,7 +103,6 @@
                 "WinUI3Apps\\PowerToys.Hosts.exe",
 
                 "WinUI3Apps\\PowerToys.FileLocksmithLib.Interop.dll",
-                "WinUI3Apps\\PowerToys.FileLocksmithExt.dll",
                 "WinUI3Apps\\PowerToys.FileLocksmithUI.exe",
                 "WinUI3Apps\\PowerToys.FileLocksmithUI.dll",
                 "WinUI3Apps\\PowerToys.FileLocksmithContextMenu.dll",

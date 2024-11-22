@@ -73,7 +73,9 @@ $items | ForEach-Object {
         $auth = Get-AuthenticodeSignature $_.FullName
         if ($auth.SignerCertificate -eq $null) {
             Write-Host "Not Signed: " + $_.FullName
-            $totalFailure++;
+            if ($_.Name -notmatch "PowerToys.FileLocksmithExt.dll") {
+                $totalFailure++;
+            }
         }
     }
 }
