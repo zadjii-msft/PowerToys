@@ -63,9 +63,16 @@ public sealed partial class MainListPage : DynamicListPage
 
     private void UpdateQuery()
     {
+        // First things first: Check our list of aliases to see if this is a match.
+        if (_mainViewModel.CheckAlias(SearchText))
+        {
+            return;
+        }
+
         // Update all the top-level commands which are fallback providers:
-        var fallbacks = topLevelItems
-            .Select(i => i?.FallbackHandler)
+        var fallbacks = topLevelItems.Select(mainItem => mainItem.Item)
+            .Where(commandItem => commandItem is IFallbackCommandItem)
+            .Select(commandItem => commandItem as IFallbackCommandItem)
             .Where(fb => fb != null)
             .Select(fb => fb!);
 
@@ -73,7 +80,7 @@ public sealed partial class MainListPage : DynamicListPage
         {
             try
             {
-                fb.UpdateQuery(SearchText);
+                fb.FallbackHandler.UpdateQuery(SearchText);
             }
             catch (COMException ex)
             {
@@ -113,7 +120,7 @@ public sealed partial class MainListPage : DynamicListPage
         {
             foreach (var item in e.NewItems)
             {
-                if (item is ExtensionObject<IListItem> listItem)
+                if (item is ExtensionObject<ICommandItem> listItem)
                 {
                     topLevelItems.Add(new MainListItem(listItem.Unsafe));
                 }
@@ -123,7 +130,7 @@ public sealed partial class MainListPage : DynamicListPage
         {
             foreach (var item in e.OldItems)
             {
-                if (item is ExtensionObject<IListItem> _)
+                if (item is ExtensionObject<ICommandItem> _)
                 {
                     // If we were maintaining the POC project we'd remove the items here.
                 }
