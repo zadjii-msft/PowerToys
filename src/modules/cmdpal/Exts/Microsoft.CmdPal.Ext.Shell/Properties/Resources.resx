@@ -175,4 +175,7 @@
   <data name="wox_shell_command_execution_description" xml:space="preserve">
     <value>All entries using the Windows Terminal force the Windows Terminal as the console host regardless of the system settings</value>
   </data>
+  <data name="shell_command_name" xml:space="preserve">
+    <value>Execute shell commands</value>
+  </data>
 </root>

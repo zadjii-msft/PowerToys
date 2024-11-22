@@ -24,7 +24,8 @@ public partial class ShellCommandsProvider : CommandProvider
         DisplayName = Resources.wox_plugin_cmd_plugin_name;
         _shellPageItem = new ListItem(new ShellListPage(_settingsManager))
         {
-            Title = Resources.wox_plugin_cmd_plugin_name,
+            Title = Resources.shell_command_name,
+            Subtitle = Resources.wox_plugin_cmd_plugin_description,
             MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))],
         };
     }

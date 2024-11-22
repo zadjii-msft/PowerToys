@@ -133,6 +133,15 @@ namespace Microsoft.CmdPal.Ext.Shell.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Execute shell commands.
+        /// </summary>
+        public static string shell_command_name {
+            get {
+                return ResourceManager.GetString("shell_command_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Keep shell open.
         /// </summary>
         public static string wox_leave_shell_open {
