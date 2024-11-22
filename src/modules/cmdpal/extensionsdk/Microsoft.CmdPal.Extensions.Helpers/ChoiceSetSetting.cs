@@ -33,14 +33,14 @@ public sealed class ChoiceSetSetting : Setting<string>
         Choices = new();
     }
 
-    public ChoiceSetSetting(string key, List<Choice> choices, Choice defaultValue)
-        : base(key, defaultValue.Value)
+    public ChoiceSetSetting(string key, List<Choice> choices)
+        : base(key, choices.ElementAt(0).Value)
     {
         Choices = choices;
     }
 
-    public ChoiceSetSetting(string key, string label, string description, List<Choice> choices, Choice defaultValue)
-        : base(key, label, description, defaultValue.Value)
+    public ChoiceSetSetting(string key, string label, string description, List<Choice> choices)
+        : base(key, label, description, choices.ElementAt(0).Value)
     {
         Choices = choices;
     }

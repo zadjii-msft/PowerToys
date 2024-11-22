@@ -77,7 +77,7 @@ public class SettingsManager
     {
         _filePath = SettingsJsonPath();
 
-        _shellCommandExecution = new(nameof(ShellCommandExecution), Resources.wox_shell_command_execution, Resources.wox_shell_command_execution_description, _choices, _choices.ElementAt(0));
+        _shellCommandExecution = new(nameof(ShellCommandExecution), Resources.wox_shell_command_execution, Resources.wox_shell_command_execution_description, _choices);
 
         _settings.Add(_leaveShellOpen);
         _settings.Add(_shellCommandExecution);
