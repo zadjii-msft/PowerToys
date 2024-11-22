@@ -16,13 +16,13 @@ namespace Microsoft.CmdPal.Ext.Shell;
 
 public partial class ShellCommandsProvider : CommandProvider
 {
-    private readonly ListItem _shellPageItem;
+    private readonly CommandItem _shellPageItem;
     private readonly SettingsManager _settingsManager = new();
 
     public ShellCommandsProvider()
     {
         DisplayName = Resources.wox_plugin_cmd_plugin_name;
-        _shellPageItem = new ListItem(new ShellListPage(_settingsManager))
+        _shellPageItem = new CommandItem(new ShellListPage(_settingsManager))
         {
             Title = Resources.shell_command_name,
             Subtitle = Resources.wox_plugin_cmd_plugin_description,
@@ -30,7 +30,7 @@ public partial class ShellCommandsProvider : CommandProvider
         };
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [_shellPageItem];
     }

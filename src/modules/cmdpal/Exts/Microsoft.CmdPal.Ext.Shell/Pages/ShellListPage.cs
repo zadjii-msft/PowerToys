@@ -22,6 +22,7 @@ internal sealed partial class ShellListPage : DynamicListPage
     public ShellListPage(SettingsManager settingsManager)
     {
         Icon = new(string.Empty);
+        Id = "com.microsoft.cmdpal.shell";
         Name = Resources.wox_plugin_cmd_plugin_name;
         _helper = new(settingsManager);
     }
