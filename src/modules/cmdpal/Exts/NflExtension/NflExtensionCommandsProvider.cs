@@ -16,7 +16,7 @@ public partial class NflExtensionActionsProvider : CommandProvider
 {
     public NflExtensionActionsProvider()
     {
-        DisplayName = "NFL Scores Extension Commands";
+        DisplayName = "NFL Scores";
     }
 
     private readonly ICommandItem[] _commands = [
