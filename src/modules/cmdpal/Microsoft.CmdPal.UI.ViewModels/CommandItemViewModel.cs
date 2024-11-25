@@ -66,6 +66,10 @@ public partial class CommandItemViewModel : ObservableObject
             .Select(contextItem => (contextItem as ICommandContextItem)!)
             .Select(contextItem => new CommandContextItemViewModel(contextItem)) // TODO ContextItemViewModels
             .ToList();
+        MoreCommands.ForEach(contextItem =>
+        {
+            contextItem.InitializePropertiesAsync().ContinueWith(t => { });
+        });
 
         model.PropChanged += Model_PropChanged;
 

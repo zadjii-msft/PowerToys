@@ -27,7 +27,7 @@ public partial class ListViewModel : ObservableObject
         foreach (var item in model.GetItems())
         {
             ListItemViewModel viewModel = new(item);
-            viewModel.InitializePropertiesAsync().ContinueWith(t => { }); // .ContinueWith((t) => );
+            viewModel.InitializePropertiesAsync().ContinueWith(t => { /*TODO this feels dirty*/ });
             group.Add(viewModel);
         }
 

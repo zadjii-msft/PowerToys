@@ -31,9 +31,12 @@ public partial class CommandContextItemViewModel : CommandItemViewModel
         }
 
         IsCritical = contextItem.IsCritical;
-        RequestedShortcut = new(
-            contextItem.RequestedShortcut.Modifiers,
-            contextItem.RequestedShortcut.Vkey,
-            contextItem.RequestedShortcut.ScanCode);
+        if (contextItem.RequestedShortcut != null)
+        {
+            RequestedShortcut = new(
+                contextItem.RequestedShortcut.Modifiers,
+                contextItem.RequestedShortcut.Vkey,
+                contextItem.RequestedShortcut.ScanCode);
+        }
     }
 }
