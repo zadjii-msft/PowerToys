@@ -36,30 +36,3 @@ public partial class ListItemViewModel : CommandItemViewModel
         Tags = li.Tags ?? [];
     }
 }
-
-// public partial class CommandContextItemViewModel : CommandItemViewModel
-// {
-//    private readonly ExtensionObject<ICommandContextItem> _listItemModel;
-
-
-// public CommandContextItemViewModel(ICommandContextItem model)
-//        : base(new(model))
-//    {
-//        _listItemModel = new(model);
-//    }
-
-// protected override void Initialize()
-//    {
-//        base.Initialize();
-
-// // TODO load tags here, details, suggested text, all that
-//        var li = _listItemModel.Unsafe;
-//        if (li == null)
-//        {
-//            return; // throw?
-//        }
-
-// // TODO TagViewModel not ITag
-//        Tags = li.Tags ?? [];
-//    }
-// }

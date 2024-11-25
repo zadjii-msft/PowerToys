@@ -6,13 +6,5 @@ namespace Microsoft.CmdPal.UI.ViewModels.Models;
 
 public class ExtensionObject<T>(T? value) // where T : IInspectable
 {
-    // public T? Safe {
-    //     get {
-    //         try {
-    //             if (_value!.Equals(_value)) return _value;
-    //         } catch (COMException){ /* log something */ }
-    //         return default;
-    //     }
-    // }
     public T? Unsafe { get; } = value;
 }
