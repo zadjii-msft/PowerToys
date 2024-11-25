@@ -45,16 +45,12 @@ public sealed partial class MainWindow : Window,
         RootShellPage.Loaded += RootShellPage_Loaded;
     }
 
-    private void RootShellPage_Loaded(object sender, RoutedEventArgs e)
-    {
+    private void RootShellPage_Loaded(object sender, RoutedEventArgs e) =>
+
         // Now that our content has loaded, we can update our dragable regions
         UpdateRegionsForCustomTitleBar();
-    }
 
-    private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs args)
-    {
-        UpdateRegionsForCustomTitleBar();
-    }
+    private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs args) => UpdateRegionsForCustomTitleBar();
 
     private void PositionCentered()
     {
@@ -128,15 +124,9 @@ public sealed partial class MainWindow : Window,
         }
     }
 
-    public void Receive(QuitMessage message)
-    {
-        Close();
-    }
+    public void Receive(QuitMessage message) => Close();
 
-    private void MainWindow_Closed(object sender, WindowEventArgs args)
-    {
-        DisposeAcrylic();
-    }
+    private void MainWindow_Closed(object sender, WindowEventArgs args) => DisposeAcrylic();
 
     // Updates our window s.t. the top of the window is dragable.
     private void UpdateRegionsForCustomTitleBar()
