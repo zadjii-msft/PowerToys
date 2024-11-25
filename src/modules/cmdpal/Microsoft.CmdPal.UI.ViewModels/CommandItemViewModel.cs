@@ -4,6 +4,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
@@ -26,6 +27,32 @@ public partial class CommandItemViewModel : ObservableObject
     public List<CommandContextItemViewModel> MoreCommands { get; private set; } = [];
 
     public bool HasMoreCommands => MoreCommands.Count > 0;
+
+    public string SecondaryCommandName => HasMoreCommands ? MoreCommands[0].Name : string.Empty;
+
+    public List<CommandContextItemViewModel> AllCommands
+    {
+        get
+        {
+            var command = _commandItemModel.Unsafe?.Command;
+            var model = new CommandContextItem(command!)
+            {
+            };
+            CommandContextItemViewModel defaultCommand = new(model)
+            {
+                Name = Name,
+                Title = Title,
+                Subtitle = Subtitle,
+                IconUri = IconUri,
+
+                // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
+            };
+
+            var l = new List<CommandContextItemViewModel> { defaultCommand };
+            l.AddRange(MoreCommands);
+            return l;
+        }
+    }
 
     public CommandItemViewModel(ExtensionObject<ICommandItem> item)
     {
