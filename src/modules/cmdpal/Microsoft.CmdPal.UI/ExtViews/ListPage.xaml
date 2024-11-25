@@ -94,15 +94,18 @@
             <ListView.ItemContainerTransitions>
                 <TransitionCollection />
             </ListView.ItemContainerTransitions>
-            <!--<ListView.GroupStyle>
+            <ListView.GroupStyle>
                 <GroupStyle HidesIfEmpty="True">
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
-                            <TextBlock FontSize="16" Text="{Binding Key}" />
+                            <TextBlock
+                                Margin="0,16,0,0"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="{Binding Key}" />
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
-            </ListView.GroupStyle>-->
+            </ListView.GroupStyle>
         </ListView>
     </Grid>
 </Page>
