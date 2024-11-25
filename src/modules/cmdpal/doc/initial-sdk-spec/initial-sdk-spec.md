@@ -1,7 +1,7 @@
 ---
 author: Mike Griese
 created on: 2024-07-19
-last updated: 2024-11-08
+last updated: 2024-11-20
 issue id: n/a
 ---
 
@@ -38,6 +38,8 @@ functionality.
     - [Extension lifecycle](#extension-lifecycle)
       - [Startup](#startup)
       - [Caching](#caching)
+        - [Loading commands from stub items](#loading-commands-from-stub-items)
+        - [Microwaved commands](#microwaved-commands)
       - [Disposing](#disposing)
   - [Installing extensions](#installing-extensions)
     - [From the Store](#from-the-store)
@@ -52,7 +54,6 @@ functionality.
       - [List Pages](#list-pages)
         - [Updating the list](#updating-the-list)
         - [Filtering the list](#filtering-the-list)
-      - [Fallback actions](#fallback-actions)
       - [Markdown Pages](#markdown-pages)
       - [Form Pages](#form-pages)
     - [Other types](#other-types)
@@ -61,13 +62,16 @@ functionality.
       - [`Details`](#details)
       - [`INotifyPropChanged`](#inotifypropchanged)
       - [`ICommandProvider`](#icommandprovider)
-    - [Settings](#settings)
+      - [Fallback commands](#fallback-commands)
+        - [`GetCommand`](#getcommand)
+        - [Settings](#settings)
   - [Helper SDK Classes](#helper-sdk-classes)
     - [Default implementations](#default-implementations)
     - [Using the Clipboard](#using-the-clipboard)
     - [Settings helpers](#settings-helpers)
   - [Advanced scenarios](#advanced-scenarios)
     - [Status messages](#status-messages)
+    - [Rendering of ICommandItems in Lists and Menus](#rendering-of-icommanditems-in-lists-and-menus)
   - [Class diagram](#class-diagram)
   - [Future considerations](#future-considerations)
     - [Arbitrary parameters and arguments](#arbitrary-parameters-and-arguments)
@@ -232,60 +236,197 @@ apps to lazily load their "UI content" as needed.
 
 #### Caching
 
-> [!IMPORTANT]
-> this section is a draft, TODO!
+A key goal of DevPal is to have it start as fast as possible, and have the
+footprint while it's running be minimal. If DevPal needed to instantiate every
+extension just to get the top-level list of commands, the impact on startup
+would grow as the user installed more extensions. Additionally, each extension
+installed would result in another process starting and running for the lifetime
+of DevPal.
 
+To avoid this, DevPal can "cache" the toplevel commands for an extension. This
+will allow DevPal to display these commands to the user on startup, without
+needing to keep the extension process running.
 
-* We will cache the list of commands for each extension. This allows us to
-  quickly load the list of commands on subsequent cold launches.
-* We should have a way to let extensions opt into more agressive caching of
-  their actions. So something that has a static list of top-level actions
-  doesn't even need to be `CoCreateInstance`'d on launch.
-  * The "Hacker News" extension, for example, only has a single top-level
-    action. Once we load that once, we don't need to CreateProcess just to find
-    it. We could just CoCreateInstance when the user selects it, and immediately
-    load the page.
-  * The "Quick Links" extension has a dynamic list of top-level actions. These
-    aren't something that can be added to the appxmanifest at packaging time.
-    But once we have them, we can cache them.
-  * The "Media Controls" extension only has a single top-level action, but it
-    needs to be running to be able to update it's title and icon. So we can't
-    just cache the state of it.
-  * Similarly, any top-level `IFallbackAction` need to be running to get
-    real-time updates to their name.
+Command Providers which can have their commands cached are called "**frozen**",
+and have `Frozen=true` set in `ICommandProvider`. This is the _default_ for apps
+using the helpers library. For the large majority of extensions, the list of
+commands won't change over time. These extensions can be cached to save
+resources.
 
-Here are some TODO!naming bad names for the caching levels:
+Command providers can opt out of this behavior by setting `Frozen=false` in
+their extension. We'll call these extensions "**fresh, never frozen**". 
 
-* "Frozen" (**default**) - After the first launch, cache the list of top-level
-  actions. When we're launched, don't create the COM object, just use the cached
-  list of actions. Most apps which provide a static list of top-level actions
-  can use this mode.
-  * For example: any app that just provides a single top level action, like the
-    Hacker News extension.
-* "Microwavable" - After the first launch, cache the list of top-level actions.
-  When we're launched, still create the COM object, and update that list of
-  commands as needed. Useful for things who's list of commands may change with
-  some frequency.
-  * an example of this is the "Quick Links" extension. It needs to be running to
-    update the list of actions, but the list of commands doesn't change that
-    often.
-* "Fresh, never frozen" - always create a new instance of the COM object and
-  query the list of actions. Never cache the results from the last launch. This
-  is for extensions that want to provide real-time info in the top level, or
-  who's list of commands changes frequently.
-  * an example of this is the "Media Controls" extension. It needs to be running
-    to update the title and icon for the playing music. It would never make
-    sense to use the previous value.
+As some examples:
+* The "Hacker News" extension, only has a single top-level action. Once we load
+  that once, we don't need to `CreateProcess` just to find that command title.
+  This is a **frozen** extension.
+* Similarly for something like the GitHub extension - it's got multiple
+  top-level commands (My issues, Issue search, Repo search, etc), but these
+  top-level commands never change. This is a **frozen** extension.
+* The "Quick Links" extension has a dynamic list of top-level actions. 
+  This is a **fresh** extension.[^3]
+* The "Media Controls" extension only has a single top-level action, but it
+  needs to be running to be able to update it's title and icon. So we can't just
+  cache the state of it. This is a **fresh** extension.
+* Similarly, any top-level `IFallbackHandler` need to be running to get
+  real-time updates to their name. Any extension with a top-level
+  `IFallbackHandler` will be treated as **fresh** extension.
+
+How do we actually cache this frozen list?
+
+Our goal is to make initial startup to be fast, even faster than hitting the
+package catalog. To support this, DevPal will cache information about the
+top-level commands it gets from extensions. With that cached information, DevPal
+can create "stub" entries of those commands in the palette, without launching
+the extension first.
+
+The structure of the data DevPal caches will look something like the following:
+
+```jsonc
+{
+    "extensions": [
+        {
+            "pfn": "TemplateExtension_0.0.1.0_x64__8wekyb3d8bbwe",
+            "clsid": "{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}",
+
+            "displayName": "TemplateDisplayName",
+            "frozen": true,
+            "commands":
+            [
+                {
+                    "id": "TemplateExtension.MyFistCommand",
+                    "icon": "",
+                    "title": "",
+                    "subtitle": "",
+                    "name": "",
+                    "moreCommands": [ /* Additional commands... */]
+                }
+            ]
+        }
+    ]
+
+}
+```
+
+In this data you can see:
+* We cache some basic info about each extension we've seen. This includes 
+  * the Package Family Name (a unique identifier per-app package), 
+  * the COM CLSID for that extension, 
+  * the display name for that extension,
+  * and if that extension is frozen or not. 
+* We also cache the list of top-level commands for that extension. We'll store
+  the basic amount of info we need to recreate that command in the top-level
+  list.
+
+On a cold launch, DevPal will do the following:
+
+1. SLOW: First we start up WASDK and XAML. Unavoidable cost. 
+2. FAST: We load builtin extensions. These are just extensions in DLLs, so
+   there's nothing to it.
+3. FAST: We load our cache of extensions from disk, and note which are frozen vs fresh
+   * We needs this to know which extensions have classes we need to instantiate
+     (fresh), vs ones we can lazy-start (frozen)
+   * We'll create stub extension objects here, with the CLSID ~and commandline~ stored.
+     * note: we don't need the executable/commandline. Just the clsid. We still
+       want to leave it to COM to deal with actually starting the COM server.
+       That's not our job, and we don't need the package catalog loaded to get
+       that - only the clsid.
+4. FAST: With our extension & command cache, get the list of commands, and add
+   those items as "stub" list items
+   * These items don't have an actual _live_ extension object backing them.
+     They're just the data we cached from the extension.
+   * Stubs refer to the stub extension object we created in 3
+   * When the user clicks on a stub item, we'll do what's outlined in [Loading commands from stub items](#loading-commands-from-stub-items) below.
+5. SLOW: We open the package catalog for more commands
+   * Extensions that we've seen before in our cache:
+     * If it's fresh, we'll start it, and fill in commands from `TopLevelCommands` into the palette
+     * If it's frozen, we'll leave it be. We've already got stubs for it. 
+   * Extensions we've never seen before: 
+     * Start it up.
+     * Check if it's fresh or frozen. 
+     * Call `TopLevelCommands`, and put all of them in the list
+     * Create a extension cache entry for that app.
+     * If the provider is frozen: we can actually realease the
+       `ICommandProvider` instance at this point.
+   * And of course, if we don't find all the packages we had cached, then delete
+     entries for the missing ones. Those apps were uninstalled.
+6. We start a package catalog change watcher to be notified by the OS for
+   changes to the list of installed extensions
+
+After 1, we can display the UI. It won't have any commands though, so maybe we should wait. 
+After 2, we'd have some commands, but nothing from extensions
+After 4, the palette is ready to be used, with all the frozen extension commands. This is probably good enough for most use cases. 
+
+Most of the time, when the user "launches" devPal, we won't run through this
+whole process. The slowest part of startup is standing up WASDK and WinUI. After
+the first launch, we will keep our window will be hidden, running silently in
+the background. When the user presses the global hotkey, or otherwise launches
+the app, we'll just activate our existing process. This is a "warm launch".
+
+On a warm launch, we already have all the stubs in memory. We're listening for
+package installs/unistalls already. So we're basically just in the post-step 5
+state already.
+
+##### Loading commands from stub items
+
+<sup>_"reheating"_</sup>
+
+When the user activates a top-level "stub" list item (refering to a frozen
+command), we need to quickly load that app and get the command for it.
+
+1. If this stub has already been reheated, just return out the `ICommand` we
+   instantiated last time, and skip this whole process.
+2. Get the extension stub out of that item
+   * If that fails: display an error message.
+3. Check if the extension is already in the warm extension cache. If it is, we
+   recently reheated a command from this provider. We can skip step 4 and go
+   straight to step 5
+4. Use the CLSID from the cache to `CoCreateInstance` this extension, and get its `ICommandProvider`.  
+   * If that fails: display an error message.
+5. Try to load the command from the provider. This is done in two steps:
+   1. If the cached command had an `id`, try to look up the command with
+      `ICommandProvider.GetCommand(id)`, passing the `id`. If that returns an
+      item, we can move on to the next stem
+   2. Otherwise (the command wasn't assigned an ID, or `GetCommand` returned
+      null): all `TopLevelItems` on that `CommandProvider`.
+      * Search through all the returned commands with the same `id` or
+        `icon/title/subtitle/name`, and return that one.
+6. If we found the command from the provider, navigate to it or invoke it. 
+
+##### Microwaved commands
+
+DevPal will want to keep the last N extensions that were activated "warm", so
+that they are ready to be re-activated again. Once a command provider is
+reheated, we'll keep it around in a warm extension cache. Stubs that have been
+activated by reheating them can then skip a `CommandProvider` lookup
+(`GetCommand` or `TopLevelItems`).
+
+We'll give the user options to control how many of the most recent commands we
+keep warm at a given time. We'll probably also want to offer an option like
+"always warm up {this command} / {all commands}", if the user doesn't care about
+the memory usage as much.
+
+> [WARNING!]
+> 
+> If your command provider returns a `IFallbackCommandItem`s from
+> `FallbackCommands`, and that provider is marked `frozen`, DevPal will always
+> treat your provider as "fresh". Otherwise, devpal wouldn't be able to call
+> into the extension to have the `IFallbackHandler` respond to the search query.
+>
+> The alternative would be to have DevPal just ignore the fallback handler from
+> that provider. Silently doing nothing seemed less user friendly than silently
+> doing What's Expected.
 
 #### Disposing
 
-> [!IMPORTANT]
-> this section is a draft, TODO!
-
-* We shouldn't have all the extensions loaded if we don't need them.
-* When we're dismissed at the home page, we should close out the extension classes we've loaded.
-* Should we close out the reference to the package entirely? So that the store has a chance to update it?
-* Should FreshNeverFrozen extensions be left open even while dismissed?
+As implied by the above section, all the extensions for DevPal won't be loaded
+and running all at once. We'll only keep the "fresh never frozen" extensions
+running, as well as the last N most recently used commands. Once we've exceeded
+that limit of recent commands, we'll release our reference to the COM object for
+that extension, and re-mark commands from it as "stubs". Upon the release of
+that reference, the extension is free to clean itself up. For extensions that
+use the helpers library, they can override  `CommandProvider.Dispose` to do
+cleanup in there.  
 
 ## Installing extensions
 
@@ -389,12 +530,14 @@ Use `cs` for samples.
 ```c#
 interface ICommand requires INotifyPropChanged{
     String Name{ get; };
+    String Id{ get; };
     IconDataType Icon{ get; };
 }
 
 enum CommandResultKind {
     Dismiss,    // Reset the palette to the main page and dismiss
     GoHome,     // Go back to the main page, but keep it open
+    Hide,       // Keep this page open, but hide the palette. 
     KeepOpen,   // Do nothing.
     GoToPage,   // Go to another page. GoToPageArgs will tell you where.
 };
@@ -424,12 +567,15 @@ As a simple example[^1]:
 
 ```cs
 class HackerNewsAction : Microsoft.Windows.Run.Extensions.InvokableCommand {
-    public string Name => "Hacker News";
-    public IconDataType Icon => "https://news.ycombinator.com/favicon.ico";
+    public class HackerNewsAction()
+    {
+        Name = "Hacker News";
+        Icon = "https://news.ycombinator.com/favicon.ico";
+    }
 
-    public ActionResult Invoke() {
+    public ICommandResult Invoke() {
         Process.Start(new ProcessStartInfo("https://news.ycombinator.com/") { UseShellExecute = true });
-        return ActionResult.Success;
+        return CommandResult.Hide();
     }
 }
 ```
@@ -437,17 +583,21 @@ class HackerNewsAction : Microsoft.Windows.Run.Extensions.InvokableCommand {
 This will create a single action in DevPal that, when selected, will open
 Hacker News in the user's default web browser.
 
-Actions can also be `Page`s, which represent additional "nested" pages within
+Commands can also be `Page`s, which represent additional "nested" pages within
 DevPal. When the user selects an action that implements `IPage`, DevPal will
 navigate to a page for that action, rather than calling `Invoke` on it. Skip
 ahead to [Pages](#Pages) for more information on the different types of pages.
 
+The `Id` property is optional. This can be set but the extension author to
+support more efficient command lookup in
+[`ICommandProvider.GetCommand()`, below](#getcommand).
+
 #### Results
 
-Actions can return a `ActionResult` to indicate what DevPal should do after
+Commands can return a `CommandResult` to indicate what DevPal should do after
 the command is executed. This allows for commands to control the flow of the
 DevPal. For example, an action that opens a URL might return `Kind =
-ActionResult.Dismiss` to close DevPal after the URL is opened.
+CommandResult.Dismiss` to close DevPal after the URL is opened.
 
 Use cases for each `CommandResultKind`:
 
@@ -547,32 +697,28 @@ Lists can be either "static" or "dynamic":
 
 
 ```csharp
-interface IFallbackHandler {
-    void UpdateQuery(String query);
-}
-
 [uuid("c78b9851-e76b-43ee-8f76-da5ba14e69a4")]
 interface IContextItem {}
 
-interface ICommandContextItem requires IContextItem {
-    ICommand Command { get; };
-    String Tooltip { get; };
-    Boolean IsCritical { get; }; // todo: better name for "make this red"
-
-    // TODO-future: we should allow app developers to specify a default keybinding for each of these actions
-}
-[uuid("924a87fc-32fe-4471-9156-84b3b30275a6")]
-interface ISeparatorContextItem requires IContextItem {}
-
-interface IListItem requires INotifyPropChanged {
+interface ICommandItem requires INotifyPropChanged {
+    ICommand Command{ get; };
+    IContextItem[] MoreCommands{ get; };
     IconDataType Icon{ get; };
     String Title{ get; };
     String Subtitle{ get; };
-    ICommand Command{ get; };
-    IContextItem[] MoreCommands{ get; };
+} 
+
+interface ICommandContextItem requires ICommandItem, IContextItem {
+    Boolean IsCritical { get; }; // READ: "make this red"
+    KeyChord RequestedShortcut { get; };
+}
+
+[uuid("924a87fc-32fe-4471-9156-84b3b30275a6")]
+interface ISeparatorContextItem requires IContextItem {}
+
+interface IListItem requires ICommandItem {
     ITag[] Tags{ get; };
     IDetails Details{ get; };
-    IFallbackHandler FallbackHandler{ get; };
     String Section { get; };
     String TextToSuggest { get; };
 }
@@ -604,22 +750,38 @@ interface IDynamicListPage requires IListPage {
 
 Lists are comprised of a collection of `IListItems`.
 
+
 ![Another mockup of the elements of a list item](./list-elements-mock-002.png)
+
+> NOTE: The above diagram is from before Nov 2024. It doesn't properly include the relationship between `ICommandItems` and list items.   
+> A more up-to-date explainer of the elements of the UI can be found in
+> ["Rendering of ICommandItems in Lists and Menus"](#rendering-of-icommanditems-in-lists-and-menus)
 
 Each ListItem has one default `Command`. This is the command that will be run
 when the user selects the item. If the IListItem has a non-null `Icon`, that
 icon will be displayed in the list. If the `Icon` is null, DevPal will display
 the `Icon` of the list item's `Command` instead.
 
-ListItems may also have a list of `MoreCommands`.
-These are additional commands that the user can take on the item. These will be
-displayed to the user in the "More commands" flyout when the user has that item
-selected. As the user moves focus through the list to select different items, we
-will update the UI to show the commands for the currently selected item.
+ListItems may also have a list of `MoreCommands`. These are additional commands
+that the user can take on the item. These will be displayed to the user in the
+"More commands" flyout when the user has that item selected. As the user moves
+focus through the list to select different items, we will update the UI to show
+the commands for the currently selected item.
 
 ![A prototype of the ListItem context menu with commands](./context-actions-prototype.png)
 
-For more details on the structure of the `Actions` property, see the
+The elements of a ListPage (`IListItem`s) and the context menu
+(`ICommandContextItem`) both share the same base type. Basically, they're both a
+list of things which have:
+* A `ICommand` to invoke or navigate to. 
+* a `Title` which might replace their `Command`'s `Name`, 
+* an `Icon` which might replace their `Command`'s `Icon`, 
+* A `Subtitle`, which is visible on the list, and a _tooltip_ for a context menu
+* They might also have `MoreCommands`:
+  * For a `IListItem`, this is the context menu. 
+  * For a ContextItem in the context menu, this creates a sub-context menu. 
+
+For more details on the structure of the `MoreCommands` property, see the
 [`ContextItem`s](#contextitems) section below.
 
 As an example, here's how the Media Controls extension adds play/pause, next &
@@ -650,8 +812,12 @@ internal sealed class MediaListItem : ListItem
 }
 internal sealed class TogglePlayMediaAction : InvokableCommand
 {
-    public string Name => "Play";
-    public IconDataType Icon => new("\ue768"); //play
+    public TogglePlayMediaAction()
+    {
+        Name = "Play";
+        Icon = new("\ue768"); //play
+    }
+
     public ICommandResult Invoke()
     {
         _ = mediaSession.TryTogglePlayPauseAsync();
@@ -771,6 +937,7 @@ class HackerNewsPage: Microsoft.Windows.Run.Extensions.ListPage {
     }
 }
 ```
+
 ##### Updating the list
 
 Extension developers are able to update the list of items in real-time, by
@@ -785,7 +952,6 @@ changed event.
 > For extension developers: Best practice would be to cache your
 > `IListItems` between calls. Minimizing the time it takes to respond to
 > `GetItems` will make the UI feel more responsive.
-
 
 > [!WARNING]
 > We chose this API surface for a few reasons:
@@ -876,87 +1042,31 @@ For example:
   "Albums", 'Podcasts'. When the user selects "Artists", the Spotify extension
   will only return artists in the list of items.
 
-#### Fallback actions
+<!-- ##### Special considerations for Top-level `IListItem`s
 
-List items may also specify a `FallbackHandler`[^2]. This is an object that will be
-informed whenever the query changes in List page hosting it. This is commonly
-used for commands that want to allow the user to search for something that
-they've typed that doesn't match any of the commands in the list.
+For the most part, the ListItem's that are returned through `ICommandProvider`'s
+`TopLevelCommands()` call are treated just like any other list items. There are
+a couple caveats, however:
 
-For example, if the user types "What's the weather?":
-* the Copilot action might want to be able to update their own action's `Name`
-  to be "Ask Copilot 'What's the weather'?".
-* The Store application may want to show a "Search the Store" action.
-* And of course, the SpongeBot extension will want to update its name to "wHaT's
-  tHe wEaThEr?".
+* `Tags` will not be displayed.
+* `Details` will not be auto-expanded (if the provider is `Frozen=false`)
+* The `Section` tag is always ignored.
+* `TextToSuggest` is always ignored
 
-This also gives the action an opportunity to know what the query was before the
-the page is navigated to.
+For command providers that are `Frozen = true`, there are additional caveats
+applied to top-level `IListItem`s:
 
-List items with a `FallbackHandler` will be shown in a static List view even if
-the query doesn't match their `Title`/`Subtitle`/`Tags`, unless their `Title` is
-empty, in which case they won't be shown. This allows for:
-* Fallback items that have dynamic names in response to the search query, but
-  not restricted to the query.
-* Fallback items that are hidden until the user types something
+* We won't display any context menu commands for these entries
+* We won't display the Details for these entries (nor the context action to show
+  details)
+* Icons which are a `IRandomAccessStream` will not work as expected. 
+* If you create a top-level `IListItem` that implements `IFallbackHandler`,
+  DevPal will treat your `ICommandProvider` as fresh, never frozen, regardless
+  of the value of `Frozen` you set.
 
-As an example, here's how a developer might implement a fallback action that
-changes its name to be mOcKiNgCaSe.
-
-```cs
-public class SpongebotPage : Microsoft.Windows.Run.Extensions.MarkdownPage, IFallbackAction
-{
-    // Name, Icon, IPropertyChanged: all those are defined in the MarkdownPage base class
-    public SpongebotPage()
-    {
-        this.Name = "";
-        this.Icon = new("https://imgflip.com/s/meme/Mocking-Spongebob.jpg");
-    }
-    public void IFallbackAction.UpdateQuery(string query) {
-        if (string.IsNullOrEmpty(query)) {
-            this.Name = "";
-        } else {
-            this.Name = ConvertToAlternatingCase(query);
-        }
-        return Task.CompletedTask.AsAsyncAction();
-    }
-    static string ConvertToAlternatingCase(string input) {
-        StringBuilder sb = new StringBuilder();
-        for (var i = 0; i < input.Length; i++)
-        {
-            sb.Append(i % 2 == 0 ? char.ToUpper(input[i]) : char.ToLower(input[i]));
-        }
-        return sb.ToString();
-    }
-    public override string Body() {
-        var t = _GenerateMeme(this.Name); // call out to imgflip APIs to generate the meme
-        t.ConfigureAwait(false);
-        return t.Result;
-    }
-}
-internal sealed class SpongebotCommandsProvider : CommandProvider
-{
-    public IListItem[] TopLevelCommands()
-    {
-        var spongebotPage = new SpongebotPage();
-        var listItem = new Microsoft.Windows.Run.Extensions.ListItem(spongebotPage);
-        // ^ The ListItem ctor will automatically set its FallbackHandler to the
-        // Action passed in, if the action implements IFallbackHandler
-        return [ listItem ];
-    }
-}
-```
-
-`Microsoft.Windows.Run.Extensions.ListItem` in the SDK helpers will automatically set
-the `FallbackHandler` property on the `IListItem` to the `Action` it's
-initialized with, if that action implements `IFallbackHandler`. This allows the
-action to directly update itself in response to the query. You may also specify
-a different `IFallbackHandler`, if needed.
-
-We'll include specific affordances within the DevPal settings to allow the user
-to configure which top-level fallbacks are enabled, and in what order. This will
-give the user greater control over the apps that can respond to queries that
-don't match any of the commands in the list.
+Again: this only applies to the top-level list items of frozen command
+providers. Once the command provider is instantiated and running, `IListItem`s
+on nested pages will all work exactly as expected. -->
 
 #### Markdown Pages
 
@@ -1080,6 +1190,9 @@ The following are additional type definitions that are used throughout the SDK.
 This represents a collection of items that might appear in the `MoreCommands`
 flyout. Mostly, these are just commands and seperators.
 
+If an `ICommandContextItem` has `MoreCommands`, then when it's invoked, we'll
+create a sub-menu with those items in it.
+
 #### `IconDataType`
 
 This is a wrapper type for passing information about an icon to DevPal. This
@@ -1088,19 +1201,28 @@ allows extensions to specify apps in a variety of ways, including:
 * A URL to an image on the web or filesystem
 * A string for an emoji or Segoe Fluent icon
 * A path to an exe, dll or lnk file, to extract the icon from
-* A `IRandomAccessStream` to an image... [TODO!api-review] This is how DevHome does it but _why_
+* A `IRandomAccessStreamReference` to raw image data. This would be for
+  extensions that want to pass us raw image data, which isn't necessarily a file
+  which DevPal can load itself.
 
-[TODO!]: actually define this.
 <!-- In .CS because it's manually added to the idl -->
 ```cs
 struct IconDataType {
     IconDataType(String iconString);
+    static IconDataType FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
+
     String Icon { get; };
+    Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
 }
 ```
 
 Terminal already has a robust arbitrary string -> icon loader that we can easily
-reuse for this.
+reuse for this. DevPal will only fall back to the `Data` member if the `Icon`
+member is null or the empty string.
+
+As a future consideration, we may also consider supporting a base64 encoded
+image in the `Icon` member. Base64 doesn't include `:`, `.` or `\`, the presence
+of any of which would indicate the string is probably a URI, not base64 data.
 
 #### `Details`
 
@@ -1192,14 +1314,25 @@ interface ICommandSettings {
     IFormPage SettingsPage { get; };
 };
 
+interface IFallbackHandler {
+    void UpdateQuery(String query);
+};
+
+interface IFallbackCommandItem requires ICommandItem {
+    IFallbackHandler FallbackHandler{ get; };
+};
+
 interface ICommandProvider requires Windows.Foundation.IClosable
 {
     String DisplayName { get; };
     IconDataType Icon { get; };
     ICommandSettings Settings { get; };
-    // TODO! Boolean CanBeCached { get; };
+    Boolean Frozen { get; };
 
-    IListItem[] TopLevelCommands();
+    ICommandItem[] TopLevelCommands();
+    IFallbackCommandItem[] FallbackCommands();
+
+    ICommand GetCommand(String id);
 
     void InitializeWithHost(IExtensionHost host);
 };
@@ -1208,12 +1341,121 @@ interface ICommandProvider requires Windows.Foundation.IClosable
 `TopLevelCommands` is the method that DevPal will call to get the list of actions
 that should be shown when the user opens DevPal. These are the commands that will
 allow the user to interact with the rest of your extension. They can be simple
-actions, or they can be pages that the user can navigate to. Because these
-top-level items are `IListItem`s, they can have `MoreCommands`, `Details` and
-`Tags` as well. The main L0 of DevPal acts as though `ShowDetails=true`, so
-`Details` present on top-level items will be shown to the user automatically.
+actions, or they can be pages that the user can navigate to. 
 
-### Settings
+`TopLevelCommands` returns a list of `ICommandItem`s. These are basically just a
+simpler form of `IListItem`, shich can be displayed even as a stub (as described
+in [Caching](#caching)), before the extension process is loaded.
+
+#### Fallback commands
+
+Providers may also specify a set of `FallbackCommands`[^2]. These are special
+top-level items which allow extensions to have dynamic top-level items which
+respond to the text the user types on the main list page.
+
+These are implemented with a special `IFallbackHandler` interface. This is an
+object that will be informed whenever the query changes in List page hosting it.
+This is commonly used for commands that want to allow the user to search for
+something that they've typed that doesn't match any of the commands in the list.
+
+For example, if the user types "What's the weather?":
+* the Copilot action might want to be able to update their own action's `Name`
+  to be "Ask Copilot 'What's the weather'?".
+* The Store application may want to show a "Search the Store for 'weather'" action.
+* And of course, the SpongeBot extension will want to update its name to "wHaT's
+  tHe wEaThEr?".
+
+This also gives the action an opportunity to know what the query was before the
+the page is navigated to.
+
+Fallback commands will be shown in the top-level search results, even if the
+query doesn't match their `Title`/`Subtitle`, unless their `Title` is empty, in
+which case they won't be shown. This allows for:
+* Fallback items that have dynamic names in response to the search query, but
+  not restricted to the query.
+* Fallback items that are hidden until the user types something
+
+As an example, here's how a developer might implement a fallback action that
+changes its name to be mOcKiNgCaSe.
+
+```cs
+public class SpongebotPage : Microsoft.Windows.Run.Extensions.MarkdownPage, IFallbackHandler
+{
+    // Name, Icon, IPropertyChanged: all those are defined in the MarkdownPage base class
+    public SpongebotPage()
+    {
+        this.Name = "";
+        this.Icon = new("https://imgflip.com/s/meme/Mocking-Spongebob.jpg");
+    }
+    public void IFallbackHandler.UpdateQuery(string query) {
+        if (string.IsNullOrEmpty(query)) {
+            this.Name = "";
+        } else {
+            this.Name = ConvertToAlternatingCase(query);
+        }
+        return Task.CompletedTask.AsAsyncAction();
+    }
+    static string ConvertToAlternatingCase(string input) {
+        StringBuilder sb = new StringBuilder();
+        for (var i = 0; i < input.Length; i++)
+        {
+            sb.Append(i % 2 == 0 ? char.ToUpper(input[i]) : char.ToLower(input[i]));
+        }
+        return sb.ToString();
+    }
+    public override string Body() {
+        var t = _GenerateMeme(this.Name); // call out to imgflip APIs to generate the meme
+        t.ConfigureAwait(false);
+        return t.Result;
+    }
+}
+internal sealed class SpongebotCommandsProvider : CommandProvider
+{
+    public ICommandItem[] TopLevelCommands() => [];
+    public IFallbackCommandItem[] FallbackCommands()
+    {        
+        var spongebotPage = new SpongebotPage();
+        var listItem = new FallbackCommandItem(spongebotPage);
+        // ^ The FallbackCommandItem ctor will automatically set its FallbackHandler to the
+        // Command passed in, if the command implements IFallbackHandler
+        return [ listItem ];
+    }
+}
+```
+
+`Microsoft.Windows.Run.Extensions.FallbackCommandItem` in the SDK helpers will automatically set
+the `FallbackHandler` property on the `IFallbackCommandItem` to the `Command` it's
+initialized with, if that command implements `IFallbackHandler`. This allows the
+action to directly update itself in response to the query. You may also specify
+a different `IFallbackHandler`, if needed.
+
+We'll include specific affordances within the DevPal settings to allow the user
+to configure which top-level fallbacks are enabled, and in what order. This will
+give the user greater control over the apps that can respond to queries that
+don't match any of the commands in the list.
+
+If an extension's own list page wants to implement a similar fallback mechanism
+- it's free to use `IDynamicListPage` to listen for changes to the query and
+have it's own ListItem it updates manually.
+
+> [!IMPORTANT] 
+> If your extension has top-level `FallbackCommandItem`s, then
+> DevPal will treat your `ICommandProvider` as fresh, never frozen, regardless
+of the value of `Frozen` you set.
+
+##### `GetCommand`
+
+`GetCommand` is a method that DevPal can use to shortcut loading a command, for
+frozen command providers. If a top-level command is assigned an `Id` by the
+extension author, DevPal will use `GetCommand` as a first-resort to instantiate
+that command.
+
+For command providers that have multiple top-level commands, this can be a
+helpful short-circuit. The extension won't need to construct instances of all
+the `IListItem`s for all its top-level commands. Instead, the extension can just
+instantiate the requested one.  
+
+##### Settings
 
 Extensions may also want to provide settings to the user. They can do this by
 implementing the `ICommandSettings` interface. This interface has a single
@@ -1226,9 +1468,10 @@ page. As these pages are just `FormPage`s, they can be as simple or as complex
 as the extension developer wants, and they're rendered and interacted with in
 the same way.
 
-We're then additionally going to provide a collection of settings helpers for
-developers in the helper SDK. This should allow developers to quickly work to
-add settings, without mucking around in building the form JSON themselves.
+We're then additionally going to provide a collection of
+[settings helpers](#settings-helpers) for developers in the helper SDK. This
+should allow developers to quickly work to add settings, without mucking around
+in building the form JSON themselves.
 
 ## Helper SDK Classes
 
@@ -1481,6 +1724,39 @@ instance from the host app.
 to remember that these are x-proc calls, and should be treated asynchronously.
 Should the other properties be async too?
 
+### Rendering of ICommandItems in Lists and Menus
+
+When displaying a list item:
+* The icon is `ICommandItem.Icon ?? ICommandItem.Command.Icon`
+* The title is `ICommandItem.Title ?? ICommandItem.Command.Name`
+* The Subtitle is `ICommandItem.Subtitle`
+* The text displayed for the default action (<kbd>↲</kbd>) is `ICommandItem.Command.Name`
+
+When displaying a command context menu item:
+* The icon is `ICommandItem.Icon ?? ICommandItem.Command.Icon`
+* The text is `ICommandItem.Title ?? ICommandItem.Command.Name`
+* The tooltip is `ICommandItem.Subtitle`
+
+When displaying a `IListItem`'s default `Command` as a context item, we'll make a new 
+```cs
+ICommandContextItem(){ 
+    Command = ICommandItem.Command,
+    MoreCommands = null,
+    Icon = Command.Icon, // use icon from command, not list item 
+    Title = Command.Name, // Use command's name, not list item
+    Subtitle = IListItem.Title, // Use the title of the list item as the tooltip on the context menu
+    IsCritical = false,
+}
+```
+
+If a `ICommandItem` in a context menu has `MoreCommands`, then activating it will open a submenu with those items. 
+If a `ICommandItem` in a context menu has `MoreCommands` AND a non-null `Command`, then activating it will open a submenu with the `Command` first (following the same rules above for building a context item from a default `Command`), followed by the items in `MoreCommands`. 
+
+When displaying a page:
+* The title will be `IPage.Title ?? ICommand.Name`
+* The icon will be `ICommand.Icon`
+
+
 ## Class diagram
 
 This is a diagram attempting to show the relationships between the various types we've defined for the SDK. Some elements are omitted for clarity. (Notably, `IconDataType` and `IPropChanged`, which are used in many places.)
@@ -1494,6 +1770,7 @@ The notes on the arrows help indicate the multiplicity of the relationship.
 classDiagram
     class ICommand {
         String Name
+        String Id
         IconDataType Icon
     }
     IPage --|> ICommand
@@ -1564,6 +1841,7 @@ classDiagram
         IDetails Details
         IFallbackHandler FallbackHandler
         String Section
+        String TextToSuggest
     }
     IContextItem "*" *-- IListItem
     IDetails "?" *-- IListItem
@@ -1582,16 +1860,18 @@ classDiagram
         Boolean ShowDetails
         IFilters Filters
         IGridProperties GridProperties
+        Boolean HasMore
 
         IListItem[] GetItems()
+        void LoadMore()
     }
-    IGridProperties "?" *-- IListPage
     IListItem "*" *-- IListPage
     IFilters "*" *-- IListPage
+    IGridProperties "?" *-- IListPage
 
     IDynamicListPage --|> IListPage
     class IDynamicListPage  {
-        IListItem[] GetItems(String query)
+        +String SearchText set;
     }
 
     class IDetails {
@@ -1628,10 +1908,14 @@ classDiagram
     class ICommandProvider {
         String DisplayName
         IconDataType Icon
+        Boolean Frozen
 
-        IListItem[] TopLevelCommands()
+        ICommandItem[] TopLevelCommands()
+        IFallbackCommandItem[] FallbackCommands()
+        IListItem GetCommand(String id)
     }
-    IListItem "*" *-- ICommandProvider
+    ICommandItem "*" *-- ICommandProvider
+    IFallbackCommandItem "*" *-- ICommandProvider
 ```
 
 
@@ -1756,6 +2040,11 @@ Or, to generate straight to the place I'm consuming it from:
     However, by making the `FallbackHandler` a property of the ListItem itself,
     then the extension itself can cast between the types, without the need for
     MBM. Thanks to Mano for helping me figure this one out.
+
+[^3]: You know, I bet we could make this a frozen provider too. I be if we added
+    `INotifyItemsChanged` to `ICommandProvider`, then when the "add bookmark"
+    command is activated, we could raise `provider.ItemsChanged`, and have the
+    palette re-cache the results of `TopLevelItems`.
 
 [Dev Home Extension]: https://learn.microsoft.com/en-us/windows/dev-home/extensions
 [`ISupportIncrementalLoading`]: https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.data.isupportincrementalloading
