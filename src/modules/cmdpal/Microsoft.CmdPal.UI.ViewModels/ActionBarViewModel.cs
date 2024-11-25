@@ -29,7 +29,7 @@ public partial class ActionBarViewModel : ObservableObject
     public partial bool MoreCommandsAvailable { get; set; } = false;
 
     [ObservableProperty]
-    public partial ObservableCollection<ActionBarContextItemViewModel> ContextActions { get; set; } = [];
+    public partial ObservableCollection<CommandContextItemViewModel> ContextActions { get; set; } = [];
 
     public ActionBarViewModel()
     {
@@ -39,13 +39,12 @@ public partial class ActionBarViewModel : ObservableObject
     {
         if (value != null)
         {
-            ActionName = value.Command.Name;
+            ActionName = value.Name;
 
             if (value.HasMoreCommands)
             {
                 MoreCommandsAvailable = true;
-                ContextActions = new(value.AllCommands
-                    .Select(command => new ActionBarContextItemViewModel(command)));
+                ContextActions = [.. value.MoreCommands];
             }
             else
             {
@@ -60,8 +59,5 @@ public partial class ActionBarViewModel : ObservableObject
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
     [RelayCommand]
-    private void InvokeItem(ActionBarContextItemViewModel item)
-    {
-        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
-    }
+    private void InvokeItem(CommandContextItemViewModel item) => WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
 }
