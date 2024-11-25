@@ -93,9 +93,12 @@ public partial class CommandItemViewModel : ObservableObject
             .Select(contextItem => (contextItem as ICommandContextItem)!)
             .Select(contextItem => new CommandContextItemViewModel(contextItem))
             .ToList();
+
+        // Here, we're already theoretically in the async context, so we can
+        // use Initialize straight up
         MoreCommands.ForEach(contextItem =>
         {
-            contextItem.InitializePropertiesAsync().ContinueWith(t => { /*TODO this feels dirty*/ });
+            contextItem.Initialize();
         });
 
         model.PropChanged += Model_PropChanged;
