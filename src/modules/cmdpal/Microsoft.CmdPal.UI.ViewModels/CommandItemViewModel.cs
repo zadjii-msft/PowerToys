@@ -64,11 +64,11 @@ public partial class CommandItemViewModel : ObservableObject
         MoreCommands = model.MoreCommands
             .Where(contextItem => contextItem is ICommandContextItem)
             .Select(contextItem => (contextItem as ICommandContextItem)!)
-            .Select(contextItem => new CommandContextItemViewModel(contextItem)) // TODO ContextItemViewModels
+            .Select(contextItem => new CommandContextItemViewModel(contextItem))
             .ToList();
         MoreCommands.ForEach(contextItem =>
         {
-            contextItem.InitializePropertiesAsync().ContinueWith(t => { });
+            contextItem.InitializePropertiesAsync().ContinueWith(t => { /*TODO this feels dirty*/ });
         });
 
         model.PropChanged += Model_PropChanged;
