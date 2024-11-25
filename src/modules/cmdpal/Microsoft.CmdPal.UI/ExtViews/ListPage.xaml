@@ -94,7 +94,7 @@
             <ListView.ItemContainerTransitions>
                 <TransitionCollection />
             </ListView.ItemContainerTransitions>
-            <ListView.GroupStyle>
+            <!--<ListView.GroupStyle>
                 <GroupStyle HidesIfEmpty="True">
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
@@ -105,7 +105,7 @@
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
-            </ListView.GroupStyle>
+            </ListView.GroupStyle>-->
         </ListView>
     </Grid>
 </Page>
