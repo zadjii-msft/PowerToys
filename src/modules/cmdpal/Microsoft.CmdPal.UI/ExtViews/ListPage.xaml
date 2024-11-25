@@ -101,7 +101,7 @@
                             <TextBlock
                                 Margin="0,16,0,0"
                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                Text="{Binding Key}" />
+                                Text="{Binding Key, Mode=OneWay}" />
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
