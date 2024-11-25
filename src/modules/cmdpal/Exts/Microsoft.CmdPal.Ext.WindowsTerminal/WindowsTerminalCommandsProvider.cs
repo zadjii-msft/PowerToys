@@ -2,10 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Runtime.Versioning;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Pages;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Properties;
@@ -23,12 +19,14 @@ public partial class WindowsTerminalCommandsProvider : CommandProvider
     {
         DisplayName = Resources.extension_name;
 
-        _terminalCommand = new TerminalTopLevelListItem(_settingsManager);
-        _terminalCommand.MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))];
+        _terminalCommand = new TerminalTopLevelListItem(_settingsManager)
+        {
+            MoreCommands = [
+            new CommandContextItem(new SettingsPage(_settingsManager)),
+            new CommandContextItem(new NoOpCommand()) { Title = "I'm a placeholder" },
+        ],
+        };
     }
 
-    public override ICommandItem[] TopLevelCommands()
-    {
-        return [_terminalCommand];
-    }
+    public override ICommandItem[] TopLevelCommands() => [_terminalCommand];
 }
