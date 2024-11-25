@@ -23,10 +23,13 @@ public partial class ActionBarViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    public partial string ActionName { get; set; } = string.Empty;
+    public partial string PrimaryActionName { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial bool MoreCommandsAvailable { get; set; } = false;
+    public partial string SecondaryActionName { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool ShouldShowContextMenu { get; set; } = false;
 
     [ObservableProperty]
     public partial ObservableCollection<CommandContextItemViewModel> ContextActions { get; set; } = [];
@@ -39,21 +42,24 @@ public partial class ActionBarViewModel : ObservableObject
     {
         if (value != null)
         {
-            ActionName = value.Name;
+            PrimaryActionName = value.Name;
+            SecondaryActionName = value.SecondaryCommandName;
 
-            if (value.HasMoreCommands)
+            if (value.MoreCommands.Count > 1)
             {
-                MoreCommandsAvailable = true;
-                ContextActions = [.. value.MoreCommands];
+                ShouldShowContextMenu = true;
+                ContextActions = [.. value.AllCommands];
             }
             else
             {
-                MoreCommandsAvailable = false;
+                ShouldShowContextMenu = false;
             }
         }
         else
         {
-            ActionName = string.Empty;
+            PrimaryActionName = string.Empty;
+            SecondaryActionName = string.Empty;
+            ShouldShowContextMenu = false;
         }
     }
 
