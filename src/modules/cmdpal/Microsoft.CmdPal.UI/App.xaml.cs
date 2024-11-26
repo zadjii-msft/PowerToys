@@ -69,6 +69,9 @@ public partial class App : Application
         // TODO: It's in the Labs feed, but we can use Sergio's AOT-friendly source generator for this: https://github.com/CommunityToolkit/Labs-Windows/discussions/463
         ServiceCollection services = new();
 
+        // Root services
+        services.AddSingleton(TaskScheduler.FromCurrentSynchronizationContext());
+
         // Built-in Commands
         services.AddSingleton<ICommandProvider, BookmarksCommandProvider>();
         services.AddSingleton<ICommandProvider, CalculatorCommandProvider>();

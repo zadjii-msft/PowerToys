@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
+using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -18,20 +19,45 @@ public partial class ListViewModel : ObservableObject
     [ObservableProperty]
     public partial ObservableGroupedCollection<string, ListItemViewModel> Items { get; set; } = [];
 
+    private readonly ExtensionObject<IListPage> _model;
+
+    private readonly TaskScheduler _taskScheduler;
+
     public ListViewModel(IListPage model)
     {
-        // TEMPORARY: just plop all the items into a single group
-        // see 9806fe5d8 for the last commit that had this with sections
-        ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
+        _model = new(model);
+        _taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-        foreach (var item in model.GetItems())
+        FetchItems();
+        model.ItemsChanged += Model_ItemsChanged;
+    }
+
+    private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchItems();
+
+    private void FetchItems()
+    {
+        Task.Factory.StartNew(
+            () =>
         {
-            ListItemViewModel viewModel = new(item);
-            _ = viewModel.InitializePropertiesAsync();
-            group.Add(viewModel);
-        }
+            // TEMPORARY: just plop all the items into a single group
+            // see 9806fe5d8 for the last commit that had this with sections
+            ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
 
-        Items.AddGroup(group);
+            // TODO unsafe
+            var newItems = _model.Unsafe!.GetItems();
+            Items.Clear();
+            foreach (var item in newItems)
+            {
+                ListItemViewModel viewModel = new(item);
+                _ = viewModel.InitializePropertiesAsync();
+                group.Add(viewModel);
+            }
+
+            Items.AddGroup(group);
+        },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            _taskScheduler).Wait();
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
