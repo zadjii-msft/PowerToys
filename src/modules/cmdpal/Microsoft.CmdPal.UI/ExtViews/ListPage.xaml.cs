@@ -32,6 +32,8 @@ public sealed partial class ListPage : Page,
             ViewModel = lvm;
         }
 
+        WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(ViewModel!));
+
         // RegisterAll isn't AOT compatible
         WeakReferenceMessenger.Default.Register<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Register<NavigatePreviousCommand>(this);

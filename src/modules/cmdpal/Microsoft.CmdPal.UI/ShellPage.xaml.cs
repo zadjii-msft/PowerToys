@@ -48,6 +48,7 @@ public sealed partial class ShellPage :
         if (RootFrame.CanGoBack)
         {
             RootFrame.GoBack();
+            SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
         }
     }
 
@@ -58,7 +59,6 @@ public sealed partial class ShellPage :
         var fromLoading = RootFrame.CanGoBack;
 
         RootFrame.Navigate(typeof(ListPage), message.ViewModel, _slideRightTransition);
-        WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(message.ViewModel));
 
         if (!fromLoading)
         {
