@@ -38,7 +38,7 @@ jobs:
 
   - task: PowerShell@2
     displayName: Build SDK
-    name: BuildSDKCommand
+    name: BuildSDK
     inputs:
       filePath: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/nuget/BuildSDKHelper.ps1"
       arguments: -Configuration "Release" -VersionOfSDK $(versionNumber) -BuildStep "build" -IsAzurePipelineBuild
@@ -55,8 +55,8 @@ jobs:
           ciPolicyFile: '$(build.sourcesdirectory)\.pipelines\CIPolicy.xml'
 
   - task: PowerShell@2
-    displayName: Build SDK
-    name: BuildSDKCommand
+    displayName: Pack SDK
+    name: PackSDK
     inputs:
       filePath: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/nuget/BuildSDKHelper.ps1"
       arguments: -Configuration "Release" -VersionOfSDK $(versionNumber) -BuildStep "pack" -IsAzurePipelineBuild
