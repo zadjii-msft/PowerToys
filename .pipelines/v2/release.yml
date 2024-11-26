@@ -96,6 +96,7 @@ extends:
 
       - stage: Build_SDK
         displayName: Build SDK
+        dependsOn: []
         jobs:
           - template: .pipelines/v2/templates/job-build-sdk.yml@self
             parameters:
