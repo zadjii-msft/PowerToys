@@ -27,7 +27,9 @@ public partial class ListViewModel : PageViewModel
         _model = new(model);
 
         // TODO: probably need to make async here
-        Initialize();
+        _ = Task.Run(InitializePropertiesAsync);
+
+        // Initialize();
     }
 
     private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchItems();

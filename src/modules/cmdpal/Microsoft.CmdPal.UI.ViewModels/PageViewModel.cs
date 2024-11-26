@@ -18,13 +18,12 @@ public partial class PageViewModel : ExtensionObjectViewModel
     public partial string Name { get; private set; } = string.Empty;
 
     [ObservableProperty]
-    public partial bool Loading { get; private set; } = false;
+    public partial bool Loading { get; private set; } = true;
 
     public PageViewModel(IPage model)
     {
         _pageModel = new(model);
         Scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-        model.PropChanged += Model_PropChanged;
     }
 
     protected override void Initialize()
@@ -37,14 +36,18 @@ public partial class PageViewModel : ExtensionObjectViewModel
 
         Name = page.Name;
         Loading = page.Loading;
+
+        page.PropChanged += Model_PropChanged;
     }
 
     private void Model_PropChanged(object sender, PropChangedEventArgs args)
     {
         try
         {
-            FetchProperty(args.PropertyName);
-            OnPropertyChanged(args.PropertyName);
+            var propName = args.PropertyName;
+            FetchProperty(propName);
+
+            OnPropertyChanged(propName);
         }
         catch (Exception)
         {
@@ -63,10 +66,14 @@ public partial class PageViewModel : ExtensionObjectViewModel
         switch (propertyName)
         {
             case nameof(Name):
-                this.Name = model.Name ?? string.Empty;
+                var newName = model.Name ?? string.Empty;
+                Task.Factory.StartNew(() => { this.Name = newName; }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
+
                 break;
             case nameof(Loading):
-                this.Loading = model.Loading;
+                // this.Loading = model.Loading;
+                var newLoading = model.Loading;
+                Task.Factory.StartNew(() => { this.Loading = newLoading; }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
                 break;
 
                 // TODO! Icon

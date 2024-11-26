@@ -85,6 +85,11 @@
             sticking with ListView as ItemsView doesn't have grouping built-in, could investigate coordinating
             keyboards between them and using ItemsRepeater for group headers, though that wouldn't use CVS either
         -->
+        <ProgressBar 
+            IsIndeterminate="True" 
+            VerticalAlignment="Top"
+            Visibility="{x:Bind ViewModel.Loading, Mode=OneWay}" />
+        
         <ListView
             x:Name="ItemsList"
             IsItemClickEnabled="True"
