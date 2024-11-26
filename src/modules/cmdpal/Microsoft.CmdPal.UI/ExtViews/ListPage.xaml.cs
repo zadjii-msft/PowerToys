@@ -66,6 +66,8 @@ public sealed partial class ListPage : Page,
                     if (lvm.InitializeCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
                     {
                         // TODO: Handle failure case
+                        System.Diagnostics.Debug.WriteLine(lvm.InitializeCommand.ExecutionTask.Exception);
+
                         _ = _queue.EnqueueAsync(() =>
                         {
                             LoadedState = ViewModelLoadedState.Error;
