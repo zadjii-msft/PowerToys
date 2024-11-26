@@ -43,12 +43,12 @@ jobs:
   - ${{ if eq(parameters.codeSign, true) }}:
     - template: steps-esrp-signing.yml
       parameters:
-        displayName: Sign Utilities
+        displayName: Sign SDK
         signingIdentity: ${{ parameters.signingIdentity }}
         inputs:
           FolderPath: 'src/modules'
           signType: batchSigning
-          batchSignPolicyFile: '$(build.sourcesdirectory)\.pipelines\ESRPSigning_abstracted_utils_dll.json'
+          batchSignPolicyFile: '$(build.sourcesdirectory)\.pipelines\ESRPSigning_sdk.json'
           ciPolicyFile: '$(build.sourcesdirectory)\.pipelines\CIPolicy.xml'
 
   - pwsh: |-
