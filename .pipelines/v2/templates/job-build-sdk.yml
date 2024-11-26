@@ -41,7 +41,7 @@ jobs:
     name: BuildSDK
     inputs:
       filePath: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/nuget/BuildSDKHelper.ps1"
-      arguments: -Configuration "Release" -VersionOfSDK $(versionNumber) -BuildStep "build" -IsAzurePipelineBuild
+      arguments: -Configuration "Release" -VersionOfSDK ${{ parameters.versionNumber }} -BuildStep "build" -IsAzurePipelineBuild
 
   - ${{ if eq(parameters.codeSign, true) }}:
     - template: steps-esrp-signing.yml
@@ -59,7 +59,7 @@ jobs:
     name: PackSDK
     inputs:
       filePath: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/nuget/BuildSDKHelper.ps1"
-      arguments: -Configuration "Release" -VersionOfSDK $(versionNumber) -BuildStep "pack" -IsAzurePipelineBuild
+      arguments: -Configuration "Release" -VersionOfSDK ${{ parameters.versionNumber }} -BuildStep "pack" -IsAzurePipelineBuild
 
   - task: CopyFiles@2
     displayName: Copy Nuget to Artifact Staging
