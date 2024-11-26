@@ -36,12 +36,9 @@ jobs:
     fetchTags: false
     fetchDepth: 1
 
-  - task: PowerShell@2
+  - pwsh: |-
+      & "$(build.sourcesdirectory)\src\modules\cmdpal\extensionsdk\nuget\BuildSDKHelper.ps1" -Configuration "Release" -VersionOfSDK ${{ parameters.versionNumber }} -BuildStep "build" -IsAzurePipelineBuild
     displayName: Build SDK
-    name: BuildSDK
-    inputs:
-      filePath: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/nuget/BuildSDKHelper.ps1"
-      arguments: -Configuration "Release" -VersionOfSDK ${{ parameters.versionNumber }} -BuildStep "build" -IsAzurePipelineBuild
 
   - ${{ if eq(parameters.codeSign, true) }}:
     - template: steps-esrp-signing.yml
@@ -54,12 +51,9 @@ jobs:
           batchSignPolicyFile: '$(build.sourcesdirectory)\.pipelines\ESRPSigning_abstracted_utils_dll.json'
           ciPolicyFile: '$(build.sourcesdirectory)\.pipelines\CIPolicy.xml'
 
-  - task: PowerShell@2
+  - pwsh: |-
+      & "$(build.sourcesdirectory)\src\modules\cmdpal\extensionsdk\nuget\BuildSDKHelper.ps1" -Configuration "Release" -VersionOfSDK ${{ parameters.versionNumber }} -BuildStep "pack" -IsAzurePipelineBuild
     displayName: Pack SDK
-    name: PackSDK
-    inputs:
-      filePath: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/nuget/BuildSDKHelper.ps1"
-      arguments: -Configuration "Release" -VersionOfSDK ${{ parameters.versionNumber }} -BuildStep "pack" -IsAzurePipelineBuild
 
   - task: CopyFiles@2
     displayName: Copy Nuget to Artifact Staging
