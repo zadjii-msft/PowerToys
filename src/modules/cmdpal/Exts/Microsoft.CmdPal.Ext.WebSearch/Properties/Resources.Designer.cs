@@ -79,6 +79,15 @@ namespace Microsoft.CmdPal.Ext.WebSearch.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open in default browser.
+        /// </summary>
+        public static string open_in_default_browser {
+            get {
+                return ResourceManager.GetString("open_in_default_browser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to the default browser.
         /// </summary>
         public static string plugin_browser {

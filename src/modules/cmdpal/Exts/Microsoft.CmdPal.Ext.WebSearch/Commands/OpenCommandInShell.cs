@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Ext.WebSearch.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Wox.Infrastructure;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
@@ -15,10 +14,10 @@ internal sealed partial class OpenCommandInShell : InvokableCommand
 
     internal OpenCommandInShell(string arguments)
     {
-        this.Name = Resources.plugin_open;
         _arguments = arguments;
         BrowserInfo.UpdateIfTimePassed();
         Icon = new(BrowserInfo.IconPath);
+        Name = Properties.Resources.open_in_default_browser;
     }
 
     public override CommandResult Invoke()
