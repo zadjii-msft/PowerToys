@@ -1,8 +1,8 @@
 Param(
   [string]$Configuration = "release",
   [string]$VersionOfSDK = "0.0.0",
+  [string]$BuildStep = "all",
   [bool]$IsAzurePipelineBuild = $false,
-  [switch]$BypassWarning = $false,
   [switch]$Help = $false
 )
 
@@ -43,39 +43,43 @@ if ($IsAzurePipelineBuild) {
   $nugetPath = (Join-Path $PSScriptRoot "NugetWrapper.cmd")
 }
 
-New-Item -ItemType Directory -Force -Path "$PSScriptRoot\..\_build"
-& $nugetPath restore (Join-Path $PSScriptRoot "..\..\..\..\..\PowerToys.sln")
+if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "build")) {
+  & $nugetPath restore (Join-Path $PSScriptRoot "..\..\..\..\..\PowerToys.sln")
 
-Try {
-  foreach ($config in $Configuration.Split(",")) {
-    foreach ($platform in $buildPlatforms) {
-      $msbuildArgs = @(
-        ("$PSScriptRoot\..\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj"),
-        ("/p:Platform="+$platform),
-        ("/p:Configuration="+$config),
-        ("/binaryLogger:CmdPal.Extensions.$platform.$config.binlog"),
-        ("/p:VersionNumber="+$VersionOfSDK)
-      )
-
-      & $msbuildPath $msbuildArgs
+  Try {
+    foreach ($config in $Configuration.Split(",")) {
+      foreach ($platform in $buildPlatforms) {
+        $msbuildArgs = @(
+          ("$PSScriptRoot\..\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj"),
+          ("/p:Platform="+$platform),
+          ("/p:Configuration="+$config),
+          ("/binaryLogger:CmdPal.Extensions.$platform.$config.binlog"),
+          ("/p:VersionNumber="+$VersionOfSDK)
+          )
+          
+        & $msbuildPath $msbuildArgs
+      }
     }
+  } Catch {
+    $formatString = "`n{0}`n`n{1}`n`n"
+    $fields = $_, $_.ScriptStackTrace
+    Write-Host ($formatString -f $fields) -ForegroundColor RED
+    Exit 1
   }
-} Catch {
-  $formatString = "`n{0}`n`n{1}`n`n"
-  $fields = $_, $_.ScriptStackTrace
-  Write-Host ($formatString -f $fields) -ForegroundColor RED
-  Exit 1
 }
 
-foreach ($config in $Configuration.Split(",")) {
-  if ($config -eq "release")
-  {
-    & $nugetPath pack (Join-Path $PSScriptRoot "Microsoft.CmdPal.Extensions.SDK.nuspec") -Version $VersionOfSDK -OutputDirectory "$PSScriptRoot\..\_build"
-  } else {
-Write-Host @"
+if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "pack")) {
+  foreach ($config in $Configuration.Split(",")) {
+    if ($config -eq "release")
+    {
+      New-Item -ItemType Directory -Force -Path "$PSScriptRoot\..\_build"
+      & $nugetPath pack (Join-Path $PSScriptRoot "Microsoft.CmdPal.Extensions.SDK.nuspec") -Version $VersionOfSDK -OutputDirectory "$PSScriptRoot\..\_build"
+    } else {
+      Write-Host @"
 WARNING: You are currently building as '$config' configuration.
 CmdPalSDK nuget creation only supports 'release' configuration right now.
 "@ -ForegroundColor YELLOW
+    }
   }
 }
 

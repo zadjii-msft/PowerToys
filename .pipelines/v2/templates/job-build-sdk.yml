@@ -1,0 +1,94 @@
+parameters:
+  - name: buildConfigurations
+    type: object
+    default:
+      - Release
+  - name: codeSign
+    type: boolean
+    default: false
+  - name: signingIdentity
+    type: object
+    default: {}
+  - name: versionNumber
+    type: string
+    default: '0.0.1'
+
+jobs:
+- job: "BuildSDK"
+  ${{ if ne(length(parameters.pool), 0) }}:
+    pool: ${{ parameters.pool }}
+  variables:
+  displayName: Build SDK
+  timeoutInMinutes: 240
+  cancelTimeoutInMinutes: 1
+  templateContext: # Required when this template is hosted in 1ES PT
+    outputs:
+    - output: pipelineArtifact
+      artifactName: SDK
+      targetPath: $(Build.ArtifactStagingDirectory)
+  steps:
+  - checkout: self
+    clean: true
+    submodules: true
+    persistCredentials: True
+    fetchTags: false
+    fetchDepth: 1
+
+  - task: PowerShell@2
+    displayName: Build SDK
+    name: BuildSDKCommand
+    inputs:
+      filePath: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/nuget/BuildSDKHelper.ps1"
+      arguments: -Configuration "Release" -VersionOfSDK $(versionNumber) -BuildStep "build" -IsAzurePipelineBuild
+
+  - ${{ if eq(parameters.codeSign, true) }}:
+    - template: steps-esrp-signing.yml
+      parameters:
+        displayName: Sign Utilities
+        signingIdentity: ${{ parameters.signingIdentity }}
+        inputs:
+          FolderPath: 'src/modules'
+          signType: batchSigning
+          batchSignPolicyFile: '$(build.sourcesdirectory)\.pipelines\ESRPSigning_abstracted_utils_dll.json'
+          ciPolicyFile: '$(build.sourcesdirectory)\.pipelines\CIPolicy.xml'
+
+  - task: PowerShell@2
+    displayName: Build SDK
+    name: BuildSDKCommand
+    inputs:
+      filePath: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/nuget/BuildSDKHelper.ps1"
+      arguments: -Configuration "Release" -VersionOfSDK $(versionNumber) -BuildStep "pack" -IsAzurePipelineBuild
+
+  - ${{ if eq(parameters.codeSign, true) }}:
+    - template: steps-esrp-signing.yml
+      parameters:
+        displayName: Sign NuGet packages
+        signingIdentity: ${{ parameters.signingIdentity }}
+        inputs:
+          FolderPath: $(JobOutputDirectory)/nupkg
+          Pattern: '*.nupkg'
+          UseMinimatch: true
+          signConfigType: inlineSignParams
+          inlineOperation: >-
+            [
+                {
+                    "KeyCode": "CP-401405",
+                    "OperationCode": "NuGetSign",
+                    "Parameters": {},
+                    "ToolName": "sign",
+                    "ToolVersion": "1.0"
+                },
+                {
+                    "KeyCode": "CP-401405",
+                    "OperationCode": "NuGetVerify",
+                    "Parameters": {},
+                    "ToolName": "sign",
+                    "ToolVersion": "1.0"
+                }
+            ]
+
+  - ${{ if eq(parameters.publishArtifacts, true) }}:
+    - publish: $(JobOutputDirectory)
+      artifact: $(JobOutputArtifactName)
+      displayName: Publish all outputs
+      condition: always()

@@ -94,6 +94,21 @@ extends:
                     move /Y "Microsoft.PowerToys.Telemetry.2.0.2\build\include\TelemetryBase.cs" "src\common\Telemetry\TelemetryBase.cs" || exit /b 1
                   displayName: Emplace telemetry files
 
+      - stage: Build_SDK
+        displayName: Build SDK
+        jobs:
+          - template: .pipelines/v2/templates/job-build-sdk.yml@self
+            parameters:
+              versionNumber: ${{ parameters.versionNumber }}
+              codeSign: true
+              signingIdentity:
+                serviceName: $(SigningServiceName)
+                appId: $(SigningAppId)
+                tenantId: $(SigningTenantId)
+                akvName: $(SigningAKVName)
+                authCertName: $(SigningAuthCertName)
+                signCertName: $(SigningSignCertName)
+
       - stage: Publish
         displayName: Publish
         dependsOn: [Build]
