@@ -45,7 +45,7 @@ public partial class ActionBarViewModel : ObservableObject
             PrimaryActionName = value.Name;
             SecondaryActionName = value.SecondaryCommandName;
 
-            if (value.MoreCommands.Count > 0)
+            if (value.MoreCommands.Count > 1)
             {
                 ShouldShowContextMenu = true;
                 ContextActions = [.. value.AllCommands];
