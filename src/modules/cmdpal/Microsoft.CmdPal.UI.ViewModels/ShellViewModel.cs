@@ -27,6 +27,18 @@ public partial class ShellViewModel(IServiceProvider _serviceProvider) : Observa
         // TODO: would want to hydrate this from our services provider in the View layer, need to think about construction here...
         var page = _serviceProvider.GetService<MainListPage>();
         WeakReferenceMessenger.Default.Send<NavigateToListMessage>(new(new(page!)));
+
+        // After loading builitns, and starting navigation, kick off a thread to load extensions.
+        tlcManager.LoadExtensionsCommand.Execute(null);
+        _ = Task.Run(async () =>
+        {
+            await tlcManager.LoadExtensionsCommand.ExecutionTask!;
+            if (tlcManager.LoadExtensionsCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
+            {
+                // TODO: Handle failure case
+            }
+        });
+
         return true;
     }
 }

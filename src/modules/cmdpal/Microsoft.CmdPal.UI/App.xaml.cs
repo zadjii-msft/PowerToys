@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Ext.Bookmarks;
 using Microsoft.CmdPal.Ext.Calc;
 using Microsoft.CmdPal.Ext.Registry;
@@ -13,6 +14,7 @@ using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
+using Microsoft.CmdPal.UI.ViewModels.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 
@@ -81,6 +83,7 @@ public partial class App : Application
         // Models
         services.AddSingleton<TopLevelCommandManager>();
         services.AddSingleton<MainListPage>();
+        services.AddSingleton<IExtensionService, ExtensionService>();
 
         // ViewModels
         services.AddSingleton<ShellViewModel>();

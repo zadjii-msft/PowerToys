@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels;
@@ -28,10 +29,15 @@ public partial class MainListPage : DynamicListPage
         _serviceProvider = serviceProvider;
 
         var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>();
-        _commands = [.. tlcManager!.TopLevelCommands];
+
+        // reference the TLC's directly... maybe?
+        _commands = tlcManager!.TopLevelCommands;
+        _commands.CollectionChanged += Commands_CollectionChanged;
 
         // _items = shellViewModel.TopLevelCommands.Select(w => w.Unsafe!).Where(li => li != null).ToArray();
     }
+
+    private void Commands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => RaiseItemsChanged(_commands.Count);
 
     public override IListItem[] GetItems() => _commands
         .Select(tlc => tlc)
