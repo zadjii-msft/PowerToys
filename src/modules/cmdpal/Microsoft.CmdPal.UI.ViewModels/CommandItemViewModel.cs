@@ -22,7 +22,7 @@ public partial class CommandItemViewModel : ObservableObject
 
     public string IconUri { get; private set; } = string.Empty;
 
-    public ExtensionObject<ICommand> Command { get; } = new(null);
+    public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
     public List<CommandContextItemViewModel> MoreCommands { get; private set; } = [];
 
@@ -41,7 +41,7 @@ public partial class CommandItemViewModel : ObservableObject
             CommandContextItemViewModel defaultCommand = new(model)
             {
                 Name = Name,
-                Title = Title,
+                Title = Name,
                 Subtitle = Subtitle,
                 IconUri = IconUri,
 
@@ -84,6 +84,7 @@ public partial class CommandItemViewModel : ObservableObject
             return;
         }
 
+        Command = new(model.Command);
         Name = model.Command?.Name ?? string.Empty;
         Title = model.Title;
         Subtitle = model.Subtitle;
