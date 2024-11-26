@@ -2,7 +2,7 @@ Param(
   [string]$Configuration = "release",
   [string]$VersionOfSDK = "0.0.0",
   [string]$BuildStep = "all",
-  [bool]$IsAzurePipelineBuild = $false,
+  [switch]$IsAzurePipelineBuild = $false,
   [switch]$Help = $false
 )
 
