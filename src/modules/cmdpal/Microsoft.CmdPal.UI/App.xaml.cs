@@ -10,6 +10,7 @@ using Microsoft.CmdPal.Ext.WindowsServices;
 using Microsoft.CmdPal.Ext.WindowsSettings;
 using Microsoft.CmdPal.Ext.WindowsTerminal;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,6 +77,10 @@ public partial class App : Application
         services.AddSingleton<ICommandProvider, WindowsServicesCommandsProvider>();
         services.AddSingleton<ICommandProvider, RegistryCommandsProvider>();
         services.AddSingleton<ICommandProvider, WindowsSettingsCommandsProvider>();
+
+        // Models
+        services.AddSingleton<TopLevelCommandManager>();
+        services.AddSingleton<MainListPage>();
 
         // ViewModels
         services.AddSingleton<ShellViewModel>();

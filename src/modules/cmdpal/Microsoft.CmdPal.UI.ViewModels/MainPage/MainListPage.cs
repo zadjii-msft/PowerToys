@@ -2,9 +2,11 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.Pages;
 
@@ -14,16 +16,26 @@ namespace Microsoft.CmdPal.UI.Pages;
 /// </summary>
 public partial class MainListPage : DynamicListPage
 {
-    private readonly IListItem[] _items;
+    private readonly IServiceProvider _serviceProvider;
+
+    // private readonly IListItem[] _items;
+    private readonly ObservableCollection<ListItemViewModel> _commands;
 
     // TODO: Thinking we may want a separate MainViewModel from the ShellViewModel and/or a CommandService/Provider
     // which holds the TopLevelCommands and anything that needs to access those functions...
-    public MainListPage(ShellViewModel shellViewModel)
+    public MainListPage(IServiceProvider serviceProvider, ShellViewModel shellViewModel)
     {
-        _items = shellViewModel.TopLevelCommands.Select(w => w.Unsafe!).Where(li => li != null).ToArray();
+        _serviceProvider = serviceProvider;
+
+        var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>();
+        _commands = [.. tlcManager!
+            .TopLevelCommands
+            .Select(listItem => new ListItemViewModel(listItem))];
+
+        // _items = shellViewModel.TopLevelCommands.Select(w => w.Unsafe!).Where(li => li != null).ToArray();
     }
 
-    public override IListItem[] GetItems() => _items;
+    public override IListItem[] GetItems() => _commands.Select(listItemVM => listItemVM.Model.Unsafe!).ToArray();
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
