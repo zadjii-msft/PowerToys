@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -24,7 +23,7 @@ public partial class ListViewModel(IListPage _model) : ObservableObject
 
     //// Run on background thread from ListPage.xaml.cs
     [RelayCommand]
-    private async Task<bool> InitializeAsync()
+    private Task<bool> InitializeAsync()
     {
         // TODO: We may want a SemaphoreSlim lock here.
 
@@ -38,7 +37,7 @@ public partial class ListViewModel(IListPage _model) : ObservableObject
         foreach (var item in _model.GetItems())
         {
             ListItemViewModel viewModel = new(item);
-            await viewModel.InitializePropertiesAsync();
+            viewModel.InitializeProperties();
             group.Add(viewModel);
         }
 
@@ -46,7 +45,7 @@ public partial class ListViewModel(IListPage _model) : ObservableObject
 
         IsInitialized = true;
 
-        return true;
+        return Task.FromResult(true);
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator

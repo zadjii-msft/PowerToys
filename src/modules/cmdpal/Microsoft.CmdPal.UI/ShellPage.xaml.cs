@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
-using Microsoft.CmdPal.UI.ViewModels.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;

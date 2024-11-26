@@ -21,7 +21,7 @@ public sealed partial class ListPage : Page,
     IRecipient<NavigatePreviousCommand>,
     IRecipient<ActivateSelectedListItemMessage>
 {
-    private DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
+    private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
 
     public ListViewModel? ViewModel
     {
