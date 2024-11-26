@@ -58,6 +58,7 @@ public sealed partial class ShellPage :
         var fromLoading = RootFrame.CanGoBack;
 
         RootFrame.Navigate(typeof(ListPage), message.ViewModel, _slideRightTransition);
+        WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(message.ViewModel));
 
         if (!fromLoading)
         {
@@ -87,6 +88,8 @@ public sealed partial class ShellPage :
                 var pageViewModel = new ListViewModel(listPage);
                 RootFrame.Navigate(typeof(ListPage), pageViewModel, _slideRightTransition);
                 SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+
+                WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(pageViewModel));
             }
 
             // else if markdown, forms, TODO

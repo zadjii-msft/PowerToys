@@ -12,7 +12,7 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ListViewModel : ObservableObject
+public partial class ListViewModel : PageViewModel
 {
     // Observable from MVVM Toolkit will auto create public properties that use INotifyPropertyChange change
     // https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/observablegroupedcollections for grouping support
@@ -21,15 +21,13 @@ public partial class ListViewModel : ObservableObject
 
     private readonly ExtensionObject<IListPage> _model;
 
-    private readonly TaskScheduler _taskScheduler;
-
     public ListViewModel(IListPage model)
+        : base(model)
     {
         _model = new(model);
-        _taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-        FetchItems();
-        model.ItemsChanged += Model_ItemsChanged;
+        // TODO: probably need to make async here
+        Initialize();
     }
 
     private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchItems();
@@ -57,7 +55,7 @@ public partial class ListViewModel : ObservableObject
        },
            CancellationToken.None,
            TaskCreationOptions.None,
-           _taskScheduler).Wait();
+           Scheduler).Wait();
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
@@ -66,4 +64,18 @@ public partial class ListViewModel : ObservableObject
 
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item) => WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+
+        var listPage = _model.Unsafe;
+        if (listPage == null)
+        {
+            return; // throw?
+        }
+
+        FetchItems();
+        listPage.ItemsChanged += Model_ItemsChanged;
+    }
 }

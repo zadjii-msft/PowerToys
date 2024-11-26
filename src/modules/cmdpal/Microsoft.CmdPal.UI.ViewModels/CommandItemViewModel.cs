@@ -9,18 +9,22 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class CommandItemViewModel : ObservableObject
+public partial class CommandItemViewModel : ExtensionObjectViewModel
 {
     private readonly ExtensionObject<ICommandItem> _commandItemModel = new(null);
 
     // private bool _initialized;
-    public string Name { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string Name { get; private set; } = string.Empty;
 
-    public string Title { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string Title { get; private set; } = string.Empty;
 
-    public string Subtitle { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string Subtitle { get; private set; } = string.Empty;
 
-    public string IconUri { get; private set; } = string.Empty;
+    [ObservableProperty]
+    public partial string IconUri { get; private set; } = string.Empty;
 
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
@@ -59,24 +63,7 @@ public partial class CommandItemViewModel : ObservableObject
         _commandItemModel = item;
     }
 
-    public async virtual Task InitializePropertiesAsync()
-    {
-        var t = new Task(() =>
-        {
-            try
-            {
-                Initialize();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex);
-            }
-        });
-        t.Start();
-        await t;
-    }
-
-    protected virtual void Initialize()
+    protected override void Initialize()
     {
         var model = _commandItemModel.Unsafe;
         if (model == null)

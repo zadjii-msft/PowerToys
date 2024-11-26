@@ -32,6 +32,19 @@ public partial class ActionBarViewModel : ObservableObject
     public partial bool ShouldShowContextMenu { get; set; } = false;
 
     [ObservableProperty]
+    public partial string PageName { get; private set; } = string.Empty;
+
+    public PageViewModel? CurrentPage
+    {
+        get => field;
+        set
+        {
+            field = value;
+            this.PageName = field?.Name ?? string.Empty;
+        }
+    }
+
+    [ObservableProperty]
     public partial ObservableCollection<CommandContextItemViewModel> ContextActions { get; set; } = [];
 
     public ActionBarViewModel()
