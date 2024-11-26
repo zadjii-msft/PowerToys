@@ -3,14 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
-using Microsoft.CmdPal.UI.Pages;
-using Microsoft.CmdPal.UI.ViewModels.Messages;
-using Microsoft.CmdPal.UI.ViewModels.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
@@ -21,7 +14,7 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider)
 
     public ObservableCollection<CommandProviderWrapper> ActionsProvider { get; set; } = [];
 
-    public ObservableCollection<ExtensionObject<IListItem>> TopLevelCommands { get; set; } = [];
+    public ObservableCollection<TopLevelCommandWrapper> TopLevelCommands { get; set; } = [];
 
     // [RelayCommand]
     public async Task<bool> LoadBuiltinsAsync()
@@ -45,7 +38,7 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider)
         await commandProvider.LoadTopLevelCommands();
         foreach (var i in commandProvider.TopLevelItems)
         {
-            TopLevelCommands.Add(new(new ListItem(i)));
+            TopLevelCommands.Add(new(new(i)));
         }
     }
 }

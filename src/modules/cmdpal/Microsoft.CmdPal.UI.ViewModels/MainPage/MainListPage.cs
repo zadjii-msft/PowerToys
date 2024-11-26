@@ -19,7 +19,7 @@ public partial class MainListPage : DynamicListPage
     private readonly IServiceProvider _serviceProvider;
 
     // private readonly IListItem[] _items;
-    private readonly ObservableCollection<ListItemViewModel> _commands;
+    private readonly ObservableCollection<TopLevelCommandWrapper> _commands;
 
     // TODO: Thinking we may want a separate MainViewModel from the ShellViewModel and/or a CommandService/Provider
     // which holds the TopLevelCommands and anything that needs to access those functions...
@@ -28,14 +28,14 @@ public partial class MainListPage : DynamicListPage
         _serviceProvider = serviceProvider;
 
         var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>();
-        _commands = [.. tlcManager!
-            .TopLevelCommands
-            .Select(listItem => new ListItemViewModel(listItem))];
+        _commands = [.. tlcManager!.TopLevelCommands];
 
         // _items = shellViewModel.TopLevelCommands.Select(w => w.Unsafe!).Where(li => li != null).ToArray();
     }
 
-    public override IListItem[] GetItems() => _commands.Select(listItemVM => listItemVM.Model.Unsafe!).ToArray();
+    public override IListItem[] GetItems() => _commands
+        .Select(tlc => tlc)
+        .ToArray();
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
