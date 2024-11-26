@@ -17,7 +17,6 @@ jobs:
 - job: "BuildSDK"
   ${{ if ne(length(parameters.pool), 0) }}:
     pool: ${{ parameters.pool }}
-  variables:
   displayName: Build SDK
   timeoutInMinutes: 240
   cancelTimeoutInMinutes: 1
