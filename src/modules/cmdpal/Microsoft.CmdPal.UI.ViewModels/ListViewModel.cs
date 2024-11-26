@@ -37,27 +37,27 @@ public partial class ListViewModel : ObservableObject
     private void FetchItems()
     {
         Task.Factory.StartNew(
-            () =>
-        {
-            // TEMPORARY: just plop all the items into a single group
-            // see 9806fe5d8 for the last commit that had this with sections
-            ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
+           () =>
+       {
+           // TEMPORARY: just plop all the items into a single group
+           // see 9806fe5d8 for the last commit that had this with sections
+           ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
 
-            // TODO unsafe
-            var newItems = _model.Unsafe!.GetItems();
-            Items.Clear();
-            foreach (var item in newItems)
-            {
-                ListItemViewModel viewModel = new(item);
-                _ = viewModel.InitializePropertiesAsync();
-                group.Add(viewModel);
-            }
+           // TODO unsafe
+           var newItems = _model.Unsafe!.GetItems();
+           Items.Clear();
+           foreach (var item in newItems)
+           {
+               ListItemViewModel viewModel = new(item);
+               _ = viewModel.InitializePropertiesAsync();
+               group.Add(viewModel);
+           }
 
-            Items.AddGroup(group);
-        },
-            CancellationToken.None,
-            TaskCreationOptions.None,
-            _taskScheduler).Wait();
+           Items.AddGroup(group);
+       },
+           CancellationToken.None,
+           TaskCreationOptions.None,
+           _taskScheduler).Wait();
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
