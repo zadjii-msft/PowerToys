@@ -6,6 +6,9 @@ parameters:
   - name: codeSign
     type: boolean
     default: false
+  - name: pool
+    type: object
+    default: []
   - name: signingIdentity
     type: object
     default: {}
@@ -58,13 +61,20 @@ jobs:
       filePath: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/nuget/BuildSDKHelper.ps1"
       arguments: -Configuration "Release" -VersionOfSDK $(versionNumber) -BuildStep "pack" -IsAzurePipelineBuild
 
+  - task: CopyFiles@2
+    displayName: Copy Nuget to Artifact Staging
+    inputs:
+      sourceFolder: "$(build.sourcesdirectory)/src/modules/cmdpal/extensionsdk/_build"
+      contents: '*.nupkg'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+
   - ${{ if eq(parameters.codeSign, true) }}:
     - template: steps-esrp-signing.yml
       parameters:
         displayName: Sign NuGet packages
         signingIdentity: ${{ parameters.signingIdentity }}
         inputs:
-          FolderPath: $(JobOutputDirectory)/nupkg
+          FolderPath: $(Build.ArtifactStagingDirectory)
           Pattern: '*.nupkg'
           UseMinimatch: true
           signConfigType: inlineSignParams
@@ -85,9 +95,3 @@ jobs:
                     "ToolVersion": "1.0"
                 }
             ]
-
-  - ${{ if eq(parameters.publishArtifacts, true) }}:
-    - publish: $(JobOutputDirectory)
-      artifact: $(JobOutputArtifactName)
-      displayName: Publish all outputs
-      condition: always()
