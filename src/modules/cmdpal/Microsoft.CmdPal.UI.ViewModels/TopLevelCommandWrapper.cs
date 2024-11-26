@@ -8,6 +8,11 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
+/// <summary>
+/// Abstraction of a top-level command. Currently owns just a live ICommandItem
+/// from an extension (or in-proc command provider), but in the future will
+/// also support stub top-level items.
+/// </summary>
 public partial class TopLevelCommandWrapper : ListItem
 {
     public ExtensionObject<ICommandItem> Model { get; }
@@ -15,7 +20,11 @@ public partial class TopLevelCommandWrapper : ListItem
     public TopLevelCommandWrapper(ExtensionObject<ICommandItem> commandItem)
         : base(commandItem.Unsafe?.Command ?? new NoOpCommand())
     {
-        // TODO! In reality we should do an async fetch
+        // TODO: In reality, we should do an async fetch when we're created
+        // from an extension object. Probably have an
+        // `static async Task<TopLevelCommandWrapper> FromExtension(ExtensionObject<ICommandItem>)`
+        // or a
+        // `async Task PromoteStub(ExtensionObject<ICommandItem>)`
         Model = commandItem;
         try
         {
@@ -25,16 +34,10 @@ public partial class TopLevelCommandWrapper : ListItem
                 return;
             }
 
-            // Name = model.Command?.Name ?? string.Empty;
             Title = model.Title;
             Subtitle = model.Subtitle;
             Icon = new(model.Icon.Icon);
             MoreCommands = model.MoreCommands;
-
-            // .Where(contextItem => contextItem is ICommandContextItem)
-            // .Select(contextItem => (contextItem as ICommandContextItem)!)
-            // .Select(contextItem => new CommandContextItemViewModel(contextItem))
-            // .ToList();
         }
         catch (Exception ex)
         {

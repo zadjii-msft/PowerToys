@@ -15,20 +15,16 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider)
 {
     private IEnumerable<ICommandProvider>? _builtInCommands;
 
-    // public ObservableCollection<CommandProviderWrapper> ActionsProvider { get; set; } = [];
     public ObservableCollection<TopLevelCommandWrapper> TopLevelCommands { get; set; } = [];
 
-    // [RelayCommand]
     public async Task<bool> LoadBuiltinsAsync()
     {
+        // Load built-In commands first. These are all in-proc, and
+        // owned by our ServiceProvider.
         _builtInCommands = _serviceProvider.GetServices<ICommandProvider>();
-
-        // Load Built In Commands First
         foreach (var provider in _builtInCommands)
         {
             CommandProviderWrapper wrapper = new(provider);
-
-            // ActionsProvider.Add(wrapper);
             await LoadTopLevelCommandsFromProvider(wrapper);
         }
 
@@ -44,6 +40,13 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider)
         }
     }
 
+    // Load commands from our extensions.
+    // Currently, this
+    // * queries the package catalog,
+    // * starts all the extensions,
+    // * then fetches the top-level commands from them.
+    // TODO In the future, we'll probably abstract some of this away, to have
+    // separate extension tracking vs stub loading.
     [RelayCommand]
     public async Task<bool> LoadExtensionsAsync()
     {
@@ -61,8 +64,6 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider)
             {
                 Debug.WriteLine(ex);
             }
-
-            // ActionsProvider.Add(wrapper);
         }
 
         return true;

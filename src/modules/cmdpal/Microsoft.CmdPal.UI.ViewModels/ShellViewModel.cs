@@ -21,14 +21,13 @@ public partial class ShellViewModel(IServiceProvider _serviceProvider) : Observa
     {
         var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>();
         await tlcManager!.LoadBuiltinsAsync();
-
         IsLoaded = true;
 
-        // TODO: would want to hydrate this from our services provider in the View layer, need to think about construction here...
+        // Built-ins have loaded. We can display our page at this point.
         var page = _serviceProvider.GetService<MainListPage>();
         WeakReferenceMessenger.Default.Send<NavigateToListMessage>(new(new(page!)));
 
-        // After loading builitns, and starting navigation, kick off a thread to load extensions.
+        // After loading built-ins, and starting navigation, kick off a thread to load extensions.
         tlcManager.LoadExtensionsCommand.Execute(null);
         _ = Task.Run(async () =>
         {

@@ -19,22 +19,17 @@ public partial class MainListPage : DynamicListPage
 {
     private readonly IServiceProvider _serviceProvider;
 
-    // private readonly IListItem[] _items;
     private readonly ObservableCollection<TopLevelCommandWrapper> _commands;
 
-    // TODO: Thinking we may want a separate MainViewModel from the ShellViewModel and/or a CommandService/Provider
-    // which holds the TopLevelCommands and anything that needs to access those functions...
-    public MainListPage(IServiceProvider serviceProvider, ShellViewModel shellViewModel)
+    public MainListPage(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
 
         var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>();
 
-        // reference the TLC's directly... maybe?
+        // reference the TLC collection directly... maybe? TODO is this a good idea ot a terrible one?
         _commands = tlcManager!.TopLevelCommands;
         _commands.CollectionChanged += Commands_CollectionChanged;
-
-        // _items = shellViewModel.TopLevelCommands.Select(w => w.Unsafe!).Where(li => li != null).ToArray();
     }
 
     private void Commands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => RaiseItemsChanged(_commands.Count);

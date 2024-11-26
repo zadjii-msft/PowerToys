@@ -26,6 +26,8 @@ public sealed partial class LoadingPage : Page
         if (e.Parameter is ShellViewModel shellVM
             && shellVM.LoadCommand != null)
         {
+            // This will load the built-in commands, then navigate to the main page.
+            // Once the mainpage loads, we'll start loading extensions.
             shellVM.LoadCommand.Execute(null);
 
             _ = Task.Run(async () =>
