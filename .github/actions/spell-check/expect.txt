@@ -102,6 +102,7 @@ backtracer
 bbwe
 bck
 BESTEFFORT
+bezelled
 bhid
 BIF
 bigbar
@@ -259,7 +260,6 @@ critsec
 Crossdevice
 CRSEL
 crx
-crw
 CSearch
 CSettings
 cso
@@ -726,6 +726,7 @@ ISSEPARATOR
 ITask
 ith
 ITHUMBNAIL
+ITwoWayPipeMessageIPCManaged
 IUI
 IUnknown
 IUse
