@@ -119,21 +119,6 @@ public:
     {
         Logger::trace("CmdPal::enable()");
 
-        if (package::IsWin11OrGreater())
-        {
-            std::wstring path = get_module_folderpath(g_hInst_cmdPal);
-#if _DEBUG
-            std::wstring packageUri = path + L"\\WinUI3Apps\\CmdPal\\AppPackages\\Microsoft.CmdPal.UI.Poc_0.0.1.0_Debug_Test\\Microsoft.CmdPal.UI.Poc_0.0.1.0_x64_Debug.msix";
-#else
-            std::wstring packageUri = path + L"\\WinUI3Apps\\CmdPal\\Microsoft.CmdPal.UI.Poc_0.0.1.0_x64.msix";
-#endif
-
-            if (!package::IsPackageRegistered(L"CmdPal"))
-            {
-                package::RegisterPackage(packageUri);
-            }
-        }
-
         m_enabled = true;
     };
 
