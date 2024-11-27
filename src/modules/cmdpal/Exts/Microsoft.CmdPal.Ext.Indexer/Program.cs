@@ -4,15 +4,12 @@
 
 using System;
 using System.Threading;
-using Microsoft.CmdPal.Ext.Indexer.Indexer;
 using Microsoft.CmdPal.Extensions;
 
 namespace Microsoft.CmdPal.Ext.Indexer;
 
 public class Program
 {
-    internal static SearchResultImageUriManager ImageUriManager { get; } = new();
-
     [MTAThread]
     public static void Main(string[] args)
     {

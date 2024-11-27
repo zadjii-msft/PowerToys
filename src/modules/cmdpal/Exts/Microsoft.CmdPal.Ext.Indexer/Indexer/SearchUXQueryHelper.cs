@@ -166,7 +166,7 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
     private void CreateSearchResult(IPropertyStore propStore)
     {
         // Get item name display
-        PROPVARIANT itemNameDisplay = default(PROPVARIANT);
+        PROPVARIANT itemNameDisplay;
         PROPERTYKEY pKeyItemNameDisplay = new() { fmtid = new System.Guid("B725F130-47EF-101A-A5F1-02608C9EEBAC"), pid = 10 };
         var hr = propStore.GetValue(ref pKeyItemNameDisplay, out itemNameDisplay);
         if (hr != 0)
@@ -176,7 +176,7 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
         }
 
         // Get item URL
-        PROPVARIANT itemUrl = default(PROPVARIANT);
+        PROPVARIANT itemUrl;
         PROPERTYKEY pKeyItemUrl = new() { fmtid = new System.Guid("49691C90-7E17-101A-A91C-08002B2ECDA9"), pid = 9 };
         hr = propStore.GetValue(ref pKeyItemUrl, out itemUrl);
         if (hr != 0)
@@ -186,7 +186,7 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
         }
 
         // Get kind text
-        PROPVARIANT kindText = default(PROPVARIANT);
+        PROPVARIANT kindText;
         PROPERTYKEY pKeyKindText = new() { fmtid = new System.Guid("F04BEF95-C585-4197-A2B7-DF46FDC9EE6D"), pid = 100 };
         hr = propStore.GetValue(ref pKeyKindText, out kindText);
         if (hr != 0)
