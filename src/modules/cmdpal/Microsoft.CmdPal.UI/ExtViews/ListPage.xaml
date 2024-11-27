@@ -6,6 +6,7 @@
     xmlns:Interactions="using:Microsoft.Xaml.Interactions.Core"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:Microsoft.CmdPal.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -20,12 +21,17 @@
             IsSourceGrouped="True"
             Source="{x:Bind ViewModel.Items, Mode=OneWay}" />
 
+        <converters:StringVisibilityConverter
+            x:Key="StringVisibilityConverter"
+            EmptyValue="Collapsed"
+            NotEmptyValue="Visible" />
+
         <!--  https://learn.microsoft.com/windows/apps/design/controls/itemsview#specify-the-look-of-the-items  -->
         <DataTemplate x:Key="ListItemViewModelTemplate" x:DataType="viewmodels:ListItemViewModel">
 
             <!--  TODO: collapse item if it's empty  -->
-            <ListViewItem MinHeight="56">
-                <Grid ColumnSpacing="12">
+            <ListViewItem>
+                <Grid Padding="0,10,0,10" ColumnSpacing="12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="28" />
                         <ColumnDefinition Width="*" />
@@ -60,8 +66,8 @@
                             Style="{StaticResource CaptionTextBlockStyle}"
                             Text="{x:Bind Subtitle, Mode=OneWay}"
                             TextTrimming="CharacterEllipsis"
-                            TextWrapping="NoWrap" />
-                        <!--  TODO: collapse subtitle if it's empty  -->
+                            TextWrapping="NoWrap"
+                            Visibility="{x:Bind Subtitle, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}" />
                     </StackPanel>
                     <!--  TODO: Add tags again  -->
                     <!--<ItemsRepeater ItemTemplate="{StaticResource TagTemplate}"
@@ -86,29 +92,34 @@
                     x:Name="ItemsList"
                     IsItemClickEnabled="True"
                     ItemClick="ListView_ItemClick"
+                    SelectionChanged="ItemsList_SelectionChanged"
                     ItemTemplate="{StaticResource ListItemViewModelTemplate}"
-                    ItemsSource="{x:Bind ItemsCVS.View, Mode=OneWay}"
-                    SelectionChanged="ItemsList_SelectionChanged">
-                    <ListView.GroupStyle>
+                    ItemsSource="{x:Bind ItemsCVS.View, Mode=OneWay}">
+                    <ListView.ItemContainerTransitions>
+                        <TransitionCollection />
+                    </ListView.ItemContainerTransitions>
+                    <!--<ListView.GroupStyle>
                         <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
                                     <TextBlock
-                                        FontFamily="Segoe UI"
-                                        FontSize="16"
-                                        Text="{Binding Key}" />
+                                        Margin="0,16,0,0"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        Text="{Binding Key, Mode=OneWay}" />
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
-                    </ListView.GroupStyle>
+                    </ListView.GroupStyle>-->
                 </ListView>
             </controls:Case>
+
             <controls:Case IsDefault="True" Value="Loading">
                 <ProgressRing
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     IsIndeterminate="True" />
             </controls:Case>
+            
             <controls:Case Value="Error">
                 <TextBlock Text="Error loading List Page" />
             </controls:Case>
