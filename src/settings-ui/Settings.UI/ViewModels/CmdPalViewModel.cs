@@ -8,16 +8,18 @@ using global::PowerToys.GPOWrapper;
 using Microsoft.PowerToys.Settings.UI.Library;
 using Microsoft.PowerToys.Settings.UI.Library.Helpers;
 using Microsoft.PowerToys.Settings.UI.Library.Interfaces;
+using Microsoft.PowerToys.Settings.UI.ViewModels.Commands;
 
 namespace Microsoft.PowerToys.Settings.UI.ViewModels
 {
     public class CmdPalViewModel : Observable
     {
         private GpoRuleConfigured _enabledGpoRuleConfiguration;
-        private bool _enabledStateIsGPOConfigured;
         private bool _isEnabled;
 
-        private ISettingsUtils SettingsUtils { get; set; }
+        public ButtonClickCommand InstallModuleEventHandler => new(InstallModule);
+
+        public ButtonClickCommand UninstallModuleEventHandler => new(UninstallModule);
 
         private GeneralSettings GeneralSettingsConfig { get; set; }
 
@@ -26,8 +28,6 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
         public CmdPalViewModel(ISettingsUtils settingsUtils, ISettingsRepository<GeneralSettings> settingsRepository, Func<string, int> ipcMSGCallBackFunc)
         {
             ArgumentNullException.ThrowIfNull(settingsUtils);
-
-            SettingsUtils = settingsUtils;
 
             // To obtain the general settings configurations of PowerToys Settings.
             ArgumentNullException.ThrowIfNull(settingsRepository);
@@ -43,10 +43,10 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
         private void InitializeEnabledValue()
         {
             _enabledGpoRuleConfiguration = GPOWrapper.GetConfiguredCmdPalEnabledValue();
-            if (_enabledGpoRuleConfiguration == GpoRuleConfigured.Disabled || _enabledGpoRuleConfiguration == GpoRuleConfigured.Enabled)
+            if (_enabledGpoRuleConfiguration is GpoRuleConfigured.Disabled or GpoRuleConfigured.Enabled)
             {
                 // Get the enabled state from GPO.
-                _enabledStateIsGPOConfigured = true;
+                IsEnabledGpoConfigured = true;
                 _isEnabled = _enabledGpoRuleConfiguration == GpoRuleConfigured.Enabled;
             }
             else
@@ -61,7 +61,7 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
 
             set
             {
-                if (_enabledStateIsGPOConfigured)
+                if (IsEnabledGpoConfigured)
                 {
                     // If it's GPO configured, shouldn't be able to change this state.
                     return;
@@ -73,7 +73,7 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
 
                     // Set the status in the general settings configuration
                     GeneralSettingsConfig.Enabled.AlwaysOnTop = value;
-                    OutGoingGeneralSettings snd = new OutGoingGeneralSettings(GeneralSettingsConfig);
+                    OutGoingGeneralSettings snd = new(GeneralSettingsConfig);
 
                     SendConfigMSG(snd.ToString());
                     OnPropertyChanged(nameof(IsEnabled));
@@ -81,15 +81,37 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
             }
         }
 
-        public bool IsEnabledGpoConfigured
-        {
-            get => _enabledStateIsGPOConfigured;
-        }
+        public bool IsEnabledGpoConfigured { get; private set; }
 
         public void RefreshEnabledState()
         {
             InitializeEnabledValue();
             OnPropertyChanged(nameof(IsEnabled));
+        }
+
+        private bool _isCmdPalInstalled;
+
+        public bool IsCmdPalInstalled
+        {
+            get => _isCmdPalInstalled;
+            set
+            {
+                if (_isCmdPalInstalled != value)
+                {
+                    _isCmdPalInstalled = value;
+                    OnPropertyChanged(nameof(IsCmdPalInstalled));
+                }
+            }
+        }
+
+        private void InstallModule()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void UninstallModule()
+        {
+            throw new NotImplementedException();
         }
     }
 }
