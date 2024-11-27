@@ -3,17 +3,26 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using global::PowerToys.GPOWrapper;
+using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
 using Microsoft.PowerToys.Settings.UI.Library.Helpers;
 using Microsoft.PowerToys.Settings.UI.Library.Interfaces;
 using Microsoft.PowerToys.Settings.UI.ViewModels.Commands;
+using Windows.Management.Deployment;
+
+using Package = global::Windows.ApplicationModel.Package;
 
 namespace Microsoft.PowerToys.Settings.UI.ViewModels
 {
     public class CmdPalViewModel : Observable
     {
+        private static readonly string PackageName = "Microsoft.CmdPal.POC";
+
         private GpoRuleConfigured _enabledGpoRuleConfiguration;
         private bool _isEnabled;
 
@@ -24,6 +33,17 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
         private GeneralSettings GeneralSettingsConfig { get; set; }
 
         private Func<string, int> SendConfigMSG { get; }
+
+        public static string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = Assembly.GetExecutingAssembly().Location;
+                UriBuilder uri = new(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
+        }
 
         public CmdPalViewModel(ISettingsUtils settingsUtils, ISettingsRepository<GeneralSettings> settingsRepository, Func<string, int> ipcMSGCallBackFunc)
         {
@@ -89,29 +109,127 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
             OnPropertyChanged(nameof(IsEnabled));
         }
 
-        private bool _isCmdPalInstalled;
+        public bool IsCmdPalInstalled => GetInstalledCmdPalPackage(PackageName) is not null;
 
-        public bool IsCmdPalInstalled
+        private Package GetInstalledCmdPalPackage(string packageName)
         {
-            get => _isCmdPalInstalled;
-            set
+            if (string.IsNullOrWhiteSpace(packageName))
             {
-                if (_isCmdPalInstalled != value)
-                {
-                    _isCmdPalInstalled = value;
-                    OnPropertyChanged(nameof(IsCmdPalInstalled));
-                }
+                Logger.LogError("Package name cannot be null or empty.");
             }
+
+            try
+            {
+                PackageManager packageManager = new();
+                System.Collections.Generic.IEnumerable<Package> packages = packageManager.FindPackagesForUser(string.Empty);
+
+                foreach (Package package in packages)
+                {
+                    if (package.Id.Name.Equals(packageName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return package;
+                    }
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Error while checking if package is installed: {ex.Message}");
+                return null;
+            }
+        }
+
+        public static string FindMsixFile(string directoryPath)
+        {
+            if (string.IsNullOrWhiteSpace(directoryPath))
+            {
+                Logger.LogError("Directory path cannot be null or empty.");
+            }
+
+            if (!Directory.Exists(directoryPath))
+            {
+                Logger.LogError($"The directory '{directoryPath}' does not exist.");
+            }
+
+            string pattern = @"^.+\.(msix|msixbundle)$";
+            Regex regex = new(pattern, RegexOptions.IgnoreCase);
+
+            string matchedFile = Directory.GetFiles(directoryPath, "*.*", SearchOption.AllDirectories)
+                                        .Where(file => regex.IsMatch(Path.GetFileName(file)))
+                                        .ToArray().FirstOrDefault();
+
+            return matchedFile;
         }
 
         private void InstallModule()
         {
-            throw new NotImplementedException();
+            string msixFilePath = FindMsixFile(AssemblyDirectory + "\\CmdPal.Poc\\AppPackages");
+
+            if (string.IsNullOrWhiteSpace(msixFilePath))
+            {
+                Logger.LogError($"MSIX file path cannot be null or empty: {msixFilePath}");
+            }
+
+            if (!File.Exists(msixFilePath))
+            {
+                Logger.LogError($"The specified MSIX file was not found: {msixFilePath}");
+            }
+
+            try
+            {
+                PackageManager packageManager = new();
+                System.Threading.Tasks.Task<DeploymentResult> deploymentResult = packageManager.AddPackageAsync(
+                    new Uri(msixFilePath),
+                    null,
+                    DeploymentOptions.None).AsTask();
+
+                deploymentResult.Wait();
+
+                if (deploymentResult.Result.ExtendedErrorCode != null)
+                {
+                    Logger.LogError($"Package installation failed with error: {deploymentResult.Result.ExtendedErrorCode.Message}");
+                }
+
+                Logger.LogInfo("Package installed successfully!");
+
+                OnPropertyChanged(nameof(IsCmdPalInstalled));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"An error occurred while installing the package: {ex.Message}");
+            }
         }
 
         private void UninstallModule()
         {
-            throw new NotImplementedException();
+            try
+            {
+                Package package = GetInstalledCmdPalPackage(PackageName);
+
+                if (package is null)
+                {
+                    return; // Package is not installed, shouldn't happen ever
+                }
+
+                PackageManager packageManager = new();
+
+                System.Threading.Tasks.Task<DeploymentResult> uninstallOperation = packageManager.RemovePackageAsync(package.Id.FullName).AsTask();
+                uninstallOperation.Wait();
+
+                if (uninstallOperation.Result.ExtendedErrorCode != null && uninstallOperation.Result.ExtendedErrorCode.HResult != 0)
+                {
+                    Logger.LogError($"Failed to uninstall package: {uninstallOperation.Result.ErrorText}");
+                }
+
+                Logger.LogInfo($"Package '{package.Id.FullName}' was uninstalled successfully.");
+
+                OnPropertyChanged(nameof(IsCmdPalInstalled));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"An error occurred while uninstalling the package: {ex.Message}");
+            }
         }
     }
 }

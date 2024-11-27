@@ -20,11 +20,10 @@
                     IsTabStop="{x:Bind ViewModel.IsEnabledGpoConfigured, Mode=OneWay}"
                     Severity="Informational" />
 
-                <tkcontrols:SettingsExpander
+                <tkcontrols:SettingsCard
                     x:Uid="CmdPal_Enable_CmdPal"
                     HeaderIcon="{ui:BitmapIcon Source=/Assets/Settings/Icons/CmdPal.png}"
-                    IsEnabled="{x:Bind ViewModel.IsEnabledGpoConfigured, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
-                    IsExpanded="True">
+                    IsEnabled="{x:Bind ViewModel.IsEnabledGpoConfigured, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}">
                     <tkcontrols:SwitchPresenter TargetType="x:Boolean" Value="{x:Bind ViewModel.IsCmdPalInstalled, Mode=OneWay}">
                         <tkcontrols:Case Value="True">
                             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -48,7 +47,7 @@
                                 Style="{StaticResource AccentButtonStyle}" />
                         </tkcontrols:Case>
                     </tkcontrols:SwitchPresenter>
-                </tkcontrols:SettingsExpander>
+                </tkcontrols:SettingsCard>
             </StackPanel>
         </controls:SettingsPageControl.ModuleContent>
 

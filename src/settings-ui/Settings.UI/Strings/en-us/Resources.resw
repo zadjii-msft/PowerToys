@@ -4709,10 +4709,10 @@ Activate by holding the key for the character you want to add an accent to, then
   <data name="Oobe_CmdPal_HowToUse.Text" xml:space="preserve">
     <value>Command Palette how to use text is TBD.</value>
   </data>
-  <data name="CmdPall_UninstallButton.Content" xml:space="preserve">
+  <data name="CmdPal_UninstallButton.Content" xml:space="preserve">
     <value>Uninstall</value>
   </data>
-  <data name="CmdPall_InstallButton.Content" xml:space="preserve">
+  <data name="CmdPal_InstallButton.Content" xml:space="preserve">
     <value>Install</value>
   </data>
 </root>
