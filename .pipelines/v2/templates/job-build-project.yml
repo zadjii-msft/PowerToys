@@ -229,87 +229,20 @@ jobs:
           ciPolicyFile: '$(build.sourcesdirectory)\.pipelines\CIPolicy.xml'
 
   - task: VSBuild@1
-    displayName: Create Hosts File Editor package
+    displayName: Create CmdPal msix pack
     inputs:
-      solution: '**\HostsUILib.csproj'
+      solution: '**\Microsoft.CmdPal.UI.Poc.csproj'
       vsVersion: 17.0
       ${{ if eq(parameters.useVSPreview, true) }}:
-        msbuildArgs: /p:CIBuild=true;NoBuild=true -t:pack /bl:$(LogOutputDirectory)\build-hosts.binlog /p:NoWarn=NU5104
+        msbuildArgs: /p:GenerateAppxPackageOnBuild=true /p:CIBuild=true;NoBuild=true /bl:$(LogOutputDirectory)\build-cmdpal-msix.binlog /p:NoWarn=NU5104
       ${{ else }}:
-        msbuildArgs: /p:CIBuild=true;NoBuild=true -t:pack /bl:$(LogOutputDirectory)\build-hosts.binlog
+        msbuildArgs: /p:GenerateAppxPackageOnBuild=true /p:CIBuild=true;NoBuild=true /bl:$(LogOutputDirectory)\build-cmdpal-msix.binlog
       configuration: $(BuildConfiguration)
       msbuildArchitecture: x64
       maximumCpuCount: true
     ${{ if eq(parameters.enableMsBuildCaching, true) }}:
       env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-
-  - task: VSBuild@1
-    displayName: Create Environment Variables Editor package
-    inputs:
-      solution: '**\EnvironmentVariablesUILib.csproj'
-      vsVersion: 17.0
-      ${{ if eq(parameters.useVSPreview, true) }}:
-        msbuildArgs: /p:CIBuild=true;NoBuild=true -t:pack /bl:$(LogOutputDirectory)\build-env-var-editor.binlog /p:NoWarn=NU5104
-      ${{ else }}:
-        msbuildArgs: /p:CIBuild=true;NoBuild=true -t:pack /bl:$(LogOutputDirectory)\build-env-var-editor.binlog
-      configuration: $(BuildConfiguration)
-      msbuildArchitecture: x64
-      maximumCpuCount: true
-    ${{ if eq(parameters.enableMsBuildCaching, true) }}:
-      env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-
-  - task: VSBuild@1
-    displayName: Create Registry Preview package
-    inputs:
-      solution: '**\RegistryPreviewUILib.csproj'
-      vsVersion: 17.0
-      ${{ if eq(parameters.useVSPreview, true) }}:
-        msbuildArgs: /p:CIBuild=true;NoBuild=true -t:pack /bl:$(LogOutputDirectory)\build-registry-preview.binlog /p:NoWarn=NU5104
-      ${{ else }}:
-        msbuildArgs: /p:CIBuild=true;NoBuild=true -t:pack /bl:$(LogOutputDirectory)\build-registry-preview.binlog
-      configuration: $(BuildConfiguration)
-      msbuildArchitecture: x64
-      maximumCpuCount: true
-    ${{ if eq(parameters.enableMsBuildCaching, true) }}:
-      env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-
-  - task: CopyFiles@2
-    displayName: Stage NuGet packages
-    inputs:
-      contents: "**/bin/Release/PowerToys*.nupkg"
-      flattenFolders: True
-      targetFolder: $(JobOutputDirectory)/nupkg
-
-  - ${{ if eq(parameters.codeSign, true) }}:
-    - template: steps-esrp-signing.yml
-      parameters:
-        displayName: Sign NuGet packages
-        signingIdentity: ${{ parameters.signingIdentity }}
-        inputs:
-          FolderPath: $(JobOutputDirectory)/nupkg
-          Pattern: '*.nupkg'
-          UseMinimatch: true
-          signConfigType: inlineSignParams
-          inlineOperation: >-
-            [
-                {
-                    "KeyCode": "CP-401405",
-                    "OperationCode": "NuGetSign",
-                    "Parameters": {},
-                    "ToolName": "sign",
-                    "ToolVersion": "1.0"
-                },
-                {
-                    "KeyCode": "CP-401405",
-                    "OperationCode": "NuGetVerify",
-                    "Parameters": {},
-                    "ToolName": "sign",
-                    "ToolVersion": "1.0"
-                }
-            ]
 
   - task: VSBuild@1
     displayName: Build BugReportTool
