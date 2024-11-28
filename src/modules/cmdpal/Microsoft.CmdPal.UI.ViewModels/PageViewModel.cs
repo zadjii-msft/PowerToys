@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 
@@ -20,13 +21,30 @@ public partial class PageViewModel : ExtensionObjectViewModel
     [ObservableProperty]
     public partial bool Loading { get; private set; } = true;
 
+    [ObservableProperty]
+    public partial bool IsInitialized { get; private set; }
+
     public PageViewModel(IPage model)
     {
         _pageModel = new(model);
         Scheduler = TaskScheduler.FromCurrentSynchronizationContext();
     }
 
-    protected override void Initialize()
+    //// Run on background thread from ListPage.xaml.cs
+    [RelayCommand]
+    private Task<bool> InitializeAsync()
+    {
+        // TODO: We may want a SemaphoreSlim lock here.
+
+        // TODO: We may want to investigate using some sort of AsyncEnumerable or populating these as they come in to the UI layer
+        //       Though we have to think about threading here and circling back to the UI thread with a TaskScheduler.
+        InitializeProperties();
+
+        IsInitialized = true;
+        return Task.FromResult(true);
+    }
+
+    public override void InitializeProperties()
     {
         var page = _pageModel.Unsafe;
         if (page == null)

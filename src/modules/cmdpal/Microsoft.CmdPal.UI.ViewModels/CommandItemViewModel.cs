@@ -63,7 +63,8 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         _commandItemModel = item;
     }
 
-    protected override void Initialize()
+    //// Called from ListViewModel on background thread started in ListPage.xaml.cs
+    public override void InitializeProperties()
     {
         var model = _commandItemModel.Unsafe;
         if (model == null)
@@ -86,7 +87,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         // use Initialize straight up
         MoreCommands.ForEach(contextItem =>
         {
-            contextItem.Initialize();
+            contextItem.InitializeProperties();
         });
 
         model.PropChanged += Model_PropChanged;

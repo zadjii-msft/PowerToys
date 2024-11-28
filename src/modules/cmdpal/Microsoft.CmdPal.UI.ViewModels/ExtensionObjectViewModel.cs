@@ -2,13 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.UI.ViewModels.Messages;
-using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -20,7 +14,7 @@ public abstract partial class ExtensionObjectViewModel : ObservableObject
         {
             try
             {
-                Initialize();
+                InitializeProperties();
             }
             catch (Exception ex)
             {
@@ -31,5 +25,5 @@ public abstract partial class ExtensionObjectViewModel : ObservableObject
         await t;
     }
 
-    protected abstract void Initialize();
+    public abstract void InitializeProperties();
 }

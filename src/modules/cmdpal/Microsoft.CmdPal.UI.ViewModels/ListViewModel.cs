@@ -26,38 +26,36 @@ public partial class ListViewModel : PageViewModel
     {
         _model = new(model);
 
-        // TODO: probably need to make async here
-        _ = Task.Run(InitializePropertiesAsync);
+        // // TODO: probably need to make async here
+        // _ = Task.Run(InitializePropertiesAsync);
 
         // Initialize();
     }
 
     private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchItems();
 
+    //// Run on background thread, from InitializeAsync or Model_ItemsChanged
     private void FetchItems()
     {
-        Task.Factory.StartNew(
-           () =>
-       {
-           // TEMPORARY: just plop all the items into a single group
-           // see 9806fe5d8 for the last commit that had this with sections
-           ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
+        ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
 
-           // TODO unsafe
-           var newItems = _model.Unsafe!.GetItems();
-           Items.Clear();
-           foreach (var item in newItems)
-           {
-               ListItemViewModel viewModel = new(item);
-               _ = viewModel.InitializePropertiesAsync();
-               group.Add(viewModel);
-           }
+        // TEMPORARY: just plop all the items into a single group
+        // see 9806fe5d8 for the last commit that had this with sections
+        // TODO unsafe
+        var newItems = _model.Unsafe!.GetItems();
 
-           Items.AddGroup(group);
-       },
-           CancellationToken.None,
-           TaskCreationOptions.None,
-           Scheduler).Wait();
+        Items.Clear();
+
+        foreach (var item in newItems)
+        {
+            ListItemViewModel viewModel = new(item);
+            viewModel.InitializeProperties();
+            group.Add(viewModel);
+        }
+
+        // Am I really allowed to modify that observable collection on a BG
+        // thread and have it just work in the UI??
+        Items.AddGroup(group);
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
@@ -67,9 +65,9 @@ public partial class ListViewModel : PageViewModel
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item) => WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
 
-    protected override void Initialize()
+    public override void InitializeProperties()
     {
-        base.Initialize();
+        base.InitializeProperties();
 
         var listPage = _model.Unsafe;
         if (listPage == null)
