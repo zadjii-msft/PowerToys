@@ -14,11 +14,7 @@ public class BaseObservable : INotifyPropChanged
 {
     public event TypedEventHandler<object, PropChangedEventArgs>? PropChanged;
 
-    protected void OnPropertyChanged(string propertyName)
-    {
-        if (PropChanged != null)
-        {
-            PropChanged.Invoke(this, new PropChangedEventArgs(propertyName));
-        }
-    }
+    protected void OnPropertyChanged(string propertyName) =>
+        // TODO #181 - This is dangerous!
+        PropChanged?.Invoke(this, new PropChangedEventArgs(propertyName));
 }
