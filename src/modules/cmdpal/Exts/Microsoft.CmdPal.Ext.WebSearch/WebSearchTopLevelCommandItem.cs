@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using Microsoft.CmdPal.Ext.WebSearch.Helpers;
 using Microsoft.CmdPal.Ext.WebSearch.Pages;
 using Microsoft.CmdPal.Ext.WebSearch.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -12,8 +13,8 @@ namespace Microsoft.CmdPal.Ext.WebSearch;
 
 public partial class WebSearchTopLevelCommandItem : CommandItem
 {
-    public WebSearchTopLevelCommandItem()
-        : base(new WebSearchListPage())
+    public WebSearchTopLevelCommandItem(SettingsManager settingsManager)
+        : base(new WebSearchListPage(settingsManager))
     {
         Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WebSearch.dark.png"));
         Title = Resources.command_item_title;

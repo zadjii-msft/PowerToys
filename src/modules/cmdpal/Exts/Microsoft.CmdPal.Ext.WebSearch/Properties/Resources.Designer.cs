@@ -160,6 +160,15 @@ namespace Microsoft.CmdPal.Ext.WebSearch.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show your history from previous searches.
+        /// </summary>
+        public static string plugin_show_history {
+            get {
+                return ResourceManager.GetString("plugin_show_history", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
         public static string settings_page_name {

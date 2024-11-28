@@ -12,14 +12,17 @@ namespace Microsoft.CmdPal.Ext.WebSearch;
 
 public partial class WebSearchCommandsProvider : CommandProvider
 {
-    private readonly WebSearchTopLevelCommandItem _webSearchCommand = new();
+    private readonly WebSearchTopLevelCommandItem _webSearchCommand;
     private readonly SettingsManager _settingsManager = new();
 
     public WebSearchCommandsProvider()
     {
         DisplayName = Resources.extension_name;
 
-        _webSearchCommand.MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))];
+        _webSearchCommand = new(_settingsManager)
+        {
+            MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))],
+        };
     }
 
     public override ICommandItem[] TopLevelCommands() => [_webSearchCommand];
