@@ -251,8 +251,8 @@ internal abstract class SearchQueryBase
         // Get the IUnknown pointer for the IRowset object
         var rowsetPtr = Marshal.GetIUnknownForObject(rowset);
         IntPtr rowsetInfoPtr;
-        Guid iidIRowsetInfo = new Guid("0C733A55-2A1C-11CE-ADE5-00AA0044773D"); // IID_IRowsetInfo
-        var res = Marshal.QueryInterface(rowsetPtr, ref iidIRowsetInfo, out rowsetInfoPtr);
+        var iidIRowsetInfo = new Guid("0C733A55-2A1C-11CE-ADE5-00AA0044773D"); // IID_IRowsetInfo
+        var res = Marshal.QueryInterface(rowsetPtr, in iidIRowsetInfo, out rowsetInfoPtr);
         Marshal.Release(rowsetPtr);
 
         // var res = rowset.QueryInterface(typeof(IRowsetInfo).GUID, out var rowsetInfoObj);
