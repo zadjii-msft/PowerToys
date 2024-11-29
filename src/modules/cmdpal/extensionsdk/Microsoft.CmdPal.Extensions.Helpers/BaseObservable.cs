@@ -14,7 +14,18 @@ public class BaseObservable : INotifyPropChanged
 {
     public event TypedEventHandler<object, PropChangedEventArgs>? PropChanged;
 
-    protected void OnPropertyChanged(string propertyName) =>
-        // TODO #181 - This is dangerous!
-        PropChanged?.Invoke(this, new PropChangedEventArgs(propertyName));
+    protected void OnPropertyChanged(string propertyName)
+    {
+        try
+        {
+            // TODO #181 - This is dangerous! If the original host goes away,
+            // this can crash as we try to invoke the handlers from that process.
+            // However, just catching it seems to still raise the event on the
+            // new host?
+            PropChanged?.Invoke(this, new PropChangedEventArgs(propertyName));
+        }
+        catch
+        {
+        }
+    }
 }
