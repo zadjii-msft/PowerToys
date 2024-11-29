@@ -118,10 +118,10 @@
             </controls:Case>
 
             <controls:Case IsDefault="True" Value="Loading">
-                <ProgressRing
+                <!--<ProgressRing
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    IsIndeterminate="True" />
+                    IsIndeterminate="True" />-->
             </controls:Case>
             
             <controls:Case Value="Error">

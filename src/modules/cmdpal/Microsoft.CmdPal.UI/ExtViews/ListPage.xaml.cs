@@ -57,10 +57,10 @@ public sealed partial class ListPage : Page,
                 && lvm.InitializeCommand != null)
             {
                 ViewModel = null;
-                lvm.InitializeCommand.Execute(null);
 
                 _ = Task.Run(async () =>
                 {
+                    lvm.InitializeCommand.Execute(null);
                     await lvm.InitializeCommand.ExecutionTask!;
 
                     if (lvm.InitializeCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
@@ -78,6 +78,7 @@ public sealed partial class ListPage : Page,
                         _ = _queue.EnqueueAsync(() =>
                         {
                             ViewModel = lvm;
+                            WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(ViewModel!));
                             LoadedState = ViewModelLoadedState.Loaded;
                         });
                     }
@@ -86,11 +87,10 @@ public sealed partial class ListPage : Page,
             else
             {
                 ViewModel = lvm;
+                WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(ViewModel!));
                 LoadedState = ViewModelLoadedState.Loaded;
             }
         }
-
-        WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(ViewModel!));
 
         // RegisterAll isn't AOT compatible
         WeakReferenceMessenger.Default.Register<NavigateNextCommand>(this);
