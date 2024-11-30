@@ -24,6 +24,9 @@ public partial class PageViewModel : ExtensionObjectViewModel
     [ObservableProperty]
     public partial bool IsInitialized { get; private set; }
 
+    [ObservableProperty]
+    public partial string ErrorMessage { get; protected set; } = string.Empty;
+
     public PageViewModel(IPage model)
     {
         _pageModel = new(model);
@@ -38,7 +41,15 @@ public partial class PageViewModel : ExtensionObjectViewModel
 
         // TODO: We may want to investigate using some sort of AsyncEnumerable or populating these as they come in to the UI layer
         //       Though we have to think about threading here and circling back to the UI thread with a TaskScheduler.
-        InitializeProperties();
+        try
+        {
+            InitializeProperties();
+        }
+        catch (Exception)
+        {
+            // return Task.FromException<bool>(e);
+            return Task.FromResult(false);
+        }
 
         IsInitialized = true;
         return Task.FromResult(true);

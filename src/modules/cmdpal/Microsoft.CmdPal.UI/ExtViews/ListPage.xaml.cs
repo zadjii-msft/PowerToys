@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
@@ -61,6 +62,7 @@ public sealed partial class ListPage : Page,
                 _ = Task.Run(async () =>
                 {
                     lvm.InitializeCommand.Execute(null);
+
                     await lvm.InitializeCommand.ExecutionTask!;
 
                     if (lvm.InitializeCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
@@ -77,9 +79,15 @@ public sealed partial class ListPage : Page,
                     {
                         _ = _queue.EnqueueAsync(() =>
                         {
+                            var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
+
                             ViewModel = lvm;
                             WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(ViewModel!));
-                            LoadedState = ViewModelLoadedState.Loaded;
+                            LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
+                            if (!result)
+                            {
+                                WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(null));
+                            }
                         });
                     }
                 });

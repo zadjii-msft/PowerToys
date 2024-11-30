@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -42,20 +43,28 @@ public partial class ListViewModel : PageViewModel
         // TEMPORARY: just plop all the items into a single group
         // see 9806fe5d8 for the last commit that had this with sections
         // TODO unsafe
-        var newItems = _model.Unsafe!.GetItems();
-
-        Items.Clear();
-
-        foreach (var item in newItems)
+        try
         {
-            ListItemViewModel viewModel = new(item);
-            viewModel.InitializeProperties();
-            group.Add(viewModel);
-        }
+            var newItems = _model.Unsafe!.GetItems();
 
-        // Am I really allowed to modify that observable collection on a BG
-        // thread and have it just work in the UI??
-        Items.AddGroup(group);
+            Items.Clear();
+
+            foreach (var item in newItems)
+            {
+                ListItemViewModel viewModel = new(item);
+                viewModel.InitializeProperties();
+                group.Add(viewModel);
+            }
+
+            // Am I really allowed to modify that observable collection on a BG
+            // thread and have it just work in the UI??
+            Items.AddGroup(group);
+        }
+        catch (COMException ex)
+        {
+            ErrorMessage = $"{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\nThis is due to a bug in the extension's code.";
+            throw;
+        }
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
