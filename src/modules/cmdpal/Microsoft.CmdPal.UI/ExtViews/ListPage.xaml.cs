@@ -61,6 +61,12 @@ public sealed partial class ListPage : Page,
 
                 _ = Task.Run(async () =>
                 {
+                    // You know, this creates the situation where we wait for
+                    // both loading page properties, AND the items, before we
+                    // display anything.
+                    //
+                    // We almost need to do an async await on initialize, then
+                    // just a fire-and-forget on FetchItems.
                     lvm.InitializeCommand.Execute(null);
 
                     await lvm.InitializeCommand.ExecutionTask!;
