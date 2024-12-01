@@ -11,7 +11,6 @@ using Microsoft.CmdPal.Ext.WindowsServices;
 using Microsoft.CmdPal.Ext.WindowsSettings;
 using Microsoft.CmdPal.Ext.WindowsTerminal;
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 using Microsoft.CmdPal.UI.ViewModels.Models;
@@ -32,9 +31,7 @@ public partial class App : Application
     /// </summary>
     public static new App Current => (App)Application.Current;
 
-    private Window? _window;
-
-    public Window? AppWindow => _window;
+    public Window? AppWindow { get; private set; }
 
     /// <summary>
     /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
@@ -59,8 +56,8 @@ public partial class App : Application
     /// <param name="args">Details about the launch request and process.</param>
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        _window = new MainWindow();
-        _window.Activate();
+        AppWindow = new MainWindow();
+        AppWindow.Activate();
     }
 
     /// <summary>
@@ -87,7 +84,6 @@ public partial class App : Application
 
         // Models
         services.AddSingleton<TopLevelCommandManager>();
-        services.AddSingleton<MainListPage>();
         services.AddSingleton<IExtensionService, ExtensionService>();
 
         // ViewModels
