@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -28,10 +29,10 @@ internal sealed partial class NflExtensionPage : ListPage
 
     public override IListItem[] GetItems()
     {
-        var dataAsync = FetchDataAsync();
+        var dataAsync = FetchWeekAsync();
         dataAsync.ConfigureAwait(false);
-        var data = dataAsync.Result;
-        return data.Events.Select(e => EventNodeToItem(e)).ToArray();
+        var games = dataAsync.Result;
+        return [.. games];
     }
 
     private ListItem EventNodeToItem(NflEvent e)
@@ -60,7 +61,7 @@ internal sealed partial class NflExtensionPage : ListPage
     private static Color HexToColor(string hex)
     {
         // Ensure the string has the correct length
-        if (hex.Length != 6 && hex.Length != 8)
+        if (hex.Length is not 6 and not 8)
         {
             throw new ArgumentException("Hex string must be 6 or 8 characters long.");
         }
@@ -72,7 +73,7 @@ internal sealed partial class NflExtensionPage : ListPage
         }
 
         // Parse the hex values into bytes
-        var a = Convert.ToByte(hex.Substring(0, 2), 16); // Alpha
+        var a = Convert.ToByte(hex[..2], 16); // Alpha
         var r = Convert.ToByte(hex.Substring(2, 2), 16); // Red
         var g = Convert.ToByte(hex.Substring(4, 2), 16); // Green
         var b = Convert.ToByte(hex.Substring(6, 2), 16); // Blue
@@ -80,13 +81,50 @@ internal sealed partial class NflExtensionPage : ListPage
         return Color.FromArgb(a, r, g, b);
     }
 
-    private async Task<NflData> FetchDataAsync()
+    private static List<string> DaysOfWeek()
     {
+        var days = new List<string>();
+
+        // Get today's date
+        var today = DateTime.Today;
+
+        // Find the Tuesday before today
+        var daysToTuesday = ((int)today.DayOfWeek - (int)DayOfWeek.Tuesday + 7) % 7;
+        var startDate = today.AddDays(-daysToTuesday);
+
+        // Iterate through the days of the week starting from the Tuesday before today
+        for (var i = 0; i < 7; i++)
+        {
+            var currentDay = startDate.AddDays(i);
+            var formattedDate = currentDay.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+            days.Add(formattedDate);
+        }
+
+        return days;
+    }
+
+    private async Task<List<ListItem>> FetchWeekAsync()
+    {
+        var days = DaysOfWeek();
+        var games = new List<ListItem>();
+        foreach (var day in days)
+        {
+            var gameData = await FetchDataAsync(day);
+            games.AddRange(gameData.Events.Select(EventNodeToItem));
+        }
+
+        return games;
+    }
+
+    private async Task<NflData> FetchDataAsync(string date)
+    {
+        _ = DaysOfWeek();
+
         try
         {
             // Make a GET request to the Mastodon trends API endpoint
             var response = await Client
-                .GetAsync($"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=20241124");
+                .GetAsync($"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates={date}");
             response.EnsureSuccessStatusCode();
 
             // Read and deserialize the response JSON into a list of MastodonStatus objects
