@@ -20,9 +20,8 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
 {
     private readonly Lock _lockObject = new(); // Lock object for synchronization
 
-    private readonly List<SearchResult> _searchResults = [];
+    private SearchQuery _searchQuery = new();
 
-    private SearchQuery _searchQuery;
 
     private uint _queryCookie = 10;
 
@@ -30,6 +29,8 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
     {
         Icon = new("\ue729");
         Name = "Indexer";
+
+        _searchQuery.Init();
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
@@ -109,23 +110,9 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
         _queryCookie++;
         lock (_lockObject)
         {
-            if (_searchQuery != null && !CanReuseQuery(_searchQuery.QueryString, searchText))
+            if (!CanReuseQuery(_searchQuery.QueryString, searchText))
             {
                 _searchQuery.CancelOutstandingQueries();
-                _searchQuery = null;
-            }
-
-            if (_searchQuery == null)
-            {
-                Stopwatch stopwatch = new();
-                stopwatch.Start();
-
-                // Create a new one, give it a new cookie, and put it into our map
-                _searchQuery = new SearchQuery();
-                _searchQuery.Init();
-
-                stopwatch.Stop();
-                Logger.LogDebug($"Init time: {stopwatch.ElapsedMilliseconds} ms");
             }
 
             // Just forward on to the helper with the right callback for feeding us results
