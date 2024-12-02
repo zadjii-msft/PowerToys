@@ -237,7 +237,9 @@ jobs:
         msbuildArgs: /p:GenerateAppxPackageOnBuild=true /p:CIBuild=true;NoBuild=true /bl:$(LogOutputDirectory)\build-cmdpal-msix.binlog /p:NoWarn=NU5104
       ${{ else }}:
         msbuildArgs: /p:GenerateAppxPackageOnBuild=true /p:CIBuild=true;NoBuild=true /bl:$(LogOutputDirectory)\build-cmdpal-msix.binlog
+      platform: $(BuildPlatform)
       configuration: $(BuildConfiguration)
+      clean: false # DO NOT REBUILD THE PROJECT
       msbuildArchitecture: x64
       maximumCpuCount: true
     ${{ if eq(parameters.enableMsBuildCaching, true) }}:

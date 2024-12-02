@@ -219,24 +219,7 @@
                 "WinUI3Apps\\PowerToys.Settings.dll",
                 "WinUI3Apps\\PowerToys.Settings.exe",
 
-                "PowerToys.CmdPalModuleInterface.dll",
-
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Common.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Ext.Apps.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Ext.Bookmarks.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Ext.Calc.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Ext.Registry.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Ext.Settings.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Ext.WindowsServices.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Ext.WindowsSettings.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Ext.WindowsTerminal.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Extensions.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.Extensions.Helpers.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.UI.Poc.dll",
-                "WinUI3Apps\\CmdPal.Poc\\CmdPalMicrosoft.CmdPal.UI.Poc.exe",
-                "WinUI3Apps\\CmdPal.Poc\\Microsoft.Terminal.UI.dll",
-
-                "WinUI3Apps\\CmdPal.Poc\\AppPackages\\Microsoft.CmdPal.UI.Poc_0.0.1.0_Test\\Microsoft.CmdPal.UI.Poc_0.0.1.0_x64.msix"
+                "PowerToys.CmdPalModuleInterface.dll"
             ],
             "SigningInfo": {
                 "Operations": [

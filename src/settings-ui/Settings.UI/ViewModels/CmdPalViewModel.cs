@@ -155,17 +155,9 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
             string pattern = @"^.+\.(msix|msixbundle)$";
             Regex regex = new(pattern, RegexOptions.IgnoreCase);
 
-            string matchedFile = string.Empty;
-            try
-            {
-                matchedFile = Directory.GetFiles(directoryPath, "*.*", SearchOption.AllDirectories)
-                                            .Where(file => regex.IsMatch(Path.GetFileName(file)))
-                                            .ToArray().FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"An error occurred while searching for MSIX files: {ex.Message}");
-            }
+            string matchedFile = Directory.GetFiles(directoryPath, "*.*", SearchOption.AllDirectories)
+                                        .Where(file => regex.IsMatch(Path.GetFileName(file)))
+                                        .ToArray().FirstOrDefault();
 
             return matchedFile;
         }
@@ -177,13 +169,11 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
             if (string.IsNullOrWhiteSpace(msixFilePath))
             {
                 Logger.LogError($"MSIX file path cannot be null or empty: {msixFilePath}");
-                return;
             }
 
             if (!File.Exists(msixFilePath))
             {
                 Logger.LogError($"The specified MSIX file was not found: {msixFilePath}");
-                return;
             }
 
             try
@@ -200,12 +190,10 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
                 {
                     Logger.LogError($"Package installation failed with error: {deploymentResult.Result.ExtendedErrorCode.Message}");
                 }
-                else
-                {
-                    Logger.LogInfo("Package installed successfully!");
 
-                    OnPropertyChanged(nameof(IsCmdPalInstalled));
-                }
+                Logger.LogInfo("Package installed successfully!");
+
+                OnPropertyChanged(nameof(IsCmdPalInstalled));
             }
             catch (Exception ex)
             {
@@ -233,12 +221,10 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
                 {
                     Logger.LogError($"Failed to uninstall package: {uninstallOperation.Result.ErrorText}");
                 }
-                else
-                {
-                    Logger.LogInfo($"Package '{package.Id.FullName}' was uninstalled successfully.");
 
-                    OnPropertyChanged(nameof(IsCmdPalInstalled));
-                }
+                Logger.LogInfo($"Package '{package.Id.FullName}' was uninstalled successfully.");
+
+                OnPropertyChanged(nameof(IsCmdPalInstalled));
             }
             catch (Exception ex)
             {

@@ -8,7 +8,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
-    <ProjectPriFileName>Microsoft.CmdPal.Common.pri</ProjectPriFileName>
+    <ProjectPriFileName>YouTubeExtension.pri</ProjectPriFileName>
   </PropertyGroup>
 
   <ItemGroup>
