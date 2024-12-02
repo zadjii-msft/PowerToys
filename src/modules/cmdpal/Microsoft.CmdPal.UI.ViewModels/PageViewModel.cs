@@ -15,11 +15,9 @@ public partial class PageViewModel : ExtensionObjectViewModel
 
     private readonly ExtensionObject<IPage> _pageModel;
 
-    [ObservableProperty]
-    public partial string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
-    [ObservableProperty]
-    public partial bool Loading { get; private set; } = true;
+    public bool Loading { get; private set; } = true;
 
     [ObservableProperty]
     public partial bool IsInitialized { get; private set; }
@@ -89,15 +87,15 @@ public partial class PageViewModel : ExtensionObjectViewModel
         switch (propertyName)
         {
             case nameof(Name):
-                var newName = model.Name ?? string.Empty;
-                UpdateProperty(() => { this.Name = newName; });
+                this.Name = model.Name ?? string.Empty;
                 break;
             case nameof(Loading):
-                var newLoading = model.Loading;
-                UpdateProperty(() => { this.Loading = newLoading; });
+                this.Loading = model.Loading;
                 break;
         }
+
+        UpdateProperty(propertyName);
     }
 
-    protected void UpdateProperty(Action action) => Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, Scheduler);
+    protected void UpdateProperty(string propertyName) => Task.Factory.StartNew(() => { OnPropertyChanged(propertyName); }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
 }

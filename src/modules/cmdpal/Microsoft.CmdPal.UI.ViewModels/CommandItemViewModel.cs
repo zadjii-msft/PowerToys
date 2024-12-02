@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
@@ -14,17 +13,13 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
     private readonly ExtensionObject<ICommandItem> _commandItemModel = new(null);
 
     // private bool _initialized;
-    [ObservableProperty]
-    public partial string Name { get; private set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
-    [ObservableProperty]
-    public partial string Title { get; private set; } = string.Empty;
+    public string Title { get; private set; } = string.Empty;
 
-    [ObservableProperty]
-    public partial string Subtitle { get; private set; } = string.Empty;
+    public string Subtitle { get; private set; } = string.Empty;
 
-    [ObservableProperty]
-    public partial string IconUri { get; private set; } = string.Empty;
+    public string IconUri { get; private set; } = string.Empty;
 
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
