@@ -5,8 +5,10 @@
 using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
+using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using MSDASC;
 
@@ -14,7 +16,7 @@ namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 
 internal abstract class SearchQueryBase
 {
-    private readonly object _lockObject = new(); // Lock object for synchronization
+    private readonly Lock _lockObject = new(); // Lock object for synchronization
 
     public uint ReuseWhereID { get; set; }
 
@@ -32,7 +34,7 @@ internal abstract class SearchQueryBase
     {
         ulong fetched = 0;
 
-        IGetRow getRow = currentRowset as IGetRow;
+        var getRow = currentRowset as IGetRow;
         uint rowCountReturned;
 
         ulong batchSize = 5000; // Number of rows to fetch in each batch
@@ -96,7 +98,7 @@ internal abstract class SearchQueryBase
             }
 
             // Free the memory allocated for row handles
-            // Marshal.FreeCoTaskMem(prghRows);
+            Marshal.FreeCoTaskMem(prghRows);
         }
         while (rowCountReturned > 0);
 
@@ -129,8 +131,7 @@ internal abstract class SearchQueryBase
                 var res = cmdTxt.SetCommandText(ref dbGuidDefault, queryStr);
                 if (res != 0)
                 {
-                    // TODO: log error
-                    var err = GetErrorInfo(0, out IErrorInfo errorInfo);
+                    var err = GetErrorInfo(0, out var errorInfo);
                     if (err == 0 && errorInfo != null)
                     {
                         errorInfo.GetDescription(out var description);
@@ -200,7 +201,7 @@ internal abstract class SearchQueryBase
         // Query CommandText
         const string CLSID_CollatorDataSource = "9E175B8B-F52A-11D8-B9A5-505054503030";
 
-        var hr = CoCreateInstance(
+        var hr = NativeHelpers.CoCreateInstance(
             new Guid(CLSID_CollatorDataSource), // CLSID_CollatorDataSource
             null,
             0x1, // CLSCTX_INPROC_SERVER
@@ -214,7 +215,7 @@ internal abstract class SearchQueryBase
             return;
         }
 
-        IDBInitialize dataSource = (IDBInitialize)dataSourceObj;
+        var dataSource = (IDBInitialize)dataSourceObj;
         hr = dataSource.Initialize();
         if (hr != 0)
         {
@@ -223,7 +224,7 @@ internal abstract class SearchQueryBase
             return;
         }
 
-        IDBCreateSession session = (IDBCreateSession)dataSource;
+        var session = (IDBCreateSession)dataSource;
         object unkSessionPtr;
 
         hr = session.CreateSession(null, typeof(IDBCreateCommand).GUID, out unkSessionPtr);
@@ -234,7 +235,7 @@ internal abstract class SearchQueryBase
             return;
         }
 
-        IDBCreateCommand createCommand = (IDBCreateCommand)unkSessionPtr;
+        var createCommand = (IDBCreateCommand)unkSessionPtr;
 
         hr = createCommand.CreateCommand(null, typeof(ICommandText).GUID, out var unkCmdPtr);
         if (hr != 0)
@@ -265,9 +266,9 @@ internal abstract class SearchQueryBase
 
         // Get the IRowsetInfo object from the interface pointer
         // IRowsetInfo rowsetInfo = (IRowsetInfo)rowsetInfoObj;
-        IRowsetInfo rowsetInfo = (IRowsetInfo)Marshal.GetObjectForIUnknown(rowsetInfoPtr);
+        var rowsetInfo = (IRowsetInfo)Marshal.GetObjectForIUnknown(rowsetInfoPtr);
 
-        DBPROPIDSET propset = new DBPROPIDSET
+        var propset = new DBPROPIDSET
         {
             // rgPropertyIDs = new uint[] { 8 }, // MSIDXSPROP_WHEREID,
             rgPropertyIDs = Marshal.AllocCoTaskMem(sizeof(uint)), // Allocate memory for the property ID array
@@ -284,7 +285,7 @@ internal abstract class SearchQueryBase
         {
             ulong cPropertySets;
 
-            res = rowsetInfo.GetProperties(1, new DBPROPIDSET[] { propset }, out cPropertySets, out prgPropSetsPtr);
+            res = rowsetInfo.GetProperties(1, [propset], out cPropertySets, out prgPropSetsPtr);
             if (res != 0)
             {
                 Logger.LogError($"Error getting properties: {res}");
@@ -298,8 +299,8 @@ internal abstract class SearchQueryBase
             }
 
             // Marshal the returned DBPROPSET
-            var dbPropSetSize = Marshal.SizeOf(typeof(DBPROPSET));
-            DBPROPSET[] propSets = new DBPROPSET[cPropertySets];
+            var dbPropSetSize = Marshal.SizeOf<DBPROPSET>();
+            var propSets = new DBPROPSET[cPropertySets];
 
             for (var i = 0; i < (int)cPropertySets; i++)
             {
@@ -307,15 +308,15 @@ internal abstract class SearchQueryBase
                 propSets[i] = Marshal.PtrToStructure<DBPROPSET>(currentPtr);
             }
 
-            DBPROPSET propSet = propSets[0];
+            var propSet = propSets[0];
             if (propSet.cProperties == 0 || propSet.rgProperties == IntPtr.Zero)
             {
                 // FreeProperties(cPropertySets, prgPropSetsPtr, propSets);
                 return 0;
             }
 
-            var dbPropSize = Marshal.SizeOf(typeof(DBPROP));
-            DBPROP[] props = new DBPROP[propSet.cProperties];
+            var dbPropSize = Marshal.SizeOf<DBPROP>();
+            var props = new DBPROP[propSet.cProperties];
 
             for (var j = 0; j < (int)propSet.cProperties; j++)
             {
@@ -324,7 +325,7 @@ internal abstract class SearchQueryBase
             }
 
             // Access the property value
-            DBPROP prop = props[0];
+            var prop = props[0];
             if (prop.vValue.vt == (ushort)VarEnum.VT_UI4)
             {
                 var value = prop.vValue.unionValue.ulVal;
@@ -365,7 +366,7 @@ internal abstract class SearchQueryBase
 
     private static bool ULongLongAdd(ulong augend, ulong addend, out ulong result)
     {
-        BigInteger bigSum = (BigInteger)augend + addend;
+        var bigSum = (BigInteger)augend + addend;
 
         if (bigSum <= ulong.MaxValue)
         {
@@ -378,12 +379,4 @@ internal abstract class SearchQueryBase
             return false; // Overflow occurred
         }
     }
-
-    [DllImport("ole32.dll", CharSet = CharSet.Unicode)]
-    private static extern int CoCreateInstance(
-        [In] Guid rclsid,
-        [MarshalAs(UnmanagedType.IUnknown)] object pUnkOuter,
-        uint dwClsContext,
-        [In] Guid riid,
-        [MarshalAs(UnmanagedType.IUnknown)] out object ppv);
 }

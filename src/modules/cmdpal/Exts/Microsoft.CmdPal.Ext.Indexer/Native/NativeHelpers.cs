@@ -40,4 +40,12 @@ internal sealed class NativeHelpers
     public const int SWSHOWNORMAL = 1;
     public const int SWSHOW = 5;
     public const uint SEEMASKINVOKEIDLIST = 12;
+
+    [DllImport("ole32.dll", CharSet = CharSet.Unicode)]
+    public static extern int CoCreateInstance(
+        [In] Guid rclsid,
+        [MarshalAs(UnmanagedType.IUnknown)] object pUnkOuter,
+        uint dwClsContext,
+        [In] Guid riid,
+        [MarshalAs(UnmanagedType.IUnknown)] out object ppv);
 }

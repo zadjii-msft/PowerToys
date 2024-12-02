@@ -8,13 +8,14 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Utils;
+using Microsoft.CmdPal.Ext.Indexer.Utils;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 
-internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISearchUXQuery, IDisposable
+internal sealed class SearchQuery : SearchQueryBase, IDisposable
 {
-    private readonly object _lockObject = new(); // Lock object for synchronization
-    private readonly List<SearchResult> searchResults = new();
+    private readonly Lock _lockObject = new(); // Lock object for synchronization
+    private readonly List<SearchResult> searchResults = [];
     private const uint QueryTimerThreshold = 85;
     private EventWaitHandle queryCompletedEvent;
     private Timer queryTpTimer;
@@ -27,11 +28,10 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
 
     public string QueryString { get; set; }
 
-    public SearchUXQueryHelper()
+    public SearchQuery()
     {
     }
 
-    // ISearchUXQuery
     public void Init()
     {
         // Create all the objects we will want cached
@@ -40,48 +40,36 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
             queryTpTimer = new Timer(QueryTimerCallback, this, Timeout.Infinite, Timeout.Infinite);
             if (queryTpTimer == null)
             {
-                // TODO : Log error
+                Logger.LogError("Failed to create query timer");
                 return;
             }
 
             queryCompletedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
             if (queryCompletedEvent == null)
             {
-                // TODO : Log error
+                Logger.LogError("Failed to create query completed event");
                 return;
             }
 
             // Execute a synchronous query on file/mapi items to prime the index and keep that handle around
             PrimeIndexAndCacheWhereId();
         }
-        catch
+        catch (Exception ex)
         {
-            // Log error
+            Logger.LogError("Exception at SearchUXQueryHelper Init", ex);
         }
     }
 
-    public uint GetNumResults()
-    {
-        return NumResults;
-    }
+    public uint GetNumResults() => NumResults;
 
-    public SearchResult GetResult(uint idx)
-    {
-        if (idx >= searchResults.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(idx));
-        }
+    public SearchResult GetResult(uint idx) => idx >= searchResults.Count ? throw new ArgumentOutOfRangeException(nameof(idx)) : searchResults[(int)idx];
 
-        return searchResults[(int)idx];
-    }
-
-    public void WaitForQueryCompletedEvent()
-    {
-        queryCompletedEvent.WaitOne();
-    }
+    public void WaitForQueryCompletedEvent() => queryCompletedEvent.WaitOne();
 
     public void CancelOutstandingQueries()
     {
+        Logger.LogDebug("Cancel query " + SearchText);
+
         // Are we currently doing work? If so, let's cancel
         lock (_lockObject)
         {
@@ -106,30 +94,23 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
                 Cookie = cookie;
 
                 // Queue query
-                DateTime fireTime = DateTime.UtcNow.AddMilliseconds(QueryTimerThreshold);
-                TimeSpan dueTime = fireTime - DateTime.UtcNow;
+                var fireTime = DateTime.UtcNow.AddMilliseconds(QueryTimerThreshold);
+                var dueTime = fireTime - DateTime.UtcNow;
                 queryTpTimer.Change(dueTime, Timeout.InfiniteTimeSpan);
             }
         }
     }
 
-    // ISearchQuery
-    public void ExecuteSync()
-    {
-    }
-
-    // Other public methods
     public static void QueryTimerCallback(object state)
     {
-        SearchUXQueryHelper pQueryHelper = (SearchUXQueryHelper)state;
+        Logger.LogDebug($"QueryTimerCallback: {state}");
+
+        var pQueryHelper = (SearchQuery)state;
         pQueryHelper.ExecuteSyncInternal();
     }
 
-    public override void OnPreFetchRows()
-    {
-        // If we've gotten this far we have successful results...only now clear the result list and update it
-        searchResults.Clear();
-    }
+    // If we've gotten this far we have successful results...only now clear the result list and update it
+    public override void OnPreFetchRows() => searchResults.Clear();
 
     public override void OnPostFetchRows()
     {
@@ -137,10 +118,7 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
         queryCompletedEvent.Set();
     }
 
-    public override void OnFetchRowCallback(IPropertyStore propStore)
-    {
-        CreateSearchResult(propStore);
-    }
+    public override void OnFetchRowCallback(IPropertyStore propStore) => CreateSearchResult(propStore);
 
     public override string GetPrimingQueryString()
     {
@@ -157,9 +135,9 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
             var queryStr = builder.GenerateQuery(SearchText, ReuseWhereID);
             ExecuteQueryStringSync(queryStr);
         }
-        catch
+        catch (Exception ex)
         {
-            // TODO: log error
+            Logger.LogError("Exception at SearchUXQueryHelper ExecuteSyncInternal", ex);
         }
     }
 
@@ -171,7 +149,7 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
         var hr = propStore.GetValue(ref pKeyItemNameDisplay, out itemNameDisplay);
         if (hr != 0)
         {
-            // TODO: log error
+            Logger.LogError("Get item name display error: " + hr);
             return;
         }
 
@@ -181,7 +159,7 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
         hr = propStore.GetValue(ref pKeyItemUrl, out itemUrl);
         if (hr != 0)
         {
-            // TODO: log error
+            Logger.LogError("Get item URL error: " + hr);
             return;
         }
 
@@ -191,7 +169,7 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
         hr = propStore.GetValue(ref pKeyKindText, out kindText);
         if (hr != 0)
         {
-            // TODO: log error
+            Logger.LogError("Get kind text error: " + hr);
             return;
         }
 
@@ -220,10 +198,7 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
             filePath,
             isFolder);
 
-        // if (searchResult.CanDisplay)
-        {
-            searchResults.Add(searchResult);
-        }
+        searchResults.Add(searchResult);
 
         itemUrl.Dispose();
         kindText.Dispose();
@@ -238,7 +213,7 @@ internal sealed class SearchUXQueryHelper : SearchQueryBase, ISearchQuery, ISear
 
         if (indexProtocolFound != -1 && (indexProtocolFound + fileProtocolString.Length) < url.Length)
         {
-            result = result.Substring(indexProtocolFound + fileProtocolString.Length);
+            result = result[(indexProtocolFound + fileProtocolString.Length)..];
         }
 
         return result;
