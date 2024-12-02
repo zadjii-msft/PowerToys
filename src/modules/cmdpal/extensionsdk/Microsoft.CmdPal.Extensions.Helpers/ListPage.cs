@@ -85,9 +85,12 @@ public class ListPage : Page, IListPage
 
     protected void RaiseItemsChanged(int totalItems)
     {
-        if (ItemsChanged != null)
+        try
         {
-            ItemsChanged.Invoke(this, new ItemsChangedEventArgs(totalItems));
+            ItemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
+        }
+        catch
+        {
         }
     }
 }

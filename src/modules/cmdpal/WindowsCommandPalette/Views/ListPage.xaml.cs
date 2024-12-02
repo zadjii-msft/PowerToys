@@ -33,27 +33,49 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         get => _selectedItem;
         set
         {
-            Debug.WriteLine($"      Selected: {SelectedItem?.Title}");
+            // Debug.WriteLine($"      Selected: {SelectedItem?.Title}");
+            if (_selectedItem != null)
+            {
+                _selectedItem.PropertyChanged -= SelectedItem_PropertyChanged;
+            }
+
             _selectedItem = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedItem)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MoreCommandsAvailable)));
+            if (_selectedItem != null)
+            {
+                _selectedItem.PropertyChanged += SelectedItem_PropertyChanged;
+            }
 
-            if (ViewModel != null && _selectedItem?.Details != null && ViewModel.ShowDetails)
-            {
-                this.DetailsContent.Child = new DetailsControl(_selectedItem.Details);
-                this.DetailsContent.Visibility = Visibility.Visible;
-                this.DetailsColumn.Width = new GridLength(2, GridUnitType.Star);
-            }
-            else
-            {
-                this.DetailsContent.Child = null;
-                this.DetailsContent.Visibility = Visibility.Collapsed;
-                this.DetailsColumn.Width = GridLength.Auto;
-            }
+            UpdateDetails();
         }
     }
 
-    private bool MoreCommandsAvailable => ItemsList.SelectedItem is not ListItemViewModel li ? false : li.HasMoreCommands;
+    private void SelectedItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(_selectedItem.Details))
+        {
+            UpdateDetails();
+        }
+    }
+
+    private void UpdateDetails()
+    {
+        if (ViewModel != null && _selectedItem?.Details != null && ViewModel.ShowDetails)
+        {
+            this.DetailsContent.Child = new DetailsControl(_selectedItem.Details);
+            this.DetailsContent.Visibility = Visibility.Visible;
+            this.DetailsColumn.Width = new GridLength(2, GridUnitType.Star);
+        }
+        else
+        {
+            this.DetailsContent.Child = null;
+            this.DetailsContent.Visibility = Visibility.Collapsed;
+            this.DetailsColumn.Width = GridLength.Auto;
+        }
+    }
+
+    private bool MoreCommandsAvailable => ItemsList.SelectedItem is ListItemViewModel li && li.HasMoreCommands;
 
     public ListPage()
     {
@@ -155,8 +177,8 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         // *
         // Debug.WriteLine($"FilteredItems_CollectionChanged");
         // Try to maintain the selected item, if we can.
-        if (ItemsList.SelectedItem != null &&
-            ItemsList.SelectedItem is ListItemViewModel li)
+        if (ItemsList.SelectedItem is not null and
+            ListItemViewModel li)
         {
             var xamlListItem = ItemsList.ContainerFromItem(li);
             if (xamlListItem != null)
@@ -181,10 +203,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         this.ItemsList.SelectedIndex = 0;
     }
 
-    private void DoAction(ActionViewModel actionViewModel)
-    {
-        ViewModel?.DoAction(actionViewModel);
-    }
+    private void DoAction(ActionViewModel actionViewModel) => ViewModel?.DoAction(actionViewModel);
 
     private void ListItem_KeyDown(object sender, KeyRoutedEventArgs e)
     {
@@ -205,18 +224,6 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
                 DoAction(new(li.DefaultAction));
             }
         }
-    }
-
-    private void MoreCommandsButton_Tapped(object sender, TappedRoutedEventArgs e)
-    {
-        var options = new FlyoutShowOptions
-        {
-            ShowMode = FlyoutShowMode.Standard,
-        };
-
-        MoreCommandsButton.Flyout.ShowAt(MoreCommandsButton, options);
-        ActionsDropdown.SelectedIndex = 0;
-        ActionsDropdown.Focus(FocusState.Programmatic);
     }
 
     private void ListItem_Tapped(object sender, TappedRoutedEventArgs e)
@@ -269,7 +276,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
             return;
         }
 
-        if (e.Key == Windows.System.VirtualKey.Enter || e.Key == Windows.System.VirtualKey.Space)
+        if (e.Key is Windows.System.VirtualKey.Enter or Windows.System.VirtualKey.Space)
         {
             DoAction(new(vm.Command));
             e.Handled = true;
@@ -309,7 +316,7 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         }
 
         var ctrlPressed = InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Control).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
-        if (e.Key == Windows.System.VirtualKey.Up || e.Key == Windows.System.VirtualKey.Down)
+        if (e.Key is Windows.System.VirtualKey.Up or Windows.System.VirtualKey.Down)
         {
             var newIndex = e.Key == Windows.System.VirtualKey.Up ? ItemsList.SelectedIndex - 1 : ItemsList.SelectedIndex + 1;
             if (newIndex >= 0 && newIndex < ItemsList.Items.Count)
@@ -389,13 +396,5 @@ public sealed partial class ListPage : Microsoft.UI.Xaml.Controls.Page, INotifyP
         ViewModel.UpdateSearchText(text);
     }
 
-    private void BackButton_Tapped(object sender, TappedRoutedEventArgs e)
-    {
-        ViewModel?.GoBack();
-    }
-
-    private void ToggleButton_Click(object sender, RoutedEventArgs e)
-    {
-        InstallationDialog.Visibility = InstallationDialog.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-    }
+    private void BackButton_Tapped(object sender, TappedRoutedEventArgs e) => ViewModel?.GoBack();
 }

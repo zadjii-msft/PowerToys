@@ -27,9 +27,31 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable, IEq
 
     internal string TextToSuggest { get; private set; }
 
-    private readonly Lazy<DetailsViewModel?> _details;
+    private DetailsViewModel? _details;
+    private bool _fetchedDetails;
 
-    internal DetailsViewModel? Details => _details.Value;
+    internal DetailsViewModel? Details
+    {
+        get
+        {
+            if (!_fetchedDetails)
+            {
+                _fetchedDetails = true;
+                try
+                {
+                    var item = this.ListItem.Unsafe;
+                    _details = item.Details != null ? new(item.Details) : null;
+                }
+                catch (COMException)
+                {
+                    /* log something */
+                    _details = null;
+                }
+            }
+
+            return _details;
+        }
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -48,7 +70,7 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable, IEq
         }
     }
 
-    internal bool CanInvoke => DefaultAction != null && DefaultAction is IInvokableCommand or IPage;
+    internal bool CanInvoke => DefaultAction is not null and (IInvokableCommand or IPage);
 
     internal IconElement IcoElement => Microsoft.Terminal.UI.IconPathConverter.IconMUX(Icon);
 
@@ -115,20 +137,19 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable, IEq
             this.Tags = model.Tags.Select(t => new TagViewModel(t)).ToArray();
         }
 
-        this._details = new(() =>
-        {
-            try
-            {
-                var item = this.ListItem.Unsafe;
-                return item.Details != null ? new(item.Details) : null;
-            }
-            catch (COMException)
-            {
-                /* log something */
-                return null;
-            }
-        });
-
+        // this._details = new(() =>
+        // {
+        //    try
+        //    {
+        //        var item = this.ListItem.Unsafe;
+        //        return item.Details != null ? new(item.Details) : null;
+        //    }
+        //    catch (COMException)
+        //    {
+        //        /* log something */
+        //        return null;
+        //    }
+        // });
         this._dispatcherQueue = DispatcherQueue.GetForCurrentThread();
     }
 
@@ -157,6 +178,11 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable, IEq
                 case nameof(TextToSuggest):
                     this.TextToSuggest = item.TextToSuggest;
                     BubbleXamlPropertyChanged(nameof(TextToSuggest));
+                    break;
+                case nameof(Details):
+                    _details = new(item.Details);
+                    _fetchedDetails = true;
+                    BubbleXamlPropertyChanged(nameof(Details));
                     break;
             }
 
@@ -194,20 +220,11 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable, IEq
         }
     }
 
-    public bool Equals(ListItemViewModel? other)
-    {
-        return other == null ? false : other.ListItem.Unsafe == this.ListItem.Unsafe;
-    }
+    public bool Equals(ListItemViewModel? other) => other != null && other.ListItem.Unsafe == this.ListItem.Unsafe;
 
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as ListItemViewModel);
-    }
+    public override bool Equals(object? obj) => Equals(obj as ListItemViewModel);
 
-    public override int GetHashCode()
-    {
-        return base.GetHashCode();
-    }
+    public override int GetHashCode() => base.GetHashCode();
 
     public static bool operator ==(ListItemViewModel? l, ListItemViewModel? r)
     {

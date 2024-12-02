@@ -16,9 +16,12 @@ public class BaseObservable : INotifyPropChanged
 
     protected void OnPropertyChanged(string propertyName)
     {
-        if (PropChanged != null)
+        try
         {
-            PropChanged.Invoke(this, new PropChangedEventArgs(propertyName));
+            PropChanged?.Invoke(this, new PropChangedEventArgs(propertyName));
+        }
+        catch
+        {
         }
     }
 }

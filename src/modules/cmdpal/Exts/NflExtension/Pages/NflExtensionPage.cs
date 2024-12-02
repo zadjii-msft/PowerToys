@@ -10,29 +10,93 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Timers;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Windows.UI;
 
 namespace NflExtension;
 
-internal sealed partial class NflExtensionPage : ListPage
+internal sealed partial class NflExtensionPage : ListPage, IDisposable
 {
     internal static readonly HttpClient Client = new();
     internal static readonly JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true };
+    private Timer _timer;
+    private List<ListItem> _lastItems;
 
     public NflExtensionPage()
     {
         Icon = new("🏈");
         Name = "NFL Scores";
+        ShowDetails = true;
+        Loading = true;
     }
 
     public override IListItem[] GetItems()
     {
+        if (_lastItems == null)
+        {
+            var dataAsync = FetchWeekAsync();
+            dataAsync.ConfigureAwait(false);
+            _lastItems = dataAsync.Result;
+        }
+
+        if (_timer == null)
+        {
+            // Set up the timer to trigger every 30 seconds (30,000 milliseconds)
+            _timer = new(10000);
+            _timer.Elapsed += OnTimedEvent;
+            _timer.AutoReset = true; // Keep repeating
+            _timer.Enabled = true;
+        }
+
+        Loading = false;
+        return [.. _lastItems];
+    }
+
+    private void OnTimedEvent(object source, ElapsedEventArgs e)
+    {
         var dataAsync = FetchWeekAsync();
         dataAsync.ConfigureAwait(false);
-        var games = dataAsync.Result;
-        return [.. games];
+        _lastItems = ReplaceGames(_lastItems, dataAsync.Result);
+
+        // _lastItems = dataAsync.Result;
+        this.RaiseItemsChanged(_lastItems.Count);
+    }
+
+    private static List<ListItem> ReplaceGames(List<ListItem> oldItems, List<ListItem> newItems)
+    {
+        var list = new List<ListItem>();
+
+        foreach (var n in newItems)
+        {
+            var found = false;
+            foreach (var o in oldItems)
+            {
+                if (o != null
+                    && n != null
+                    && o.Command is NflGameCommand oldCmd
+                    && n.Command is NflGameCommand newCmd
+                    && oldCmd.Game.Id == newCmd.Game.Id)
+                {
+                    found = true;
+                    o.Command = n.Command;
+                    o.Subtitle = n.Subtitle;
+                    o.Title = n.Title;
+                    o.Tags = n.Tags;
+                    o.MoreCommands = n.MoreCommands;
+                    o.Details = n.Details;
+                    list.Add(o);
+                }
+            }
+
+            if (!found)
+            {
+                list.Add(n);
+            }
+        }
+
+        return list;
     }
 
     private ListItem EventNodeToItem(NflEvent e)
@@ -41,20 +105,57 @@ internal sealed partial class NflExtensionPage : ListPage
         var game = e
                 .Competitions
                     .First<Competition>();
+        var id = game.Id;
+
         var tags = game
                     .Competitors
                     .Select(c =>
-                        new Microsoft.CmdPal.Extensions.Helpers.Tag()
+                        new Tag()
                         {
                             Icon = new IconDataType(c.Team.Id == game.Situation?.Possession ? "🏈" : string.Empty),
                             Text = $"{c.Team.Abbreviation} {c.Score}",
                             Color = HexToColor(c.Team.Color),
                         }).ToArray();
-        return new ListItem(new NoOpCommand())
+
+        Details details = null;
+        if (game.Situation != null)
+        {
+            var detailsBody = $"""
+{game.Situation.DownDistanceText}
+
+{game.Situation.LastPlay.Text}
+""";
+
+            details = new Details()
+            {
+                Title = string.Join("-", game.Competitors.Select(c => $"{c.Team.Abbreviation} {c.Score}")),
+                Body = detailsBody,
+            };
+        }
+
+        // Icon
+        var icon = new IconDataType(string.Empty);
+        if (game.Situation != null)
+        {
+            icon = new(game.Situation.IsRedZone ? "🚨" : "🟢");
+        }
+        else if (e.Status.Type.Name == "STATUS_FINAL")
+        {
+            var winner = game.Competitors[0].Winner ? game.Competitors[0] : game.Competitors[1];
+            icon = new(winner.Team.Logo);
+        }
+        else
+        {
+            icon = new("\uecc5");
+        }
+
+        return new ListItem(new NflGameCommand(game))
         {
             Title = name,
             Subtitle = e.Status.Type.Detail,
+            Icon = icon,
             Tags = tags,
+            Details = details,
         };
     }
 
@@ -141,6 +242,14 @@ internal sealed partial class NflExtensionPage : ListPage
 
         return null;
     }
+
+    public void Dispose() => throw new NotImplementedException();
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+public sealed partial class NflGameCommand(Competition game) : NoOpCommand
+{
+    public Competition Game => game;
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
@@ -166,11 +275,17 @@ public sealed class NflEvent
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
 public sealed class Competition
 {
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+
     [JsonPropertyName("competitors")]
     public List<Competitor> Competitors { get; set; }
 
     [JsonPropertyName("situation")]
     public CompetitionSituation Situation { get; set; } = null;
+
+    [JsonPropertyName("broadcast")]
+    public string Broadcast { get; set; }
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
@@ -181,6 +296,9 @@ public sealed class Competitor
 
     [JsonPropertyName("score")]
     public string Score { get; set; }
+
+    [JsonPropertyName("winner")]
+    public bool Winner { get; set; }
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
@@ -206,6 +324,9 @@ public sealed class Team
 
     [JsonPropertyName("alternateColor")]
     public string AlternateColor { get; set; }
+
+    [JsonPropertyName("logo")]
+    public string Logo { get; set; }
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
@@ -231,6 +352,26 @@ public sealed class CompetitionSituation
 
     [JsonPropertyName("possession")]
     public string Possession { get; set; }
+
+    [JsonPropertyName("lastPlay")]
+    public LastPlay LastPlay { get; set; }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+public sealed class LastPlay
+{
+    [JsonPropertyName("text")]
+    public string Text { get; set; }
+
+    [JsonPropertyName("drive")]
+    public Drive Drive { get; set; }
+}
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
+public sealed class Drive
+{
+    [JsonPropertyName("description")]
+    public string Description { get; set; }
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
@@ -243,6 +384,9 @@ public sealed class NflEventStatus
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
 public sealed class NflEventStatusType
 {
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
     [JsonPropertyName("description")]
     public string Description { get; set; }
 
