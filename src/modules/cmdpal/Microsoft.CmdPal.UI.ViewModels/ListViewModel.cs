@@ -45,7 +45,7 @@ public partial class ListViewModel : PageViewModel
 
             foreach (var item in newItems)
             {
-                ListItemViewModel viewModel = new(item);
+                ListItemViewModel viewModel = new(item, Scheduler);
                 viewModel.InitializeProperties();
                 group.Add(viewModel);
             }
