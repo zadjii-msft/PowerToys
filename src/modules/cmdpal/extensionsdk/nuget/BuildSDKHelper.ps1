@@ -26,6 +26,10 @@ Options:
       Example: -Configuration Release
       Example: -Configuration "Debug,Release"
 
+  -VersionOfSDK <version>
+      Set the version number of the build sdk nuget package
+      Example: -VersionOfSDK "1.0.0"
+
   -Help
       Display this usage message.
 "@
