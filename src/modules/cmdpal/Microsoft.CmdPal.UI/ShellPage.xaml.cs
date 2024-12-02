@@ -48,6 +48,7 @@ public sealed partial class ShellPage :
         if (RootFrame.CanGoBack)
         {
             RootFrame.GoBack();
+            RootFrame.ForwardStack.Clear();
             SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
         }
     }

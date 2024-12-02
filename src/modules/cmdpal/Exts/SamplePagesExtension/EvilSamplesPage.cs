@@ -15,6 +15,21 @@ public partial class EvilSamplesPage : ListPage
            Title = "List Page without items",
            Subtitle = "Throws exception on GetItems",
        },
+       new ListItem(new ExplodeInFiveSeconds(false))
+       {
+           Title = "Page that will throw an exception after loading it",
+           Subtitle = "Throws exception on GetItems _after_ a ItemsChanged",
+       },
+       new ListItem(new ExplodeInFiveSeconds(true))
+       {
+           Title = "Page that keeps throwing exceptions",
+           Subtitle = "Will throw every 5 seconds once you open it",
+       },
+       new ListItem(new SelfImmolateCommand())
+       {
+           Title = "Terminate this extension",
+           Subtitle = "Will exit this extension (while it's loaded!)",
+       },
     ];
 
     public EvilSamplesPage()
