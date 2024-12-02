@@ -12,7 +12,7 @@ parameters:
   - name: signingIdentity
     type: object
     default: {}
-  - name: versionNumber
+  - name: sdkVersionNumber
     type: string
     default: '0.0.1'
 
@@ -37,7 +37,7 @@ jobs:
     fetchDepth: 1
 
   - pwsh: |-
-      & "$(build.sourcesdirectory)\src\modules\cmdpal\extensionsdk\nuget\BuildSDKHelper.ps1" -Configuration "Release" -VersionOfSDK ${{ parameters.versionNumber }} -BuildStep "build" -IsAzurePipelineBuild
+      & "$(build.sourcesdirectory)\src\modules\cmdpal\extensionsdk\nuget\BuildSDKHelper.ps1" -Configuration "Release" -VersionOfSDK ${{ parameters.sdkVersionNumber }} -BuildStep "build" -IsAzurePipelineBuild
     displayName: Build SDK
 
   - ${{ if eq(parameters.codeSign, true) }}:
@@ -52,7 +52,7 @@ jobs:
           ciPolicyFile: '$(build.sourcesdirectory)\.pipelines\CIPolicy.xml'
 
   - pwsh: |-
-      & "$(build.sourcesdirectory)\src\modules\cmdpal\extensionsdk\nuget\BuildSDKHelper.ps1" -Configuration "Release" -VersionOfSDK ${{ parameters.versionNumber }} -BuildStep "pack" -IsAzurePipelineBuild
+      & "$(build.sourcesdirectory)\src\modules\cmdpal\extensionsdk\nuget\BuildSDKHelper.ps1" -Configuration "Release" -VersionOfSDK ${{ parameters.sdkVersionNumber }} -BuildStep "pack" -IsAzurePipelineBuild
     displayName: Pack SDK
 
   - task: CopyFiles@2

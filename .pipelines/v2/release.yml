@@ -104,7 +104,6 @@ extends:
                 name: SHINE-INT-L
                 image: SHINE-VS17-Latest
                 os: windows
-              versionNumber: ${{ parameters.versionNumber }}
               codeSign: true
               signingIdentity:
                 serviceName: $(SigningServiceName)
