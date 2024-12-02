@@ -21,15 +21,10 @@ public partial class ListViewModel : PageViewModel
 
     private readonly ExtensionObject<IListPage> _model;
 
-    public ListViewModel(IListPage model)
-        : base(model)
+    public ListViewModel(IListPage model, TaskScheduler scheduler)
+        : base(model, scheduler)
     {
         _model = new(model);
-
-        // // TODO: probably need to make async here
-        // _ = Task.Run(InitializePropertiesAsync);
-
-        // Initialize();
     }
 
     private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchItems();

@@ -24,12 +24,10 @@ public partial class PageViewModel : ExtensionObjectViewModel
     [ObservableProperty]
     public partial bool IsInitialized { get; private set; }
 
-    // [ObservableProperty]
-    // public partial string ErrorMessage { get; protected set; } = string.Empty;
-    public PageViewModel(IPage model)
+    public PageViewModel(IPage model, TaskScheduler scheduler)
     {
         _pageModel = new(model);
-        Scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+        Scheduler = scheduler;
     }
 
     //// Run on background thread from ListPage.xaml.cs
@@ -46,7 +44,6 @@ public partial class PageViewModel : ExtensionObjectViewModel
         }
         catch (Exception)
         {
-            // return Task.FromException<bool>(e);
             return Task.FromResult(false);
         }
 
@@ -74,8 +71,6 @@ public partial class PageViewModel : ExtensionObjectViewModel
         {
             var propName = args.PropertyName;
             FetchProperty(propName);
-
-            OnPropertyChanged(propName);
         }
         catch (Exception)
         {
@@ -95,16 +90,14 @@ public partial class PageViewModel : ExtensionObjectViewModel
         {
             case nameof(Name):
                 var newName = model.Name ?? string.Empty;
-                Task.Factory.StartNew(() => { this.Name = newName; }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
-
+                UpdateProperty(() => { this.Name = newName; });
                 break;
             case nameof(Loading):
-                // this.Loading = model.Loading;
                 var newLoading = model.Loading;
-                Task.Factory.StartNew(() => { this.Loading = newLoading; }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
+                UpdateProperty(() => { this.Loading = newLoading; });
                 break;
-
-                // TODO! Icon
         }
     }
+
+    protected void UpdateProperty(Action action) => Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, Scheduler);
 }

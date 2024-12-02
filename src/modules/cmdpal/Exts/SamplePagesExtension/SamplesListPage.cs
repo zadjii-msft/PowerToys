@@ -30,6 +30,11 @@ public partial class SamplesListPage : ListPage
            Title = "List Page With Details Sample Command",
            Subtitle = "A list of items, each with additional details to display",
        },
+       new ListItem(new SampleUpdatingItemsPage())
+       {
+           Title = "List page with items that change",
+           Subtitle = "The items on the list update themselves in real time",
+       },
        new ListItem(new SampleDynamicListPage())
        {
            Title = "Dynamic List Page Command",
