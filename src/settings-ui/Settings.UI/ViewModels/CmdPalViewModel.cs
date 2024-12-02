@@ -164,7 +164,7 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
 
         private void InstallModule()
         {
-            string msixFilePath = FindMsixFile(AssemblyDirectory + "\\CmdPal.Poc\\AppPackages");
+            string msixFilePath = FindMsixFile(AssemblyDirectory + "\\CmdPal\\");
 
             if (string.IsNullOrWhiteSpace(msixFilePath))
             {
