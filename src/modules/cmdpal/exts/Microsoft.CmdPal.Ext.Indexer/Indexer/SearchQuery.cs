@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation
+﻿// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -15,7 +15,6 @@ namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 internal sealed class SearchQuery : SearchQueryBase, IDisposable
 {
     private readonly Lock _lockObject = new(); // Lock object for synchronization
-    private readonly List<SearchResult> searchResults = [];
     private const uint QueryTimerThreshold = 85;
     private EventWaitHandle queryCompletedEvent;
     private Timer queryTpTimer;
@@ -27,6 +26,8 @@ internal sealed class SearchQuery : SearchQueryBase, IDisposable
     public string SearchText { get; private set; }
 
     public string QueryString { get; set; }
+
+    public List<SearchResult> SearchResults { get; private set; } = [];
 
     public SearchQuery()
     {
@@ -62,7 +63,7 @@ internal sealed class SearchQuery : SearchQueryBase, IDisposable
 
     public uint GetNumResults() => NumResults;
 
-    public SearchResult GetResult(uint idx) => idx >= searchResults.Count ? throw new ArgumentOutOfRangeException(nameof(idx)) : searchResults[(int)idx];
+    public SearchResult GetResult(uint idx) => idx >= SearchResults.Count ? throw new ArgumentOutOfRangeException(nameof(idx)) : SearchResults[(int)idx];
 
     public void WaitForQueryCompletedEvent() => queryCompletedEvent.WaitOne();
 
@@ -105,18 +106,16 @@ internal sealed class SearchQuery : SearchQueryBase, IDisposable
 
     public static void QueryTimerCallback(object state)
     {
-        Logger.LogDebug($"QueryTimerCallback: {state}");
-
         var pQueryHelper = (SearchQuery)state;
         pQueryHelper.ExecuteSyncInternal();
     }
 
     // If we've gotten this far we have successful results...only now clear the result list and update it
-    public override void OnPreFetchRows() => searchResults.Clear();
+    public override void OnPreFetchRows() => SearchResults.Clear();
 
     public override void OnPostFetchRows()
     {
-        NumResults = (uint)searchResults.Count; // num results is really how many we display
+        NumResults = (uint)SearchResults.Count; // num results is really how many we display
         queryCompletedEvent.Set();
     }
 
@@ -200,7 +199,7 @@ internal sealed class SearchQuery : SearchQueryBase, IDisposable
             filePath,
             isFolder);
 
-        searchResults.Add(searchResult);
+        SearchResults.Add(searchResult);
 
         itemUrl.Dispose();
         kindText.Dispose();

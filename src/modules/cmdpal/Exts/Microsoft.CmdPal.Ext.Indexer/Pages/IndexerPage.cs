@@ -22,7 +22,6 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
 
     private SearchQuery _searchQuery = new();
 
-
     private uint _queryCookie = 10;
 
     public IndexerPage()
@@ -35,12 +34,6 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        if (string.IsNullOrEmpty(newSearch))
-        {
-            _searchResults.Clear();
-            Logger.LogDebug("Clear");
-        }
-
         if (oldSearch != newSearch)
         {
             Logger.LogDebug($"Update {oldSearch} -> {newSearch}");
@@ -54,7 +47,6 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
     {
         if (query == string.Empty)
         {
-            _searchResults.Clear();
             return [];
         }
 
@@ -66,30 +58,20 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
 
         lock (_lockObject)
         {
-            // race between drawing and selecting options...always check validity.
             if (_searchQuery != null)
             {
-                // Get the results from the query helper and stash in the UI
                 var cookie = _searchQuery.Cookie;
                 if (cookie == _queryCookie)
                 {
-                    var numResults = _searchQuery.GetNumResults();
-                    _searchResults.Clear();
-
-                    for (uint i = 0; i < numResults; i++)
+                    foreach (var result in _searchQuery.SearchResults)
                     {
-                        _searchResults.Add(_searchQuery.GetResult(i));
+                        items.Add(new IndexerListItem(new IndexerItem
+                        {
+                            FileName = result.ItemDisplayName,
+                            FullPath = result.LaunchUri,
+                        }));
                     }
                 }
-            }
-
-            foreach (var result in _searchResults)
-            {
-                items.Add(new IndexerListItem(new IndexerItem
-                {
-                    FileName = result.ItemDisplayName,
-                    FullPath = result.LaunchUri,
-                }));
             }
         }
 
@@ -103,7 +85,6 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
     {
         if (searchText == string.Empty)
         {
-            _searchResults.Clear();
             return _queryCookie;
         }
 
@@ -164,7 +145,6 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
 
     public void Dispose()
     {
-        _searchResults.Clear();
         _searchQuery = null;
         GC.SuppressFinalize(this);
     }
