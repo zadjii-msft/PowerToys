@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -60,9 +59,9 @@ public partial class ListViewModel : PageViewModel
             // thread and have it just work in the UI??
             Items.AddGroup(group);
         }
-        catch (COMException ex)
+        catch (Exception ex)
         {
-            ErrorMessage = $"{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\nThis is due to a bug in the extension's code.";
+            ShowException(ex);
             throw;
         }
     }

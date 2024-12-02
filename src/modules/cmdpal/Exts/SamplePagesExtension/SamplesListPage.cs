@@ -39,6 +39,11 @@ public partial class SamplesListPage : ListPage
        {
            Title = "Sample settings page",
            Subtitle = "A demo of the settings helpers",
+       },
+       new ListItem(new EvilSamplesPage())
+       {
+           Title = "Evil samples",
+           Subtitle = "Samples designed to break the palette in many different evil ways",
        }
     ];
 
@@ -48,8 +53,5 @@ public partial class SamplesListPage : ListPage
         Icon = new("\ue946"); // Info
     }
 
-    public override IListItem[] GetItems()
-    {
-        return _commands;
-    }
+    public override IListItem[] GetItems() => _commands;
 }

@@ -24,9 +24,8 @@ public partial class PageViewModel : ExtensionObjectViewModel
     [ObservableProperty]
     public partial bool IsInitialized { get; private set; }
 
-    [ObservableProperty]
-    public partial string ErrorMessage { get; protected set; } = string.Empty;
-
+    // [ObservableProperty]
+    // public partial string ErrorMessage { get; protected set; } = string.Empty;
     public PageViewModel(IPage model)
     {
         _pageModel = new(model);

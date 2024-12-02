@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.CmdPal.UI.ViewModels.Messages;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -26,4 +28,6 @@ public abstract partial class ExtensionObjectViewModel : ObservableObject
     }
 
     public abstract void InitializeProperties();
+
+    protected void ShowException(Exception ex) => WeakReferenceMessenger.Default.Send<ShowExceptionMessage>(new(ex));
 }

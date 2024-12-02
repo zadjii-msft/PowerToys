@@ -20,7 +20,8 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class ListPage : Page,
     IRecipient<NavigateNextCommand>,
     IRecipient<NavigatePreviousCommand>,
-    IRecipient<ActivateSelectedListItemMessage>
+    IRecipient<ActivateSelectedListItemMessage>,
+    IRecipient<ShowExceptionMessage>
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
 
@@ -43,6 +44,16 @@ public sealed partial class ListPage : Page,
     // Using a DependencyProperty as the backing store for LoadedState.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty LoadedStateProperty =
         DependencyProperty.Register(nameof(LoadedState), typeof(ViewModelLoadedState), typeof(ListPage), new PropertyMetadata(ViewModelLoadedState.Loading));
+
+    public string ErrorMessage
+    {
+        get => (string)GetValue(ErrorMessageProperty);
+        set => SetValue(ErrorMessageProperty, value);
+    }
+
+    // Using a DependencyProperty as the backing store for LoadedState.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty ErrorMessageProperty =
+        DependencyProperty.Register(nameof(ErrorMessage), typeof(string), typeof(ListPage), new PropertyMetadata(string.Empty));
 
     public ListPage()
     {
@@ -88,7 +99,7 @@ public sealed partial class ListPage : Page,
                             var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
 
                             ViewModel = lvm;
-                            WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(ViewModel!));
+                            WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(lvm));
                             LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
                             if (!result)
                             {
@@ -101,7 +112,7 @@ public sealed partial class ListPage : Page,
             else
             {
                 ViewModel = lvm;
-                WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(ViewModel!));
+                WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(lvm));
                 LoadedState = ViewModelLoadedState.Loaded;
             }
         }
@@ -110,6 +121,7 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Register<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Register<NavigatePreviousCommand>(this);
         WeakReferenceMessenger.Default.Register<ActivateSelectedListItemMessage>(this);
+        WeakReferenceMessenger.Default.Register<ShowExceptionMessage>(this);
 
         base.OnNavigatedTo(e);
     }
@@ -121,6 +133,7 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Unregister<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Unregister<NavigatePreviousCommand>(this);
         WeakReferenceMessenger.Default.Unregister<ActivateSelectedListItemMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ShowExceptionMessage>(this);
     }
 
     private void ListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -167,6 +180,16 @@ public sealed partial class ListPage : Page,
         {
             ViewModel?.UpdateSelectedItemCommand.Execute(item);
         }
+    }
+
+    public void Receive(ShowExceptionMessage message)
+    {
+        _ = _queue.EnqueueAsync(() =>
+        {
+            var ex = message.Exception;
+            ErrorMessage = $"{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\nThis is due to a bug in the extension's code.";
+            LoadedState = ViewModelLoadedState.Error;
+        });
     }
 }
 

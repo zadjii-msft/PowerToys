@@ -126,8 +126,8 @@
             
             <controls:Case Value="Error">
                 <StackPanel Orientation="Vertical" Margin="16">
-                    <TextBlock Text="Error loading List Page" FontSize="18" />
-                    <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" IsTextSelectionEnabled="True"/>
+                    <TextBlock Text="Error on page" FontSize="18" Foreground="{ThemeResource SystemErrorTextColor}" />
+                    <TextBlock Text="{x:Bind ErrorMessage, Mode=OneWay}" IsTextSelectionEnabled="True"/>
                 </StackPanel>
             </controls:Case>
         </controls:SwitchPresenter>
