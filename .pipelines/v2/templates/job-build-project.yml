@@ -234,9 +234,9 @@ jobs:
       solution: '**\Microsoft.CmdPal.UI.Poc.csproj'
       vsVersion: 17.0
       ${{ if eq(parameters.useVSPreview, true) }}:
-        msbuildArgs: /p:GenerateAppxPackageOnBuild=true /p:CIBuild=true;NoBuild=true /bl:$(LogOutputDirectory)\build-cmdpal-msix.binlog /p:NoWarn=NU5104
+        msbuildArgs: /p:GenerateAppxPackageOnBuild=true /p:CIBuild=true /bl:$(LogOutputDirectory)\build-cmdpal-msix.binlog /p:NoWarn=NU5104
       ${{ else }}:
-        msbuildArgs: /p:GenerateAppxPackageOnBuild=true /p:CIBuild=true;NoBuild=true /bl:$(LogOutputDirectory)\build-cmdpal-msix.binlog
+        msbuildArgs: /p:GenerateAppxPackageOnBuild=true /p:CIBuild=true /bl:$(LogOutputDirectory)\build-cmdpal-msix.binlog
       platform: $(BuildPlatform)
       configuration: $(BuildConfiguration)
       clean: false # DO NOT REBUILD THE PROJECT
