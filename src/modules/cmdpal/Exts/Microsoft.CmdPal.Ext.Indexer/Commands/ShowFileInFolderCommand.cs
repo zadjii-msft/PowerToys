@@ -2,9 +2,11 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.CmdPal.Ext.Indexer.Data;
+using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Commands;
@@ -16,7 +18,7 @@ internal sealed partial class ShowFileInFolderCommand : InvokableCommand
     internal ShowFileInFolderCommand(IndexerItem item)
     {
         this._item = item;
-        this.Name = "Show in folder"; // TODO: localize
+        this.Name = "Show in folder";
         this.Icon = new("\uE838");
     }
 
@@ -29,9 +31,9 @@ internal sealed partial class ShowFileInFolderCommand : InvokableCommand
                 var argument = "/select, \"" + _item.FullPath + "\"";
                 Process.Start("explorer.exe", argument);
             }
-            catch
+            catch (Exception ex)
             {
-                // TODO: log
+                Logger.LogError("Invoke exception: ", ex);
             }
         }
 

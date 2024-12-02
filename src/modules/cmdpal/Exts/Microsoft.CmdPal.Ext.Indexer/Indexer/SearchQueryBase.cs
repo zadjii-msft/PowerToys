@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
+using Microsoft.CmdPal.Ext.Indexer.Utils;
 using MSDASC;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
@@ -48,7 +49,7 @@ internal abstract class SearchQueryBase
 
             if (res < 0)
             {
-                // TODO: log error
+                Logger.LogError($"Error fetching rows: {res}");
                 break;
             }
 
@@ -70,7 +71,7 @@ internal abstract class SearchQueryBase
                 res = getRow.GetRowFromHROW(null, rowHandles[i], typeof(IPropertyStore).GUID, out unknown);
                 if (res != 0)
                 {
-                    // TODO: log error
+                    Logger.LogError($"Error getting row from HROW: {res}");
                     break;
                 }
 
@@ -90,7 +91,7 @@ internal abstract class SearchQueryBase
 
             if (res != 0)
             {
-                // Log error
+                Logger.LogError($"Error releasing rows: {res}");
                 break;
             }
 
@@ -133,7 +134,7 @@ internal abstract class SearchQueryBase
                     if (err == 0 && errorInfo != null)
                     {
                         errorInfo.GetDescription(out var description);
-                        Console.WriteLine($"Error Description: {description}");
+                        Logger.LogError($"SetCommandText Error: {description}");
                     }
 
                     return;
@@ -142,7 +143,7 @@ internal abstract class SearchQueryBase
                 res = cmdTxt.Execute(null, typeof(IRowset).GUID, 0, out var rowCount, out var unkRowsetPtr);
                 if (res != 0)
                 {
-                    // TODO: log error
+                    Logger.LogError($"Execute Error: {res}");
                     return;
                 }
 
@@ -152,9 +153,9 @@ internal abstract class SearchQueryBase
                 FetchRows(out var rowsFetched);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // TODO: log error
+            Logger.LogError("Error executing query", ex);
         }
         finally
         {
@@ -171,7 +172,7 @@ internal abstract class SearchQueryBase
         GetCommandText(out cmdTxt);
         if (cmdTxt == null)
         {
-            // TODO: log error
+            Logger.LogError("Failed to get ICommandText interface");
             return;
         }
 
@@ -179,14 +180,14 @@ internal abstract class SearchQueryBase
         var res = cmdTxt.SetCommandText(ref dbGuidDefault, queryStr);
         if (res != 0)
         {
-            // TODO: log error
+            Logger.LogError($"SetCommandText Error: {res}");
             return;
         }
 
         res = cmdTxt.Execute(null, typeof(IRowset).GUID, 0, out var _, out var unkRowsetPtr);
         if (res != 0)
         {
-            // TODO: log error
+            Logger.LogError($"Execute Error: {res}");
             return;
         }
 
@@ -208,7 +209,7 @@ internal abstract class SearchQueryBase
 
         if (hr != 0)
         {
-            // TODO: log error
+            Logger.LogError("CoCreateInstance failed: " + hr);
             cmdText = null;
             return;
         }
@@ -217,7 +218,7 @@ internal abstract class SearchQueryBase
         hr = dataSource.Initialize();
         if (hr != 0)
         {
-            // TODO: log error
+            Logger.LogError("DB Initialize failed: " + hr);
             cmdText = null;
             return;
         }
@@ -228,7 +229,7 @@ internal abstract class SearchQueryBase
         hr = session.CreateSession(null, typeof(IDBCreateCommand).GUID, out unkSessionPtr);
         if (hr != 0)
         {
-            // TODO: log error
+            Logger.LogError("CreateSession failed: " + hr);
             cmdText = null;
             return;
         }
@@ -238,7 +239,7 @@ internal abstract class SearchQueryBase
         hr = createCommand.CreateCommand(null, typeof(ICommandText).GUID, out var unkCmdPtr);
         if (hr != 0)
         {
-            // TODO: log error
+            Logger.LogError("CreateCommand failed: " + hr);
             cmdText = null;
             return;
         }
@@ -258,7 +259,7 @@ internal abstract class SearchQueryBase
         // var res = rowset.QueryInterface(typeof(IRowsetInfo).GUID, out var rowsetInfoObj);
         if (res != 0)
         {
-            // TODO: log error
+            Logger.LogError($"Error getting IRowsetInfo interface: {res}");
             return 0;
         }
 
@@ -286,13 +287,13 @@ internal abstract class SearchQueryBase
             res = rowsetInfo.GetProperties(1, new DBPROPIDSET[] { propset }, out cPropertySets, out prgPropSetsPtr);
             if (res != 0)
             {
-                // TODO: log error
+                Logger.LogError($"Error getting properties: {res}");
                 return 0;
             }
 
             if (cPropertySets == 0 || prgPropSetsPtr == IntPtr.Zero)
             {
-                // TODO: log error
+                Logger.LogError("No property sets returned");
                 return 0;
             }
 

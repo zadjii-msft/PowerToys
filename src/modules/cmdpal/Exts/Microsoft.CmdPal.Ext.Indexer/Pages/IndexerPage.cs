@@ -159,8 +159,9 @@ internal sealed partial class IndexerPage : DynamicListPage
                 return true;
             }
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.LogError("CanReuseQuery exception", ex);
         }
 
         return false;

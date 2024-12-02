@@ -4,6 +4,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.CmdPal.Ext.Indexer.Utils;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
 
@@ -54,7 +55,7 @@ public struct PROPVARIANT : IDisposable
         var res = PropVariantClear(ref this);
         if (res != 0)
         {
-            // TODO: Log error
+            Logger.LogError("Error in PropVariantClear: " + res);
         }
     }
 

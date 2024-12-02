@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading;
+using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions;
 
 namespace Microsoft.CmdPal.Ext.Indexer;
@@ -13,6 +14,8 @@ public class Program
     [MTAThread]
     public static void Main(string[] args)
     {
+        Logger.InitializeLogger();
+
         if (args.Length > 0 && args[0] == "-RegisterProcessAsComServer")
         {
             using ExtensionServer server = new();
