@@ -11,7 +11,8 @@ using Microsoft.UI.Xaml.Input;
 namespace Microsoft.CmdPal.UI.Controls;
 
 public sealed partial class ActionBar : UserControl,
-    IRecipient<UpdateActionBarMessage>
+    IRecipient<UpdateActionBarMessage>,
+    IRecipient<UpdateActionBarPage>
 {
     public ActionBarViewModel ViewModel { get; set; } = new();
 
@@ -19,6 +20,7 @@ public sealed partial class ActionBar : UserControl,
     {
         this.InitializeComponent();
         WeakReferenceMessenger.Default.Register<UpdateActionBarMessage>(this);
+        WeakReferenceMessenger.Default.Register<UpdateActionBarPage>(this);
     }
 
     private void ActionListViewItem_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -42,4 +44,6 @@ public sealed partial class ActionBar : UserControl,
     }
 
     public void Receive(UpdateActionBarMessage message) => ViewModel.SelectedItem = message.ViewModel;
+
+    public void Receive(UpdateActionBarPage message) => ViewModel.CurrentPage = message.Page;
 }

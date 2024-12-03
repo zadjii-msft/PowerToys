@@ -4,6 +4,7 @@
 
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,6 @@ public sealed partial class ShellPage :
     Page,
     IRecipient<NavigateBackMessage>,
     IRecipient<NavigateToDetailsMessage>,
-    IRecipient<NavigateToListMessage>,
     IRecipient<PerformCommandMessage>
 {
     private readonly DrillInNavigationTransitionInfo _drillInNavigationTransitionInfo = new();
@@ -35,7 +35,6 @@ public sealed partial class ShellPage :
         // how we are doing navigation around
         WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
         WeakReferenceMessenger.Default.Register<NavigateToDetailsMessage>(this);
-        WeakReferenceMessenger.Default.Register<NavigateToListMessage>(this);
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
 
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
@@ -48,6 +47,8 @@ public sealed partial class ShellPage :
         if (RootFrame.CanGoBack)
         {
             RootFrame.GoBack();
+            RootFrame.ForwardStack.Clear();
+            SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
         }
     }
 
@@ -84,9 +85,19 @@ public sealed partial class ShellPage :
         {
             if (command is IListPage listPage)
             {
-                var pageViewModel = new ListViewModel(listPage);
-                RootFrame.Navigate(typeof(ListPage), pageViewModel, _slideRightTransition);
-                SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+                _ = DispatcherQueue.TryEnqueue(() =>
+                {
+                    var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext());
+                    RootFrame.Navigate(typeof(ListPage), pageViewModel, _slideRightTransition);
+                    SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+                    if (command is MainListPage)
+                    {
+                        // todo bodgy
+                        RootFrame.BackStack.Clear();
+                    }
+
+                    WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(pageViewModel));
+                });
             }
 
             // else if markdown, forms, TODO
