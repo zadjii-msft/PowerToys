@@ -52,22 +52,6 @@ public sealed partial class ShellPage :
         }
     }
 
-    public void Receive(NavigateToListMessage message)
-    {
-        // The first time we navigate to a list (from loading -> main list),
-        // clear out the back stack so that we can't go back again.
-        var fromLoading = RootFrame.CanGoBack;
-
-        RootFrame.Navigate(typeof(ListPage), message.ViewModel, _slideRightTransition);
-
-        if (!fromLoading)
-        {
-            RootFrame.BackStack.Clear();
-        }
-
-        SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
-    }
-
     public void Receive(PerformCommandMessage message)
     {
         var command = message.Command.Unsafe;

@@ -24,7 +24,7 @@ public partial class ShellViewModel(IServiceProvider _serviceProvider) : Observa
         IsLoaded = true;
 
         // Built-ins have loaded. We can display our page at this point.
-        var page = _serviceProvider.GetService<MainListPage>();
+        var page = new MainListPage(_serviceProvider);
         WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(new(page!)));
 
         // After loading built-ins, and starting navigation, kick off a thread to load extensions.
