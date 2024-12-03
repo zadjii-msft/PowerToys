@@ -4,8 +4,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
-using System.Runtime.Versioning;
 using Microsoft.CmdPal.Ext.Shell.Helpers;
 using Microsoft.CmdPal.Ext.Shell.Pages;
 using Microsoft.CmdPal.Ext.Shell.Properties;
@@ -24,14 +22,12 @@ public partial class ShellCommandsProvider : CommandProvider
         DisplayName = Resources.wox_plugin_cmd_plugin_name;
         _shellPageItem = new CommandItem(new ShellListPage(_settingsManager))
         {
+            Icon = new("\uE756"),
             Title = Resources.shell_command_name,
             Subtitle = Resources.wox_plugin_cmd_plugin_description,
             MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))],
         };
     }
 
-    public override ICommandItem[] TopLevelCommands()
-    {
-        return [_shellPageItem];
-    }
+    public override ICommandItem[] TopLevelCommands() => [_shellPageItem];
 }
