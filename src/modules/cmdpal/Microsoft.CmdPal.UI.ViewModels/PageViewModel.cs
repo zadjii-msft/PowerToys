@@ -17,9 +17,14 @@ public partial class PageViewModel : ExtensionObjectViewModel
 
     public string Name { get; private set; } = string.Empty;
 
+    // This is our visible loading state.
+    // * The field stores the value from the IPage from the extension itself.
+    // * The accessor returns a combination of the pages requested loading
+    //   state, and if we're currently fetching content from the extension.
     public bool Loading { get => field || FetchingContent; private set; } = true;
 
-    public bool FetchingContent { get; protected set; }
+    // Use this to track when we're still retrieving content from an extension.
+    protected bool FetchingContent { get; set; }
 
     [ObservableProperty]
     public partial bool IsInitialized { get; private set; }
