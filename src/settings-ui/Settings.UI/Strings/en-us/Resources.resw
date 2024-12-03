@@ -4684,7 +4684,7 @@ Activate by holding the key for the character you want to add an accent to, then
     <value>A better quick launcher</value>
   </data>
   <data name="CmdPal_Enable_CmdPal.Header" xml:space="preserve">
-    <value>Enable Command Palette</value>
+    <value>Install Command Palette</value>
     <comment>"Command Palette" is the name of the utility.</comment>
   </data>
   <data name="CmdPal.ModuleDescription" xml:space="preserve">

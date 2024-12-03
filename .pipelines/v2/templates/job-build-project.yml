@@ -87,6 +87,7 @@ jobs:
             ${{ else }}:
               OutputBuildPlatform: ${{ platform }}
   variables:
+    MakeAppxPath: 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\MakeAppx.exe'
     # Azure DevOps abhors a vacuum
     # If these are blank, expansion will fail later on... which will result in direct substitution of the variable *names*
     # later on. We'll just... set them to a single space and if we need to, check IsNullOrWhiteSpace.
@@ -361,6 +362,33 @@ jobs:
           !**\obj\**
 
   - ${{ if eq(parameters.codeSign, true) }}:
+    - pwsh: |-
+        $Package = (Get-ChildItem -Recurse -Filter "Microsoft.CmdPal.UI.Poc*.msix" | Select -First 1)
+        $PackageFilename = $Package.FullName
+        Write-Host "##vso[task.setvariable variable=CmdPalPackagePath]${PackageFilename}"
+      displayName: Locate the MSIX
+
+    - pwsh: |-
+        & "$(MakeAppxPath)" unpack /p "$(CmdPalPackagePath)" /d "$(JobOutputDirectory)/CmdPalPackageContents"
+      displayName: Unpack the MSIX for signing
+
+    - template: steps-esrp-signing.yml
+      parameters:
+        displayName: Sign CmdPal MSIX content
+        signingIdentity: ${{ parameters.signingIdentity }}
+        inputs:
+          FolderPath: '$(JobOutputDirectory)/CmdPalPackageContents' # Video conf uses x86 and x64.
+          signType: batchSigning
+          batchSignPolicyFile: '$(build.sourcesdirectory)\.pipelines\ESRPSigning_cmdpal_msix_content.json'
+          ciPolicyFile: '$(build.sourcesdirectory)\.pipelines\CIPolicy.xml'
+
+    - pwsh: |-
+        $outDir = New-Item -Type Directory "$(JobOutputDirectory)/_appx" -ErrorAction:Ignore
+        $PackageFilename = Join-Path $outDir.FullName (Split-Path -Leaf "$(CmdPalPackagePath)")
+        & "$(MakeAppxPath)" pack /h SHA256 /o /p $PackageFilename /d "$(JobOutputDirectory)/CmdPalPackageContents"
+        Copy-Item -Force $PackageFilename "$(CmdPalPackagePath)"
+      displayName: Re-pack the new CmdPal package after signing
+
     - template: steps-esrp-signing.yml
       parameters:
         displayName: Sign Core PowerToys
