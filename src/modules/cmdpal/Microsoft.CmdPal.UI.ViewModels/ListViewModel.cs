@@ -32,33 +32,48 @@ public partial class ListViewModel : PageViewModel
     //// Run on background thread, from InitializeAsync or Model_ItemsChanged
     private void FetchItems()
     {
-        ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
-
         // TEMPORARY: just plop all the items into a single group
         // see 9806fe5d8 for the last commit that had this with sections
         // TODO unsafe
+        IListItem[]? newItems = null;
+        List<ListItemViewModel> viewModels = [];
+
+        // Internally start tracking that we're fetching content, and let the
+        // UI know to start displaying the loading bar.
+        FetchingContent = true;
+        UpdateProperty(nameof(Loading));
+
         try
         {
-            var newItems = _model.Unsafe!.GetItems();
-
-            Items.Clear();
-
+            newItems = _model.Unsafe!.GetItems();
             foreach (var item in newItems)
             {
                 ListItemViewModel viewModel = new(item, Scheduler);
                 viewModel.InitializeProperties();
-                group.Add(viewModel);
+                viewModels.Add(viewModel);
             }
-
-            // Am I really allowed to modify that observable collection on a BG
-            // thread and have it just work in the UI??
-            Items.AddGroup(group);
         }
         catch (Exception ex)
         {
             ShowException(ex);
             throw;
         }
+
+        // Now hop onto the UI thread to update the actual list.
+        Task.Factory.StartNew(
+            () =>
+            {
+                FetchingContent = false;
+                OnPropertyChanged(nameof(Loading));
+
+                ObservableGroup<string, ListItemViewModel> group = new(string.Empty, viewModels);
+
+                Items.Clear();
+                Items.AddGroup(group);
+            },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            Scheduler);
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
@@ -78,7 +93,14 @@ public partial class ListViewModel : PageViewModel
             return; // throw?
         }
 
-        FetchItems();
-        listPage.ItemsChanged += Model_ItemsChanged;
+        // Start a _new_ background task to fetch the items. This will allow us
+        // to update the UI in response to the basic page properties loading,
+        // THEN fetch all the items from the extension (rather than wait till
+        // all the items are loaded to display the page title)
+        _ = Task.Run(() =>
+        {
+            FetchItems();
+            listPage.ItemsChanged += Model_ItemsChanged;
+        });
     }
 }

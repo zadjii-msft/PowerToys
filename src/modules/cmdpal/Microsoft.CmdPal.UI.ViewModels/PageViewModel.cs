@@ -17,7 +17,9 @@ public partial class PageViewModel : ExtensionObjectViewModel
 
     public string Name { get; private set; } = string.Empty;
 
-    public bool Loading { get; private set; } = true;
+    public bool Loading { get => field || FetchingContent; private set; } = true;
+
+    public bool FetchingContent { get; protected set; }
 
     [ObservableProperty]
     public partial bool IsInitialized { get; private set; }

@@ -17,17 +17,20 @@ internal sealed partial class ProcessListPage : ListPage
     {
         this.Icon = new("\ue9d9");
         this.Name = "Process Monitor";
+        this.Loading = true;
     }
 
     public override IListItem[] GetItems()
     {
-        return DoGetItems();
+        this.Loading = true;
+        var items = DoGetItems();
+        this.Loading = false;
+        return items;
     }
 
     private IListItem[] DoGetItems()
     {
         var items = GetRunningProcesses();
-        this.Loading = false;
         var s = items
             .OrderByDescending(p => p.Memory)
             .Select((process) => new ListItem(new SwitchToProcess(process))
