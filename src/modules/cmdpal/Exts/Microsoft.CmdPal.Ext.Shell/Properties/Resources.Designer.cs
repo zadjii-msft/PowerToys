@@ -70,6 +70,15 @@ namespace Microsoft.CmdPal.Ext.Shell.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Run.
+        /// </summary>
+        public static string generic_run_command {
+            get {
+                return ResourceManager.GetString("generic_run_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Run in Command Prompt (cmd.exe).
         /// </summary>
         public static string run_command_in_command_prompt {

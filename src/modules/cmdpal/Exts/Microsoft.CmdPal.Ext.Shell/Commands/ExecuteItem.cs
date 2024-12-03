@@ -3,19 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Shell.Helpers;
 using Microsoft.CmdPal.Ext.Shell.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Windows.UI;
 
 namespace Microsoft.CmdPal.Ext.Shell.Commands;
 
@@ -23,13 +16,31 @@ internal sealed partial class ExecuteItem : InvokableCommand
 {
     private readonly SettingsManager _settings;
     private readonly string _cmd;
+    private readonly RunAsType _runas;
 
-    private static readonly char[] Separator = new[] { ' ' };
+    private static readonly char[] Separator = [' '];
 
     public ExecuteItem(string cmd, SettingsManager settings, RunAsType type = RunAsType.None)
     {
+        if (type == RunAsType.Administrator)
+        {
+            Name = Properties.Resources.wox_plugin_cmd_run_as_administrator;
+            Icon = new("\xE7EF"); // Admin Icon
+        }
+        else if (type == RunAsType.OtherUser)
+        {
+            Name = Properties.Resources.wox_plugin_cmd_run_as_user;
+            Icon = new("\xE7EE"); // User Icon
+        }
+        else
+        {
+            Name = Properties.Resources.generic_run_command;
+            Icon = new("\uE751"); // Return Key Icon
+        }
+
         _cmd = cmd;
         _settings = settings;
+        _runas = type;
     }
 
     private static bool ExistInPath(string filename)
@@ -127,72 +138,31 @@ internal sealed partial class ExecuteItem : InvokableCommand
             }
             else if (executionShell == ExecutionShell.Powershell)
             {
-                string arguments;
-                if (_settings.LeaveShellOpen)
-                {
-                    arguments = $"-NoExit \"{command}\"";
-                }
-                else
-                {
-                    arguments = $"\"{command} ; Read-Host -Prompt \\\"{Resources.run_plugin_cmd_wait_message}\\\"\"";
-                }
-
+                var arguments = _settings.LeaveShellOpen
+                    ? $"-NoExit \"{command}\""
+                    : $"\"{command} ; Read-Host -Prompt \\\"{Resources.run_plugin_cmd_wait_message}\\\"\"";
                 info = SetProcessStartInfo("powershell.exe", workingDirectory, arguments, runAsVerbArg);
             }
             else if (executionShell == ExecutionShell.PowerShellSeven)
             {
-                string arguments;
-                if (_settings.LeaveShellOpen)
-                {
-                    arguments = $"-NoExit -C \"{command}\"";
-                }
-                else
-                {
-                    arguments = $"-C \"{command} ; Read-Host -Prompt \\\"{Resources.run_plugin_cmd_wait_message}\\\"\"";
-                }
-
+                var arguments = _settings.LeaveShellOpen
+                    ? $"-NoExit -C \"{command}\""
+                    : $"-C \"{command} ; Read-Host -Prompt \\\"{Resources.run_plugin_cmd_wait_message}\\\"\"";
                 info = SetProcessStartInfo("pwsh.exe", workingDirectory, arguments, runAsVerbArg);
             }
             else if (executionShell == ExecutionShell.WindowsTerminalCmd)
             {
-                string arguments;
-                if (_settings.LeaveShellOpen)
-                {
-                    arguments = $"cmd.exe /k \"{command}\"";
-                }
-                else
-                {
-                    arguments = $"cmd.exe /c \"{command}\" & pause";
-                }
-
+                var arguments = _settings.LeaveShellOpen ? $"cmd.exe /k \"{command}\"" : $"cmd.exe /c \"{command}\" & pause";
                 info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
             }
             else if (executionShell == ExecutionShell.WindowsTerminalPowerShell)
             {
-                string arguments;
-                if (_settings.LeaveShellOpen)
-                {
-                    arguments = $"powershell -NoExit -C \"{command}\"";
-                }
-                else
-                {
-                    arguments = $"powershell -C \"{command}\"";
-                }
-
+                var arguments = _settings.LeaveShellOpen ? $"powershell -NoExit -C \"{command}\"" : $"powershell -C \"{command}\"";
                 info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
             }
             else if (executionShell == ExecutionShell.WindowsTerminalPowerShellSeven)
             {
-                string arguments;
-                if (_settings.LeaveShellOpen)
-                {
-                    arguments = $"pwsh.exe -NoExit -C \"{command}\"";
-                }
-                else
-                {
-                    arguments = $"pwsh.exe -C \"{command}\"";
-                }
-
+                var arguments = _settings.LeaveShellOpen ? $"pwsh.exe -NoExit -C \"{command}\"" : $"pwsh.exe -C \"{command}\"";
                 info = SetProcessStartInfo("wt.exe", workingDirectory, arguments, runAsVerbArg);
             }
             else if (executionShell == ExecutionShell.RunCommand)
@@ -270,7 +240,7 @@ internal sealed partial class ExecuteItem : InvokableCommand
     {
         try
         {
-            Execute(Process.Start, PrepareProcessStartInfo(_cmd));
+            Execute(Process.Start, PrepareProcessStartInfo(_cmd, _runas));
         }
         catch
         {
