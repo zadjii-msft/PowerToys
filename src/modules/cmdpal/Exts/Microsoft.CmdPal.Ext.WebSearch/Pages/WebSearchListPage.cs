@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using Microsoft.CmdPal.Ext.WebSearch.Commands;
 using Microsoft.CmdPal.Ext.WebSearch.Helpers;
@@ -18,10 +19,11 @@ namespace Microsoft.CmdPal.Ext.WebSearch.Pages;
 internal sealed partial class WebSearchListPage : DynamicListPage
 {
     private readonly string _iconPath = string.Empty;
+    private readonly List<ListItem> _historyItems;
     private readonly SettingsManager _settingsManager;
     private static readonly CompositeFormat PluginInBrowserName = System.Text.CompositeFormat.Parse(Properties.Resources.plugin_in_browser_name);
     private static readonly CompositeFormat PluginOpen = System.Text.CompositeFormat.Parse(Properties.Resources.plugin_open);
-    private ListItem[] searchListItem;
+    private List<ListItem> allItems;
 
     public WebSearchListPage(SettingsManager settingsManager)
     {
@@ -29,7 +31,7 @@ internal sealed partial class WebSearchListPage : DynamicListPage
         Title = Resources.command_item_title;
         PlaceholderText = Resources.plugin_description;
         Icon = new(string.Empty);
-        searchListItem = [new(new NoOpCommand())
+        allItems = [new(new NoOpCommand())
         {
             Title = Properties.Resources.plugin_description,
             Subtitle = string.Format(CultureInfo.CurrentCulture, PluginOpen, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),
@@ -37,12 +39,15 @@ internal sealed partial class WebSearchListPage : DynamicListPage
         ];
         Id = "com.microsoft.cmdpal.websearch";
         _settingsManager = settingsManager;
+        _historyItems = _settingsManager.LoadHistory();
+        allItems.AddRange(_historyItems);
     }
 
     public List<ListItem> Query(string query)
     {
         ArgumentNullException.ThrowIfNull(query);
 
+        var filteredHistoryItems = ListHelpers.FilterList(_historyItems, query).OfType<ListItem>();
         var results = new List<ListItem>();
         var arguments = "? ";
 
@@ -70,24 +75,15 @@ internal sealed partial class WebSearchListPage : DynamicListPage
             results.Add(result);
         }
 
+        results.AddRange(filteredHistoryItems);
         return results;
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        searchListItem = [.. Query(newSearch)];
+        allItems = [.. Query(newSearch)];
         RaiseItemsChanged(0);
     }
 
-    public override IListItem[] GetItems()
-    {
-        // Convert history items to ListItem objects
-        var historyListItems = _settingsManager.LoadHistory();
-
-        // Combine existing searchListItem array with new history items
-        var combinedList = new List<IListItem>(searchListItem);
-        combinedList.AddRange(historyListItems);
-
-        return [.. combinedList];
-    }
+    public override IListItem[] GetItems() => [.. allItems];
 }
