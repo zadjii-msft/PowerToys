@@ -17,7 +17,7 @@ Syntax:
       Build.cmd [options]
 
 Description:
-      Builds the Command Pallete SDK
+      Builds the Command Palette SDK
 
 Options:
 
