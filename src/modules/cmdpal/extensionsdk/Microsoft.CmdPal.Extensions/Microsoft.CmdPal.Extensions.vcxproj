@@ -48,7 +48,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WinUI3Apps\CmdPal</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\Microsoft.CmdPal.Extensions</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
@@ -189,12 +189,4 @@
     <Error Condition="!Exists('$(WasdkNuget)\build\native\Microsoft.WindowsAppSDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(WasdkNuget)\build\native\Microsoft.WindowsAppSDK.targets'))" />
     <Error Condition="!Exists('$(WebView2Nuget)\build\native\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(WebView2Nuget)\build\native\Microsoft.Web.WebView2.targets'))" />
   </Target>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\common\version\version.vcxproj">
-      <Project>{cc6e41ac-8174-4e8a-8d22-85dd7f4851df}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="version.rc" />
-  </ItemGroup>
 </Project>
