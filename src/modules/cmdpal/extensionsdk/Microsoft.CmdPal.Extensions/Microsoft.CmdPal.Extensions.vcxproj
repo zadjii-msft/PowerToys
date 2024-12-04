@@ -46,7 +46,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WinUI3Apps\CmdPal</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\Microsoft.CmdPal.Extensions</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
