@@ -67,7 +67,23 @@ namespace Microsoft.CmdPal.Extensions
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     runtimeclass IconDataType {
         IconDataType(String iconString);
+        static IconDataType FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
+
         String Icon { get; };
+        Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
+    };
+    
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    runtimeclass KeyChord
+    {
+        KeyChord();
+        KeyChord(Windows.System.VirtualKeyModifiers modifiers, Int32 vkey, Int32 scanCode);
+        KeyChord(Boolean ctrl, Boolean alt, Boolean shift, Boolean win, Int32 vkey, Int32 scanCode);
+        UInt64 Hash();
+        Boolean Equals(KeyChord other);
+        Windows.System.VirtualKeyModifiers Modifiers;
+        Int32 Vkey;
+        Int32 ScanCode;
     };
 
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
@@ -79,6 +95,17 @@ namespace Microsoft.CmdPal.Extensions
     runtimeclass PropChangedEventArgs {
         PropChangedEventArgs(String propertyName);
         String PropertyName { get; };
+    };
+
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface INotifyItemsChanged {
+        event Windows.Foundation.TypedEventHandler<Object, ItemsChangedEventArgs> ItemsChanged;
+    };
+
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    runtimeclass ItemsChangedEventArgs {
+        ItemsChangedEventArgs(Int32 totalItems);
+        Int32 TotalItems { get; };
     };
 
 $sdkContents

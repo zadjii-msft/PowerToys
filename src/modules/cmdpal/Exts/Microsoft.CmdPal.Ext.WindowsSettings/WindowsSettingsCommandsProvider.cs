@@ -2,8 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using Microsoft.CmdPal.Ext.WindowsSettings.Classes;
 using Microsoft.CmdPal.Ext.WindowsSettings.Helpers;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -12,7 +10,7 @@ namespace Microsoft.CmdPal.Ext.WindowsSettings;
 
 public partial class WindowsSettingsCommandsProvider : CommandProvider
 {
-    private readonly ListItem _searchSettingsListItem;
+    private readonly CommandItem _searchSettingsListItem;
 
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private readonly WindowsSettings.Classes.WindowsSettings? _windowsSettings;
@@ -20,13 +18,13 @@ public partial class WindowsSettingsCommandsProvider : CommandProvider
 
     public WindowsSettingsCommandsProvider()
     {
-        DisplayName = $"Windows Services";
+        DisplayName = $"Windows Settings";
 
         _windowsSettings = JsonSettingsListHelper.ReadAllPossibleSettings();
-        _searchSettingsListItem = new ListItem(new WindowsSettingsListPage(_windowsSettings))
+        _searchSettingsListItem = new CommandItem(new WindowsSettingsListPage(_windowsSettings))
         {
-            Title = "Search Windows Settings",
-            Subtitle = "Quickly navigate to specific Windows settings",
+            Title = "Windows Settings",
+            Subtitle = "Navigate to specific Windows settings",
         };
 
         UnsupportedSettingsHelper.FilterByBuild(_windowsSettings);
@@ -35,7 +33,7 @@ public partial class WindowsSettingsCommandsProvider : CommandProvider
         WindowsSettingsPathHelper.GenerateSettingsPathValues(_windowsSettings);
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [
             _searchSettingsListItem

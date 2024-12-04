@@ -5,8 +5,10 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.UI.Dispatching;
 using WindowsCommandPalette.Models;
 using WindowsCommandPalette.Views;
 
@@ -19,8 +21,12 @@ public sealed partial class MainListPage : DynamicListPage
     private readonly FilteredListSection _filteredSection;
     private readonly ObservableCollection<MainListItem> topLevelItems = new();
 
+    private readonly DispatcherQueue _dispatcherQueue;
+
     public MainListPage(MainViewModel viewModel)
     {
+        this._dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
         this._mainViewModel = viewModel;
 
         // wacky: "All apps" is added to _mainViewModel.TopLevelCommands before
@@ -50,38 +56,71 @@ public sealed partial class MainListPage : DynamicListPage
         Loading = false;
     }
 
-    public override IListItem[] GetItems(string query)
+    public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        _filteredSection.Query = query;
+        UpdateQuery();
+    }
 
-        var fallbacks = topLevelItems
-            .Select(i => i?.FallbackHandler)
+    private void UpdateQuery()
+    {
+        // First things first: Check our list of aliases to see if this is a match.
+        if (_mainViewModel.CheckAlias(SearchText))
+        {
+            return;
+        }
+
+        // Update all the top-level commands which are fallback providers:
+        var fallbacks = topLevelItems.Select(mainItem => mainItem.Item)
+            .Where(commandItem => commandItem is IFallbackCommandItem)
+            .Select(commandItem => commandItem as IFallbackCommandItem)
             .Where(fb => fb != null)
             .Select(fb => fb!);
 
         foreach (var fb in fallbacks)
         {
-            fb.UpdateQuery(query);
+            try
+            {
+                fb.FallbackHandler.UpdateQuery(SearchText);
+            }
+            catch (COMException ex)
+            {
+                Debug.WriteLine("Failed to update fallback handler:");
+                Debug.WriteLine(ex);
+            }
         }
 
-        if (string.IsNullOrEmpty(query))
-        {
-            return topLevelItems.ToArray();
-        }
-        else
-        {
-            return _filteredSection.Items;
-        }
+        // Let our filtering wrapper know the newly typed search text.
+        // Do this _after_ updating our fallback handlers.
+        _filteredSection.Query = SearchText;
+
+        var count = string.IsNullOrEmpty(SearchText) ? topLevelItems.Count : _filteredSection.Count;
+        RaiseItemsChanged(count);
+    }
+
+    public override IListItem[] GetItems()
+    {
+        return string.IsNullOrEmpty(SearchText) ? topLevelItems
+            .Where(item => !string.IsNullOrEmpty(item.Title))
+            .ToArray()
+            : _filteredSection.Items;
     }
 
     private void TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        this._dispatcherQueue.TryEnqueue(DispatcherQueuePriority.Normal, () =>
+        {
+            this.Handle_TopLevelCommands_CollectionChanged(sender, e);
+        });
+    }
+
+    private void Handle_TopLevelCommands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         Debug.WriteLine("TopLevelCommands_CollectionChanged");
         if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
         {
             foreach (var item in e.NewItems)
             {
-                if (item is ExtensionObject<IListItem> listItem)
+                if (item is ExtensionObject<ICommandItem> listItem)
                 {
                     topLevelItems.Add(new MainListItem(listItem.Unsafe));
                 }
@@ -91,7 +130,7 @@ public sealed partial class MainListPage : DynamicListPage
         {
             foreach (var item in e.OldItems)
             {
-                if (item is ExtensionObject<IListItem> _)
+                if (item is ExtensionObject<ICommandItem> _)
                 {
                     // If we were maintaining the POC project we'd remove the items here.
                 }
@@ -105,6 +144,6 @@ public sealed partial class MainListPage : DynamicListPage
         // Sneaky?
         // Raise a Items changed event, so the list page knows that our items
         // have changed, and it should re-fetch them.
-        this.OnPropertyChanged("Items");
+        this.RaiseItemsChanged(topLevelItems.Count);
     }
 }

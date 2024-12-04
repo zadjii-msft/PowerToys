@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -15,13 +14,13 @@ public partial class WindowsServicesCommandsProvider : CommandProvider
         DisplayName = $"Windows Services";
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return [
-            new ListItem(new ServicesListPage())
+            new CommandItem(new ServicesListPage())
             {
-                Title = "Search Windows Services",
-                Subtitle = "Quickly manage all Windows Services",
+                Title = "Windows Services",
+                Subtitle = "Manage Windows Services",
             }
         ];
     }

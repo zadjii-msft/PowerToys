@@ -4,17 +4,33 @@
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public partial class CommandProvider : ICommandProvider
+public abstract partial class CommandProvider : ICommandProvider
 {
     private string _displayName = string.Empty;
 
     private IconDataType _icon = new(string.Empty);
 
+    private ICommandSettings? _settings;
+
     public string DisplayName { get => _displayName; protected set => _displayName = value; }
 
     public IconDataType Icon { get => _icon; protected set => _icon = value; }
 
-    public virtual IListItem[] TopLevelCommands() => throw new NotImplementedException();
+    public abstract ICommandItem[] TopLevelCommands();
+
+    public virtual IFallbackCommandItem[]? FallbackCommands()
+    {
+        return null;
+    }
+
+    public virtual ICommand? GetCommand(string id)
+    {
+        return null;
+    }
+
+    public ICommandSettings? Settings { get => _settings; protected set => _settings = value; }
+
+    public bool Frozen { get; protected set; } = true;
 
     public void InitializeWithHost(IExtensionHost host)
     {
@@ -22,7 +38,9 @@ public partial class CommandProvider : ICommandProvider
     }
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-    public void Dispose() => throw new NotImplementedException();
+    public void Dispose()
+    {
+    }
 #pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
 
 }

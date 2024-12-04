@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Ext.Bookmarks;
 using Microsoft.CmdPal.Ext.Calc;
@@ -32,7 +30,7 @@ public sealed class MainViewModel : IDisposable
 
     public ObservableCollection<CommandProviderWrapper> ActionsProvider { get; set; } = [];
 
-    public ObservableCollection<ExtensionObject<IListItem>> TopLevelCommands { get; set; } = [];
+    public ObservableCollection<ExtensionObject<ICommandItem>> TopLevelCommands { get; set; } = [];
 
     public List<ICommandProvider> BuiltInCommands { get; set; } = [];
 
@@ -48,6 +46,10 @@ public sealed class MainViewModel : IDisposable
 
     public event TypedEventHandler<object, object?>? AppsReady;
 
+    public event TypedEventHandler<object, ICommand?>? GoToCommandRequested;
+
+    private readonly Dictionary<string, CommandAlias> _aliases = new();
+
     internal MainViewModel()
     {
         BuiltInCommands.Add(new BookmarksCommandProvider());
@@ -61,6 +63,8 @@ public sealed class MainViewModel : IDisposable
         BuiltInCommands.Add(new WindowsSettingsCommandsProvider());
 
         ResetTopLevel();
+
+        PopulateAliases();
 
         // On a background thread, warm up the app cache since we want it more often than not
         new Task(() =>
@@ -97,8 +101,9 @@ public sealed class MainViewModel : IDisposable
 
     public IEnumerable<IListItem> AppItems => LoadedApps ? Apps.GetItems() : [];
 
-    public IEnumerable<ExtensionObject<IListItem>> Everything => TopLevelCommands
-        .Concat(AppItems.Select(i => new ExtensionObject<IListItem>(i)))
+    // Okay this is definitely bad - Evaluating this re-wraps every app in the list with a new wrapper, holy fuck that's stupid
+    public IEnumerable<ExtensionObject<ICommandItem>> Everything => TopLevelCommands
+        .Concat(AppItems.Select(i => new ExtensionObject<ICommandItem>(i)))
         .Where(i =>
         {
             var v = i != null;
@@ -109,5 +114,50 @@ public sealed class MainViewModel : IDisposable
     {
         _quitCommandProvider.Dispose();
         _reloadCommandProvider.Dispose();
+    }
+
+    private void AddAlias(CommandAlias a)
+    {
+        _aliases.Add(a.SearchPrefix, a);
+    }
+
+    public bool CheckAlias(string searchText)
+    {
+        // var foundAliias = searchText == "vd";
+        // var aliasTarget = "com.zadjii.VirtualDesktopsList";
+        if (_aliases.TryGetValue(searchText, out var alias))
+        {
+            try
+            {
+                foreach (var listItemWrapper in this.TopLevelCommands)
+                {
+                    var li = listItemWrapper.Unsafe;
+                    if (li == null)
+                    {
+                        continue;
+                    }
+
+                    var id = li.Command?.Id;
+                    if (!string.IsNullOrEmpty(id) && id == alias.CommandId)
+                    {
+                        GoToCommandRequested?.Invoke(this, li.Command);
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        return false;
+    }
+
+    private void PopulateAliases()
+    {
+        this.AddAlias(new CommandAlias("vd", "com.zadjii.VirtualDesktopsList", true));
+        this.AddAlias(new CommandAlias(":", "com.microsoft.cmdpal.registry", true));
+        this.AddAlias(new CommandAlias("$", "com.microsoft.cmdpal.windowsSettings", true));
+        this.AddAlias(new CommandAlias("=", "com.microsoft.cmdpal.calculator", true));
     }
 }

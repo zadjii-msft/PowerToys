@@ -78,7 +78,7 @@ public partial class BookmarksCommandProvider : CommandProvider
         _commands.AddRange(collected);
     }
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         if (_commands.Count == 0)
         {
@@ -87,34 +87,19 @@ public partial class BookmarksCommandProvider : CommandProvider
 
         return _commands.Select(action =>
         {
-            var listItem = new ListItem(action);
+            var listItem = new CommandItem(action);
 
             // Add actions for folder types
-            if (action is UrlAction urlAction && urlAction.Type == "folder")
+            if (action is UrlAction urlAction)
             {
-                listItem.MoreCommands = [
-                    new CommandContextItem(new OpenInTerminalAction(urlAction.Url))
-                ];
-            }
+                if (urlAction.Type == "folder")
+                {
+                    listItem.MoreCommands = [
+                        new CommandContextItem(new OpenInTerminalAction(urlAction.Url))
+                    ];
+                }
 
-            // listItem.Subtitle = "Bookmark";
-            if (action is not AddBookmarkPage)
-            {
-                listItem.Tags = [
-                    new Tag()
-                    {
-                        Text = "Bookmark",
-
-                        // Icon = new("🔗"),
-                        // Color=Windows.UI.Color.FromArgb(255, 255, 0, 255)
-                    },
-
-                    // new Tag() {
-                    //    Text = "A test",
-                    //    //Icon = new("🔗"),
-                    //    Color=Windows.UI.Color.FromArgb(255, 255, 0, 0)
-                    // }
-                ];
+                listItem.Subtitle = urlAction.Url;
             }
 
             return listItem;

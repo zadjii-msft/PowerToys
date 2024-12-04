@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Common.Extensions;
 using Microsoft.CmdPal.Common.Services;
@@ -16,7 +17,7 @@ namespace WindowsCommandPalette.Views;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class MainPage : Page
+public sealed partial class MainPage : Microsoft.UI.Xaml.Controls.Page
 {
     private string _log = string.Empty;
 
@@ -26,6 +27,7 @@ public sealed partial class MainPage : Page
     {
         this.InitializeComponent();
         this.ViewModel.SummonRequested += ViewModel_SummonRequested;
+        this.ViewModel.GoToCommandRequested += ViewModel_GoToCommandRequested;
         var rootListVm = new ListPageViewModel(new MainListPage(ViewModel));
         InitializePage(rootListVm);
 
@@ -52,7 +54,7 @@ public sealed partial class MainPage : Page
     private void HackyBadClearFilter()
     {
         // BODGY but I don't care, cause i'm throwing this all out
-        if ((this.RootFrame.Content as Page)?.FindName("FilterBox") is TextBox tb)
+        if ((this.RootFrame.Content as Microsoft.UI.Xaml.Controls.Page)?.FindName("FilterBox") is TextBox tb)
         {
             tb.Text = string.Empty;
             tb.Focus(FocusState.Programmatic);
@@ -103,24 +105,29 @@ public sealed partial class MainPage : Page
 
     private void InvokeActionHandler(object sender, ActionViewModel args)
     {
-        var action = args.Command;
-        TryAllowForeground(action);
-        if (action is IInvokableCommand invokable)
+        var command = args.Command;
+        InvokeCommandHandler(command);
+    }
+
+    private void InvokeCommandHandler(ICommand command)
+    {
+        TryAllowForeground(command);
+        if (command is IInvokableCommand invokable)
         {
             HandleResult(invokable.Invoke());
             return;
         }
-        else if (action is IListPage listPage)
+        else if (command is IListPage listPage)
         {
             GoToList(listPage);
             return;
         }
-        else if (action is IMarkdownPage mdPage)
+        else if (command is IMarkdownPage mdPage)
         {
             GoToMarkdown(mdPage);
             return;
         }
-        else if (action is IFormPage formPage)
+        else if (command is IFormPage formPage)
         {
             GoToForm(formPage);
             return;
@@ -129,6 +136,14 @@ public sealed partial class MainPage : Page
         // This is bad
         // TODO! handle this with some sort of badly authored extension error
         throw new NotImplementedException();
+    }
+
+    private void ViewModel_GoToCommandRequested(object sender, ICommand? args)
+    {
+        if (args != null)
+        {
+            InvokeCommandHandler(args);
+        }
     }
 
     private void TryAllowForeground(ICommand action)
@@ -166,8 +181,21 @@ public sealed partial class MainPage : Page
     {
         var formData = args.FormData;
         var form = args.Form;
-        var result = form.SubmitForm(formData);
-        HandleResult(result);
+
+        // TODO ~ when we have a real MVVM app ~
+        // This should be done in a Task, on a background thread, and awaited
+        try
+        {
+            var result = form.SubmitForm(formData);
+
+            // Log successful form submission
+            HandleResult(result);
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine("Error submitting form to extension");
+            Debug.WriteLine(e.Message);
+        }
     }
 
     private void HandleResult(ICommandResult? res)
@@ -279,9 +307,9 @@ public sealed partial class MainPage : Page
     {
         // TODO! do this better async
         await commandProvider.LoadTopLevelCommands().ConfigureAwait(false);
-        foreach (var i in commandProvider.TopLevelItems)
+        foreach (var commandItem in commandProvider.TopLevelItems)
         {
-            ViewModel.TopLevelCommands.Add(new(i));
+            ViewModel.TopLevelCommands.Add(new(commandItem));
         }
     }
 

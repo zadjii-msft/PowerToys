@@ -3,15 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.UI.Dispatching;
 
 namespace WindowsCommandPalette.Views;
 
-public sealed class ListPageViewModel : PageViewModel
+public sealed class ListPageViewModel : PageViewModel, INotifyPropertyChanged
 {
     private readonly ObservableCollection<ListItemViewModel> _items = [];
 
@@ -30,22 +30,57 @@ public sealed class ListPageViewModel : PageViewModel
 
     public bool ShowDetails => _forceShowDetails || Page.ShowDetails;
 
+    public bool HasMore { get; private set; }
+
+    public string PlaceholderText { get; private set; } = "Type here to search...";
+
+    public string SearchText { get; set; } = string.Empty;
+
+    private bool _loadingMore;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public ListPageViewModel(IListPage page)
         : base(page)
     {
         page.PropChanged += Page_PropChanged;
+        page.ItemsChanged += Page_ItemsChanged;
+
+        HasMore = page.HasMore;
+        PlaceholderText = page.PlaceholderText;
+    }
+
+    private void Page_ItemsChanged(object sender, ItemsChangedEventArgs args)
+    {
+        Debug.WriteLine("Items changed");
+
+        _loadingMore = false;
+
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await this.UpdateListItems();
+        });
     }
 
     private void Page_PropChanged(object sender, PropChangedEventArgs args)
     {
-        if (args.PropertyName == "Items")
+        _dispatcherQueue.TryEnqueue(() =>
         {
-            Debug.WriteLine("Items changed");
-            _dispatcherQueue.TryEnqueue(async () =>
+            switch (args.PropertyName)
             {
-                await this.UpdateListItems();
-            });
-        }
+                case nameof(HasMore):
+                    HasMore = Page.HasMore;
+                    break;
+                case nameof(PlaceholderText):
+                    PlaceholderText = Page.PlaceholderText;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaceholderText)));
+                    break;
+                case nameof(SearchText):
+                    SearchText = Page.SearchText;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SearchText)));
+                    break;
+            }
+        });
     }
 
     internal Task InitialRender()
@@ -60,9 +95,7 @@ public sealed class ListPageViewModel : PageViewModel
         {
             try
             {
-                return IsDynamicPage != null ?
-                    IsDynamicPage.GetItems(_query) :
-                    this.Page.GetItems();
+                return this.Page.GetItems();
             }
             catch (Exception ex)
             {
@@ -76,53 +109,60 @@ public sealed class ListPageViewModel : PageViewModel
 
         // still on main thread
 
-        // TODO! For dynamic lists, we're clearing out the whole list of items
-        // we already have, then rebuilding it. We shouldn't do that. We should
-        // still use the results from GetItems and put them into the code in
-        // UpdateFilter to intelligently add/remove as needed.
-        // TODODO! are we still? ^^
+        // This creates an entirely new list of ListItemViewModels, and we're
+        // really hoping that the equality check in `InPlaceUpdateList`
+        // properly uses ListItemViewModel.Equals to compare if the objects
+        // are literally the same.
         Collection<ListItemViewModel> newItems = new(items.Select(i => new ListItemViewModel(i)).ToList());
-        Debug.WriteLine($"  Found {newItems.Count} items");
+
+        // Debug.WriteLine($"  Found {newItems.Count} items");
 
         // THIS populates FilteredItems. If you do this off the UI thread, guess what -
         // the list view won't update. So WATCH OUT
         ListHelpers.InPlaceUpdateList(FilteredItems, newItems);
         ListHelpers.InPlaceUpdateList(_items, newItems);
 
-        Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
+        // Debug.WriteLine($"Done with UpdateListItems, found {FilteredItems.Count} / {_items.Count}");
     }
 
-    internal async Task<IEnumerable<ListItemViewModel>> GetFilteredItems(string query)
+    public void UpdateSearchText(string query)
     {
-        // This method does NOT change any lists. It doesn't modify _items or FilteredItems...
         if (query == _query)
         {
-            return FilteredItems;
+            return;
         }
 
         _query = query;
-        if (IsDynamic)
+        if (IsDynamicPage != null)
         {
-            // ... except here we might modify those lists. But ignore that for now, GH #77 will fix this.
-            await UpdateListItems();
-            return FilteredItems;
+            // Tell the dynamic page the new search text. If they need to update, they will.
+            IsDynamicPage.SearchText = _query;
         }
         else
         {
-            // Static lists don't need to re-fetch the items
-            if (string.IsNullOrEmpty(query))
-            {
-                return _items;
-            }
+            var filtered = ListItemViewModel
+                .FilterList(_items, query);
+            Collection<ListItemViewModel> newItems = new(filtered.ToList());
+            ListHelpers.InPlaceUpdateList(FilteredItems, newItems);
+        }
+    }
 
-            // TODO! Probably bad that this turns list view models into listitems back to NEW view models
-            // TODO! make this safer
-            // TODODO! ^ still relevant?
-            var newFilter = ListHelpers
-                .FilterList(_items.Select(vm => vm.ListItem.Unsafe), query)
-                .Select(li => new ListItemViewModel(li));
+    public async void LoadMoreIfNeeded()
+    {
+        if (!_loadingMore && HasMore)
+        {
+            // This is kinda a hack, to prevent us from over-requesting
+            // more at the bottom.
+            // We'll set this flag after we've requested more. We will clear it
+            // on the new ItemsChanged
+            _loadingMore = true;
 
-            return newFilter;
+            // TODO GH #73: When we have a real prototype, this should be an async call
+            // A thought: maybe the ExtensionObject.Unsafe could be an async
+            // call, so that you _know_ you need to wrap it up when you call it?
+            var t = new Task(() => Page.LoadMore());
+            t.Start();
+            await t;
         }
     }
 }

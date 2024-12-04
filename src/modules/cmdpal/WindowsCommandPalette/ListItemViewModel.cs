@@ -5,6 +5,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using WindowsCommandPalette.Models;
@@ -12,7 +13,7 @@ using WindowsCommandPalette.Views;
 
 namespace WindowsCommandPalette;
 
-public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
+public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable, IEquatable<ListItemViewModel>
 {
     private readonly DispatcherQueue _dispatcherQueue;
 
@@ -23,6 +24,8 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
     internal string Subtitle { get; private set; }
 
     internal string Icon { get; private set; }
+
+    internal string TextToSuggest { get; private set; }
 
     private readonly Lazy<DetailsViewModel?> _details;
 
@@ -105,6 +108,7 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
         this.Title = model.Title;
         this.Subtitle = model.Subtitle;
         this.Icon = model.Icon.Icon;
+        this.TextToSuggest = model.TextToSuggest;
 
         if (model.Tags != null)
         {
@@ -150,6 +154,10 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
                     this.Icon = item.Command.Icon.Icon;
                     BubbleXamlPropertyChanged(nameof(IcoElement));
                     break;
+                case nameof(TextToSuggest):
+                    this.TextToSuggest = item.TextToSuggest;
+                    BubbleXamlPropertyChanged(nameof(TextToSuggest));
+                    break;
             }
 
             BubbleXamlPropertyChanged(args.PropertyName);
@@ -184,5 +192,46 @@ public sealed class ListItemViewModel : INotifyPropertyChanged, IDisposable
         {
             /* log something */
         }
+    }
+
+    public bool Equals(ListItemViewModel? other)
+    {
+        return other == null ? false : other.ListItem.Unsafe == this.ListItem.Unsafe;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as ListItemViewModel);
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public static bool operator ==(ListItemViewModel? l, ListItemViewModel? r)
+    {
+        return l is null ? r is null : l.Equals(r);
+    }
+
+    public static bool operator !=(ListItemViewModel? l, ListItemViewModel? r)
+    {
+        return !(l == r);
+    }
+
+    private struct ScoredListItemViewModel
+    {
+        public int Score;
+        public ListItemViewModel ViewModel;
+    }
+
+    public static IEnumerable<ListItemViewModel> FilterList(IEnumerable<ListItemViewModel> items, string query)
+    {
+        var scores = items
+            .Select(li => new ScoredListItemViewModel() { ViewModel = li, Score = ListHelpers.ScoreListItem(query, li.ListItem.Unsafe) })
+            .Where(score => score.Score > 0)
+            .OrderByDescending(score => score.Score);
+        return scores
+            .Select(score => score.ViewModel);
     }
 }

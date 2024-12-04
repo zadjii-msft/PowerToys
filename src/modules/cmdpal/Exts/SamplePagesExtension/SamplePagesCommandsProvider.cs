@@ -1,8 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -15,35 +14,15 @@ public partial class SamplePagesCommandsProvider : CommandProvider
         DisplayName = "Sample Pages Commands";
     }
 
-    private readonly IListItem[] _commands = [
-       new ListItem(new SampleMarkdownPage())
+    private readonly ICommandItem[] _commands = [
+       new CommandItem(new SamplesListPage())
        {
-           Title = "Markdown Page Sample Command",
-           Subtitle = "SamplePages Extension",
+           Title = "Sample Pages",
+           Subtitle = "View example commands",
        },
-       new ListItem(new SampleListPage())
-       {
-           Title = "List Page Sample Command",
-           Subtitle = "SamplePages Extension",
-       },
-       new ListItem(new SampleFormPage())
-       {
-           Title = "Form Page Sample Command",
-           Subtitle = "SamplePages Extension",
-       },
-       new ListItem(new SampleListPageWithDetails())
-       {
-           Title = "List Page With Details Sample Command",
-           Subtitle = "SamplePages Extension",
-       },
-       new ListItem(new SampleDynamicListPage())
-       {
-           Title = "Dynamic List Page Command",
-           Subtitle = "SamplePages Extension",
-       }
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _commands;
     }
