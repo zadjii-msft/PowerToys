@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
@@ -19,7 +20,8 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class ListPage : Page,
     IRecipient<NavigateNextCommand>,
     IRecipient<NavigatePreviousCommand>,
-    IRecipient<ActivateSelectedListItemMessage>
+    IRecipient<ActivateSelectedListItemMessage>,
+    IRecipient<ShowExceptionMessage>
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
 
@@ -43,6 +45,16 @@ public sealed partial class ListPage : Page,
     public static readonly DependencyProperty LoadedStateProperty =
         DependencyProperty.Register(nameof(LoadedState), typeof(ViewModelLoadedState), typeof(ListPage), new PropertyMetadata(ViewModelLoadedState.Loading));
 
+    public string ErrorMessage
+    {
+        get => (string)GetValue(ErrorMessageProperty);
+        set => SetValue(ErrorMessageProperty, value);
+    }
+
+    // Using a DependencyProperty as the backing store for LoadedState.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty ErrorMessageProperty =
+        DependencyProperty.Register(nameof(ErrorMessage), typeof(string), typeof(ListPage), new PropertyMetadata(string.Empty));
+
     public ListPage()
     {
         this.InitializeComponent();
@@ -57,10 +69,17 @@ public sealed partial class ListPage : Page,
                 && lvm.InitializeCommand != null)
             {
                 ViewModel = null;
-                lvm.InitializeCommand.Execute(null);
 
                 _ = Task.Run(async () =>
                 {
+                    // You know, this creates the situation where we wait for
+                    // both loading page properties, AND the items, before we
+                    // display anything.
+                    //
+                    // We almost need to do an async await on initialize, then
+                    // just a fire-and-forget on FetchItems.
+                    lvm.InitializeCommand.Execute(null);
+
                     await lvm.InitializeCommand.ExecutionTask!;
 
                     if (lvm.InitializeCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
@@ -77,8 +96,15 @@ public sealed partial class ListPage : Page,
                     {
                         _ = _queue.EnqueueAsync(() =>
                         {
+                            var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
+
                             ViewModel = lvm;
-                            LoadedState = ViewModelLoadedState.Loaded;
+                            WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(lvm));
+                            LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
+                            if (!result)
+                            {
+                                WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(null));
+                            }
                         });
                     }
                 });
@@ -86,6 +112,7 @@ public sealed partial class ListPage : Page,
             else
             {
                 ViewModel = lvm;
+                WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(lvm));
                 LoadedState = ViewModelLoadedState.Loaded;
             }
         }
@@ -94,6 +121,7 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Register<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Register<NavigatePreviousCommand>(this);
         WeakReferenceMessenger.Default.Register<ActivateSelectedListItemMessage>(this);
+        WeakReferenceMessenger.Default.Register<ShowExceptionMessage>(this);
 
         base.OnNavigatedTo(e);
     }
@@ -105,6 +133,7 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Unregister<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Unregister<NavigatePreviousCommand>(this);
         WeakReferenceMessenger.Default.Unregister<ActivateSelectedListItemMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ShowExceptionMessage>(this);
     }
 
     private void ListView_ItemClick(object sender, ItemClickEventArgs e)
@@ -151,6 +180,16 @@ public sealed partial class ListPage : Page,
         {
             ViewModel?.UpdateSelectedItemCommand.Execute(item);
         }
+    }
+
+    public void Receive(ShowExceptionMessage message)
+    {
+        _ = _queue.EnqueueAsync(() =>
+        {
+            var ex = message.Exception;
+            ErrorMessage = $"{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\nThis is due to a bug in the extension's code.";
+            LoadedState = ViewModelLoadedState.Error;
+        });
     }
 }
 

@@ -12,19 +12,17 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ListViewModel : ObservableObject
+public partial class ListViewModel : PageViewModel
 {
     // Observable from MVVM Toolkit will auto create public properties that use INotifyPropertyChange change
     // https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/observablegroupedcollections for grouping support
     [ObservableProperty]
     public partial ObservableGroupedCollection<string, ListItemViewModel> Items { get; set; } = [];
 
-    [ObservableProperty]
-    public partial bool IsInitialized { get; private set; }
-
     private readonly ExtensionObject<IListPage> _model;
 
-    public ListViewModel(IListPage model)
+    public ListViewModel(IListPage model, TaskScheduler scheduler)
+        : base(model, scheduler)
     {
         _model = new(model);
     }
@@ -34,42 +32,48 @@ public partial class ListViewModel : ObservableObject
     //// Run on background thread, from InitializeAsync or Model_ItemsChanged
     private void FetchItems()
     {
-        ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
-
         // TEMPORARY: just plop all the items into a single group
         // see 9806fe5d8 for the last commit that had this with sections
         // TODO unsafe
-        var newItems = _model.Unsafe!.GetItems();
+        IListItem[]? newItems = null;
+        List<ListItemViewModel> viewModels = [];
 
-        Items.Clear();
+        // Internally start tracking that we're fetching content, and let the
+        // UI know to start displaying the loading bar.
+        FetchingContent = true;
+        UpdateProperty(nameof(Loading));
 
-        foreach (var item in newItems)
+        try
         {
-            ListItemViewModel viewModel = new(item);
-            viewModel.InitializeProperties();
-            group.Add(viewModel);
+            newItems = _model.Unsafe!.GetItems();
+            foreach (var item in newItems)
+            {
+                ListItemViewModel viewModel = new(item, Scheduler);
+                viewModel.InitializeProperties();
+                viewModels.Add(viewModel);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowException(ex);
+            throw;
         }
 
-        // Am I really allowed to modify that observable collection on a BG
-        // thread and have it just work in the UI??
-        Items.AddGroup(group);
-    }
+        // Now hop onto the UI thread to update the actual list.
+        Task.Factory.StartNew(
+            () =>
+            {
+                FetchingContent = false;
+                OnPropertyChanged(nameof(Loading));
 
-    //// Run on background thread from ListPage.xaml.cs
-    [RelayCommand]
-    private Task<bool> InitializeAsync()
-    {
-        // TODO: We may want a SemaphoreSlim lock here.
+                ObservableGroup<string, ListItemViewModel> group = new(string.Empty, viewModels);
 
-        // TODO: We may want to investigate using some sort of AsyncEnumerable or populating these as they come in to the UI layer
-        //       Though we have to think about threading here and circling back to the UI thread with a TaskScheduler.
-        FetchItems();
-
-        _model.Unsafe!.ItemsChanged += Model_ItemsChanged;
-
-        IsInitialized = true;
-
-        return Task.FromResult(true);
+                Items.Clear();
+                Items.AddGroup(group);
+            },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            Scheduler);
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
@@ -78,4 +82,25 @@ public partial class ListViewModel : ObservableObject
 
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item) => WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
+
+    public override void InitializeProperties()
+    {
+        base.InitializeProperties();
+
+        var listPage = _model.Unsafe;
+        if (listPage == null)
+        {
+            return; // throw?
+        }
+
+        // Start a _new_ background task to fetch the items. This will allow us
+        // to update the UI in response to the basic page properties loading,
+        // THEN fetch all the items from the extension (rather than wait till
+        // all the items are loaded to display the page title)
+        _ = Task.Run(() =>
+        {
+            FetchItems();
+            listPage.ItemsChanged += Model_ItemsChanged;
+        });
+    }
 }
