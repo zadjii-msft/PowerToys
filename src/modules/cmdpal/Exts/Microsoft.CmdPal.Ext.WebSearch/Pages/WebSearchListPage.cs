@@ -60,7 +60,6 @@ internal sealed partial class WebSearchListPage : DynamicListPage
                 Subtitle = string.Format(CultureInfo.CurrentCulture, PluginInBrowserName, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),
                 Icon = new(_iconPath),
             });
-            return results;
         }
         else
         {

@@ -32,7 +32,7 @@ internal sealed partial class OpenCommandInShell : InvokableCommand
             return CommandResult.KeepOpen();
         }
 
-        _settingsManager.SaveHistory(new HistoryItem(_arguments, DateTime.Now));
+        _settingsManager.SaveHistory(new HistoryItem(_arguments[2..], DateTime.Now));
         return CommandResult.Dismiss();
     }
 }
