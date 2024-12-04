@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Ext.Indexer.Indexer;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
@@ -37,16 +38,34 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
     {
         if (oldSearch != newSearch)
         {
-            Logger.LogDebug($"Update {oldSearch} -> {newSearch}");
-            RaiseItemsChanged(0);
+            _ = Task.Run(() =>
+            {
+                Logger.LogDebug($"Update {oldSearch} -> {newSearch}");
+                StartQuery(newSearch);
+                RaiseItemsChanged(0);
+            });
         }
     }
 
-    public override IListItem[] GetItems() => DoGetItems(SearchText);
+    public override IListItem[] GetItems() => DoGetItems();
 
-    private IListItem[] DoGetItems(string query)
+    private void StartQuery(string query)
     {
         if (query == string.Empty)
+        {
+            return;
+        }
+
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
+        Query(query);
+        stopwatch.Stop();
+        Logger.LogDebug($"Query time: {stopwatch.ElapsedMilliseconds} ms, query: \"{query}\"");
+    }
+
+    private IListItem[] DoGetItems()
+    {
+        if (string.IsNullOrEmpty(SearchText))
         {
             return [];
         }
@@ -55,7 +74,6 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
 
         Stopwatch stopwatch = new();
         stopwatch.Start();
-        Query(query);
 
         lock (_lockObject)
         {
@@ -80,7 +98,7 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
         }
 
         stopwatch.Stop();
-        Logger.LogDebug($"Query time: {stopwatch.ElapsedMilliseconds} ms, results: {items.Count}, query: {query}");
+        Logger.LogDebug($"Build ListItems: {stopwatch.ElapsedMilliseconds} ms, results: {items.Count}, query: \"{SearchText}\"");
 
         return [.. items];
     }
