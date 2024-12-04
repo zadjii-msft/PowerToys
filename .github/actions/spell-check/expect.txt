@@ -667,6 +667,7 @@ Iindex
 IJson
 Ijwhost
 IKs
+iljxck
 ILogon
 IMAGEHLP
 IMAGERESIZERCONTEXTMENU
@@ -770,6 +771,7 @@ lastcodeanalysissucceeded
 Lastdevice
 LASTEXITCODE
 LAYOUTRTL
+lcb
 LCIDTo
 lcl
 Lclean
@@ -997,6 +999,7 @@ newitem
 newpath
 newplus
 NEWPLUSCONTEXTMENU
+NEWPLUSSHELLEXTENSIONWIN
 newrow
 newsgroups
 NIF
@@ -1168,6 +1171,7 @@ pnid
 Pnp
 Popups
 POPUPWINDOW
+POSITIONITEM
 POWERRENAMECONTEXTMENU
 powerrenameinput
 POWERRENAMETEST
