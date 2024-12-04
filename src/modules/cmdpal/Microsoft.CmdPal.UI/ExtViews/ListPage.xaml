@@ -92,9 +92,9 @@
                     x:Name="ItemsList"
                     IsItemClickEnabled="True"
                     ItemClick="ListView_ItemClick"
-                    SelectionChanged="ItemsList_SelectionChanged"
                     ItemTemplate="{StaticResource ListItemViewModelTemplate}"
-                    ItemsSource="{x:Bind ItemsCVS.View, Mode=OneWay}">
+                    ItemsSource="{x:Bind ItemsCVS.View, Mode=OneWay}"
+                    SelectionChanged="ItemsList_SelectionChanged">
                     <ListView.ItemContainerTransitions>
                         <TransitionCollection />
                     </ListView.ItemContainerTransitions>
@@ -119,7 +119,7 @@
                     VerticalAlignment="Center"
                     IsIndeterminate="True" />
             </controls:Case>
-            
+
             <controls:Case Value="Error">
                 <TextBlock Text="Error loading List Page" />
             </controls:Case>
