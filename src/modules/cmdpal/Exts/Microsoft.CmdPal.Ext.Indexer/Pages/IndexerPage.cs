@@ -28,6 +28,7 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
     {
         Icon = new("\ue729");
         Name = "Indexer";
+        PlaceholderText = "Search for files and folders...";
 
         _searchQuery.Init();
     }
@@ -69,7 +70,10 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
                         {
                             FileName = result.ItemDisplayName,
                             FullPath = result.LaunchUri,
-                        }));
+                        })
+                        {
+                            Icon = new(result.IsFolder ? "\uE838" : "\uE8E5"),
+                        });
                     }
                 }
             }
