@@ -63,9 +63,9 @@ public class SettingsManager
             List<HistoryItem> historyItems;
 
             // Check if the file exists and load existing history
-            if (File.Exists(_filePath))
+            if (File.Exists(_historyPath))
             {
-                var existingContent = File.ReadAllText(_filePath);
+                var existingContent = File.ReadAllText(_historyPath);
                 historyItems = JsonSerializer.Deserialize<List<HistoryItem>>(existingContent) ?? [];
             }
             else
@@ -78,7 +78,7 @@ public class SettingsManager
 
             // Serialize the updated list back to JSON and save it
             var historyJson = JsonSerializer.Serialize(historyItems);
-            File.WriteAllText(_filePath, historyJson);
+            File.WriteAllText(_historyPath, historyJson);
         }
         catch (Exception ex)
         {
@@ -90,13 +90,13 @@ public class SettingsManager
     {
         try
         {
-            if (!File.Exists(_filePath))
+            if (!File.Exists(_historyPath))
             {
                 return [];
             }
 
             // Read and deserialize JSON into a list of HistoryItem objects
-            var fileContent = File.ReadAllText(_filePath);
+            var fileContent = File.ReadAllText(_historyPath);
             var historyItems = JsonSerializer.Deserialize<List<HistoryItem>>(fileContent) ?? [];
 
             // Convert each HistoryItem to a ListItem
@@ -125,9 +125,35 @@ public class SettingsManager
         _historyPath = HistoryStateJsonPath();
 
         _settings.Add(_globalIfURI);
+        _settings.Add(_showHistory);
 
         // Load settings from file upon initialization
         LoadSettings();
+    }
+
+    private void ClearHistory()
+    {
+        try
+        {
+            if (File.Exists(_historyPath))
+            {
+                // Delete the history file
+                File.Delete(_historyPath);
+
+                // Log that the history was successfully cleared
+                ExtensionHost.LogMessage(new LogMessage() { Message = "History cleared successfully." });
+            }
+            else
+            {
+                // Log that there was no history file to delete
+                ExtensionHost.LogMessage(new LogMessage() { Message = "No history file found to clear." });
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log any exception that occurs
+            ExtensionHost.LogMessage(new LogMessage() { Message = $"Failed to clear history: {ex}" });
+        }
     }
 
     public Microsoft.CmdPal.Extensions.Helpers.Settings GetSettings() => _settings;
@@ -140,6 +166,11 @@ public class SettingsManager
             var settingsJson = _settings.ToJson();
 
             File.WriteAllText(_filePath, settingsJson);
+
+            if (!ShowHistory)
+            {
+                ClearHistory();
+            }
         }
         catch (Exception ex)
         {

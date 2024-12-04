@@ -39,15 +39,18 @@ internal sealed partial class WebSearchListPage : DynamicListPage
         ];
         Id = "com.microsoft.cmdpal.websearch";
         _settingsManager = settingsManager;
-        _historyItems = _settingsManager.LoadHistory();
-        allItems.AddRange(_historyItems);
+        _historyItems = _settingsManager.ShowHistory ? _settingsManager.LoadHistory() : null;
+        if (_historyItems != null)
+        {
+            allItems.AddRange(_historyItems);
+        }
     }
 
     public List<ListItem> Query(string query)
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        var filteredHistoryItems = ListHelpers.FilterList(_historyItems, query).OfType<ListItem>();
+        var filteredHistoryItems = _settingsManager.ShowHistory ? ListHelpers.FilterList(_historyItems, query).OfType<ListItem>() : null;
         var results = new List<ListItem>();
         var arguments = "? ";
 
@@ -74,7 +77,11 @@ internal sealed partial class WebSearchListPage : DynamicListPage
             results.Add(result);
         }
 
-        results.AddRange(filteredHistoryItems);
+        if (filteredHistoryItems != null)
+        {
+            results.AddRange(filteredHistoryItems);
+        }
+
         return results;
     }
 
