@@ -32,8 +32,6 @@ public partial class ActionBarViewModel : ObservableObject,
     [ObservableProperty]
     public partial bool ShouldShowContextMenu { get; set; } = false;
 
-    // public string PageName => CurrentPage?.Name ?? string.Empty;
-    // [NotifyPropertyChangedFor(nameof(PageName))]
     [ObservableProperty]
     public partial PageViewModel? CurrentPage { get; private set; }
 
