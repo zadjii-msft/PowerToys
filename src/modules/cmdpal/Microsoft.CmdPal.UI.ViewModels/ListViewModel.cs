@@ -8,44 +8,57 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
+using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ListViewModel(IListPage _model) : ObservableObject
+public partial class ListViewModel : PageViewModel
 {
     // Observable from MVVM Toolkit will auto create public properties that use INotifyPropertyChange change
     // https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/observablegroupedcollections for grouping support
     [ObservableProperty]
     public partial ObservableGroupedCollection<string, ListItemViewModel> Items { get; set; } = [];
 
-    [ObservableProperty]
-    public partial bool IsInitialized { get; private set; }
+    private readonly ExtensionObject<IListPage> _model;
 
-    //// Run on background thread from ListPage.xaml.cs
-    [RelayCommand]
-    private Task<bool> InitializeAsync()
+    public ListViewModel(IListPage model, TaskScheduler scheduler)
+        : base(model, scheduler)
     {
-        // TODO: We may want a SemaphoreSlim lock here.
+        _model = new(model);
+    }
 
-        // TODO: We may want to investigate using some sort of AsyncEnumerable or populating these as they come in to the UI layer
-        //       Though we have to think about threading here and circling back to the UI thread with a TaskScheduler.
+    private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchItems();
+
+    //// Run on background thread, from InitializeAsync or Model_ItemsChanged
+    private void FetchItems()
+    {
+        ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
 
         // TEMPORARY: just plop all the items into a single group
         // see 9806fe5d8 for the last commit that had this with sections
-        ObservableGroup<string, ListItemViewModel> group = new(string.Empty);
-
-        foreach (var item in _model.GetItems())
+        // TODO unsafe
+        try
         {
-            ListItemViewModel viewModel = new(item);
-            viewModel.InitializeProperties();
-            group.Add(viewModel);
+            var newItems = _model.Unsafe!.GetItems();
+
+            Items.Clear();
+
+            foreach (var item in newItems)
+            {
+                ListItemViewModel viewModel = new(item, Scheduler);
+                viewModel.InitializeProperties();
+                group.Add(viewModel);
+            }
+
+            // Am I really allowed to modify that observable collection on a BG
+            // thread and have it just work in the UI??
+            Items.AddGroup(group);
         }
-
-        Items.AddGroup(group);
-
-        IsInitialized = true;
-
-        return Task.FromResult(true);
+        catch (Exception ex)
+        {
+            ShowException(ex);
+            throw;
+        }
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
@@ -54,4 +67,18 @@ public partial class ListViewModel(IListPage _model) : ObservableObject
 
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item) => WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
+
+    public override void InitializeProperties()
+    {
+        base.InitializeProperties();
+
+        var listPage = _model.Unsafe;
+        if (listPage == null)
+        {
+            return; // throw?
+        }
+
+        FetchItems();
+        listPage.ItemsChanged += Model_ItemsChanged;
+    }
 }
