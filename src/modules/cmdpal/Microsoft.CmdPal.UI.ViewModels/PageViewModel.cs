@@ -17,15 +17,21 @@ public partial class PageViewModel : ExtensionObjectViewModel
 
     private readonly ExtensionObject<IPage> _pageModel;
 
-    public string Name { get; private set; } = string.Empty;
-
-    public bool Loading { get; private set; } = true;
-
     [ObservableProperty]
     public partial bool IsInitialized { get; private set; }
 
     [ObservableProperty]
     public partial string ErrorMessage { get; private set; } = string.Empty;
+
+    // These are properties that are "observable" from the extension object
+    // itself, in the sense that they get raised by PropChanged events from the
+    // extension. However, we don't want to actually make them
+    // [ObservableProperty]s, because PropChanged comes in off the UI thread,
+    // and ObservableProperty is not smart enough to raisee the PropertyChanged
+    // on the UI thread.
+    public string Name { get; private set; } = string.Empty;
+
+    public bool Loading { get; private set; } = true;
 
     public PageViewModel(IPage model, TaskScheduler scheduler)
     {

@@ -14,7 +14,12 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
     protected TaskScheduler Scheduler { get; private set; }
 
-    // private bool _initialized;
+    // These are properties that are "observable" from the extension object
+    // itself, in the sense that they get raised by PropChanged events from the
+    // extension. However, we don't want to actually make them
+    // [ObservableProperty]s, because PropChanged comes in off the UI thread,
+    // and ObservableProperty is not smart enough to raisee the PropertyChanged
+    // on the UI thread.
     public string Name { get; private set; } = string.Empty;
 
     public string Title { get; private set; } = string.Empty;
