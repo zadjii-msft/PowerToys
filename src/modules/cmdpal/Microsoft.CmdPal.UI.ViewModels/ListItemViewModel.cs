@@ -32,7 +32,13 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
             return; // throw?
         }
 
-        Tags = li.Tags?.Select(t => new TagViewModel(t, Scheduler)).ToList() ?? [];
+        Tags = li.Tags?.Select(t =>
+        {
+            var vm = new TagViewModel(t, Scheduler);
+            vm.InitializeProperties();
+            return vm;
+        })
+            .ToList() ?? [];
         TextToSuggest = li.TextToSuggest;
         Section = li.Section ?? string.Empty;
 
@@ -55,7 +61,13 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
         switch (propertyName)
         {
             case nameof(Tags):
-                Tags = model.Tags?.Select(t => new TagViewModel(t, Scheduler)).ToList() ?? [];
+                Tags = model.Tags?.Select(t =>
+                {
+                    var vm = new TagViewModel(t, Scheduler);
+                    vm.InitializeProperties();
+                    return vm;
+                })
+                    .ToList() ?? [];
                 UpdateProperty(nameof(HasTags));
                 break;
             case nameof(TextToSuggest):
