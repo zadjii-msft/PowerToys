@@ -45,16 +45,6 @@ public sealed partial class ListPage : Page,
     public static readonly DependencyProperty LoadedStateProperty =
         DependencyProperty.Register(nameof(LoadedState), typeof(ViewModelLoadedState), typeof(ListPage), new PropertyMetadata(ViewModelLoadedState.Loading));
 
-    public string ErrorMessage
-    {
-        get => (string)GetValue(ErrorMessageProperty);
-        set => SetValue(ErrorMessageProperty, value);
-    }
-
-    // Using a DependencyProperty as the backing store for LoadedState.  This enables animation, styling, binding, etc...
-    public static readonly DependencyProperty ErrorMessageProperty =
-        DependencyProperty.Register(nameof(ErrorMessage), typeof(string), typeof(ListPage), new PropertyMetadata(string.Empty));
-
     public ListPage()
     {
         this.InitializeComponent();
@@ -99,12 +89,8 @@ public sealed partial class ListPage : Page,
                             var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
 
                             ViewModel = lvm;
-                            WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(lvm));
+                            WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(result ? lvm : null));
                             LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
-                            if (!result)
-                            {
-                                WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(null));
-                            }
                         });
                     }
                 });
@@ -186,8 +172,6 @@ public sealed partial class ListPage : Page,
     {
         _ = _queue.EnqueueAsync(() =>
         {
-            var ex = message.Exception;
-            ErrorMessage = $"{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\nThis is due to a bug in the extension's code.";
             LoadedState = ViewModelLoadedState.Error;
         });
     }

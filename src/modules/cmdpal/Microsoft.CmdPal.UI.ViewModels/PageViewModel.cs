@@ -4,7 +4,9 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
@@ -21,6 +23,9 @@ public partial class PageViewModel : ExtensionObjectViewModel
 
     [ObservableProperty]
     public partial bool IsInitialized { get; private set; }
+
+    [ObservableProperty]
+    public partial string ErrorMessage { get; private set; } = string.Empty;
 
     public PageViewModel(IPage model, TaskScheduler scheduler)
     {
@@ -60,6 +65,10 @@ public partial class PageViewModel : ExtensionObjectViewModel
         Name = page.Name;
         Loading = page.Loading;
 
+        // Let the UI know about our initial properties too.
+        UpdateProperty(nameof(Name));
+        UpdateProperty(nameof(Loading));
+
         page.PropChanged += Model_PropChanged;
     }
 
@@ -98,4 +107,17 @@ public partial class PageViewModel : ExtensionObjectViewModel
     }
 
     protected void UpdateProperty(string propertyName) => Task.Factory.StartNew(() => { OnPropertyChanged(propertyName); }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
+
+    protected void ShowException(Exception ex)
+    {
+        Task.Factory.StartNew(
+            () =>
+        {
+            ErrorMessage = $"{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\nThis is due to a bug in the extension's code.";
+            WeakReferenceMessenger.Default.Send<ShowExceptionMessage>(new(ex));
+        },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            Scheduler);
+    }
 }

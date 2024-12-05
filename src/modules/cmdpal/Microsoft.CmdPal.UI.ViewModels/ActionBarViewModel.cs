@@ -10,7 +10,8 @@ using Microsoft.CmdPal.UI.ViewModels.Messages;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ActionBarViewModel : ObservableObject
+public partial class ActionBarViewModel : ObservableObject,
+    IRecipient<UpdateActionBarPage>
 {
     public ListItemViewModel? SelectedItem
     {
@@ -31,24 +32,17 @@ public partial class ActionBarViewModel : ObservableObject
     [ObservableProperty]
     public partial bool ShouldShowContextMenu { get; set; } = false;
 
+    // public string PageName => CurrentPage?.Name ?? string.Empty;
+    // [NotifyPropertyChangedFor(nameof(PageName))]
     [ObservableProperty]
-    public partial string PageName { get; private set; } = string.Empty;
-
-    public PageViewModel? CurrentPage
-    {
-        get => field;
-        set
-        {
-            field = value;
-            this.PageName = field?.Name ?? string.Empty;
-        }
-    }
+    public partial PageViewModel? CurrentPage { get; private set; }
 
     [ObservableProperty]
     public partial ObservableCollection<CommandContextItemViewModel> ContextActions { get; set; } = [];
 
     public ActionBarViewModel()
     {
+        WeakReferenceMessenger.Default.Register<UpdateActionBarPage>(this);
     }
 
     private void SetSelectedItem(ListItemViewModel? value)
@@ -79,4 +73,6 @@ public partial class ActionBarViewModel : ObservableObject
     // InvokeItemCommand is what this will be in Xaml due to source generator
     [RelayCommand]
     private void InvokeItem(CommandContextItemViewModel item) => WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
+
+    public void Receive(UpdateActionBarPage message) => CurrentPage = message.Page;
 }
