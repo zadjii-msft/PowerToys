@@ -19,7 +19,7 @@ public sealed partial class AllAppsPage : ListPage
         this.Name = "All Apps";
         this.Icon = new("\ue71d");
         this.ShowDetails = true;
-        this.Loading = true;
+        this.IsLoading = true;
         this.PlaceholderText = "Search installed apps...";
     }
 
@@ -28,7 +28,7 @@ public sealed partial class AllAppsPage : ListPage
         if (this.allAppsSection == null || allAppsSection.Length == 0)
         {
             var apps = GetPrograms();
-            this.Loading = false;
+            this.IsLoading = false;
             this.allAppsSection = apps
                             .Select((app) => new AppListItem(app))
                             .ToArray();

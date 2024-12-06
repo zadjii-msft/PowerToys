@@ -31,7 +31,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
         Name = "Mastodon";
         ShowDetails = true;
         HasMore = true;
-        Loading = true;
+        IsLoading = true;
 
         // #6364ff
         AccentColor = ColorHelpers.FromRgb(99, 100, 255);
@@ -90,7 +90,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
 
     public override void LoadMore()
     {
-        this.Loading = true;
+        this.IsLoading = true;
         ExtensionHost.LogMessage(new LogMessage() { Message = $"Loading 20 posts, starting with {_items.Count}..." });
         var postsAsync = FetchExplorePage(20, this._items.Count);
         postsAsync.ContinueWith((res) =>
@@ -99,7 +99,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
             this.AddPosts(posts);
             ExtensionHost.LogMessage(new LogMessage() { Message = $"... got {posts.Count} new posts" });
 
-            this.Loading = false;
+            this.IsLoading = false;
             this.RaiseItemsChanged(this._items.Count);
         }).ConfigureAwait(false);
     }
@@ -126,7 +126,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
             Console.WriteLine($"An error occurred: {e.Message}");
         }
 
-        Loading = false;
+        IsLoading = false;
 
         return statuses;
     }

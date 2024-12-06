@@ -211,7 +211,7 @@ namespace Microsoft.CmdPal.Extensions
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IPage requires ICommand {
         String Title { get; };
-        Boolean Loading { get; };
+        Boolean IsLoading { get; };
         
         OptionalColor AccentColor { get; };
     }

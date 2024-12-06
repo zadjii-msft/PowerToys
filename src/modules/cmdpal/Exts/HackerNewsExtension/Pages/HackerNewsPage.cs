@@ -23,7 +23,7 @@ internal sealed partial class HackerNewsPage : ListPage
         Icon = new("https://news.ycombinator.com/favicon.ico");
         Name = "Hacker News";
         AccentColor = ColorHelpers.FromRgb(255, 102, 0);
-        Loading = true;
+        IsLoading = true;
         ShowDetails = true;
     }
 
@@ -53,7 +53,7 @@ internal sealed partial class HackerNewsPage : ListPage
     {
         try
         {
-            Loading = true;
+            IsLoading = true;
             var t = DoGetItems();
             t.ConfigureAwait(false);
             return t.Result;
@@ -79,7 +79,7 @@ internal sealed partial class HackerNewsPage : ListPage
     private async Task<IListItem[]> DoGetItems()
     {
         var items = await GetHackerNewsTopPosts();
-        this.Loading = false;
+        IsLoading = false;
         var s = items.Select((post) => new ListItem(new LinkCommand(post))
         {
             Title = post.Title,

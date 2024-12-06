@@ -641,7 +641,7 @@ information that the host application will then use to render the page.
 ```csharp
 interface IPage requires ICommand {
     String Title { get; };
-    Boolean Loading { get; };
+    Boolean IsLoading { get; };
     
     OptionalColor AccentColor { get; };
 }
@@ -931,7 +931,7 @@ class HackerNewsPage: Microsoft.Windows.Run.Extensions.ListPage {
     public bool Loading => true;
     IListItem[] GetItems() {
         List<NewsItem> items = /* do some RSS feed stuff */;
-        this.Loading = false;
+        this.IsLoading = false;
         return items
                 .Select((post) => new NewsListItem(post))
                 .ToArray();
@@ -1118,7 +1118,7 @@ class GithubIssuePage(GithubIssue issue): Microsoft.Windows.Run.Extensions.Markd
     public bool Loading => true;
     public string Body() {
         issue.Body = /* fetch the body from the API */;
-        this.Loading = false;
+        this.IsLoading = false;
         return issue.Body;
     }
     public IContextItem[] Commands => [ new CommandContextItem(new OpenLinkAction(issue)) ];
@@ -1569,7 +1569,7 @@ class HackerNewsPage: Microsoft.Windows.Run.Extensions.ListPage {
     public bool Loading => true;
     IListItem[] GetItems(String query) {
         List<NewsItem> items = /* do some RSS feed stuff */;
-        this.Loading = false;
+        this.IsLoading = false;
         return items
                 .Select((post) => new NewsListItem(post))
                 .ToArray();
@@ -1803,7 +1803,7 @@ classDiagram
     IPage --|> ICommand
     class IPage  {
         String Title
-        Boolean Loading
+        Boolean IsLoading
     }
 
     IInvokableCommand --|> ICommand

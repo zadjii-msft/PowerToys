@@ -10,13 +10,13 @@ public partial class Page : Command, IPage
     private string _title = string.Empty;
     private OptionalColor _accentColor;
 
-    public bool Loading
+    public bool IsLoading
     {
         get => _loading;
         set
         {
             _loading = value;
-            OnPropertyChanged(nameof(Loading));
+            OnPropertyChanged(nameof(IsLoading));
         }
     }
 
