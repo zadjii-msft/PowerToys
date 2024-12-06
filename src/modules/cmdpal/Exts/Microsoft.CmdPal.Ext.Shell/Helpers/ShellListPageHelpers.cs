@@ -38,7 +38,7 @@ public class ShellListPageHelpers
 
     private List<ListItem> GetHistoryCmds(string cmd, ListItem result)
     {
-        IEnumerable<ListItem> history = _settings.Count.Where(o => o.Key.Contains(cmd, StringComparison.CurrentCultureIgnoreCase))
+        IEnumerable<ListItem?> history = _settings.Count.Where(o => o.Key.Contains(cmd, StringComparison.CurrentCultureIgnoreCase))
             .OrderByDescending(o => o.Value)
             .Select(m =>
             {
@@ -59,7 +59,7 @@ public class ShellListPageHelpers
                 };
                 return ret;
             }).Where(o => o != null).Take(4);
-        return history.ToList();
+        return history.Select(o => o!).ToList();
     }
 
     public List<ListItem> Query(string query)

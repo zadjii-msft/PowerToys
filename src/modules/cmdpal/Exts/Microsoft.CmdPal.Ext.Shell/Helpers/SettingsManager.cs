@@ -12,8 +12,6 @@ using System.Text.Json.Serialization;
 using Microsoft.CmdPal.Ext.Shell.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
 
-#nullable enable
-
 namespace Microsoft.CmdPal.Ext.Shell.Helpers;
 
 public class SettingsManager

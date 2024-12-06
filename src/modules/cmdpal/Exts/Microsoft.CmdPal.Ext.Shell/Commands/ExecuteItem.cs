@@ -73,8 +73,13 @@ internal sealed partial class ExecuteItem : InvokableCommand
         }
     }
 
-    private void Execute(Func<ProcessStartInfo, Process> startProcess, ProcessStartInfo info)
+    private void Execute(Func<ProcessStartInfo, Process?> startProcess, ProcessStartInfo info)
     {
+        if (startProcess == null)
+        {
+            return;
+        }
+
         try
         {
             startProcess(info);

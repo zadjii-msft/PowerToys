@@ -21,7 +21,7 @@ internal sealed partial class SettingsPage : FormPage
 
     public SettingsPage(SettingsManager settingsManager)
     {
-        Name = "Test Settings Page"; // TODO --> localization
+        Name = Properties.Resources.settings_page_name;
         Icon = new("\uE713"); // Settings icon
         _settings = settingsManager.GetSettings();
         _settingsManager = settingsManager;

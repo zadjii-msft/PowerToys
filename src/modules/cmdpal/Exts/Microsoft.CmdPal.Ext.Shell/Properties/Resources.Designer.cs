@@ -142,6 +142,15 @@ namespace Microsoft.CmdPal.Ext.Shell.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string settings_page_name {
+            get {
+                return ResourceManager.GetString("settings_page_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Execute shell commands.
         /// </summary>
         public static string shell_command_name {
