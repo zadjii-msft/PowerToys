@@ -11,11 +11,12 @@ using Microsoft.CmdPal.Ext.WindowsServices;
 using Microsoft.CmdPal.Ext.WindowsSettings;
 using Microsoft.CmdPal.Ext.WindowsTerminal;
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.UI.Pages;
+using Microsoft.CmdPal.UI.ExtViews;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -71,6 +72,8 @@ public partial class App : Application
 
         // Root services
         services.AddSingleton(TaskScheduler.FromCurrentSynchronizationContext());
+        services.AddSingleton(DispatcherQueue.GetForCurrentThread());
+        services.AddSingleton<IIconCacheService, IconCacheService>();
 
         // Built-in Commands
         services.AddSingleton<ICommandProvider, BookmarksCommandProvider>();
