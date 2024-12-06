@@ -59,6 +59,7 @@ functionality.
     - [Other types](#other-types)
       - [`ContextItem`s](#contextitems)
       - [`IconDataType`](#icondatatype)
+      - [`OptionalColor`](#optionalcolor)
       - [`Details`](#details)
       - [`INotifyPropChanged`](#inotifypropchanged)
       - [`ICommandProvider`](#icommandprovider)
@@ -642,7 +643,7 @@ interface IPage requires ICommand {
     String Title { get; };
     Boolean Loading { get; };
     
-    Windows.UI.Color AccentColor { get; };
+    OptionalColor AccentColor { get; };
 }
 ```
 
@@ -1224,6 +1225,32 @@ As a future consideration, we may also consider supporting a base64 encoded
 image in the `Icon` member. Base64 doesn't include `:`, `.` or `\`, the presence
 of any of which would indicate the string is probably a URI, not base64 data.
 
+#### `OptionalColor`
+
+We declare our own `Color` struct to avoid depending on `Windows.UI.Color` and
+to avoid passing around unclothed `uint32s`.
+
+```c#
+struct Color
+{
+    UInt8 R;
+    UInt8 G;
+    UInt8 B;
+    UInt8 A;
+};
+
+struct OptionalColor
+{
+    Boolean HasValue;
+    Microsoft.CmdPal.Extensions.Color Color;
+};
+```
+
+We also define `OptionalColor` as a helper struct here. Yes, this is also just
+an `IReference<Color>`. However, `IReference` has some weird ownership semantics
+that just make it a pain for something as simple as "maybe this color doesn't
+have a value set". 
+
 #### `Details`
 
 This represents additional information that can be displayed about an action or
@@ -1248,7 +1275,7 @@ block, and the generator will pull this into the file first.   -->
 interface ITag {
     IconDataType Icon { get; };
     String Text { get; };
-    Windows.UI.Color Color { get; };
+    OptionalColor Color { get; };
     String ToolTip { get; };
     ICommand Command { get; };
 };
@@ -1884,7 +1911,7 @@ classDiagram
     class ITag {
         IconDataType Icon
         String Text
-        Windows.UI.Color Color
+        Color Color
         String ToolTip
         ICommand Command
     }

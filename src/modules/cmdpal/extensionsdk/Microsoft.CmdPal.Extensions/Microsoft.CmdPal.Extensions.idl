@@ -114,11 +114,25 @@ namespace Microsoft.CmdPal.Extensions
         IFilterItem[] Filters();
     }
     
+    struct Color
+    {
+        UInt8 R;
+        UInt8 G;
+        UInt8 B;
+        UInt8 A;
+    };
+    
+    struct OptionalColor
+    {
+        Boolean HasValue;
+        Microsoft.CmdPal.Extensions.Color Color;
+    };
+    
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface ITag {
         IconDataType Icon { get; };
         String Text { get; };
-        Windows.UI.Color Color { get; };
+        OptionalColor Color { get; };
         String ToolTip { get; };
         ICommand Command { get; };
     };
@@ -199,7 +213,7 @@ namespace Microsoft.CmdPal.Extensions
         String Title { get; };
         Boolean Loading { get; };
         
-        Windows.UI.Color AccentColor { get; };
+        OptionalColor AccentColor { get; };
     }
     
     [uuid("c78b9851-e76b-43ee-8f76-da5ba14e69a4")]
