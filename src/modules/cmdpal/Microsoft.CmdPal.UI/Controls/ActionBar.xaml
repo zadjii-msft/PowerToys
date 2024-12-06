@@ -65,6 +65,10 @@
                     
                 </Interactions:DataTriggerBehavior>
             </Interactivity:Interaction.Behaviors>-->
+
+            <Interactivity:Interaction.Behaviors>
+                <local:LoadIconBehavior Source="{x:Bind ViewModel.CurrentPage.Icon, Mode=OneWay}"/>
+            </Interactivity:Interaction.Behaviors>
         </Border>
 
         <TextBlock
