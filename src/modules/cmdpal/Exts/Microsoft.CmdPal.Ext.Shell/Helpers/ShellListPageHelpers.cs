@@ -55,7 +55,7 @@ public class ShellListPageHelpers
 
                     // Using CurrentCulture since this is user facing
                     Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, CmdHasBeenExecutedTimes, m.Value),
-                    Icon = new(string.Empty),
+                    Icon = new("\uE81C"),
                 };
                 return ret;
             }).Where(o => o != null).Take(4);
@@ -108,7 +108,7 @@ public class ShellListPageHelpers
 
                 // Using CurrentCulture since this is user facing
                 Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, CmdHasBeenExecutedTimes, m.Value),
-                Icon = new(string.Empty), // TODO GH #125 -- revisit Icons
+                Icon = new("\uE81C"),
             }).Take(5);
 
         return history.ToList();
