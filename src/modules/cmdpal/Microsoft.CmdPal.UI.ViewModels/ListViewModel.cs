@@ -21,6 +21,12 @@ public partial class ListViewModel : PageViewModel
 
     private readonly ExtensionObject<IListPage> _model;
 
+    // Remember - "observable" properties from the model (via PropChanged)
+    // cannot be marked [ObservableProperty]
+    public bool ShowDetails { get; private set; }
+
+    public string PlaceholderText { get => string.IsNullOrEmpty(field) ? "Type here to search..." : field; private set; } = string.Empty;
+
     public ListViewModel(IListPage model, TaskScheduler scheduler)
         : base(model, scheduler)
     {
@@ -78,7 +84,35 @@ public partial class ListViewModel : PageViewModel
             return; // throw?
         }
 
+        ShowDetails = listPage.ShowDetails;
+        UpdateProperty(nameof(ShowDetails));
+        PlaceholderText = listPage.PlaceholderText;
+        UpdateProperty(nameof(PlaceholderText));
+
         FetchItems();
         listPage.ItemsChanged += Model_ItemsChanged;
+    }
+
+    protected override void FetchProperty(string propertyName)
+    {
+        base.FetchProperty(propertyName);
+
+        var model = this._model.Unsafe;
+        if (model == null)
+        {
+            return; // throw?
+        }
+
+        switch (propertyName)
+        {
+            case nameof(ShowDetails):
+                this.ShowDetails = model.ShowDetails;
+                break;
+            case nameof(PlaceholderText):
+                this.PlaceholderText = model.PlaceholderText;
+                break;
+        }
+
+        UpdateProperty(propertyName);
     }
 }

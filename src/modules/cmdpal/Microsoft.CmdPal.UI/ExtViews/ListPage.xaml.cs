@@ -165,6 +165,17 @@ public sealed partial class ListPage : Page,
         if (ItemsList.SelectedItem is ListItemViewModel item)
         {
             ViewModel?.UpdateSelectedItemCommand.Execute(item);
+
+            if ((ViewModel?.ShowDetails ?? false) &&
+                item.HasDetails)
+            {
+                // TODO: fire a message off to the shellpage to make the
+                // details pane visible, with this item's details.
+            }
+            else
+            {
+                // TODO: fire message to hide the details pane.
+            }
         }
     }
 

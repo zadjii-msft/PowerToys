@@ -71,6 +71,7 @@ public sealed partial class ShellPage :
             {
                 _ = DispatcherQueue.TryEnqueue(() =>
                 {
+                    // TODO: also hide our details pane about here, if we had one
                     var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext());
                     RootFrame.Navigate(typeof(ListPage), pageViewModel, _slideRightTransition);
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);

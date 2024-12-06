@@ -22,6 +22,10 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
 
     public string Section { get; private set; } = string.Empty;
 
+    public DetailsViewModel? Details { get; private set; }
+
+    public bool HasDetails => Details != null;
+
     public override void InitializeProperties()
     {
         base.InitializeProperties();
@@ -41,6 +45,13 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
             .ToList() ?? [];
         TextToSuggest = li.TextToSuggest;
         Section = li.Section ?? string.Empty;
+        var extensionDetails = li.Details;
+        if (extensionDetails != null)
+        {
+            Details = new(extensionDetails, Scheduler);
+            UpdateProperty(nameof(Details));
+            UpdateProperty(nameof(HasDetails));
+        }
 
         UpdateProperty(nameof(HasTags));
         UpdateProperty(nameof(Tags));
@@ -75,6 +86,12 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
                 break;
             case nameof(Section):
                 this.Section = model.Section ?? string.Empty;
+                break;
+            case nameof(Details):
+                var extensionDetails = model.Details;
+                Details = extensionDetails != null ? new(extensionDetails, Scheduler) : null;
+                UpdateProperty(nameof(Details));
+                UpdateProperty(nameof(HasDetails));
                 break;
         }
 
