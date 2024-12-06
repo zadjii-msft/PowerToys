@@ -13,7 +13,6 @@ using HackerNewsExtension.Commands;
 using HackerNewsExtension.Data;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Windows.UI;
 
 namespace HackerNewsExtension;
 
@@ -23,7 +22,7 @@ internal sealed partial class HackerNewsPage : ListPage
     {
         Icon = new("https://news.ycombinator.com/favicon.ico");
         Name = "Hacker News";
-        AccentColor = Color.FromArgb(255, 255, 102, 0);
+        AccentColor = ColorHelpers.FromRgb(255, 102, 0);
         Loading = true;
         ShowDetails = true;
     }
