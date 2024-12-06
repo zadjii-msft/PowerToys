@@ -51,14 +51,14 @@ public sealed partial class ActionBar : UserControl,
     {
         if (ViewModel.CurrentPage != null)
         {
-            ViewModel.CurrentPage.PropertyChanged -= CurrentPage_PropertyChanged;
+            // ViewModel.CurrentPage.PropertyChanged -= CurrentPage_PropertyChanged;
         }
 
         ViewModel.CurrentPage = message.Page;
 
         if (ViewModel.CurrentPage != null)
         {
-            ViewModel.CurrentPage.PropertyChanged += CurrentPage_PropertyChanged;
+            // ViewModel.CurrentPage.PropertyChanged += CurrentPage_PropertyChanged;
         }
 
         // ViewModel.CurrentPage.PropertyChanged += CurrentPage_PropertyChanged;
