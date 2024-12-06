@@ -8,7 +8,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Xaml.Interactivity;
 
-namespace Microsoft.CmdPal.UI.Controls;
+namespace Microsoft.CmdPal.UI;
 
 public partial class LoadIconBehavior : DependencyObject, IBehavior
 {

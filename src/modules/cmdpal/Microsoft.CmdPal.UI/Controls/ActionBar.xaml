@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:cmdpalUI="using:Microsoft.CmdPal.UI"
     xmlns:local="using:Microsoft.CmdPal.UI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:CommunityToolkit.WinUI"
@@ -53,21 +54,16 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--  TO DO: Placeholder, needs to be replaced with extension info  -->
+        
         <Border
             x:Name="IconBorder"
             Width="20"
             Height="20"
             Margin="12,0,0,0"
             CornerRadius="{StaticResource ControlCornerRadius}">
-            <!--<Interactivity:Interaction.Behaviors>
-                <Interactions:DataTriggerBehavior>
-                    
-                </Interactions:DataTriggerBehavior>
-            </Interactivity:Interaction.Behaviors>-->
-
+            <!-- LoadIconBehavior will magically fill this border up with an icon -->
             <Interactivity:Interaction.Behaviors>
-                <local:LoadIconBehavior Source="{x:Bind ViewModel.CurrentPage.Icon, Mode=OneWay}"/>
+                <cmdpalUI:LoadIconBehavior Source="{x:Bind ViewModel.CurrentPage.Icon, Mode=OneWay}"/>
             </Interactivity:Interaction.Behaviors>
         </Border>
 

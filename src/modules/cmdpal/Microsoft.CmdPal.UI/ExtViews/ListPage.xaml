@@ -67,6 +67,17 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
+
+                    <Border x:Name="IconBorder"
+                            Grid.Column="0"
+                            Width="20"
+                            Height="20"
+                            Margin="4,0,4,0">
+                        <!-- LoadIconBehavior will magically fill this border up with an icon -->
+                        <Interactivity:Interaction.Behaviors>
+                            <local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>
+                        </Interactivity:Interaction.Behaviors>
+                    </Border>
                     <Viewbox
                         Width="20"
                         Height="20"

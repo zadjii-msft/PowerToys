@@ -22,6 +22,8 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
 
     public string Section { get; private set; } = string.Empty;
 
+    public IconDataType Icon { get; private set; } = new(string.Empty);
+
     public override void InitializeProperties()
     {
         base.InitializeProperties();
@@ -41,11 +43,13 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
             .ToList() ?? [];
         TextToSuggest = li.TextToSuggest;
         Section = li.Section ?? string.Empty;
+        Icon = li.Icon ?? new(string.Empty);
 
         UpdateProperty(nameof(HasTags));
         UpdateProperty(nameof(Tags));
         UpdateProperty(nameof(TextToSuggest));
         UpdateProperty(nameof(Section));
+        UpdateProperty(nameof(Icon));
     }
 
     protected override void FetchProperty(string propertyName)
@@ -75,6 +79,9 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
                 break;
             case nameof(Section):
                 this.Section = model.Section ?? string.Empty;
+                break;
+            case nameof(Icon):
+                this.Icon = model.Icon ?? new(string.Empty);
                 break;
         }
 
