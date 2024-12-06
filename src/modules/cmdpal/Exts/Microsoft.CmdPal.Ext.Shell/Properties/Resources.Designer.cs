@@ -61,6 +61,78 @@ namespace Microsoft.CmdPal.Ext.Shell.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error running the command.
+        /// </summary>
+        public static string cmd_command_failed {
+            get {
+                return ResourceManager.GetString("cmd_command_failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command not found.
+        /// </summary>
+        public static string cmd_command_not_found {
+            get {
+                return ResourceManager.GetString("cmd_command_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to execute command through command shell.
+        /// </summary>
+        public static string cmd_execute_through_shell {
+            get {
+                return ResourceManager.GetString("cmd_execute_through_shell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to this command has been executed {0} times.
+        /// </summary>
+        public static string cmd_has_been_executed_times {
+            get {
+                return ResourceManager.GetString("cmd_has_been_executed_times", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executes commands (e.g. &apos;ping&apos;, &apos;cmd&apos;).
+        /// </summary>
+        public static string cmd_plugin_description {
+            get {
+                return ResourceManager.GetString("cmd_plugin_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shell.
+        /// </summary>
+        public static string cmd_plugin_name {
+            get {
+                return ResourceManager.GetString("cmd_plugin_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run as administrator (Ctrl+Shift+Enter).
+        /// </summary>
+        public static string cmd_run_as_administrator {
+            get {
+                return ResourceManager.GetString("cmd_run_as_administrator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run as different user (Ctrl+Shift+U).
+        /// </summary>
+        public static string cmd_run_as_user {
+            get {
+                return ResourceManager.GetString("cmd_run_as_user", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Find and run the executable file.
         /// </summary>
         public static string find_executable_file_and_run_it {
@@ -75,6 +147,15 @@ namespace Microsoft.CmdPal.Ext.Shell.Properties {
         public static string generic_run_command {
             get {
                 return ResourceManager.GetString("generic_run_command", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep shell open.
+        /// </summary>
+        public static string leave_shell_open {
+            get {
+                return ResourceManager.GetString("leave_shell_open", resourceCulture);
             }
         }
         
@@ -151,110 +232,29 @@ namespace Microsoft.CmdPal.Ext.Shell.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execute shell commands.
-        /// </summary>
-        public static string shell_command_name {
-            get {
-                return ResourceManager.GetString("shell_command_name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Keep shell open.
-        /// </summary>
-        public static string wox_leave_shell_open {
-            get {
-                return ResourceManager.GetString("wox_leave_shell_open", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to this command has been executed {0} times.
-        /// </summary>
-        public static string wox_plugin_cmd_cmd_has_been_executed_times {
-            get {
-                return ResourceManager.GetString("wox_plugin_cmd_cmd_has_been_executed_times", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error running the command.
-        /// </summary>
-        public static string wox_plugin_cmd_command_failed {
-            get {
-                return ResourceManager.GetString("wox_plugin_cmd_command_failed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Command not found.
-        /// </summary>
-        public static string wox_plugin_cmd_command_not_found {
-            get {
-                return ResourceManager.GetString("wox_plugin_cmd_command_not_found", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to execute command through command shell.
-        /// </summary>
-        public static string wox_plugin_cmd_execute_through_shell {
-            get {
-                return ResourceManager.GetString("wox_plugin_cmd_execute_through_shell", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Executes commands (e.g. &apos;ping&apos;, &apos;cmd&apos;).
-        /// </summary>
-        public static string wox_plugin_cmd_plugin_description {
-            get {
-                return ResourceManager.GetString("wox_plugin_cmd_plugin_description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shell.
-        /// </summary>
-        public static string wox_plugin_cmd_plugin_name {
-            get {
-                return ResourceManager.GetString("wox_plugin_cmd_plugin_name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Run as administrator (Ctrl+Shift+Enter).
-        /// </summary>
-        public static string wox_plugin_cmd_run_as_administrator {
-            get {
-                return ResourceManager.GetString("wox_plugin_cmd_run_as_administrator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Run as different user (Ctrl+Shift+U).
-        /// </summary>
-        public static string wox_plugin_cmd_run_as_user {
-            get {
-                return ResourceManager.GetString("wox_plugin_cmd_run_as_user", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Command execution.
         /// </summary>
-        public static string wox_shell_command_execution {
+        public static string shell_command_execution {
             get {
-                return ResourceManager.GetString("wox_shell_command_execution", resourceCulture);
+                return ResourceManager.GetString("shell_command_execution", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to All entries using the Windows Terminal force the Windows Terminal as the console host regardless of the system settings.
         /// </summary>
-        public static string wox_shell_command_execution_description {
+        public static string shell_command_execution_description {
             get {
-                return ResourceManager.GetString("wox_shell_command_execution_description", resourceCulture);
+                return ResourceManager.GetString("shell_command_execution_description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execute shell commands.
+        /// </summary>
+        public static string shell_command_name {
+            get {
+                return ResourceManager.GetString("shell_command_name", resourceCulture);
             }
         }
     }

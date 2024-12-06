@@ -17,7 +17,7 @@ internal sealed partial class ShellListPage : DynamicListPage
     {
         Icon = new("\uE756");
         Id = "com.microsoft.cmdpal.shell";
-        Name = Resources.wox_plugin_cmd_plugin_name;
+        Name = Resources.cmd_plugin_name;
         _helper = new(settingsManager);
     }
 

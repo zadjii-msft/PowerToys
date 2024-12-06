@@ -19,12 +19,12 @@ public partial class ShellCommandsProvider : CommandProvider
 
     public ShellCommandsProvider()
     {
-        DisplayName = Resources.wox_plugin_cmd_plugin_name;
+        DisplayName = Resources.cmd_plugin_name;
         _shellPageItem = new CommandItem(new ShellListPage(_settingsManager))
         {
             Icon = new("\uE756"),
             Title = Resources.shell_command_name,
-            Subtitle = Resources.wox_plugin_cmd_plugin_description,
+            Subtitle = Resources.cmd_plugin_description,
             MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))],
         };
     }

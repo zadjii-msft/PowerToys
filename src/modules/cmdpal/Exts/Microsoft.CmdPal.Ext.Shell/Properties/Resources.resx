@@ -117,34 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="wox_plugin_cmd_plugin_name" xml:space="preserve">
+  <data name="cmd_plugin_name" xml:space="preserve">
     <value>Shell</value>
   </data>
-  <data name="wox_plugin_cmd_plugin_description" xml:space="preserve">
+  <data name="cmd_plugin_description" xml:space="preserve">
     <value>Executes commands (e.g. 'ping', 'cmd')</value>
   </data>
-  <data name="wox_plugin_cmd_cmd_has_been_executed_times" xml:space="preserve">
+  <data name="cmd_has_been_executed_times" xml:space="preserve">
     <value>this command has been executed {0} times</value>
   </data>
-  <data name="wox_plugin_cmd_execute_through_shell" xml:space="preserve">
+  <data name="cmd_execute_through_shell" xml:space="preserve">
     <value>execute command through command shell</value>
   </data>
-  <data name="wox_plugin_cmd_run_as_administrator" xml:space="preserve">
+  <data name="cmd_run_as_administrator" xml:space="preserve">
     <value>Run as administrator (Ctrl+Shift+Enter)</value>
   </data>
-  <data name="wox_plugin_cmd_command_failed" xml:space="preserve">
+  <data name="cmd_command_failed" xml:space="preserve">
     <value>Error running the command</value>
   </data>
-  <data name="wox_plugin_cmd_command_not_found" xml:space="preserve">
+  <data name="cmd_command_not_found" xml:space="preserve">
     <value>Command not found</value>
   </data>
-  <data name="wox_plugin_cmd_run_as_user" xml:space="preserve">
+  <data name="cmd_run_as_user" xml:space="preserve">
     <value>Run as different user (Ctrl+Shift+U)</value>
   </data>
-  <data name="wox_leave_shell_open" xml:space="preserve">
+  <data name="leave_shell_open" xml:space="preserve">
     <value>Keep shell open</value>
   </data>
-  <data name="wox_shell_command_execution" xml:space="preserve">
+  <data name="shell_command_execution" xml:space="preserve">
     <value>Command execution</value>
   </data>
   <data name="run_command_in_command_prompt" xml:space="preserve">
@@ -172,7 +172,7 @@
     <value>Press Enter to continue</value>
     <comment>"Enter" means the Enter key on the keyboard.</comment>
   </data>
-  <data name="wox_shell_command_execution_description" xml:space="preserve">
+  <data name="shell_command_execution_description" xml:space="preserve">
     <value>All entries using the Windows Terminal force the Windows Terminal as the console host regardless of the system settings</value>
   </data>
   <data name="shell_command_name" xml:space="preserve">

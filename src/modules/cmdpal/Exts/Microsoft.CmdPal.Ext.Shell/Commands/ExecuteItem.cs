@@ -24,12 +24,12 @@ internal sealed partial class ExecuteItem : InvokableCommand
     {
         if (type == RunAsType.Administrator)
         {
-            Name = Properties.Resources.wox_plugin_cmd_run_as_administrator;
+            Name = Properties.Resources.cmd_run_as_administrator;
             Icon = new("\xE7EF"); // Admin Icon
         }
         else if (type == RunAsType.OtherUser)
         {
-            Name = Properties.Resources.wox_plugin_cmd_run_as_user;
+            Name = Properties.Resources.cmd_run_as_user;
             Icon = new("\xE7EE"); // User Icon
         }
         else
@@ -86,16 +86,16 @@ internal sealed partial class ExecuteItem : InvokableCommand
         }
         catch (FileNotFoundException e)
         {
-            var name = "Plugin: " + Properties.Resources.wox_plugin_cmd_plugin_name;
-            var message = $"{Properties.Resources.wox_plugin_cmd_command_not_found}: {e.Message}";
+            var name = "Plugin: " + Properties.Resources.cmd_plugin_name;
+            var message = $"{Properties.Resources.cmd_command_not_found}: {e.Message}";
 
             // GH TODO #138 -- show this message once that's wired up
             // _context.API.ShowMsg(name, message);
         }
         catch (Win32Exception e)
         {
-            var name = "Plugin: " + Properties.Resources.wox_plugin_cmd_plugin_name;
-            var message = $"{Properties.Resources.wox_plugin_cmd_command_failed}: {e.Message}";
+            var name = "Plugin: " + Properties.Resources.cmd_plugin_name;
+            var message = $"{Properties.Resources.cmd_command_failed}: {e.Message}";
             ExtensionHost.LogMessage(new LogMessage() { Message = name + message });
 
             // GH TODO #138 -- show this message once that's wired up

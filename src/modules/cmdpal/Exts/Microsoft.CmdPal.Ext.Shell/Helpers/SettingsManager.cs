@@ -30,7 +30,7 @@ public class SettingsManager
         new ChoiceSetSetting.Choice(Resources.run_command_in_windows_terminal_powershell_seven, "4"),
     };
 
-    private readonly ToggleSetting _leaveShellOpen = new(nameof(LeaveShellOpen), Resources.wox_leave_shell_open, Resources.wox_leave_shell_open,  false); // TODO -- double check default value
+    private readonly ToggleSetting _leaveShellOpen = new(nameof(LeaveShellOpen), Resources.leave_shell_open, Resources.leave_shell_open,  false); // TODO -- double check default value
     private readonly ChoiceSetSetting _shellCommandExecution;
 
     public bool LeaveShellOpen => _leaveShellOpen.Value;
@@ -75,7 +75,7 @@ public class SettingsManager
     {
         _filePath = SettingsJsonPath();
 
-        _shellCommandExecution = new(nameof(ShellCommandExecution), Resources.wox_shell_command_execution, Resources.wox_shell_command_execution_description, _choices);
+        _shellCommandExecution = new(nameof(ShellCommandExecution), Resources.shell_command_execution, Resources.shell_command_execution_description, _choices);
 
         _settings.Add(_leaveShellOpen);
         _settings.Add(_shellCommandExecution);
