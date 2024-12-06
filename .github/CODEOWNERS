@@ -14,3 +14,6 @@ packages.config  @crutkas @DHowett @ethanfangg
 LICENSE @crutkas @DHowett @ethanfangg
 SECURITY.md @crutkas @DHowett @ethanfangg
 CODE_OF_CONDUCT.md @crutkas @DHowett @ethanfangg
+
+# locking down the appxmanifest file as it should not be changed often, but can be pushed to PR by mistake because of the prebuilt action of src\modules\cmdpal\WindowsCommandPalette\Microsoft.CmdPal.UI.Poc.csproj
+src\modules\cmdpal\WindowsCommandPalette\Package.appxmanifest @crutkas @DHowett @ethanfangg
