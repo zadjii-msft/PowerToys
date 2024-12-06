@@ -16,7 +16,7 @@ namespace Microsoft.CmdPal.Ext.Shell.Helpers;
 
 public class ShellListPageHelpers
 {
-    private static readonly CompositeFormat WoxPluginCmdCmdHasBeenExecutedTimes = System.Text.CompositeFormat.Parse(Properties.Resources.cmd_has_been_executed_times);
+    private static readonly CompositeFormat CmdHasBeenExecutedTimes = System.Text.CompositeFormat.Parse(Properties.Resources.cmd_has_been_executed_times);
     private readonly SettingsManager _settings;
 
     public ShellListPageHelpers(SettingsManager settings)
@@ -45,7 +45,7 @@ public class ShellListPageHelpers
                 if (m.Key == cmd)
                 {
                     // Using CurrentCulture since this is user facing
-                    result.Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, WoxPluginCmdCmdHasBeenExecutedTimes, m.Value);
+                    result.Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, CmdHasBeenExecutedTimes, m.Value);
                     return null;
                 }
 
@@ -54,7 +54,7 @@ public class ShellListPageHelpers
                     Title = m.Key,
 
                     // Using CurrentCulture since this is user facing
-                    Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, WoxPluginCmdCmdHasBeenExecutedTimes, m.Value),
+                    Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, CmdHasBeenExecutedTimes, m.Value),
                     Icon = new(string.Empty),
                 };
                 return ret;
@@ -80,9 +80,8 @@ public class ShellListPageHelpers
             results.AddRange(history);
         }
 
-        for (var i = 0; i < results.Count; i++)
+        foreach (var currItem in results)
         {
-            var currItem = results[i];
             currItem.MoreCommands = LoadContextMenus(currItem).ToArray();
         }
 
@@ -108,7 +107,7 @@ public class ShellListPageHelpers
                 Title = m.Key,
 
                 // Using CurrentCulture since this is user facing
-                Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, WoxPluginCmdCmdHasBeenExecutedTimes, m.Value),
+                Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, CmdHasBeenExecutedTimes, m.Value),
                 Icon = new(string.Empty), // TODO GH #125 -- revisit Icons
             }).Take(5);
 
