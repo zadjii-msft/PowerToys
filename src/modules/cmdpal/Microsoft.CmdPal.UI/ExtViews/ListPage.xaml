@@ -82,14 +82,6 @@
                             <local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>
                         </Interactivity:Interaction.Behaviors>
                     </Border>
-                    <Viewbox
-                        Width="20"
-                        Height="20"
-                        VerticalAlignment="Center">
-                        <!--TODO: Icon
-                        <ContentControl Content="{x:Bind IcoElement, Mode=OneWay}" />
-                        -->
-                    </Viewbox>
 
                     <StackPanel
                         Grid.Column="1"

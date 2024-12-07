@@ -23,11 +23,19 @@ public partial class ActionBarViewModel : ObservableObject,
         }
     }
 
+    // [ObservableProperty]
+    // public partial string PrimaryActionName { get; set; } = string.Empty;
+
+    // [ObservableProperty]
+    // public partial string SecondaryActionName { get; set; } = string.Empty;
     [ObservableProperty]
-    public partial string PrimaryActionName { get; set; } = string.Empty;
+    public partial CommandItemViewModel? PrimaryAction { get; set; }
 
     [ObservableProperty]
-    public partial string SecondaryActionName { get; set; } = string.Empty;
+    [NotifyPropertyChangedFor(nameof(HasSecondaryCommand))]
+    public partial CommandItemViewModel? SecondaryAction { get; set; }
+
+    public bool HasSecondaryCommand => SecondaryAction != null;
 
     [ObservableProperty]
     public partial bool ShouldShowContextMenu { get; set; } = false;
@@ -49,8 +57,8 @@ public partial class ActionBarViewModel : ObservableObject,
     {
         if (value != null)
         {
-            PrimaryActionName = value.Name;
-            SecondaryActionName = value.SecondaryCommandName;
+            PrimaryAction = value;
+            SecondaryAction = value.SecondaryCommand;
 
             if (value.MoreCommands.Count > 1)
             {
@@ -64,8 +72,8 @@ public partial class ActionBarViewModel : ObservableObject,
         }
         else
         {
-            PrimaryActionName = string.Empty;
-            SecondaryActionName = string.Empty;
+            PrimaryAction = null;
+            SecondaryAction = null;
             ShouldShowContextMenu = false;
         }
     }
