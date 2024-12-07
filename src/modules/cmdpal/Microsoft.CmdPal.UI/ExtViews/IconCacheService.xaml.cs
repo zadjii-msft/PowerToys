@@ -22,11 +22,30 @@ public sealed class IconCacheService(DispatcherQueue dispatcherQueue) : IIconCac
     {
         if (!string.IsNullOrEmpty(icon.Icon))
         {
-            return IconPathConverter.IconSourceMUX(icon.Icon, false);
+            var source = IconPathConverter.IconSourceMUX(icon.Icon, false);
+            if (source is FontIconSource fontIco)
+            {
+                fontIco.FontSize = 20;
+            }
+
+            return source;
         }
         else if (icon.Data != null)
         {
             return await StreamToIconSource(icon.Data);
+        }
+
+        return null;
+    }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    public async Task<IconElement?> GetIconElement(IconDataType icon)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+    {
+        if (!string.IsNullOrEmpty(icon.Icon))
+        {
+            var elem = IconPathConverter.IconMUX(icon.Icon, 20);
+            return elem;
         }
 
         return null;
