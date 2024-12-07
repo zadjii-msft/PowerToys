@@ -34,7 +34,6 @@ public partial class LoadIconBehavior : DependencyObject, IBehavior
 
     public async void OnSourcePropertyChanged()
     {
-        // TODO: Cache this in the class
         var iconService = App.Current.Services.GetService<IIconCacheService>()!;
 
         var icoSource = await iconService.GetIconSource(Source ?? new(string.Empty));
@@ -43,6 +42,8 @@ public partial class LoadIconBehavior : DependencyObject, IBehavior
         {
             if (icoSource is FontIconSource fontIco)
             {
+                // For inexplicable reasons, FontIconSource.CreateIconElement
+                // doesn't work, so do it ourselves
                 IconSourceElement elem = new()
                 {
                     IconSource = fontIco,
