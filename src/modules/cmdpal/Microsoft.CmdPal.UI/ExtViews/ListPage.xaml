@@ -40,13 +40,17 @@
                 BorderThickness="1"
                 CornerRadius="4">
                 <StackPanel Orientation="Horizontal">
-                    <!-- -TODO: Icon
-                    <ContentControl
-                        Width="12"
-                        Height="12"
-                        Margin="0,0,4,0"
-                        Content="{x:Bind IcoElement, Mode=OneWay}"
-                        Visibility="{x:Bind HasIcon, Mode=OneWay}" /> -->
+                    <Border x:Name="IconBorder"
+                            Width="12"
+                            Height="12"
+                            Margin="0,0,4,0"
+                            Visibility="{x:Bind HasIcon, Mode=OneWay}">
+                        <!-- LoadIconBehavior will magically fill this border up with an icon -->
+                        <Interactivity:Interaction.Behaviors>
+                            <local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>
+                        </Interactivity:Interaction.Behaviors>
+                    </Border>
+                    
                     <TextBlock
                         VerticalAlignment="Center"
                         FontSize="12"
