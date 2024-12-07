@@ -736,7 +736,7 @@ interface IListPage requires IPage, INotifyItemsChanged {
     Boolean ShowDetails{ get; };
     IFilters Filters { get; };
     IGridProperties GridProperties { get; };
-    Boolean HasMore { get; };
+    Boolean HasMoreItems { get; };
 
     IListItem[] GetItems();     
     void LoadMore();

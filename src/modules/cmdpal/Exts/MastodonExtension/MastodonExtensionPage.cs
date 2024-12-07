@@ -30,7 +30,7 @@ internal sealed partial class MastodonExtensionPage : ListPage
         Icon = new("https://mastodon.social/packs/media/icons/android-chrome-36x36-4c61fdb42936428af85afdbf8c6a45a8.png");
         Name = "Mastodon";
         ShowDetails = true;
-        HasMore = true;
+        HasMoreItems = true;
         IsLoading = true;
 
         // #6364ff
