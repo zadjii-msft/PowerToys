@@ -239,7 +239,7 @@
             VerticalAlignment="Bottom"
             Fill="{ThemeResource CardStrokeColorDefaultBrush}" />
 
-        <StackPanel
+        <!-- <StackPanel
             Grid.Row="2"
             Padding="24,12,0,0"
             Orientation="Horizontal"
@@ -261,7 +261,7 @@
                 Click="ToggleButton_Click"
                 Content="Tralalal"
                 Opacity="0" />
-        </StackPanel>
+        </StackPanel> -->
         <Grid
             Grid.Row="3"
             Background="{ThemeResource LayerOnAcrylicFillColorDefaultBrush}"
