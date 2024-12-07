@@ -55,12 +55,11 @@
         </Grid.ColumnDefinitions>
 
         
-        <Border
-            x:Name="IconBorder"
-            Width="20"
-            Height="20"
-            Margin="12,0,0,0"
-            CornerRadius="{StaticResource ControlCornerRadius}">
+        <Border x:Name="IconBorder"
+                Width="20"
+                Height="20"
+                Margin="12,0,0,0"
+                CornerRadius="{StaticResource ControlCornerRadius}">
             <!-- LoadIconBehavior will magically fill this border up with an icon -->
             <Interactivity:Interaction.Behaviors>
                 <cmdpalUI:LoadIconBehavior Source="{x:Bind ViewModel.CurrentPage.Icon, Mode=OneWay}"/>

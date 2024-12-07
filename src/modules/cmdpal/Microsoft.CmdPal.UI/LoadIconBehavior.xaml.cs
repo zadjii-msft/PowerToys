@@ -42,6 +42,8 @@ public partial class LoadIconBehavior : DependencyObject, IBehavior
         {
             if (icoSource is FontIconSource fontIco)
             {
+                fontIco.FontSize = border.Width;
+
                 // For inexplicable reasons, FontIconSource.CreateIconElement
                 // doesn't work, so do it ourselves
                 IconSourceElement elem = new()
