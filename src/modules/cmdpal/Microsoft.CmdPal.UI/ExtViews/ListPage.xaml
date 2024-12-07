@@ -81,9 +81,9 @@
     </Page.Resources>
 
     <Grid>
-        <ProgressBar 
-            IsIndeterminate="True" 
+        <ProgressBar
             VerticalAlignment="Top"
+            IsIndeterminate="True"
             Visibility="{x:Bind ViewModel.Loading, Mode=OneWay}" />
         <!--  not using Interactivity:Interaction.Behaviors due to wanting to do AoT  -->
         <!--
@@ -125,9 +125,12 @@
             </controls:Case>
 
             <controls:Case Value="Error">
-                <StackPanel Orientation="Vertical" Margin="16">
-                    <TextBlock Text="Error on page" FontSize="18" Foreground="{ThemeResource SystemErrorTextColor}" />
-                    <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" IsTextSelectionEnabled="True"/>
+                <StackPanel Margin="16" Orientation="Vertical">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="{ThemeResource SystemErrorTextColor}"
+                        Text="Error on page" />
+                    <TextBlock IsTextSelectionEnabled="True" Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" />
                 </StackPanel>
             </controls:Case>
         </controls:SwitchPresenter>
