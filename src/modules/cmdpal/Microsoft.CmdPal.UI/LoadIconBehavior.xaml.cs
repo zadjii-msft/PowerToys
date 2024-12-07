@@ -36,11 +36,24 @@ public partial class LoadIconBehavior : DependencyObject, IBehavior
     {
         // TODO: Cache this in the class
         var iconService = App.Current.Services.GetService<IIconCacheService>()!;
+
         var icoSource = await iconService.GetIconSource(Source ?? new(string.Empty));
 
         if (AssociatedObject is Border border)
         {
-            border.Child = icoSource?.CreateIconElement();
+            if (icoSource is FontIconSource fontIco)
+            {
+                IconSourceElement elem = new()
+                {
+                    IconSource = fontIco,
+                };
+                border.Child = elem;
+            }
+            else
+            {
+                var icoElement = icoSource?.CreateIconElement();
+                border.Child = icoElement;
+            }
         }
     }
 }
