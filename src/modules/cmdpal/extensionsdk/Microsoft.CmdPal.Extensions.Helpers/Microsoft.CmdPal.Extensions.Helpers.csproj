@@ -7,7 +7,7 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- <PlatformTarget>AnyCPU</PlatformTarget> -->
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
 
@@ -29,15 +29,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsAppSDK" />
-    <PackageReference Include="Microsoft.Web.WebView2" /> 
-    <!-- ^ This line forces the WebView2 version used by Windows App SDK to be the one we expect from Directory.Packages.props . -->
+    <PackageReference Include="Microsoft.Web.WebView2" /> <!-- This line forces the WebView2 version used by Windows App SDK to be the one we expect from Directory.Packages.props . -->
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.CmdPal.Extensions\Microsoft.CmdPal.Extensions.vcxproj" />
   </ItemGroup>
 
-  <!-- <ItemGroup>
+  <ItemGroup>
     <Content Include="$(TargetDir)\..\..\..\..\Microsoft.CmdPal.Extensions\$(Platform)\$(Configuration)\Microsoft.CmdPal.Extensions\Microsoft.CmdPal.Extensions.winmd" Link="Microsoft.CmdPal.Extensions.winmd" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup> -->
+  </ItemGroup>
 </Project>
