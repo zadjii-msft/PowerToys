@@ -87,6 +87,7 @@ public class ListPage : Page, IListPage
     {
         try
         {
+            // TODO #181 - This is the same thing that BaseObservable has to deal with.
             ItemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
         }
         catch
