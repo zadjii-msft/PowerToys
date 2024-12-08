@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Windows.UI;
 
 namespace NflExtension;
 
@@ -29,7 +28,7 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
         Icon = new("🏈");
         Name = "NFL Scores";
         ShowDetails = true;
-        Loading = true;
+        IsLoading = true;
     }
 
     public override IListItem[] GetItems()
@@ -50,7 +49,7 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
             _timer.Enabled = true;
         }
 
-        Loading = false;
+        IsLoading = false;
         return [.. _lastItems];
     }
 
@@ -121,6 +120,8 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
         if (game.Situation != null)
         {
             var detailsBody = $"""
+![a test](https://obsidian.md/images/obsidian-logo-gradient.svg)
+
 {game.Situation.DownDistanceText}
 
 {game.Situation.LastPlay.Text}
@@ -159,7 +160,7 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
         };
     }
 
-    private static Color HexToColor(string hex)
+    private static OptionalColor HexToColor(string hex)
     {
         // Ensure the string has the correct length
         if (hex.Length is not 6 and not 8)
@@ -179,7 +180,7 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
         var g = Convert.ToByte(hex.Substring(4, 2), 16); // Green
         var b = Convert.ToByte(hex.Substring(6, 2), 16); // Blue
 
-        return Color.FromArgb(a, r, g, b);
+        return ColorHelpers.FromArgb(a, r, g, b);
     }
 
     private static List<string> DaysOfWeek()
@@ -247,9 +248,18 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
-public sealed partial class NflGameCommand(Competition game) : NoOpCommand
+public sealed partial class NflGameCommand : OpenUrlCommand
 {
-    public Competition Game => game;
+    public Competition Game { get; init; }
+
+    public string GameUrl => $"https://www.espn.com/nfl/game/_/gameId/{Game.Id}";
+
+    public NflGameCommand(Competition game)
+        : base($"https://www.espn.com/nfl/game/_/gameId/{game.Id}")
+    {
+        Game = game;
+        Name = "View on ESPN";
+    }
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
