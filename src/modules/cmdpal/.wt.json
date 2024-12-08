@@ -21,6 +21,11 @@
             "input": "start https://github.com/zadjii-msft/PowerToys/compare/main...zadjii-msft:PowerToys:{branch}?expand=1\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D",
             "name": "New PR",
             "description": "Create a new PR targeting the right fork.\nReplace {branch} with the actual branch you want to merge."
+        },
+        {
+            "input": ".\\extensionsdk\\nuget\\BuildSDKHelper.ps1 -VersionOfSDK 0.0.1",
+            "name": "Build SDK",
+            "description": "Will build the nuget package for our SDK, for internal consumption"
         }
     ]
 }
