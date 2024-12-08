@@ -22,16 +22,35 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Border
+
+    <Grid
         Padding="8"
         Background="{ThemeResource LayerFillColorDefaultBrush}"
         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
         BorderThickness="1,0,0,0">
-        <StackPanel>
-            <TextBlock 
-                Text="{x:Bind ViewModel.Details.Title, Mode=OneWay}" 
-                Visibility="{x:Bind ViewModel.Details.Title, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}"/>
-            <!--<TextBlock Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}" />-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border 
+            Width="64" 
+            Height="64" 
+            Background="{ThemeResource AccentFillColorDefaultBrush}"
+            CornerRadius="{StaticResource ControlCornerRadius}">
+        </Border>
+
+        <TextBlock 
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            FontSize="20"
+            TextWrapping="WrapWholeWords"
+            Style="{StaticResource SubtitleTextBlockStyle}"
+            Text="{x:Bind ViewModel.Details.Title, Mode=OneWay}" 
+            Visibility="{x:Bind ViewModel.Details.Title, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}"/>
+
+        <ScrollViewer Grid.Row="2" HorizontalAlignment="Stretch">
             <toolkit:MarkdownTextBlock 
                 Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}"
                 Background="Transparent"
@@ -40,7 +59,6 @@
                 Header3Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                 IsTextSelectionEnabled="True"
                 />
-        </StackPanel>
-    </Border>
-
+        </ScrollViewer>
+    </Grid>
 </UserControl>
