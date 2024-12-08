@@ -49,6 +49,7 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
         if (extensionDetails != null)
         {
             Details = new(extensionDetails, Scheduler);
+            Details.InitializeProperties();
             UpdateProperty(nameof(Details));
             UpdateProperty(nameof(HasDetails));
         }

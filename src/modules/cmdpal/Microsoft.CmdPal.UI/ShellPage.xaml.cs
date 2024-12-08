@@ -8,6 +8,7 @@ using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 
@@ -20,7 +21,9 @@ public sealed partial class ShellPage :
     Page,
     IRecipient<NavigateBackMessage>,
     IRecipient<NavigateToDetailsMessage>,
-    IRecipient<PerformCommandMessage>
+    IRecipient<PerformCommandMessage>,
+    IRecipient<ShowDetailsMessage>,
+    IRecipient<HideDetailsMessage>
 {
     private readonly DrillInNavigationTransitionInfo _drillInNavigationTransitionInfo = new();
 
@@ -36,6 +39,9 @@ public sealed partial class ShellPage :
         WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
         WeakReferenceMessenger.Default.Register<NavigateToDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
+
+        WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
+        WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
 
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
     }
@@ -95,5 +101,18 @@ public sealed partial class ShellPage :
         {
             // TODO logging
         }
+    }
+
+    public void Receive(ShowDetailsMessage message)
+    {
+        DetailsContent.ViewModel.Details = message.Details;
+        DetailsContent.Visibility = Visibility.Visible;
+        DetailsColumn.Width = new GridLength(2, GridUnitType.Star);
+    }
+
+    public void Receive(HideDetailsMessage message)
+    {
+        DetailsContent.Visibility = Visibility.Collapsed;
+        DetailsColumn.Width = GridLength.Auto;
     }
 }

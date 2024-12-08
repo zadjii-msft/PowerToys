@@ -38,6 +38,7 @@
                    IsNavigationStackEnabled="True" />
             
             <controls:DetailsPane 
+                x:Name="DetailsContent"
                 Grid.Column="1" 
                 Visibility="Visible" />
                    

@@ -8,7 +8,8 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class DetailsPaneViewModel : ObservableObject
 {
-    public DetailsViewModel? Details { get; set; }
+    [ObservableProperty]
+    public partial DetailsViewModel? Details { get; set; }
 
     public DetailsPaneViewModel()
     {
