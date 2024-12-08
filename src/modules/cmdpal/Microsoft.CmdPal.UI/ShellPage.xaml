@@ -27,7 +27,21 @@
             Background="{ThemeResource LayerOnAcrylicFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="0,1,0,1">
-            <Frame Name="RootFrame" IsNavigationStackEnabled="True" />
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition x:Name="DetailsColumn" Width="2*" />
+            </Grid.ColumnDefinitions>
+
+            <Frame Name="RootFrame" 
+                   Grid.Column="0" 
+                   IsNavigationStackEnabled="True" />
+            
+            <controls:DetailsPane 
+                Grid.Column="1" 
+                Visibility="Visible" />
+                   
+        
         </Grid>
 
 
