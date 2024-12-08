@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:viewmodels="using:Microsoft.CmdPal.UI.ViewModels"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
     Background="Transparent"
     mc:Ignorable="d">
 
@@ -23,15 +24,22 @@
 
     <Border
         Padding="8"
-        Margin="2"
         Background="{ThemeResource LayerFillColorDefaultBrush}"
         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-        CornerRadius="{StaticResource ControlCornerRadius}"
-        BorderThickness="1">
+        BorderThickness="1,0,0,0">
         <StackPanel>
-            <TextBlock Text="Details details details" />
-            <TextBlock Text="{x:Bind ViewModel.Details.Title, Mode=OneWay}" />
-            <TextBlock Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}" />
+            <TextBlock 
+                Text="{x:Bind ViewModel.Details.Title, Mode=OneWay}" 
+                Visibility="{x:Bind ViewModel.Details.Title, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}"/>
+            <!--<TextBlock Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}" />-->
+            <toolkit:MarkdownTextBlock 
+                Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}"
+                Background="Transparent"
+                Header3FontSize="12"
+                Header3FontWeight="Normal"
+                Header3Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                IsTextSelectionEnabled="True"
+                />
         </StackPanel>
     </Border>
 
