@@ -248,19 +248,6 @@ jobs:
       targetFolder: $(JobOutputDirectory)/sdk/lib/net8.0-windows10.0.19041.0
 
   - task: CopyFiles@2
-    displayName: Stage SDK/runtimes
-    inputs:
-      flattenFolders: True
-      ${{ if eq(variables['BuildPlatform'],'x64') }}:
-        contents: |-
-          "**/Microsoft.CmdPal.Extensions/$(BuildPlatform)/release/Microsoft.CmdPal.Extensions/Microsoft.CmdPal.Extensions.dll"
-        targetFolder: $(JobOutputDirectory)/sdk/runtimes/win-$(BuildPlatform)/native/
-      ${{ if eq(variables['BuildPlatform'],'arm64') }}:
-        contents: |-
-          "**/Microsoft.CmdPal.Extensions/$(BuildPlatform)/release/WinUI3Apps/CmdPal/Microsoft.CmdPal.Extensions.dll"
-        targetFolder: $(JobOutputDirectory)/sdk/runtimes/win-$(BuildPlatform)/native/
-
-  - task: CopyFiles@2
     displayName: Stage SDK/winmd
     inputs:
       contents: |-
