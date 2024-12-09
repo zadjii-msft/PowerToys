@@ -77,7 +77,8 @@ public sealed partial class ShellPage :
             {
                 _ = DispatcherQueue.TryEnqueue(() =>
                 {
-                    // TODO: also hide our details pane about here, if we had one
+                    // Also hide our details pane about here, if we had one
+                    HideDetails();
                     var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext());
                     RootFrame.Navigate(typeof(ListPage), pageViewModel, _slideRightTransition);
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
@@ -110,7 +111,9 @@ public sealed partial class ShellPage :
         DetailsColumn.Width = new GridLength(2, GridUnitType.Star);
     }
 
-    public void Receive(HideDetailsMessage message)
+    public void Receive(HideDetailsMessage message) => HideDetails();
+
+    private void HideDetails()
     {
         DetailsContent.Visibility = Visibility.Collapsed;
         DetailsColumn.Width = GridLength.Auto;
