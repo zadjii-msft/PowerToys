@@ -32,7 +32,7 @@
             Spacing="8" />
 
         <DataTemplate x:Key="TagTemplate" x:DataType="viewmodels:TagViewModel">
-            <!--  TODO: Actually colorize the tags again -->
+            <!--  TODO: Actually colorize the tags again  -->
             <Border
                 Padding="4,2,4,2"
                 VerticalAlignment="Center"
@@ -46,7 +46,7 @@
                         Height="12"
                         Margin="0,0,4,0"
                         Content="{x:Bind IcoElement, Mode=OneWay}"
-                        Visibility="{x:Bind HasIcon, Mode=OneWay}" /> -->
+                        Visibility="{x:Bind HasIcon, Mode=OneWay}" />-->
                     <TextBlock
                         VerticalAlignment="Center"
                         FontSize="12"
@@ -98,12 +98,13 @@
                             TextWrapping="NoWrap"
                             Visibility="{x:Bind Subtitle, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}" />
                     </StackPanel>
-                    
-                    <ItemsRepeater ItemTemplate="{StaticResource TagTemplate}"
-                       ItemsSource="{x:Bind Tags}"
-                       Grid.Column="2"
-                       Visibility="{x:Bind HasTags}"
-                       Layout="{StaticResource HorizontalStackLayout}" />
+
+                    <ItemsRepeater
+                        Grid.Column="2"
+                        ItemTemplate="{StaticResource TagTemplate}"
+                        ItemsSource="{x:Bind Tags}"
+                        Layout="{StaticResource HorizontalStackLayout}"
+                        Visibility="{x:Bind HasTags}" />
                 </Grid>
             </ListViewItem>
         </DataTemplate>
