@@ -18,6 +18,10 @@ internal abstract class SearchQueryBase
 {
     private readonly Lock _lockObject = new(); // Lock object for synchronization
 
+    private static readonly Guid IIDIRowsetInfo = new("0C733A55-2A1C-11CE-ADE5-00AA0044773D");
+
+    private readonly DBPROPIDSET dbPropIdSet; // TODO: Implement IDisposable
+
     public uint ReuseWhereID { get; set; }
 
     public uint NumResults { get; set; }
@@ -28,6 +32,15 @@ internal abstract class SearchQueryBase
 
     public SearchQueryBase()
     {
+        dbPropIdSet = new DBPROPIDSET
+        {
+            rgPropertyIDs = Marshal.AllocCoTaskMem(sizeof(uint)), // Allocate memory for the property ID array
+            cPropertyIDs = 1,
+            guidPropertySet = new Guid("AA6EE6B0-E828-11D0-B23E-00AA0047FC01"), // DBPROPSET_MSIDXS_ROWSETEXT,
+        };
+
+        // Copy the property ID into the allocated memory
+        Marshal.WriteInt32(dbPropIdSet.rgPropertyIDs, 8); // MSIDXSPROP_WHEREID
     }
 
     protected virtual void FetchRows(out ulong totalFetched)
@@ -245,112 +258,114 @@ internal abstract class SearchQueryBase
         cmdText = (ICommandText)unkCmdPtr;
     }
 
-    protected uint GetReuseWhereId(IRowset rowset)
+    private IRowsetInfo GetRowsetInfo(IRowset rowset)
     {
-        // Get the IUnknown pointer for the IRowset object
-        var rowsetPtr = Marshal.GetIUnknownForObject(rowset);
-        IntPtr rowsetInfoPtr;
-        var iidIRowsetInfo = new Guid("0C733A55-2A1C-11CE-ADE5-00AA0044773D"); // IID_IRowsetInfo
-        var res = Marshal.QueryInterface(rowsetPtr, in iidIRowsetInfo, out rowsetInfoPtr);
-        Marshal.Release(rowsetPtr);
-
-        // var res = rowset.QueryInterface(typeof(IRowsetInfo).GUID, out var rowsetInfoObj);
-        if (res != 0)
+        if (rowset == null)
         {
-            Logger.LogError($"Error getting IRowsetInfo interface: {res}");
-            return 0;
+            return null;
         }
 
-        // Get the IRowsetInfo object from the interface pointer
-        // IRowsetInfo rowsetInfo = (IRowsetInfo)rowsetInfoObj;
-        var rowsetInfo = (IRowsetInfo)Marshal.GetObjectForIUnknown(rowsetInfoPtr);
+        var rowsetInfoPtr = IntPtr.Zero;
 
-        var propset = new DBPROPIDSET
+        try
         {
-            // rgPropertyIDs = new uint[] { 8 }, // MSIDXSPROP_WHEREID,
-            rgPropertyIDs = Marshal.AllocCoTaskMem(sizeof(uint)), // Allocate memory for the property ID array
-            cPropertyIDs = 1,
-            guidPropertySet = new Guid("AA6EE6B0-E828-11D0-B23E-00AA0047FC01"), // DBPROPSET_MSIDXS_ROWSETEXT,
-        };
+            // Get the IUnknown pointer for the IRowset object
+            var rowsetPtr = Marshal.GetIUnknownForObject(rowset);
 
-        // Copy the property ID into the allocated memory
-        Marshal.WriteInt32(propset.rgPropertyIDs, 8); // MSIDXSPROP_WHEREID
+            // Query for IRowsetInfo interface
+            var res = Marshal.QueryInterface(rowsetPtr, in IIDIRowsetInfo, out rowsetInfoPtr);
+            if (res != 0)
+            {
+                Logger.LogError($"Error getting IRowsetInfo interface: {res}");
+                return null;
+            }
 
+            // Marshal the interface pointer to the actual IRowsetInfo object
+            var rowsetInfo = (IRowsetInfo)Marshal.GetObjectForIUnknown(rowsetInfoPtr);
+            return rowsetInfo;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Exception occurred while getting IRowsetInfo. ", ex);
+            return null;
+        }
+        finally
+        {
+            // Release the IRowsetInfo pointer if it was obtained
+            if (rowsetInfoPtr != IntPtr.Zero)
+            {
+                Marshal.Release(rowsetInfoPtr); // Release the IRowsetInfo pointer
+            }
+        }
+    }
+
+    private DBPROP? GetPropset(IRowsetInfo rowsetInfo)
+    {
         var prgPropSetsPtr = IntPtr.Zero;
 
         try
         {
             ulong cPropertySets;
-
-            res = rowsetInfo.GetProperties(1, [propset], out cPropertySets, out prgPropSetsPtr);
+            var res = rowsetInfo.GetProperties(1, [dbPropIdSet], out cPropertySets, out prgPropSetsPtr);
             if (res != 0)
             {
                 Logger.LogError($"Error getting properties: {res}");
-                return 0;
+                return null;
             }
 
             if (cPropertySets == 0 || prgPropSetsPtr == IntPtr.Zero)
             {
                 Logger.LogError("No property sets returned");
-                return 0;
+                return null;
             }
 
-            // Marshal the returned DBPROPSET
-            var dbPropSetSize = Marshal.SizeOf<DBPROPSET>();
-            var propSets = new DBPROPSET[cPropertySets];
-
-            for (var i = 0; i < (int)cPropertySets; i++)
-            {
-                var currentPtr = new IntPtr(prgPropSetsPtr.ToInt64() + (i * dbPropSetSize));
-                propSets[i] = Marshal.PtrToStructure<DBPROPSET>(currentPtr);
-            }
-
-            var propSet = propSets[0];
+            var firstPropSetPtr = new IntPtr(prgPropSetsPtr.ToInt64());
+            var propSet = Marshal.PtrToStructure<DBPROPSET>(firstPropSetPtr);
             if (propSet.cProperties == 0 || propSet.rgProperties == IntPtr.Zero)
             {
-                // FreeProperties(cPropertySets, prgPropSetsPtr, propSets);
-                return 0;
+                return null;
             }
 
-            var dbPropSize = Marshal.SizeOf<DBPROP>();
-            var props = new DBPROP[propSet.cProperties];
-
-            for (var j = 0; j < (int)propSet.cProperties; j++)
-            {
-                var propPtr = new IntPtr(propSet.rgProperties.ToInt64() + (j * dbPropSize));
-                props[j] = Marshal.PtrToStructure<DBPROP>(propPtr);
-            }
-
-            // Access the property value
-            var prop = props[0];
-            if (prop.vValue.vt == (ushort)VarEnum.VT_UI4)
-            {
-                var value = prop.vValue.unionValue.ulVal;
-
-                // Free allocated memory before returning
-                // FreeProperties(cPropertySets, prgPropSetsPtr, propSets);
-                return value;
-            }
-            else
-            {
-                // FreeProperties(cPropertySets, prgPropSetsPtr, propSets);
-                return 0;
-            }
+            var propPtr = new IntPtr(propSet.rgProperties.ToInt64());
+            var prop = Marshal.PtrToStructure<DBPROP>(propPtr);
+            return prop;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Exception occurred while getting properties,", ex);
+            return null;
         }
         finally
         {
-            // Free the allocated memory for rgPropertyIDs
-            if (propset.rgPropertyIDs != IntPtr.Zero)
-            {
-                Marshal.FreeCoTaskMem(propset.rgPropertyIDs);
-            }
-
             // Free the property sets pointer returned by GetProperties, if necessary
             if (prgPropSetsPtr != IntPtr.Zero)
             {
                 Marshal.FreeCoTaskMem(prgPropSetsPtr);
             }
         }
+    }
+
+    private uint GetReuseWhereId(IRowset rowset)
+    {
+        var rowsetInfo = GetRowsetInfo(rowset);
+        if (rowsetInfo == null)
+        {
+            return 0;
+        }
+
+        var prop = GetPropset(rowsetInfo);
+        if (prop == null)
+        {
+            return 0;
+        }
+
+        if (prop?.vValue.vt == (ushort)VarEnum.VT_UI4)
+        {
+            var value = prop?.vValue.unionValue.ulVal;
+            return (uint)value;
+        }
+
+        return 0;
     }
 
     public abstract void OnPreFetchRows();
@@ -374,4 +389,13 @@ internal abstract class SearchQueryBase
             return false; // Overflow occurred
         }
     }
+
+    /*public void Dispose()
+    {
+        // Free the allocated memory for rgPropertyIDs
+        if (propset.rgPropertyIDs != IntPtr.Zero)
+        {
+            Marshal.FreeCoTaskMem(propset.rgPropertyIDs);
+        }
+    }*/
 }
