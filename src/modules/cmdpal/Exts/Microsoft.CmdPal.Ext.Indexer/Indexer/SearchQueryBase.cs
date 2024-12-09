@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
+using Microsoft.CmdPal.Ext.Indexer.Indexer.Utils;
 using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using MSDASC;
@@ -167,7 +168,7 @@ internal abstract class SearchQueryBase
     protected void PrimeIndexAndCacheWhereId()
     {
         // We need to generate a search query string with the search text the user entered above
-        var queryStr = GetPrimingQueryString();
+        var queryStr = QueryStringBuilder.GeneratePrimingQuery();
 
         ICommandText cmdTxt;
         GetCommandText(out cmdTxt);
@@ -361,8 +362,6 @@ internal abstract class SearchQueryBase
     public abstract void OnPostFetchRows();
 
     public abstract void OnFetchRowCallback(IPropertyStore propStore);
-
-    public abstract string GetPrimingQueryString();
 
     private static bool ULongLongAdd(ulong augend, ulong addend, out ulong result)
     {

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -121,19 +121,11 @@ internal sealed class SearchQuery : SearchQueryBase, IDisposable
 
     public override void OnFetchRowCallback(IPropertyStore propStore) => CreateSearchResult(propStore);
 
-    public override string GetPrimingQueryString()
-    {
-        var builder = new QueryStringBuilder();
-        var queryStr = builder.GeneratePrimingQuery();
-        return queryStr;
-    }
-
     private void ExecuteSyncInternal()
     {
         try
         {
-            var builder = new QueryStringBuilder();
-            var queryStr = builder.GenerateQuery(SearchText, ReuseWhereID);
+            var queryStr = QueryStringBuilder.GenerateQuery(SearchText, ReuseWhereID);
             ExecuteQueryStringSync(queryStr);
         }
         catch (Exception ex)
