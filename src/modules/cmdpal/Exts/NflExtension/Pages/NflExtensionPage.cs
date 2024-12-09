@@ -4,13 +4,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Timers;
+using HtmlAgilityPack;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -98,7 +101,7 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
         return list;
     }
 
-    private ListItem EventNodeToItem(NflEvent e)
+    private async Task<ListItem> EventNodeToItemAsync(NflEvent e)
     {
         var name = e.Name;
         var game = e
@@ -116,23 +119,7 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
                             Color = HexToColor(c.Team.Color),
                         }).ToArray();
 
-        Details details = null;
-        if (game.Situation != null)
-        {
-            var detailsBody = $"""
-![a test](https://obsidian.md/images/obsidian-logo-gradient.svg)
-
-{game.Situation.DownDistanceText}
-
-{game.Situation.LastPlay.Text}
-""";
-
-            details = new Details()
-            {
-                Title = string.Join("-", game.Competitors.Select(c => $"{c.Team.Abbreviation} {c.Score}")),
-                Body = detailsBody,
-            };
-        }
+        var details = await BuildDetails(game);
 
         // Icon
         var icon = new IconDataType(string.Empty);
@@ -158,6 +145,71 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
             Tags = tags,
             Details = details,
         };
+
+        static async Task<Details> BuildDetails(Competition game)
+        {
+            Details details = null;
+            if (game.Situation != null)
+            {
+                var detailsBody = $"""
+![a test](https://obsidian.md/images/obsidian-logo-gradient.svg)
+
+{game.Situation.DownDistanceText}
+
+{game.Situation.LastPlay.Text}
+""";
+
+                await FetchImage(game);
+
+                details = new Details()
+                {
+                    Title = string.Join("-", game.Competitors.Select(c => $"{c.Team.Abbreviation} {c.Score}")),
+                    Body = detailsBody,
+                };
+            }
+
+            return details;
+        }
+    }
+
+    private static async Task FetchImage(Competition game)
+    {
+        var url = $"https://www.espn.com/nfl/game/_/gameId/{game.Id}";
+        var svgOutputPath = $"Assets/{game.Id}.svg";
+        svgOutputPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), svgOutputPath);
+        try
+        {
+            // Create an HttpClient to retrieve the webpage
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetStringAsync(url);
+
+            // Load the response into an HtmlDocument
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(response);
+
+            // Select the #drivechart element
+            var driveChartElement = htmlDocument.DocumentNode.SelectSingleNode("//*[@id='drivechart']");
+
+            if (driveChartElement != null)
+            {
+                // Extract the inner HTML content
+                var svgContent = driveChartElement.InnerHtml;
+                svgContent = $"<svg xmlns=\"http://www.w3.org/2000/svg\">{{svgContent}}</svg>";
+
+                // Save the content as an SVG file
+                File.WriteAllText(svgOutputPath, svgContent);
+
+                Debug.WriteLine($"SVG saved successfully to {svgOutputPath}");
+            }
+            else
+            {
+                Debug.WriteLine("The #drivechart element was not found on the page.");
+            }
+        }
+        catch (System.Exception)
+        {
+            // Console.WriteLine($"An error occurred: {ex.Message}");
+        }
     }
 
     private static OptionalColor HexToColor(string hex)
@@ -212,7 +264,13 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
         foreach (var day in days)
         {
             var gameData = await FetchDataAsync(day);
-            games.AddRange(gameData.Events.Select(EventNodeToItem));
+            foreach (var ev in gameData.Events)
+            {
+                var li = await EventNodeToItemAsync(ev);
+                games.Add(li);
+            }
+
+            // games.AddRange((IEnumerable<ListItem>)gameData.Events.Select(EventNodeToItemAsync));
         }
 
         return games;
@@ -236,7 +294,7 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
 
             return data;
         }
-        catch (Exception e)
+        catch (System.Exception e)
         {
             Console.WriteLine($"An error occurred: {e.Message}");
         }
