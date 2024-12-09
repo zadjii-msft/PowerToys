@@ -11,7 +11,6 @@ using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Utils;
 using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
-using MSDASC;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 
@@ -106,9 +105,6 @@ internal abstract class SearchQueryBase
         totalFetched = fetched;
     }
 
-    [DllImport("oleaut32.dll")]
-    private static extern int GetErrorInfo(uint dwReserved, out IErrorInfo ppErrorInfo);
-
     protected void ExecuteQueryStringSync(string queryStr)
     {
         try
@@ -132,7 +128,7 @@ internal abstract class SearchQueryBase
                 var res = cmdTxt.SetCommandText(ref dbGuidDefault, queryStr);
                 if (res != 0)
                 {
-                    var err = GetErrorInfo(0, out var errorInfo);
+                    var err = NativeHelpers.GetErrorInfo(0, out var errorInfo);
                     if (err == 0 && errorInfo != null)
                     {
                         errorInfo.GetDescription(out var description);

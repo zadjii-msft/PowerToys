@@ -4,6 +4,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using MSDASC;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Native;
 
@@ -48,4 +49,7 @@ internal sealed class NativeHelpers
         uint dwClsContext,
         [In] Guid riid,
         [MarshalAs(UnmanagedType.IUnknown)] out object ppv);
+
+    [DllImport("oleaut32.dll")]
+    public static extern int GetErrorInfo(uint dwReserved, out IErrorInfo ppErrorInfo);
 }
