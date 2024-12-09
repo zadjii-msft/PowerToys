@@ -24,6 +24,16 @@ public sealed partial class ActionBar : UserControl
 
     private void ActionListViewItem_Tapped(object sender, TappedRoutedEventArgs e)
     {
-        // TODO
+        MoreCommandsButton.Flyout.Hide();
+
+        if (sender is not ListViewItem listItem)
+        {
+            return;
+        }
+
+        if (listItem.DataContext is CommandContextItemViewModel item)
+        {
+            ViewModel?.InvokeItemCommand.Execute(item);
+        }
     }
 }
