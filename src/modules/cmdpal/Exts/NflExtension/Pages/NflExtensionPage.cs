@@ -151,15 +151,15 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
             Details details = null;
             if (game.Situation != null)
             {
+                var driveChartPath = await FetchImage(game);
+
                 var detailsBody = $"""
-![a test](https://obsidian.md/images/obsidian-logo-gradient.svg)
+![Drivechart]({driveChartPath})
 
 {game.Situation.DownDistanceText}
 
 {game.Situation.LastPlay.Text}
 """;
-
-                await FetchImage(game);
 
                 details = new Details()
                 {
@@ -172,7 +172,7 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
         }
     }
 
-    private static async Task FetchImage(Competition game)
+    private static async Task<string> FetchImage(Competition game)
     {
         var url = $"https://www.espn.com/nfl/game/_/gameId/{game.Id}";
         var svgOutputPath = $"Assets/{game.Id}.svg";
@@ -200,6 +200,7 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
                 File.WriteAllText(svgOutputPath, svgContent);
 
                 Debug.WriteLine($"SVG saved successfully to {svgOutputPath}");
+                return svgOutputPath;
             }
             else
             {
@@ -210,6 +211,8 @@ internal sealed partial class NflExtensionPage : ListPage, IDisposable
         {
             // Console.WriteLine($"An error occurred: {ex.Message}");
         }
+
+        return string.Empty;
     }
 
     private static OptionalColor HexToColor(string hex)
