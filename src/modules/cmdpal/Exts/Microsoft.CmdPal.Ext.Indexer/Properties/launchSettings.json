@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Microsoft.CmdPal.Ext.Indexer (Package)": {
-      "commandName": "MsixPackage"
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": true
     },
     "Microsoft.CmdPal.Ext.Indexer (Unpackaged)": {
       "commandName": "Project"
