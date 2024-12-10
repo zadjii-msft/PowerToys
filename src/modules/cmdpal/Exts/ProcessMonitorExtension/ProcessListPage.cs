@@ -21,6 +21,8 @@ internal sealed partial class ProcessListPage : ListPage
 
     public override IListItem[] GetItems() => DoGetItems();
 
+    internal void UpdateItems() => this.RaiseItemsChanged(-1);
+
     private IListItem[] DoGetItems()
     {
         var items = GetRunningProcesses();
@@ -32,7 +34,7 @@ internal sealed partial class ProcessListPage : ListPage
                 Title = process.Name,
                 Subtitle = $"PID: {process.ProcessId}",
                 MoreCommands = [
-                    new CommandContextItem(new TerminateProcess(process))
+                    new CommandContextItem(new TerminateProcess(process, this))
                 ],
             }).ToArray();
         return s;
