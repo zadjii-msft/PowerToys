@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.CmdPal.Ext.WebSearch.Commands;
 using Microsoft.CmdPal.Ext.WebSearch.Helpers;
 using Microsoft.CmdPal.Ext.WebSearch.Pages;
 using Microsoft.CmdPal.Ext.WebSearch.Properties;
@@ -13,10 +14,12 @@ namespace Microsoft.CmdPal.Ext.WebSearch;
 public partial class WebSearchCommandsProvider : CommandProvider
 {
     private readonly SettingsManager _settingsManager = new();
+    private readonly FallbackExecuteSearchItem _fallbackItem;
 
     public WebSearchCommandsProvider()
     {
         DisplayName = Resources.extension_name;
+        _fallbackItem = new FallbackExecuteSearchItem(_settingsManager);
     }
 
     public override ICommandItem[] TopLevelCommands()
@@ -27,4 +30,6 @@ public partial class WebSearchCommandsProvider : CommandProvider
         }
         ];
     }
+
+    public override IFallbackCommandItem[]? FallbackCommands() => [_fallbackItem];
 }

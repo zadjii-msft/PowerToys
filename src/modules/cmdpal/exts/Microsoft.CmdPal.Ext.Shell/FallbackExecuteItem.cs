@@ -4,9 +4,6 @@
 
 using Microsoft.CmdPal.Ext.Shell.Commands;
 using Microsoft.CmdPal.Ext.Shell.Helpers;
-using Microsoft.CmdPal.Ext.Shell.Pages;
-using Microsoft.CmdPal.Ext.Shell.Properties;
-using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.Shell;

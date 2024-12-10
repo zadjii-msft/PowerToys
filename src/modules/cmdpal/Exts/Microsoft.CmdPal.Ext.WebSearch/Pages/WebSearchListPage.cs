@@ -19,7 +19,7 @@ namespace Microsoft.CmdPal.Ext.WebSearch.Pages;
 internal sealed partial class WebSearchListPage : DynamicListPage
 {
     private readonly string _iconPath = string.Empty;
-    private readonly List<ListItem> _historyItems;
+    private readonly List<ListItem>? _historyItems;
     private readonly SettingsManager _settingsManager;
     private static readonly CompositeFormat PluginInBrowserName = System.Text.CompositeFormat.Parse(Properties.Resources.plugin_in_browser_name);
     private static readonly CompositeFormat PluginOpen = System.Text.CompositeFormat.Parse(Properties.Resources.plugin_open);
@@ -50,8 +50,13 @@ internal sealed partial class WebSearchListPage : DynamicListPage
     public List<ListItem> Query(string query)
     {
         ArgumentNullException.ThrowIfNull(query);
+        IEnumerable<ListItem>? filteredHistoryItems = null;
 
-        var filteredHistoryItems = _settingsManager.ShowHistory != Resources.history_none ? ListHelpers.FilterList(_historyItems, query).OfType<ListItem>() : null;
+        if (_historyItems != null)
+        {
+            filteredHistoryItems = _settingsManager.ShowHistory != Resources.history_none ? ListHelpers.FilterList(_historyItems, query).OfType<ListItem>() : null;
+        }
+
         var results = new List<ListItem>();
         var arguments = "? ";
 

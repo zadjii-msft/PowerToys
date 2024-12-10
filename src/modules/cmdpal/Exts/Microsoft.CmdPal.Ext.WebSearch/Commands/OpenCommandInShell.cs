@@ -13,12 +13,13 @@ namespace Microsoft.CmdPal.Ext.WebSearch.Commands;
 
 internal sealed partial class OpenCommandInShell : InvokableCommand
 {
-    private readonly string _arguments;
     private readonly SettingsManager _settingsManager;
+
+    public string Arguments { get; internal set; } = string.Empty;
 
     internal OpenCommandInShell(string arguments, SettingsManager settingsManager)
     {
-        _arguments = arguments;
+        Arguments = arguments;
         BrowserInfo.UpdateIfTimePassed();
         Icon = new(BrowserInfo.IconPath);
         Name = Properties.Resources.open_in_default_browser;
@@ -27,7 +28,7 @@ internal sealed partial class OpenCommandInShell : InvokableCommand
 
     public override CommandResult Invoke()
     {
-        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, _arguments))
+        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, Arguments))
         {
             // TODO GH# 138 --> actually display feedback from the extension somewhere.
             return CommandResult.KeepOpen();
@@ -35,7 +36,7 @@ internal sealed partial class OpenCommandInShell : InvokableCommand
 
         if (_settingsManager.ShowHistory != Resources.history_none)
         {
-            _settingsManager.SaveHistory(new HistoryItem(_arguments[2..], DateTime.Now));
+            _settingsManager.SaveHistory(new HistoryItem(Arguments[2..], DateTime.Now));
         }
 
         return CommandResult.Dismiss();
