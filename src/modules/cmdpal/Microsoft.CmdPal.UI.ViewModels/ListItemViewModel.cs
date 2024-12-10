@@ -4,6 +4,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
@@ -100,4 +101,10 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
 
         UpdateProperty(propertyName);
     }
+
+    // TODO: Do we want filters to match descriptions and other properties? Tags, etc... Yes?
+    // TODO: Do we want to save off the score here so we can sort by it in our ListViewModel?
+    public bool MatchesFilter(string filter) => StringMatcher.FuzzySearch(filter, Title).Success || StringMatcher.FuzzySearch(filter, Subtitle).Success;
+
+    public override string ToString() => $"{Name} ListItemViewModel";
 }
