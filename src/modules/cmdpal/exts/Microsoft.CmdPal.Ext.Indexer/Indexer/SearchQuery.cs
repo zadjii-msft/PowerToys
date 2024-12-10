@@ -19,8 +19,6 @@ internal sealed class SearchQuery : SearchQueryBase, IDisposable
     private EventWaitHandle queryCompletedEvent;
     private Timer queryTpTimer;
 
-    public bool ContentSearchEnabled { get; private set; }
-
     public uint Cookie { get; set; }
 
     public string SearchText { get; private set; }
@@ -60,10 +58,6 @@ internal sealed class SearchQuery : SearchQueryBase, IDisposable
             Logger.LogError("Exception at SearchUXQueryHelper Init", ex);
         }
     }
-
-    public uint GetNumResults() => NumResults;
-
-    public SearchResult GetResult(uint idx) => idx >= SearchResults.Count ? throw new ArgumentOutOfRangeException(nameof(idx)) : SearchResults[(int)idx];
 
     public void WaitForQueryCompletedEvent() => queryCompletedEvent.WaitOne();
 
@@ -110,14 +104,9 @@ internal sealed class SearchQuery : SearchQueryBase, IDisposable
         pQueryHelper.ExecuteSyncInternal();
     }
 
-    // If we've gotten this far we have successful results...only now clear the result list and update it
     public override void OnPreFetchRows() => SearchResults.Clear();
 
-    public override void OnPostFetchRows()
-    {
-        NumResults = (uint)SearchResults.Count; // num results is really how many we display
-        queryCompletedEvent.Set();
-    }
+    public override void OnPostFetchRows() => queryCompletedEvent.Set();
 
     public override void OnFetchRowCallback(IPropertyStore propStore) => CreateSearchResult(propStore);
 
