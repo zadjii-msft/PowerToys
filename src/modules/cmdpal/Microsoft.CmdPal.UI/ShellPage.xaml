@@ -87,11 +87,11 @@
 
                 <Border x:Name="HeroImageBorder"
                         Width="64" 
-                        Height="64" >
+                        Height="64"
+                        Visibility="{x:Bind ViewModel.Details.HasHeroImage, Mode=OneWay}" >
                     <!-- LoadIconBehavior will magically fill this border up with an icon -->
                     <Interactivity:Interaction.Behaviors>
                         <local:LoadIconBehavior Source="{x:Bind ViewModel.Details.HeroImage, Mode=OneWay}"/>
-                        <local:HideMissingIconBehavior Source="{x:Bind ViewModel.Details.HeroImage, Mode=OneWay}"/>
                     </Interactivity:Interaction.Behaviors>
                 </Border>
 
