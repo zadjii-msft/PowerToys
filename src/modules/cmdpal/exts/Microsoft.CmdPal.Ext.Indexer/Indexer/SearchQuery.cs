@@ -135,84 +135,6 @@ internal sealed class SearchQuery : IDisposable
         }
     }
 
-    private SearchResult CreateSearchResult(IPropertyStore propStore)
-    {
-        // Get item name display
-        PROPVARIANT itemNameDisplay;
-        PROPERTYKEY pKeyItemNameDisplay = new() { fmtid = new System.Guid("B725F130-47EF-101A-A5F1-02608C9EEBAC"), pid = 10 };
-        var hr = propStore.GetValue(ref pKeyItemNameDisplay, out itemNameDisplay);
-        if (hr != 0)
-        {
-            Logger.LogError("Get item name display error: " + hr);
-            return null;
-        }
-
-        // Get item URL
-        PROPVARIANT itemUrl;
-        PROPERTYKEY pKeyItemUrl = new() { fmtid = new System.Guid("49691C90-7E17-101A-A91C-08002B2ECDA9"), pid = 9 };
-        hr = propStore.GetValue(ref pKeyItemUrl, out itemUrl);
-        if (hr != 0)
-        {
-            Logger.LogError("Get item URL error: " + hr);
-            return null;
-        }
-
-        // Get kind text
-        PROPVARIANT kindText;
-        PROPERTYKEY pKeyKindText = new() { fmtid = new System.Guid("F04BEF95-C585-4197-A2B7-DF46FDC9EE6D"), pid = 100 };
-        hr = propStore.GetValue(ref pKeyKindText, out kindText);
-        if (hr != 0)
-        {
-            Logger.LogError("Get kind text error: " + hr);
-            return null;
-        }
-
-        var isFolder = false;
-        if (kindText.vt == (ushort)VarEnum.VT_LPWSTR && kindText.unionValue.pwszVal != IntPtr.Zero)
-        {
-            var kindString = Marshal.PtrToStringUni(kindText.unionValue.pwszVal);
-            if (string.Equals(kindString, "Folder", StringComparison.OrdinalIgnoreCase))
-            {
-                isFolder = true;
-            }
-        }
-
-        var filePath = Marshal.PtrToStringUni(itemUrl.unionValue.pwszVal);
-        if (filePath == null)
-        {
-            return null;
-        }
-
-        filePath = ConvertUrlToFilePath(filePath);
-
-        // Create the actual result object
-        var searchResult = new SearchResult(
-            Marshal.PtrToStringUni(itemNameDisplay.unionValue.pwszVal),
-            Marshal.PtrToStringUni(itemUrl.unionValue.pwszVal),
-            filePath,
-            isFolder);
-
-        itemUrl.Dispose();
-        kindText.Dispose();
-
-        return searchResult;
-    }
-
-    private string ConvertUrlToFilePath(string url)
-    {
-        var result = url.Replace('/', '\\'); // replace all '/' to '\\'
-
-        var fileProtocolString = "file:";
-        var indexProtocolFound = url.IndexOf(fileProtocolString, StringComparison.CurrentCultureIgnoreCase);
-
-        if (indexProtocolFound != -1 && (indexProtocolFound + fileProtocolString.Length) < url.Length)
-        {
-            result = result[(indexProtocolFound + fileProtocolString.Length)..];
-        }
-
-        return result;
-    }
-
     private bool HandleRow(IGetRow getRow, IntPtr rowHandle)
     {
         object propertyStorePtr = null;
@@ -233,8 +155,14 @@ internal sealed class SearchQuery : IDisposable
                 return false;
             }
 
-            SearchResults.Add(CreateSearchResult(propertyStore));
+            var searchResult = SearchResult.Create(propertyStore);
+            if (searchResult == null)
+            {
+                Logger.LogError("Failed to create search result");
+                return false;
+            }
 
+            SearchResults.Add(searchResult);
             return true;
         }
         catch (Exception ex)
