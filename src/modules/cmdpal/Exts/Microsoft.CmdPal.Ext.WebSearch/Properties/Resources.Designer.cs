@@ -205,7 +205,7 @@ namespace Microsoft.CmdPal.Ext.WebSearch.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show your history from previous searches.
+        ///   Looks up a localized string similar to Determines the number of history items to show from previous searches.
         /// </summary>
         public static string plugin_show_history {
             get {

@@ -167,7 +167,7 @@
     <value>Failed to open {0}.</value>
   </data>
   <data name="plugin_show_history" xml:space="preserve">
-    <value>Show your history from previous searches</value>
+    <value>Determines the number of history items to show from previous searches</value>
   </data>
   <data name="settings_page_name" xml:space="preserve">
     <value>Settings</value>
