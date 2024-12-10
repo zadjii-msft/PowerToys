@@ -7,9 +7,20 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:Microsoft.CmdPal.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     Background="Transparent"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <converters:StringVisibilityConverter
+                x:Key="StringNotEmptyToVisibilityConverter"
+                EmptyValue="Collapsed"
+                NotEmptyValue="Visible" />
+        </ResourceDictionary>
+    </Page.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -36,13 +47,50 @@
             <Frame Name="RootFrame" 
                    Grid.Column="0" 
                    IsNavigationStackEnabled="True" />
-            
-            <controls:DetailsPane 
+
+            <Grid 
                 x:Name="DetailsContent"
                 Grid.Column="1" 
-                Visibility="Visible" />
-                   
-        
+                Visibility="Visible"
+                Padding="8"
+                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1,0,0,0">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Border 
+                    Width="64" 
+                    Height="64" 
+                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                    CornerRadius="{StaticResource ControlCornerRadius}">
+                </Border>
+
+                <TextBlock 
+                    Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    FontSize="20"
+                    TextWrapping="WrapWholeWords"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.Details.Title, Mode=OneWay}" 
+                    Visibility="{x:Bind ViewModel.Details.Title, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}"/>
+
+                <ScrollViewer Grid.Row="2" HorizontalAlignment="Stretch">
+                    <toolkit:MarkdownTextBlock 
+                        Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}"
+                        Background="Transparent"
+                        Header3FontSize="12"
+                        Header3FontWeight="Normal"
+                        Header3Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsTextSelectionEnabled="True"/>
+                </ScrollViewer>
+            </Grid>
+
+
         </Grid>
 
 

@@ -106,7 +106,7 @@ public sealed partial class ShellPage :
 
     public void Receive(ShowDetailsMessage message)
     {
-        DetailsContent.ViewModel.Details = message.Details;
+        ViewModel.Details = message.Details;
         DetailsContent.Visibility = Visibility.Visible;
         DetailsColumn.Width = new GridLength(2, GridUnitType.Star);
     }
