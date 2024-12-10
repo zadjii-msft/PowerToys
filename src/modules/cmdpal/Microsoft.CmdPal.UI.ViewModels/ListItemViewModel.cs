@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 
@@ -24,6 +25,7 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
 
     public DetailsViewModel? Details { get; private set; }
 
+    [MemberNotNullWhen(true, nameof(Details))]
     public bool HasDetails => Details != null;
 
     public override void InitializeProperties()
