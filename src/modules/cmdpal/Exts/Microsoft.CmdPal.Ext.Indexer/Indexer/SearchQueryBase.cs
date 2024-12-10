@@ -27,7 +27,6 @@ internal abstract class SearchQueryBase
     public uint NumResults { get; set; }
 
     private IRowset currentRowset;
-
     private IRowset reuseRowset;
 
     public SearchQueryBase()
@@ -127,38 +126,18 @@ internal abstract class SearchQueryBase
                 // We need to generate a search query string with the search text the user entered above
                 if (currentRowset != null)
                 {
+                    if (reuseRowset != null)
+                    {
+                        Marshal.ReleaseComObject(reuseRowset);
+                    }
+
                     // We have a previous rowset, this means the user is typing and we should store this
                     // recapture the where ID from this so the next ExecuteSync call will be faster
                     reuseRowset = currentRowset;
                     ReuseWhereID = GetReuseWhereId(reuseRowset);
                 }
 
-                currentRowset = null;
-
-                ICommandText cmdTxt;
-                GetCommandText(out cmdTxt);
-                var dbGuidDefault = new Guid("C8B521FB-5CF3-11CE-ADE5-00AA0044773D");
-                var res = cmdTxt.SetCommandText(ref dbGuidDefault, queryStr);
-                if (res != 0)
-                {
-                    var err = NativeHelpers.GetErrorInfo(0, out var errorInfo);
-                    if (err == 0 && errorInfo != null)
-                    {
-                        errorInfo.GetDescription(out var description);
-                        Logger.LogError($"SetCommandText Error: {description}");
-                    }
-
-                    return;
-                }
-
-                res = cmdTxt.Execute(null, typeof(IRowset).GUID, 0, out var rowCount, out var unkRowsetPtr);
-                if (res != 0)
-                {
-                    Logger.LogError($"Execute Error: {res}");
-                    return;
-                }
-
-                currentRowset = unkRowsetPtr as IRowset;
+                currentRowset = ExecuteCommand(queryStr);
 
                 OnPreFetchRows();
                 FetchRows(out var rowsFetched);
@@ -176,86 +155,93 @@ internal abstract class SearchQueryBase
 
     protected void PrimeIndexAndCacheWhereId()
     {
-        // We need to generate a search query string with the search text the user entered above
         var queryStr = QueryStringBuilder.GeneratePrimingQuery();
-
-        ICommandText cmdTxt;
-        GetCommandText(out cmdTxt);
-        if (cmdTxt == null)
+        var rowset = ExecuteCommand(queryStr);
+        if (rowset != null)
         {
-            Logger.LogError("Failed to get ICommandText interface");
-            return;
+            if (reuseRowset != null)
+            {
+                Marshal.ReleaseComObject(reuseRowset);
+            }
+
+            reuseRowset = rowset;
         }
 
-        var dbGuidDefault = new Guid("C8B521FB-5CF3-11CE-ADE5-00AA0044773D");
-        var res = cmdTxt.SetCommandText(ref dbGuidDefault, queryStr);
-        if (res != 0)
-        {
-            Logger.LogError($"SetCommandText Error: {res}");
-            return;
-        }
-
-        res = cmdTxt.Execute(null, typeof(IRowset).GUID, 0, out var _, out var unkRowsetPtr);
-        if (res != 0)
-        {
-            Logger.LogError($"Execute Error: {res}");
-            return;
-        }
-
-        reuseRowset = unkRowsetPtr as IRowset;
         ReuseWhereID = GetReuseWhereId(reuseRowset);
     }
 
-    protected void GetCommandText(out ICommandText cmdText)
+    private IRowset ExecuteCommand(string queryStr)
     {
-        // Query CommandText
-        const string CLSID_CollatorDataSource = "9E175B8B-F52A-11D8-B9A5-505054503030";
+        object sessionPtr = null;
+        object commandPtr = null;
 
-        var hr = NativeHelpers.CoCreateInstance(
-            new Guid(CLSID_CollatorDataSource), // CLSID_CollatorDataSource
-            null,
-            0x1, // CLSCTX_INPROC_SERVER
-            typeof(IDBInitialize).GUID,
-            out var dataSourceObj);
-
-        if (hr != 0)
+        try
         {
-            Logger.LogError("CoCreateInstance failed: " + hr);
-            cmdText = null;
-            return;
-        }
+            var session = (IDBCreateSession)DataSourceManager.GetDataSource();
+            var hr = session.CreateSession(null, typeof(IDBCreateCommand).GUID, out sessionPtr);
+            if (hr != 0 || sessionPtr == null)
+            {
+                Logger.LogError("CreateSession failed: " + hr);
+                return null;
+            }
 
-        var dataSource = (IDBInitialize)dataSourceObj;
-        hr = dataSource.Initialize();
-        if (hr != 0)
+            var createCommand = (IDBCreateCommand)sessionPtr;
+            hr = createCommand.CreateCommand(null, typeof(ICommandText).GUID, out commandPtr);
+            if (hr != 0 || commandPtr == null)
+            {
+                Logger.LogError("CreateCommand failed: " + hr);
+                return null;
+            }
+
+            var commandText = (ICommandText)commandPtr;
+            if (commandText == null)
+            {
+                Logger.LogError("Failed to get ICommandText interface");
+                return null;
+            }
+
+            Guid dbGuidDefault = new("C8B521FB-5CF3-11CE-ADE5-00AA0044773D");
+            var res = commandText.SetCommandText(ref dbGuidDefault, queryStr);
+            if (res != 0)
+            {
+                var err = NativeHelpers.GetErrorInfo(0, out var errorInfo);
+                if (err == 0 && errorInfo != null)
+                {
+                    errorInfo.GetDescription(out var description);
+                    Logger.LogError($"SetCommandText Error: {description}");
+                }
+
+                return null;
+            }
+
+            res = commandText.Execute(null, typeof(IRowset).GUID, 0, out var _, out var rowsetPointer);
+            if (res != 0)
+            {
+                Logger.LogError($"Execute Error: {res}");
+                return null;
+            }
+
+            return rowsetPointer as IRowset;
+        }
+        catch (Exception ex)
         {
-            Logger.LogError("DB Initialize failed: " + hr);
-            cmdText = null;
-            return;
+            Logger.LogError("Unexpected error.", ex);
+            return null;
         }
-
-        var session = (IDBCreateSession)dataSource;
-        object unkSessionPtr;
-
-        hr = session.CreateSession(null, typeof(IDBCreateCommand).GUID, out unkSessionPtr);
-        if (hr != 0)
+        finally
         {
-            Logger.LogError("CreateSession failed: " + hr);
-            cmdText = null;
-            return;
+            // Release the command pointer
+            if (commandPtr != null)
+            {
+                Marshal.ReleaseComObject(commandPtr);
+            }
+
+            // Release the session pointer
+            if (sessionPtr != null)
+            {
+                Marshal.ReleaseComObject(sessionPtr);
+            }
         }
-
-        var createCommand = (IDBCreateCommand)unkSessionPtr;
-
-        hr = createCommand.CreateCommand(null, typeof(ICommandText).GUID, out var unkCmdPtr);
-        if (hr != 0)
-        {
-            Logger.LogError("CreateCommand failed: " + hr);
-            cmdText = null;
-            return;
-        }
-
-        cmdText = (ICommandText)unkCmdPtr;
     }
 
     private IRowsetInfo GetRowsetInfo(IRowset rowset)
