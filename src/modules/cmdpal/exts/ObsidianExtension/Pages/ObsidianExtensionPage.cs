@@ -19,20 +19,28 @@ internal sealed partial class ObsidianExtensionPage : ListPage
         Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\obsidian-logo.png"));
         Name = "Obsidian Notes";
         PlaceholderText = "Search notes...";
-        Loading = true;
+        IsLoading = true;
     }
 
     public override IListItem[] GetItems()
     {
         var vaultPath = @"C:\Users\zadji\Obsidian\Notes";
         var notes = GetNotes(vaultPath);
-        Loading = false;
+        IsLoading = false;
+
+        // Vault name (use the last folder in the vault path)
+        var vaultName = Path.GetFileName(vaultPath);
+
         var listItems = notes.Select(n =>
-            new ListItem(new NoOpCommand())
+        {
+            var obsidianUri = $"obsidian://open?vault={vaultName}&file={Uri.EscapeDataString(n.RelativePath)}";
+            return new ListItem(new OpenUrlCommand(obsidianUri))
             {
+                Icon = new("\uE70B"),
                 Title = n.Name,
-                Subtitle = n.Folder,
-            });
+                Subtitle = $"{n.Folder}/",
+            };
+        });
         return listItems.ToArray();
     }
 
@@ -50,8 +58,13 @@ internal sealed partial class ObsidianExtensionPage : ListPage
                 // Display the note name without the full path or file extension
                 var noteName = Path.GetFileNameWithoutExtension(noteFile);
                 var folderPath = Path.GetDirectoryName(noteFile[vaultPath.Length..].TrimStart('\\', '/'));
-
-                notes.Add(new Note() { Name = noteName, Folder = folderPath });
+                var relativePath = Path.GetRelativePath(vaultPath, noteFile);
+                notes.Add(new Note()
+                {
+                    Name = noteName,
+                    Folder = folderPath,
+                    RelativePath = relativePath,
+                });
 
                 // Console.WriteLine(noteName);
             }
@@ -69,4 +82,6 @@ public sealed class Note
     public string Name { get; set; } = string.Empty;
 
     public string Folder { get; set; } = string.Empty;
+
+    public string RelativePath { get; set; } = string.Empty;
 }
