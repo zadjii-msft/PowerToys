@@ -12,6 +12,8 @@ namespace Microsoft.CmdPal.UI;
 
 public partial class LoadIconBehavior : DependencyObject, IBehavior
 {
+    private static IIconCacheService? iconService;
+
     public IconDataType Source
     {
         get => (IconDataType)GetValue(SourceProperty);
@@ -24,7 +26,7 @@ public partial class LoadIconBehavior : DependencyObject, IBehavior
 
     // Using a DependencyProperty as the backing store for Source.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty SourceProperty =
-        DependencyProperty.Register("Source", typeof(IconDataType), typeof(LoadIconBehavior), new PropertyMetadata(new IconDataType(string.Empty)));
+        DependencyProperty.Register(nameof(Source), typeof(IconDataType), typeof(LoadIconBehavior), new PropertyMetadata(new IconDataType(string.Empty)));
 
     public DependencyObject? AssociatedObject { get; private set; }
 
@@ -34,7 +36,7 @@ public partial class LoadIconBehavior : DependencyObject, IBehavior
 
     public async void OnSourcePropertyChanged()
     {
-        var iconService = App.Current.Services.GetService<IIconCacheService>()!;
+        iconService ??= App.Current.Services.GetService<IIconCacheService>()!;
 
         var icoSource = await iconService.GetIconSource(Source ?? new(string.Empty));
 

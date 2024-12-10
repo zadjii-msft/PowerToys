@@ -20,7 +20,6 @@
                 x:Key="StringNotEmptyToVisibilityConverter"
                 EmptyValue="Collapsed"
                 NotEmptyValue="Visible" />
-            <converters:TaskResultConverter x:Key="TaskConverter"/>
 
             <!--  Template for actions in the mode actions dropdown button  -->
             <DataTemplate x:Key="ContextMenuViewModelTemplate" x:DataType="viewmodels:CommandContextItemViewModel">

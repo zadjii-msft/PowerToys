@@ -73,8 +73,7 @@ public partial class App : Application
 
         // Root services
         services.AddSingleton(TaskScheduler.FromCurrentSynchronizationContext());
-        services.AddSingleton(DispatcherQueue.GetForCurrentThread());
-        services.AddSingleton<IIconCacheService, IconCacheService>();
+        services.AddSingleton<IIconCacheService>(new IconCacheService(DispatcherQueue.GetForCurrentThread()));
 
         // Built-in Commands
         services.AddSingleton<ICommandProvider, AllAppsCommandProvider>();
