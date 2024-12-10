@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Extensions;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.CmdPal.UI.ExtViews;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Xaml.Interactivity;
@@ -12,7 +12,7 @@ namespace Microsoft.CmdPal.UI;
 
 public partial class LoadIconBehavior : DependencyObject, IBehavior
 {
-    private static IIconCacheService? iconService;
+    private static readonly IconCacheService IconService = new(Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread());
 
     public IconDataType Source
     {
@@ -36,9 +36,7 @@ public partial class LoadIconBehavior : DependencyObject, IBehavior
 
     public async void OnSourcePropertyChanged()
     {
-        iconService ??= App.Current.Services.GetService<IIconCacheService>()!;
-
-        var icoSource = await iconService.GetIconSource(Source ?? new(string.Empty));
+        var icoSource = await IconService.GetIconSource(Source ?? new(string.Empty));
 
         if (AssociatedObject is Border border)
         {

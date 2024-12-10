@@ -33,30 +33,29 @@
 
         <DataTemplate x:Key="TagTemplate" x:DataType="viewmodels:TagViewModel">
             <!--  TODO: Actually colorize the tags again -->
-            <Border
+            <StackPanel
                 Padding="4,2,4,2"
                 VerticalAlignment="Center"
                 BorderBrush="{ThemeResource TextBoxBorderThemeBrush}"
                 BorderThickness="1"
+                Orientation="Horizontal"
                 CornerRadius="4">
-                <StackPanel Orientation="Horizontal">
-                    <Border x:Name="IconBorder"
-                            Width="12"
-                            Height="12"
-                            Margin="0,0,4,0"
-                            Visibility="{x:Bind HasIcon, Mode=OneWay}">
-                        <!-- LoadIconBehavior will magically fill this border up with an icon -->
-                        <Interactivity:Interaction.Behaviors>
-                            <local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>
-                        </Interactivity:Interaction.Behaviors>
-                    </Border>
+                <Border x:Name="IconBorder"
+                        Width="12"
+                        Height="12"
+                        Margin="0,0,4,0"
+                        Visibility="{x:Bind HasIcon, Mode=OneWay}">
+                    <!-- LoadIconBehavior will magically fill this border up with an icon -->
+                    <Interactivity:Interaction.Behaviors>
+                        <local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>
+                    </Interactivity:Interaction.Behaviors>
+                </Border>
                     
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        FontSize="12"
-                        Text="{x:Bind Text, Mode=OneWay}" />
-                </StackPanel>
-            </Border>
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Text="{x:Bind Text, Mode=OneWay}" />
+            </StackPanel>
         </DataTemplate>
 
         <!--  https://learn.microsoft.com/windows/apps/design/controls/itemsview#specify-the-look-of-the-items  -->

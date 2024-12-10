@@ -11,7 +11,7 @@ using Windows.Storage.Streams;
 
 namespace Microsoft.CmdPal.UI.ExtViews;
 
-public sealed class IconCacheService(DispatcherQueue dispatcherQueue) : IIconCacheService
+public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
 {
     public Task<IconSource?> GetIconSource(IconDataType icon) =>
 
