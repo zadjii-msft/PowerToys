@@ -4,6 +4,7 @@
 
 using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.UI.Dispatching;
@@ -76,23 +77,21 @@ public sealed partial class ListPage : Page,
                         // TODO: Handle failure case
                         System.Diagnostics.Debug.WriteLine(lvm.InitializeCommand.ExecutionTask.Exception);
 
-                        // _ = _queue.EnqueueAsync(() =>
-                        _queue.TryEnqueue(new(() =>
+                        _ = _queue.EnqueueAsync(() =>
                         {
                             LoadedState = ViewModelLoadedState.Error;
-                        }));
+                        });
                     }
                     else
                     {
-                        // _ = _queue.EnqueueAsync(() =>
-                        _queue.TryEnqueue(new(() =>
+                        _ = _queue.EnqueueAsync(() =>
                         {
                             var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
 
                             ViewModel = lvm;
                             WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(result ? lvm : null));
                             LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
-                        }));
+                        });
                     }
                 });
             }
@@ -171,10 +170,10 @@ public sealed partial class ListPage : Page,
 
     public void Receive(ShowExceptionMessage message)
     {
-        _queue.TryEnqueue(new(() =>
+        _ = _queue.EnqueueAsync(() =>
         {
             LoadedState = ViewModelLoadedState.Error;
-        }));
+        });
     }
 }
 
