@@ -78,11 +78,11 @@ public partial class ListViewModel : PageViewModel
 
         if (ShowDetails && item.HasDetails)
         {
-            WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details!));
+            WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
         }
         else
         {
-            WeakReferenceMessenger.Default.Send<HideDetailsMessage>(new());
+            WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
         }
     }
 
