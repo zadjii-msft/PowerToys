@@ -123,6 +123,21 @@
   <data name="extension_name" xml:space="preserve">
     <value>Web Search</value>
   </data>
+  <data name="history_1" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="history_10" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="history_20" xml:space="preserve">
+    <value>20</value>
+  </data>
+  <data name="history_5" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="history_none" xml:space="preserve">
+    <value>None</value>
+  </data>
   <data name="open_in_default_browser" xml:space="preserve">
     <value>Open in default browser</value>
   </data>

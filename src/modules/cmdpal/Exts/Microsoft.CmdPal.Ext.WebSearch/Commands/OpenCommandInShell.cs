@@ -4,6 +4,7 @@
 
 using System;
 using Microsoft.CmdPal.Ext.WebSearch.Helpers;
+using Microsoft.CmdPal.Ext.WebSearch.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Wox.Infrastructure;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
@@ -32,7 +33,7 @@ internal sealed partial class OpenCommandInShell : InvokableCommand
             return CommandResult.KeepOpen();
         }
 
-        if (_settingsManager.ShowHistory)
+        if (_settingsManager.ShowHistory != Resources.history_none)
         {
             _settingsManager.SaveHistory(new HistoryItem(_arguments[2..], DateTime.Now));
         }

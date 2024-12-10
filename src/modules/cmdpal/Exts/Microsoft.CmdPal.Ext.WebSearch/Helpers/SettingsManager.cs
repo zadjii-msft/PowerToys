@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.CmdPal.Ext.WebSearch.Commands;
@@ -20,12 +21,21 @@ public class SettingsManager
     private readonly string _historyPath;
     private readonly Microsoft.CmdPal.Extensions.Helpers.Settings _settings = new();
 
+    private readonly List<ChoiceSetSetting.Choice> _choices = new()
+    {
+        new ChoiceSetSetting.Choice(Resources.history_none, Resources.history_none),
+        new ChoiceSetSetting.Choice(Resources.history_1, Resources.history_1),
+        new ChoiceSetSetting.Choice(Resources.history_5, Resources.history_5),
+        new ChoiceSetSetting.Choice(Resources.history_10, Resources.history_10),
+        new ChoiceSetSetting.Choice(Resources.history_20, Resources.history_20),
+    };
+
     private readonly ToggleSetting _globalIfURI = new(nameof(GlobalIfURI), Resources.plugin_global_if_uri, Resources.plugin_global_if_uri, false);
-    private readonly ToggleSetting _showHistory = new(nameof(ShowHistory), Resources.plugin_show_history, Resources.plugin_show_history, true);
+    private readonly ChoiceSetSetting _showHistory;
 
     public bool GlobalIfURI => _globalIfURI.Value;
 
-    public bool ShowHistory => _showHistory.Value;
+    public string ShowHistory => _showHistory.Value != null ? _showHistory.Value : string.Empty;
 
     internal static string SettingsJsonPath()
     {
@@ -66,15 +76,25 @@ public class SettingsManager
             if (File.Exists(_historyPath))
             {
                 var existingContent = File.ReadAllText(_historyPath);
-                historyItems = JsonSerializer.Deserialize<List<HistoryItem>>(existingContent) ?? [];
+                historyItems = JsonSerializer.Deserialize<List<HistoryItem>>(existingContent) ?? new List<HistoryItem>();
             }
             else
             {
-                historyItems = [];
+                historyItems = new List<HistoryItem>();
             }
 
             // Add the new history item
             historyItems.Add(historyItem);
+
+            // Determine the maximum number of items to keep based on ShowHistory
+            if (int.TryParse(ShowHistory, out var maxHistoryItems) && maxHistoryItems > 0)
+            {
+                // Keep only the most recent `maxHistoryItems` items
+                while (historyItems.Count > maxHistoryItems)
+                {
+                    historyItems.RemoveAt(0); // Remove the oldest item
+                }
+            }
 
             // Serialize the updated list back to JSON and save it
             var historyJson = JsonSerializer.Serialize(historyItems);
@@ -123,6 +143,7 @@ public class SettingsManager
     {
         _filePath = SettingsJsonPath();
         _historyPath = HistoryStateJsonPath();
+        _showHistory = new(nameof(ShowHistory), Resources.plugin_show_history, Resources.plugin_show_history, _choices);
 
         _settings.Add(_globalIfURI);
         _settings.Add(_showHistory);
@@ -167,9 +188,29 @@ public class SettingsManager
 
             File.WriteAllText(_filePath, settingsJson);
 
-            if (!ShowHistory)
+            if (ShowHistory == Resources.history_none)
             {
                 ClearHistory();
+            }
+            else if (int.TryParse(ShowHistory, out var maxHistoryItems) && maxHistoryItems > 0)
+            {
+                // Trim the history file if there are more items than the new limit
+                if (File.Exists(_historyPath))
+                {
+                    var existingContent = File.ReadAllText(_historyPath);
+                    var historyItems = JsonSerializer.Deserialize<List<HistoryItem>>(existingContent) ?? new List<HistoryItem>();
+
+                    // Check if trimming is needed
+                    if (historyItems.Count > maxHistoryItems)
+                    {
+                        // Trim the list to keep only the most recent `maxHistoryItems` items
+                        historyItems = historyItems.Skip(historyItems.Count - maxHistoryItems).ToList();
+
+                        // Save the trimmed history back to the file
+                        var trimmedHistoryJson = JsonSerializer.Serialize(historyItems);
+                        File.WriteAllText(_historyPath, trimmedHistoryJson);
+                    }
+                }
             }
         }
         catch (Exception ex)

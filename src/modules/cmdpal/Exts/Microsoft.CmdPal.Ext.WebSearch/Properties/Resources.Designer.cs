@@ -79,6 +79,51 @@ namespace Microsoft.CmdPal.Ext.WebSearch.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        public static string history_1 {
+            get {
+                return ResourceManager.GetString("history_1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 10.
+        /// </summary>
+        public static string history_10 {
+            get {
+                return ResourceManager.GetString("history_10", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 20.
+        /// </summary>
+        public static string history_20 {
+            get {
+                return ResourceManager.GetString("history_20", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 5.
+        /// </summary>
+        public static string history_5 {
+            get {
+                return ResourceManager.GetString("history_5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string history_none {
+            get {
+                return ResourceManager.GetString("history_none", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open in default browser.
         /// </summary>
         public static string open_in_default_browser {

@@ -30,7 +30,5 @@ internal sealed partial class SettingsPage : FormPage
         _settings.SettingsChanged += SettingsChanged;
     }
 
-#pragma warning disable IDE0060 // Remove unused parameter
     private void SettingsChanged(object sender, Microsoft.CmdPal.Extensions.Helpers.Settings args) => _settingsManager.SaveSettings();
-#pragma warning restore IDE0060 // Remove unused parameter
 }
