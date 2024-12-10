@@ -339,7 +339,7 @@ jobs:
     displayName: HACK Copy core WebView2 ARM64 dll to output directory
     condition: eq(variables['BuildPlatform'],'arm64')
     inputs:
-      contents: packages/Microsoft.Web.WebView2.1.0.2739.15/runtimes/win-ARM64/native_uap/Microsoft.Web.WebView2.Core.dll
+      contents: packages/Microsoft.Web.WebView2.1.0.2903.40/runtimes/win-ARM64/native_uap/Microsoft.Web.WebView2.Core.dll
       targetFolder: $(Build.SourcesDirectory)/ARM64/Release/WinUI3Apps/
       flattenFolders: True
       OverWrite: True
