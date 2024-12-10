@@ -30,9 +30,10 @@ internal sealed partial class WebSearchListPage : DynamicListPage
         Name = Resources.command_item_title;
         Title = Resources.command_item_title;
         PlaceholderText = Resources.plugin_description;
-        Icon = new(string.Empty);
+        Icon = new("\uF6FA"); // WebSearch icon
         allItems = [new(new NoOpCommand())
         {
+            Icon = new("\uF6FA"),
             Title = Properties.Resources.plugin_description,
             Subtitle = string.Format(CultureInfo.CurrentCulture, PluginOpen, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),
         }
