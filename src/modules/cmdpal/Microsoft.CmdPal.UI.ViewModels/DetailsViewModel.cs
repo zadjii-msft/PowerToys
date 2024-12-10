@@ -13,8 +13,8 @@ public partial class DetailsViewModel(IDetails _details, TaskScheduler Scheduler
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
+    public IconDataType HeroImage { get; private set; } = new(string.Empty);
 
-    // TODO: Icon
     // TODO: Metadata is an array of IDetailsElement,
     // where IDetailsElement = {IDetailsTags, IDetailsLink, IDetailsSeparator}
     public string Title { get; private set; } = string.Empty;
@@ -31,9 +31,11 @@ public partial class DetailsViewModel(IDetails _details, TaskScheduler Scheduler
 
         Title = model.Title;
         Body = model.Body;
+        HeroImage = model.HeroImage;
 
         UpdateProperty(nameof(Title));
         UpdateProperty(nameof(Body));
+        UpdateProperty(nameof(HeroImage));
     }
 
     protected void UpdateProperty(string propertyName) => Task.Factory.StartNew(() => { OnPropertyChanged(propertyName); }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
