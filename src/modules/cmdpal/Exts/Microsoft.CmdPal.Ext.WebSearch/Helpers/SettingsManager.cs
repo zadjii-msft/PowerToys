@@ -130,6 +130,7 @@ public class SettingsManager
                 });
             }
 
+            listItems.Reverse();
             return listItems;
         }
         catch (Exception ex)
