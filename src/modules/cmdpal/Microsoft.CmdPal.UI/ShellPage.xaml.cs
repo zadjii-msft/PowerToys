@@ -106,16 +106,10 @@ public sealed partial class ShellPage :
     public void Receive(ShowDetailsMessage message)
     {
         ViewModel.Details = message.Details;
-
         ViewModel.IsDetailsVisible = true;
-
-        // Tried this too, but it also didn't work
-        // VisualStateManager.GoToState(this, "DetailsVisible", false);
     }
 
     public void Receive(HideDetailsMessage message) => HideDetails();
 
-    // Tried this too, but it also didn't work:
-    // VisualStateManager.GoToState(this, "DetailsCollapsed", false);
     private void HideDetails() => ViewModel.IsDetailsVisible = false;
 }
