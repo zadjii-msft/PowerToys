@@ -8,7 +8,6 @@ using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 
@@ -107,15 +106,16 @@ public sealed partial class ShellPage :
     public void Receive(ShowDetailsMessage message)
     {
         ViewModel.Details = message.Details;
-        DetailsContent.Visibility = Visibility.Visible;
-        DetailsColumn.Width = new GridLength(2, GridUnitType.Star);
+
+        ViewModel.IsDetailsVisible = true;
+
+        // Tried this too, but it also didn't work
+        // VisualStateManager.GoToState(this, "DetailsVisible", false);
     }
 
     public void Receive(HideDetailsMessage message) => HideDetails();
 
-    private void HideDetails()
-    {
-        DetailsContent.Visibility = Visibility.Collapsed;
-        DetailsColumn.Width = GridLength.Auto;
-    }
+    // Tried this too, but it also didn't work:
+    // VisualStateManager.GoToState(this, "DetailsCollapsed", false);
+    private void HideDetails() => ViewModel.IsDetailsVisible = false;
 }

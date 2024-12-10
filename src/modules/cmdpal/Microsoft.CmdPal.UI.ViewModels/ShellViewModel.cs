@@ -19,6 +19,9 @@ public partial class ShellViewModel(IServiceProvider _serviceProvider) : Observa
     [ObservableProperty]
     public partial DetailsViewModel? Details { get; set; }
 
+    [ObservableProperty]
+    public partial bool IsDetailsVisible { get; set; }
+
     [RelayCommand]
     public async Task<bool> LoadAsync()
     {

@@ -18,9 +18,10 @@
                 x:Key="StringNotEmptyToVisibilityConverter"
                 EmptyValue="Collapsed"
                 NotEmptyValue="Visible" />
+            <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
         </ResourceDictionary>
     </Page.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -33,7 +34,7 @@
             Grid.Row="0"
             VerticalAlignment="Top" />
 
-        <Grid
+        <Grid x:Name="ContentGrid"
             Grid.Row="1"
             Background="{ThemeResource LayerOnAcrylicFillColorDefaultBrush}"
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -41,7 +42,7 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*" />
-                <ColumnDefinition x:Name="DetailsColumn" Width="2*" />
+                <ColumnDefinition x:Name="DetailsColumn" Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Frame Name="RootFrame" 
@@ -51,7 +52,7 @@
             <Grid 
                 x:Name="DetailsContent"
                 Grid.Column="1" 
-                Visibility="Visible"
+                Visibility="Collapsed"
                 Padding="8"
                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -88,12 +89,36 @@
                         Header3Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         IsTextSelectionEnabled="True"/>
                 </ScrollViewer>
-            </Grid>
-
-
+            </Grid> <!--/DetailsContent-->
+            
         </Grid>
-
 
         <controls:ActionBar Grid.Row="2" VerticalAlignment="Top" />
     </Grid>
+
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup>
+
+            <VisualState x:Name="DetailsCollapsed">
+                <VisualState.StateTriggers>
+                    <StateTrigger IsActive="{x:Bind ViewModel.IsDetailsVisible, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"/>
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Target="DetailsContent.Visibility" Value="Collapsed" />
+                    <Setter Target="DetailsColumn.Width" Value="Auto" />
+                </VisualState.Setters>
+            </VisualState>
+
+            <VisualState x:Name="DetailsVisible">
+                <VisualState.StateTriggers>
+                    <StateTrigger IsActive="{x:Bind ViewModel.IsDetailsVisible, Mode=OneWay}"/>
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Target="DetailsContent.Visibility" Value="Visible" />
+                    <Setter Target="DetailsColumn.Width" Value="2*" />
+                </VisualState.Setters>
+            </VisualState>
+
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
 </Page>
