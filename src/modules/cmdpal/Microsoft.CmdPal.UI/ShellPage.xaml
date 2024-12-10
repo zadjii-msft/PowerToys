@@ -23,6 +23,33 @@
     </Page.Resources>
 
     <Grid>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+
+                <VisualState x:Name="DetailsCollapsed">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{x:Bind ViewModel.IsDetailsVisible, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="DetailsContent.Visibility" Value="Collapsed" />
+                        <Setter Target="DetailsColumn.Width" Value="Auto" />
+                    </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="DetailsVisible">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{x:Bind ViewModel.IsDetailsVisible, Mode=OneWay}"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="DetailsContent.Visibility" Value="Visible" />
+                        <Setter Target="DetailsColumn.Width" Value="2*" />
+                    </VisualState.Setters>
+                </VisualState>
+
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -94,32 +121,6 @@
         </Grid>
 
         <controls:ActionBar Grid.Row="2" VerticalAlignment="Top" />
-
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-
-                <VisualState x:Name="DetailsCollapsed">
-                    <VisualState.StateTriggers>
-                        <StateTrigger IsActive="{x:Bind ViewModel.IsDetailsVisible, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="DetailsContent.Visibility" Value="Collapsed" />
-                        <Setter Target="DetailsColumn.Width" Value="Auto" />
-                    </VisualState.Setters>
-                </VisualState>
-
-                <VisualState x:Name="DetailsVisible">
-                    <VisualState.StateTriggers>
-                        <StateTrigger IsActive="{x:Bind ViewModel.IsDetailsVisible, Mode=OneWay}"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="DetailsContent.Visibility" Value="Visible" />
-                        <Setter Target="DetailsColumn.Width" Value="2*" />
-                    </VisualState.Setters>
-                </VisualState>
-
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
         
     </Grid>
 
