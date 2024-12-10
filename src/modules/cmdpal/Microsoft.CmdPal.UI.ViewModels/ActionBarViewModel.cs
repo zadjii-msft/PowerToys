@@ -11,8 +11,7 @@ using Microsoft.CmdPal.UI.ViewModels.Messages;
 namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class ActionBarViewModel : ObservableObject,
-    IRecipient<UpdateActionBarMessage>,
-    IRecipient<UpdateActionBarPage>
+    IRecipient<UpdateActionBarMessage>
 {
     public ListItemViewModel? SelectedItem
     {
@@ -45,12 +44,9 @@ public partial class ActionBarViewModel : ObservableObject,
     public ActionBarViewModel()
     {
         WeakReferenceMessenger.Default.Register<UpdateActionBarMessage>(this);
-        WeakReferenceMessenger.Default.Register<UpdateActionBarPage>(this);
     }
 
     public void Receive(UpdateActionBarMessage message) => SelectedItem = message.ViewModel;
-
-    public void Receive(UpdateActionBarPage message) => CurrentPage = message.Page;
 
     private void SetSelectedItem(ListItemViewModel? value)
     {

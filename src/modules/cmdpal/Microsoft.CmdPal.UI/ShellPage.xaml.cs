@@ -20,7 +20,9 @@ public sealed partial class ShellPage :
     Page,
     IRecipient<NavigateBackMessage>,
     IRecipient<NavigateToDetailsMessage>,
-    IRecipient<PerformCommandMessage>
+    IRecipient<PerformCommandMessage>,
+    IRecipient<ShowDetailsMessage>,
+    IRecipient<HideDetailsMessage>
 {
     private readonly DrillInNavigationTransitionInfo _drillInNavigationTransitionInfo = new();
 
@@ -32,10 +34,15 @@ public sealed partial class ShellPage :
     {
         this.InitializeComponent();
 
+        DetailsMarkdown.Config = CommunityToolkit.Labs.WinUI.MarkdownTextBlock.MarkdownConfig.Default;
+
         // how we are doing navigation around
         WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
         WeakReferenceMessenger.Default.Register<NavigateToDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
+
+        WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
+        WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
 
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
     }
@@ -49,6 +56,11 @@ public sealed partial class ShellPage :
             RootFrame.GoBack();
             RootFrame.ForwardStack.Clear();
             SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+        }
+        else
+        {
+            // If we can't go back then we must be at the top and thus escape again should quit.
+            WeakReferenceMessenger.Default.Send<QuitMessage>();
         }
     }
 
@@ -71,6 +83,8 @@ public sealed partial class ShellPage :
             {
                 _ = DispatcherQueue.TryEnqueue(() =>
                 {
+                    // Also hide our details pane about here, if we had one
+                    HideDetails();
                     var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext());
                     RootFrame.Navigate(typeof(ListPage), pageViewModel, _slideRightTransition);
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
@@ -80,7 +94,7 @@ public sealed partial class ShellPage :
                         RootFrame.BackStack.Clear();
                     }
 
-                    WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(pageViewModel));
+                    ViewModel.CurrentPage = pageViewModel;
                 });
             }
 
@@ -95,4 +109,14 @@ public sealed partial class ShellPage :
             // TODO logging
         }
     }
+
+    public void Receive(ShowDetailsMessage message)
+    {
+        ViewModel.Details = message.Details;
+        ViewModel.IsDetailsVisible = true;
+    }
+
+    public void Receive(HideDetailsMessage message) => HideDetails();
+
+    private void HideDetails() => ViewModel.IsDetailsVisible = false;
 }
