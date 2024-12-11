@@ -32,8 +32,6 @@ internal sealed class SearchQuery : IDisposable
 
     public string SearchText { get; private set; }
 
-    public string QueryString { get; set; }
-
     public List<SearchResult> SearchResults { get; private set; } = [];
 
     public SearchQuery()

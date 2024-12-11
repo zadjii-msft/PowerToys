@@ -113,7 +113,7 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
         _queryCookie++;
         lock (_lockObject)
         {
-            if (!CanReuseQuery(_searchQuery.QueryString, searchText))
+            if (!CanReuseQuery(_searchQuery.SearchText, searchText))
             {
                 _searchQuery.CancelOutstandingQueries();
             }
