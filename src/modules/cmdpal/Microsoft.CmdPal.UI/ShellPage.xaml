@@ -95,7 +95,7 @@
                         Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}" />
 
                 </ScrollViewer>
-            </Grid> 
+            </Grid>
             <!--  /DetailsContent  -->
 
         </Grid>
