@@ -138,9 +138,6 @@
     <Copy SourceFiles="$(PkgAdaptiveCards_ObjectModel_WinUI3)\runtimes\win10-$(Platform)\native\AdaptiveCards.ObjectModel.WinUI3.dll" DestinationFolder="$(TargetDir)" />
     <Copy SourceFiles="$(PkgAdaptiveCards_Rendering_WinUI3)\runtimes\win10-$(Platform)\native\AdaptiveCards.Rendering.WinUI3.dll" DestinationFolder="$(TargetDir)" />
   </Target>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="call powershell.exe -NonInteractive -executionpolicy Unrestricted -File $(MSBuildThisFileDirectory)\setPackageVersion.ps1" />
-  </Target>
   <!-- </AdaptiveCardsWorkaround> -->
 
 </Project>
