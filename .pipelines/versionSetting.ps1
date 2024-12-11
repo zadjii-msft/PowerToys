@@ -83,5 +83,5 @@ $cmdPalAppManifestReadFileLocation = $cmdPalAppManifestWriteFileLocation;
 
 [XML]$cmdPalAppManifest = Get-Content $cmdPalAppManifestReadFileLocation
 $cmdPalAppManifest.Package.Identity.Version = $versionNumber + '.0'
-Write-Host "Package version: " $cmdPalAppManifest.Package.Identity.Version
+Write-Host "CmdPal Package version: " $cmdPalAppManifest.Package.Identity.Version
 $cmdPalAppManifest.Save($cmdPalAppManifestWriteFileLocation);
