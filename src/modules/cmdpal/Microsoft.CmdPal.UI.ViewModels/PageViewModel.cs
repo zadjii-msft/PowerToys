@@ -23,6 +23,10 @@ public partial class PageViewModel : ExtensionObjectViewModel
     [ObservableProperty]
     public partial string ErrorMessage { get; private set; } = string.Empty;
 
+    // This is set from the SearchBar
+    [ObservableProperty]
+    public partial string Filter { get; set; } = string.Empty;
+
     // These are properties that are "observable" from the extension object
     // itself, in the sense that they get raised by PropChanged events from the
     // extension. However, we don't want to actually make them
@@ -32,6 +36,8 @@ public partial class PageViewModel : ExtensionObjectViewModel
     public string Name { get; private set; } = string.Empty;
 
     public bool IsLoading { get; private set; } = true;
+
+    public IconDataType Icon { get; private set; } = new(string.Empty);
 
     public PageViewModel(IPage model, TaskScheduler scheduler)
     {
@@ -70,10 +76,12 @@ public partial class PageViewModel : ExtensionObjectViewModel
 
         Name = page.Name;
         IsLoading = page.IsLoading;
+        Icon = page.Icon;
 
         // Let the UI know about our initial properties too.
         UpdateProperty(nameof(Name));
         UpdateProperty(nameof(IsLoading));
+        UpdateProperty(nameof(Icon));
 
         page.PropChanged += Model_PropChanged;
     }
@@ -91,6 +99,14 @@ public partial class PageViewModel : ExtensionObjectViewModel
         }
     }
 
+    partial void OnFilterChanged(string oldValue, string newValue) => OnFilterUpdated(newValue);
+
+    protected virtual void OnFilterUpdated(string filter)
+    {
+        // The base page has no notion of data, so we do nothing here...
+        // subclasses should override.
+    }
+
     protected virtual void FetchProperty(string propertyName)
     {
         var model = this._pageModel.Unsafe;
@@ -106,6 +122,9 @@ public partial class PageViewModel : ExtensionObjectViewModel
                 break;
             case nameof(IsLoading):
                 this.IsLoading = model.IsLoading;
+                break;
+            case nameof(Icon):
+                this.Icon = model.Icon;
                 break;
         }
 
