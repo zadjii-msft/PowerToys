@@ -21,12 +21,11 @@ internal sealed class SearchQuery : IDisposable
     private static readonly Guid IIDIRowsetInfo = new("0C733A55-2A1C-11CE-ADE5-00AA0044773D");
 
     private const uint QueryTimerThreshold = 85;
+    private uint reuseWhereID;
     private EventWaitHandle queryCompletedEvent;
     private Timer queryTpTimer;
     private IRowset currentRowset;
     private IRowset reuseRowset;
-
-    public uint ReuseWhereID { get; set; }
 
     public uint Cookie { get; set; }
 
@@ -124,7 +123,7 @@ internal sealed class SearchQuery : IDisposable
     {
         try
         {
-            var queryStr = QueryStringBuilder.GenerateQuery(SearchText, ReuseWhereID);
+            var queryStr = QueryStringBuilder.GenerateQuery(SearchText, reuseWhereID);
             ExecuteQueryStringSync(queryStr);
         }
         catch (Exception ex)
@@ -274,7 +273,7 @@ internal sealed class SearchQuery : IDisposable
                     // We have a previous rowset, this means the user is typing and we should store this
                     // recapture the where ID from this so the next ExecuteSync call will be faster
                     reuseRowset = currentRowset;
-                    ReuseWhereID = GetReuseWhereId(reuseRowset);
+                    reuseWhereID = GetReuseWhereId(reuseRowset);
                 }
 
                 currentRowset = ExecuteCommand(queryStr);
@@ -305,9 +304,8 @@ internal sealed class SearchQuery : IDisposable
             }
 
             reuseRowset = rowset;
+            reuseWhereID = GetReuseWhereId(reuseRowset);
         }
-
-        ReuseWhereID = GetReuseWhereId(reuseRowset);
     }
 
     private IRowset ExecuteCommand(string queryStr)
