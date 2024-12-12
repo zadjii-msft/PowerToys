@@ -37,7 +37,10 @@ public sealed partial class IconControl : UserControl
 
                 if (icoSource is FontIconSource fontIco)
                 {
-                    fontIco.FontSize = 20; // border.Width;
+                    if (!double.IsNaN(this.Width))
+                    {
+                        fontIco.FontSize = this.Width;
+                    }
 
                     // For inexplicable reasons, FontIconSource.CreateIconElement
                     // doesn't work, so do it ourselves

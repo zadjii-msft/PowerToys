@@ -19,7 +19,7 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
 
     public OptionalColor Color { get; private set; }
 
-    public IconDataType Icon { get; private set; } = new(string.Empty);
+    public IconViewModel Icon { get; private set; } = new(null);
 
     public bool HasIcon => !string.IsNullOrEmpty(Icon.Icon);
 
@@ -37,7 +37,7 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
         Text = model.Text;
         Color = model.Color;
         Tooltip = model.ToolTip;
-        Icon = model.Icon;
+        Icon = new(model.Icon);
 
         UpdateProperty(nameof(Text));
         UpdateProperty(nameof(Color));

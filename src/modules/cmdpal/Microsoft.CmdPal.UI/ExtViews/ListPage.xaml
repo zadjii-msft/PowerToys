@@ -42,17 +42,12 @@
                 BorderThickness="1"
                 Orientation="Horizontal"
                 CornerRadius="4">
-                <Border x:Name="IconBorder"
-                        Width="12"
-                        Height="12"
-                        Margin="0,0,4,0"
-                        Visibility="{x:Bind HasIcon, Mode=OneWay}">
-                    <!-- LoadIconBehavior will magically fill this border up with an icon -->
-                    <Interactivity:Interaction.Behaviors>
-                        <!--<local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>-->
-                    </Interactivity:Interaction.Behaviors>
-                </Border>
-                    
+
+                <cmdPalControls:IconControl
+                        Grid.Column="0"
+                        Visibility="{x:Bind HasIcon, Mode=OneWay}"
+                        ViewModel="{x:Bind Icon, Mode=OneWay}"/>
+
                 <TextBlock
                     VerticalAlignment="Center"
                     FontSize="12"
@@ -72,21 +67,10 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-
                     <cmdPalControls:IconControl
                         Grid.Column="0"
                         ViewModel="{x:Bind Icon, Mode=OneWay}"/>
                     
-                    <!--<Border x:Name="IconBorder"
-                            Grid.Column="0"
-                            Width="20"
-                            Height="20"
-                            Margin="4,0,4,0">
-                        <Interactivity:Interaction.Behaviors>
-                            <local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>
-                        </Interactivity:Interaction.Behaviors>
-                    </Border>-->
-
                     <StackPanel
                         Grid.Column="1"
                         VerticalAlignment="Center"
