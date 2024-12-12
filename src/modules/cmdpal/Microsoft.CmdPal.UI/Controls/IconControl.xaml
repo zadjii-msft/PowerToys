@@ -24,9 +24,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Border x:Name="IconBorder"
-            Width="20"
-            Height="20">
+    <Border x:Name="IconBorder">
     </Border>
 
 </UserControl>

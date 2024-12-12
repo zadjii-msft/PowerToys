@@ -34,7 +34,6 @@
                             Width="16"
                             Grid.Column="0"
                             Height="16"
-                            Margin="4,4,4,4"
                             Visibility="{x:Bind Icon.HasIcon, Mode=OneWay}"
                             ViewModel="{x:Bind Icon, Mode=OneWay}"/>
 
@@ -56,7 +55,7 @@
             Width="20"
             Height="20"
             Margin="12,0,0,0"
-            ViewModel="{x:Bind ViewModel.CurrentPage.Icon, Mode=OneWay}"/>
+            ViewModel="{x:Bind CurrentPageViewModel.Icon, Mode=OneWay}"/>
 
         <TextBlock
             Grid.Column="1"
@@ -80,7 +79,7 @@
                     <cmdPalControls:IconControl
                         Width="16"
                         Height="16"
-                        Margin="4,4,4,4"
+                        Margin="4"
                         Visibility="{x:Bind ViewModel.PrimaryAction.Icon.HasIcon, Mode=OneWay}"
                         ViewModel="{x:Bind ViewModel.PrimaryAction.Icon, Mode=OneWay}"/>
 
@@ -109,7 +108,7 @@
                     <cmdPalControls:IconControl
                         Width="16"
                         Height="16"
-                        Margin="4,4,4,4"
+                        Margin="4"
                         Visibility="{x:Bind ViewModel.SecondaryAction.Icon.HasIcon, Mode=OneWay}"
                         ViewModel="{x:Bind ViewModel.SecondaryAction.Icon, Mode=OneWay}"/>
 
