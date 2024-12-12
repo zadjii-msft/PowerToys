@@ -24,7 +24,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
     public string Subtitle { get; private set; } = string.Empty;
 
-    public IconDataType Icon { get; private set; } = new(string.Empty);
+    public IconViewModel Icon { get; private set; } = new(null);
 
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
@@ -79,7 +79,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         Name = model.Command?.Name ?? string.Empty;
         Title = model.Title;
         Subtitle = model.Subtitle;
-        Icon = model.Icon;
+        Icon = new(model.Icon);
         MoreCommands = model.MoreCommands
             .Where(contextItem => contextItem is ICommandContextItem)
             .Select(contextItem => (contextItem as ICommandContextItem)!)
@@ -130,7 +130,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
                 this.Subtitle = model.Subtitle;
                 break;
             case nameof(Icon):
-                this.Icon = model.Icon;
+                this.Icon = new(model.Icon);
                 break;
 
                 // TODO! Icon

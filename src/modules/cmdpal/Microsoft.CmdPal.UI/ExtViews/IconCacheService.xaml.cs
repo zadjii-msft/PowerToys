@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.Terminal.UI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
@@ -13,13 +14,15 @@ namespace Microsoft.CmdPal.UI.ExtViews;
 
 public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
 {
+    public Task<IconSource?> GetIconSource(IconViewModel vm) =>
+        IconToSource(vm);
+
     public Task<IconSource?> GetIconSource(IconDataType icon) =>
+        IconToSource(new(icon));
 
-        // todo: actually implement a cache of some sort
-        IconToSource(icon);
-
-    private async Task<IconSource?> IconToSource(IconDataType icon)
+    private async Task<IconSource?> IconToSource(IconViewModel icon)
     {
+        // todo: actually implement a cache of some sort
         if (!string.IsNullOrEmpty(icon.Icon))
         {
             var source = IconPathConverter.IconSourceMUX(icon.Icon, false);

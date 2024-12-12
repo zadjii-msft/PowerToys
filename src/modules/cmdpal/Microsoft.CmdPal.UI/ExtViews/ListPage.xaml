@@ -9,6 +9,7 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:Microsoft.CmdPal.UI"
+    xmlns:cmdPalControls="using:Microsoft.CmdPal.UI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:Microsoft.CmdPal.UI.ViewModels"
     Background="Transparent"
@@ -48,7 +49,7 @@
                         Visibility="{x:Bind HasIcon, Mode=OneWay}">
                     <!-- LoadIconBehavior will magically fill this border up with an icon -->
                     <Interactivity:Interaction.Behaviors>
-                        <local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>
+                        <!--<local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>-->
                     </Interactivity:Interaction.Behaviors>
                 </Border>
                     
@@ -72,16 +73,19 @@
                     </Grid.ColumnDefinitions>
 
 
-                    <Border x:Name="IconBorder"
+                    <cmdPalControls:IconControl
+                        Grid.Column="0"
+                        ViewModel="{x:Bind Icon, Mode=OneWay}"/>
+                    
+                    <!--<Border x:Name="IconBorder"
                             Grid.Column="0"
                             Width="20"
                             Height="20"
                             Margin="4,0,4,0">
-                        <!-- LoadIconBehavior will magically fill this border up with an icon -->
                         <Interactivity:Interaction.Behaviors>
                             <local:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>
                         </Interactivity:Interaction.Behaviors>
-                    </Border>
+                    </Border>-->
 
                     <StackPanel
                         Grid.Column="1"

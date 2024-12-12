@@ -37,7 +37,7 @@
                                 Margin="0,0,0,0">
                             <!-- LoadIconBehavior will magically fill this border up with an icon -->
                             <Interactivity:Interaction.Behaviors>
-                                <cmdpalUI:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>
+                                <!--<cmdpalUI:LoadIconBehavior Source="{x:Bind Icon, Mode=OneWay}"/>-->
                             </Interactivity:Interaction.Behaviors>
                         </Border>
 
@@ -93,7 +93,7 @@
                             Margin="4,4,4,4">
                         <!-- LoadIconBehavior will magically fill this border up with an icon -->
                         <Interactivity:Interaction.Behaviors>
-                            <cmdpalUI:LoadIconBehavior Source="{x:Bind ViewModel.PrimaryAction.Icon, Mode=OneWay}"/>
+                            <!--<cmdpalUI:LoadIconBehavior Source="{x:Bind ViewModel.PrimaryAction.Icon, Mode=OneWay}"/>-->
                         </Interactivity:Interaction.Behaviors>
                     </Border>
 
@@ -125,7 +125,7 @@
                             Margin="4,4,4,4">
                         <!-- LoadIconBehavior will magically fill this border up with an icon -->
                         <Interactivity:Interaction.Behaviors>
-                            <cmdpalUI:LoadIconBehavior Source="{x:Bind ViewModel.SecondaryAction.Icon, Mode=OneWay}" />
+                            <!--<cmdpalUI:LoadIconBehavior Source="{x:Bind ViewModel.SecondaryAction.Icon, Mode=OneWay}" />-->
                         </Interactivity:Interaction.Behaviors>
                     </Border>
 
