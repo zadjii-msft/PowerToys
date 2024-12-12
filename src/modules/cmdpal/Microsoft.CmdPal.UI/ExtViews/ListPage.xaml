@@ -45,8 +45,8 @@
 
                 <cmdPalControls:IconControl
                         Grid.Column="0"
-                    Width="20"
-                    Height="20"
+                        Width="20"
+                        Height="20"
                         Visibility="{x:Bind HasIcon, Mode=OneWay}"
                         ViewModel="{x:Bind Icon, Mode=OneWay}"/>
 
@@ -71,8 +71,8 @@
 
                     <cmdPalControls:IconControl
                         Grid.Column="0"
-                    Width="20"
-                    Height="20"
+                        Width="20"
+                        Height="20"
                         ViewModel="{x:Bind Icon, Mode=OneWay}"/>
                     
                     <StackPanel

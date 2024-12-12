@@ -23,10 +23,6 @@ public sealed partial class IconControl : UserControl
 
     private void AttachViewModel(IconViewModel? vm)
     {
-        // if (_viewModel != null)
-        // {
-        //     _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
-        // }
         _viewModel = vm;
 
         if (_viewModel != null)
