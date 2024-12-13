@@ -41,15 +41,14 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         get
         {
             var command = _commandItemModel.Unsafe?.Command;
-            var model = new CommandContextItem(command!)
-            {
-            };
+            var model = new CommandContextItem(command!);
             CommandContextItemViewModel defaultCommand = new(model, PageContext)
             {
                 Name = Name,
                 Title = Name,
                 Subtitle = Subtitle,
                 Icon = Icon,
+                Command = new(command),
 
                 // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
             };
