@@ -24,11 +24,16 @@ public sealed partial class FormControl : UserControl
     public FormControl()
     {
         this.InitializeComponent();
+
+        // Ensure we render in the correct theme and swap accordingly on updates
+        FormControl_ActualThemeChanged(this, null!);
+        ActualThemeChanged += FormControl_ActualThemeChanged;
+    }
+
+    private void FormControl_ActualThemeChanged(Microsoft.UI.Xaml.FrameworkElement sender, object args)
+    {
         var lightTheme = ActualTheme == Microsoft.UI.Xaml.ElementTheme.Light;
         _renderer.HostConfig = lightTheme ? AdaptiveCardsConfig.Light : AdaptiveCardsConfig.Dark;
-
-        // TODO in the future, we should handle ActualThemeChanged and replace
-        // our rendered card with one for that theme. But today is not that day
     }
 
     private void AttachViewModel(FormViewModel? vm)
