@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 
@@ -105,14 +106,16 @@ public partial class ListViewModel : PageViewModel
         try
         {
             var newItems = _model.Unsafe!.GetItems();
-            Items.Clear();
+            Collection<ListItemViewModel> newViewModels = [];
             foreach (var item in newItems)
             {
                 // TODO: When we fetch next page of items or refreshed items, we may need to check if we have an existing ViewModel in the cache?
                 ListItemViewModel viewModel = new(item, this);
                 viewModel.InitializeProperties();
-                Items.Add(viewModel); // TODO: Figure out when we clear/remove things from cache...
+                newViewModels.Add(viewModel); // TODO: Figure out when we clear/remove things from cache...
             }
+
+            ListHelpers.InPlaceUpdateList(Items, newViewModels);
         }
         catch (Exception ex)
         {
@@ -136,18 +139,20 @@ public partial class ListViewModel : PageViewModel
 
     private void ApplyFilter()
     {
-        FilteredItems.Clear();
+        Collection<ListItemViewModel> newResults = [];
         foreach (var viewModel in Items)
         {
             // We may already have items from the new items here.
-            if ((Filter == string.Empty || viewModel.MatchesFilter(Filter))
-                && !FilteredItems.Contains(viewModel)) //// TODO: We should be smarter about the contains here somehow (also in OnFilterUpdated)
+            if (Filter == string.Empty ||
+                viewModel.MatchesFilter(Filter))
             {
                 // Am I really allowed to modify that observable collection on a BG
                 // thread and have it just work in the UI??
-                FilteredItems.Add(viewModel);
+                newResults.Add(viewModel);
             }
         }
+
+        ListHelpers.InPlaceUpdateList(FilteredItems, newResults);
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
