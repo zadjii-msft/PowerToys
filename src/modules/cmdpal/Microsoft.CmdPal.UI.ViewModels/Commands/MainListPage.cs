@@ -4,7 +4,6 @@
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -25,6 +24,7 @@ public partial class MainListPage : DynamicListPage
     private IEnumerable<IListItem>? _filteredItems;
 
     private bool _appsLoading = true;
+    private bool _startedAppLoad;
 
     public MainListPage(IServiceProvider serviceProvider)
     {
@@ -38,17 +38,6 @@ public partial class MainListPage : DynamicListPage
         // reference the TLC collection directly... maybe? TODO is this a good idea ot a terrible one?
         _commands = tlcManager.TopLevelCommands;
         _commands.CollectionChanged += Commands_CollectionChanged;
-
-        // This _should_ start a background thread to start loading all the apps.
-        // It _feels_ like it does it's work on the main thread though, like it
-        // slows down startup... which doesn't make sense.
-        _ = Task.Run(() =>
-        {
-            _ = AppCache.Instance.Value;
-            _appsLoading = false;
-            Debug.WriteLine("Loaded apps");
-            IsLoading = ActuallyLoading();
-        });
     }
 
     private void TlcManager_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -63,7 +52,12 @@ public partial class MainListPage : DynamicListPage
 
     public override IListItem[] GetItems()
     {
-        Debug.WriteLine("main GetItems");
+        if (!_startedAppLoad)
+        {
+            StartAppLoad();
+            _startedAppLoad = true;
+        }
+
         return string.IsNullOrEmpty(SearchText)
             ? _commands.Select(tlc => tlc).ToArray()
             : _filteredItems?.ToArray() ?? [];
@@ -72,10 +66,33 @@ public partial class MainListPage : DynamicListPage
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
         /* handle changes to the filter text here */
-        IEnumerable<IListItem> commands = _commands;
-        IEnumerable<IListItem> apps = AllAppsCommandProvider.Page.GetItems();
-        var allItems = commands.Concat(apps);
-        _filteredItems = ListHelpers.FilterList(allItems, SearchText);
+
+        // Cleared out the filter text? easy. Reset _filteredItems, and bail out.
+        if (string.IsNullOrEmpty(newSearch))
+        {
+            _filteredItems = null;
+            RaiseItemsChanged(_commands.Count);
+            return;
+        }
+
+        // If the new string doesn't start with the old string, then we can't
+        // re-use previous results. Reset _filteredItems, and keep er moving.
+        if (!newSearch.StartsWith(oldSearch, StringComparison.CurrentCultureIgnoreCase))
+        {
+            _filteredItems = null;
+        }
+
+        // If we don't have any previous filter results to work with, start
+        // with a list of all our commands & apps.
+        if (_filteredItems == null)
+        {
+            IEnumerable<IListItem> commands = _commands;
+            IEnumerable<IListItem> apps = AllAppsCommandProvider.Page.GetItems();
+            _filteredItems = commands.Concat(apps);
+        }
+
+        // Produce a list of everything that matches the current filter.
+        _filteredItems = ListHelpers.FilterList(_filteredItems, SearchText);
         RaiseItemsChanged(_filteredItems.Count());
     }
 
@@ -83,5 +100,18 @@ public partial class MainListPage : DynamicListPage
     {
         var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>()!;
         return _appsLoading || tlcManager.IsLoading;
+    }
+
+    private void StartAppLoad()
+    {
+        // This _should_ start a background thread to start loading all the apps.
+        // It _feels_ like it does it's work on the main thread though, like it
+        // slows down startup... which doesn't make sense.
+        _ = Task.Run(() =>
+        {
+            _ = AppCache.Instance.Value;
+            _appsLoading = false;
+            IsLoading = ActuallyLoading();
+        });
     }
 }
