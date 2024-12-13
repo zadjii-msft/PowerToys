@@ -2,13 +2,15 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
-    : CommandItemViewModel(new(model), scheduler)
+public partial class ListItemViewModel(IListItem model, IPageContext context)
+    : CommandItemViewModel(new(model), context)
 {
     private readonly ExtensionObject<IListItem> _listItemModel = new(model);
 
@@ -22,6 +24,11 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
 
     public string Section { get; private set; } = string.Empty;
 
+    public DetailsViewModel? Details { get; private set; }
+
+    [MemberNotNullWhen(true, nameof(Details))]
+    public bool HasDetails => Details != null;
+
     public override void InitializeProperties()
     {
         base.InitializeProperties();
@@ -34,13 +41,21 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
 
         Tags = li.Tags?.Select(t =>
         {
-            var vm = new TagViewModel(t, Scheduler);
+            var vm = new TagViewModel(t, PageContext);
             vm.InitializeProperties();
             return vm;
         })
             .ToList() ?? [];
         TextToSuggest = li.TextToSuggest;
         Section = li.Section ?? string.Empty;
+        var extensionDetails = li.Details;
+        if (extensionDetails != null)
+        {
+            Details = new(extensionDetails, PageContext);
+            Details.InitializeProperties();
+            UpdateProperty(nameof(Details));
+            UpdateProperty(nameof(HasDetails));
+        }
 
         UpdateProperty(nameof(HasTags));
         UpdateProperty(nameof(Tags));
@@ -63,7 +78,7 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
             case nameof(Tags):
                 Tags = model.Tags?.Select(t =>
                 {
-                    var vm = new TagViewModel(t, Scheduler);
+                    var vm = new TagViewModel(t, PageContext);
                     vm.InitializeProperties();
                     return vm;
                 })
@@ -76,8 +91,24 @@ public partial class ListItemViewModel(IListItem model, TaskScheduler scheduler)
             case nameof(Section):
                 this.Section = model.Section ?? string.Empty;
                 break;
+            case nameof(Details):
+                var extensionDetails = model.Details;
+                Details = extensionDetails != null ? new(extensionDetails, PageContext) : null;
+                UpdateProperty(nameof(Details));
+                UpdateProperty(nameof(HasDetails));
+                break;
         }
 
         UpdateProperty(propertyName);
     }
+
+    // TODO: Do we want filters to match descriptions and other properties? Tags, etc... Yes?
+    // TODO: Do we want to save off the score here so we can sort by it in our ListViewModel?
+    public bool MatchesFilter(string filter) => StringMatcher.FuzzySearch(filter, Title).Success || StringMatcher.FuzzySearch(filter, Subtitle).Success;
+
+    public override string ToString() => $"{Name} ListItemViewModel";
+
+    public override bool Equals(object? obj) => obj is ListItemViewModel vm && vm._listItemModel.Equals(this._listItemModel);
+
+    public override int GetHashCode() => _listItemModel.GetHashCode();
 }

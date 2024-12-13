@@ -4,6 +4,6 @@
 
 namespace Microsoft.CmdPal.UI.ViewModels.Messages;
 
-public record UpdateActionBarPage(PageViewModel? Page)
+public record NavigateToPageMessage(PageViewModel? Page)
 {
 }
