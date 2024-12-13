@@ -14,14 +14,16 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class ListViewModel : PageViewModel
 {
-    private readonly HashSet<ListItemViewModel> _itemCache = [];
+    // private readonly HashSet<ListItemViewModel> _itemCache = [];
 
     // TODO: Do we want a base "ItemsPageViewModel" for anything that's going to have items?
 
     // Observable from MVVM Toolkit will auto create public properties that use INotifyPropertyChange change
     // https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/observablegroupedcollections for grouping support
     [ObservableProperty]
-    public partial ObservableCollection<ListItemViewModel> Items { get; set; } = [];
+    public partial ObservableCollection<ListItemViewModel> FilteredItems { get; set; } = [];
+
+    public ObservableCollection<ListItemViewModel> Items { get; set; } = [];
 
     private readonly ExtensionObject<IListPage> _model;
 
@@ -30,6 +32,8 @@ public partial class ListViewModel : PageViewModel
     public bool ShowDetails { get; private set; }
 
     public string PlaceholderText { get => string.IsNullOrEmpty(field) ? "Type here to search..." : field; private set; } = string.Empty;
+
+    private bool _isDynamic;
 
     public ListViewModel(IListPage model, TaskScheduler scheduler)
         : base(model, scheduler)
@@ -43,32 +47,51 @@ public partial class ListViewModel : PageViewModel
         //// and manage filtering below, but we should be smarter about this and understand caching and other requirements...
         //// Investigate if we re-use src\modules\cmdpal\extensionsdk\Microsoft.CmdPal.Extensions.Helpers\ListHelpers.cs InPlaceUpdateList and FilterList?
 
-        // Remove all items out right if we clear the filter, otherwise, recheck the items already displayed.
-        if (string.IsNullOrWhiteSpace(filter))
+        if (_isDynamic)
         {
-            Items.Clear();
+            try
+            {
+                if (_model.Unsafe is IDynamicListPage dynamic)
+                {
+                    dynamic.SearchText = filter;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowException(ex);
+            }
         }
         else
         {
-            // Remove any existing items which don't match the filter
-            for (var i = Items.Count - 1; i >= 0; i--)
-            {
-                if (!Items[i].MatchesFilter(filter))
-                {
-                    Items.RemoveAt(i);
-                }
-            }
+            ApplyFilter();
         }
 
-        // Add back any new items which do match the filter
-        foreach (var item in _itemCache)
-        {
-            if ((filter == string.Empty || item.MatchesFilter(filter))
-                && !Items.Contains(item)) //// TODO: We should be smarter here somehow
-            {
-                Items.Add(item);
-            }
-        }
+        //// Remove all items out right if we clear the filter, otherwise, recheck the items already displayed.
+        // if (string.IsNullOrWhiteSpace(filter))
+        // {
+        //    Items.Clear();
+        // }
+        // else
+        // {
+        //    // Remove any existing items which don't match the filter
+        //    for (var i = Items.Count - 1; i >= 0; i--)
+        //    {
+        //        if (!Items[i].MatchesFilter(filter))
+        //        {
+        //            Items.RemoveAt(i);
+        //        }
+        //    }
+        // }
+
+        //// Add back any new items which do match the filter
+        // foreach (var item in _itemCache)
+        // {
+        //    if ((filter == string.Empty || item.MatchesFilter(filter))
+        //        && !Items.Contains(item)) //// TODO: We should be smarter here somehow
+        //    {
+        //        Items.Add(item);
+        //    }
+        // }
     }
 
     private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchItems();
@@ -82,28 +105,48 @@ public partial class ListViewModel : PageViewModel
         try
         {
             var newItems = _model.Unsafe!.GetItems();
-
+            Items.Clear();
             foreach (var item in newItems)
             {
                 // TODO: When we fetch next page of items or refreshed items, we may need to check if we have an existing ViewModel in the cache?
                 ListItemViewModel viewModel = new(item, this);
                 viewModel.InitializeProperties();
-                _itemCache.Add(viewModel); // TODO: Figure out when we clear/remove things from cache...
-
-                // We may already have items from the new items here.
-                if ((Filter == string.Empty || viewModel.MatchesFilter(Filter))
-                    && !Items.Contains(viewModel)) //// TODO: We should be smarter about the contains here somehow (also in OnFilterUpdated)
-                {
-                    // Am I really allowed to modify that observable collection on a BG
-                    // thread and have it just work in the UI??
-                    Items.Add(viewModel);
-                }
+                Items.Add(viewModel); // TODO: Figure out when we clear/remove things from cache...
             }
         }
         catch (Exception ex)
         {
             ShowException(ex);
             throw;
+        }
+
+        if (!_isDynamic)
+        {
+            ApplyFilter();
+        }
+        else
+        {
+            FilteredItems.Clear();
+            foreach (var viewModel in Items)
+            {
+                FilteredItems.Add(viewModel);
+            }
+        }
+    }
+
+    private void ApplyFilter()
+    {
+        FilteredItems.Clear();
+        foreach (var viewModel in Items)
+        {
+            // We may already have items from the new items here.
+            if ((Filter == string.Empty || viewModel.MatchesFilter(Filter))
+                && !FilteredItems.Contains(viewModel)) //// TODO: We should be smarter about the contains here somehow (also in OnFilterUpdated)
+            {
+                // Am I really allowed to modify that observable collection on a BG
+                // thread and have it just work in the UI??
+                FilteredItems.Add(viewModel);
+            }
         }
     }
 
@@ -135,6 +178,8 @@ public partial class ListViewModel : PageViewModel
         {
             return; // throw?
         }
+
+        _isDynamic = listPage is IDynamicListPage;
 
         ShowDetails = listPage.ShowDetails;
         UpdateProperty(nameof(ShowDetails));
