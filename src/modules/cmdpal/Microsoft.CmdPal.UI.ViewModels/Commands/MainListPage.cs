@@ -21,6 +21,8 @@ public partial class MainListPage : DynamicListPage
 
     private readonly ObservableCollection<TopLevelCommandWrapper> _commands;
 
+    private IEnumerable<IListItem>? _filteredItems;
+
     public MainListPage(IServiceProvider serviceProvider)
     {
         Name = "Command Palette";
@@ -36,12 +38,20 @@ public partial class MainListPage : DynamicListPage
 
     private void Commands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => RaiseItemsChanged(_commands.Count);
 
-    public override IListItem[] GetItems() => _commands
-        .Select(tlc => tlc)
-        .ToArray();
+    public override IListItem[] GetItems()
+    {
+        return string.IsNullOrEmpty(SearchText)
+            ? _commands.Select(tlc => tlc).ToArray()
+            : _filteredItems?.ToArray() ?? [];
+    }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
         /* handle changes to the filter text here */
+        IEnumerable<IListItem> commands = _commands;
+        IEnumerable<IListItem> apps = AllAppsCommandProvider.Page.GetItems();
+        var allItems = commands.Concat(apps);
+        _filteredItems = ListHelpers.FilterList(allItems, SearchText);
+        RaiseItemsChanged(_filteredItems.Count());
     }
 }
