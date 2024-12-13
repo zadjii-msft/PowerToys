@@ -20,7 +20,8 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class ListPage : Page,
     IRecipient<NavigateNextCommand>,
     IRecipient<NavigatePreviousCommand>,
-    IRecipient<ActivateSelectedListItemMessage>
+    IRecipient<ActivateSelectedListItemMessage>,
+    IRecipient<ActivateSecondaryCommandMessage>
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
 
@@ -106,6 +107,7 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Register<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Register<NavigatePreviousCommand>(this);
         WeakReferenceMessenger.Default.Register<ActivateSelectedListItemMessage>(this);
+        WeakReferenceMessenger.Default.Register<ActivateSecondaryCommandMessage>(this);
 
         base.OnNavigatedTo(e);
     }
@@ -117,6 +119,7 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Unregister<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Unregister<NavigatePreviousCommand>(this);
         WeakReferenceMessenger.Default.Unregister<ActivateSelectedListItemMessage>(this);
+        WeakReferenceMessenger.Default.Unregister<ActivateSecondaryCommandMessage>(this);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too agressive at pruning methods bound in XAML")]
@@ -164,6 +167,14 @@ public sealed partial class ListPage : Page,
         if (ItemsList.SelectedItem is ListItemViewModel item)
         {
             ViewModel?.InvokeItemCommand.Execute(item);
+        }
+    }
+
+    public void Receive(ActivateSecondaryCommandMessage message)
+    {
+        if (ItemsList.SelectedItem is ListItemViewModel item)
+        {
+            ViewModel?.InvokeSecondaryCommandCommand.Execute(item);
         }
     }
 

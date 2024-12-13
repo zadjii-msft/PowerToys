@@ -76,23 +76,22 @@ public sealed partial class SearchBar : UserControl, ICurrentPageAware
 
             e.Handled = true;
         }
+        else if (ctrlPressed && e.Key == VirtualKey.Enter)
+        {
+            // ctrl+enter
+            WeakReferenceMessenger.Default.Send<ActivateSecondaryCommandMessage>();
+            e.Handled = true;
+        }
         else if (e.Key == VirtualKey.Enter)
         {
             WeakReferenceMessenger.Default.Send<ActivateSelectedListItemMessage>();
-
             e.Handled = true;
-        } // ctrl+k
+        }
         else if (ctrlPressed && e.Key == VirtualKey.K)
         {
-            // TODO: ShowActionsMessage?
-            // Move code below to ActionBar
-            /*FlyoutShowOptions options = new FlyoutShowOptions
-            {
-                ShowMode = FlyoutShowMode.Standard,
-            };
-            MoreCommandsButton.Flyout.ShowAt(MoreCommandsButton, options);
-            ActionsDropdown.SelectedIndex = 0;
-            ActionsDropdown.Focus(FocusState.Programmatic);*/
+            // ctrl+k
+            WeakReferenceMessenger.Default.Send<OpenContextMenuMessage>();
+            e.Handled = true;
         }
         else if (e.Key == VirtualKey.Escape)
         {

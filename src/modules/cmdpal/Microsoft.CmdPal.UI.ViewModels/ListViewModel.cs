@@ -169,7 +169,17 @@ public partial class ListViewModel : PageViewModel
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
     [RelayCommand]
-    private void InvokeItem(ListItemViewModel item) => WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
+    private void InvokeItem(ListItemViewModel item) =>
+        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
+
+    [RelayCommand]
+    private void InvokeSecondaryCommand(ListItemViewModel item)
+    {
+        if (item.SecondaryCommand != null)
+        {
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command));
+        }
+    }
 
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item)
