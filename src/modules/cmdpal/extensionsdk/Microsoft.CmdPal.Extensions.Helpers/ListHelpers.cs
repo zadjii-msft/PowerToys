@@ -9,19 +9,8 @@ namespace Microsoft.CmdPal.Extensions.Helpers;
 public class ListHelpers
 {
     // Generate a score for a list item.
-    public static int ScoreListItem(string query, IListItem listItem)
+    public static int ScoreListItem(string query, ICommandItem listItem)
     {
-        var isFallback = false;
-
-        // if (listItem.FallbackHandler != null)
-        // {
-        //    isFallback = true;
-        //    listItem.FallbackHandler.UpdateQuery(query);
-        //    if (string.IsNullOrWhiteSpace(listItem.Title))
-        //    {
-        //        return 0;
-        //    }
-        // }
         if (string.IsNullOrEmpty(query))
         {
             return 1;
@@ -37,7 +26,7 @@ public class ListHelpers
         // var lnkResolvedExecutableNameMatch = StringMatcher.FuzzySearch(query, LnkResolvedExecutableName);
         // var locLnkResolvedExecutableNameMatch = StringMatcher.FuzzySearch(query, LnkResolvedExecutableNameLocalized);
         // var score = new[] { nameMatch.Score, (descriptionMatch.Score - 4) / 2, executableNameMatch.Score }.Max();
-        return new[] { nameMatch.Score, (descriptionMatch.Score - 4) / 2, 0 }.Max() / (isFallback ? 3 : 1);
+        return new[] { nameMatch.Score, (descriptionMatch.Score - 4) / 2, 0 }.Max();
     }
 
     public static IEnumerable<IListItem> FilterList(IEnumerable<IListItem> items, string query)
