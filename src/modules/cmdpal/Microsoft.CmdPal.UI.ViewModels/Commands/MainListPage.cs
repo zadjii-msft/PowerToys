@@ -4,12 +4,12 @@
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.CmdPal.UI.Pages;
+namespace Microsoft.CmdPal.UI.ViewModels.MainPage;
 
 /// <summary>
 /// This class encapsulates the data we load from built-in providers and extensions to use within the same extension-UI system for a <see cref="ListPage"/>.
@@ -27,6 +27,7 @@ public partial class MainListPage : DynamicListPage
         _serviceProvider = serviceProvider;
 
         var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>();
+        var allApps = AllAppsCommandProvider.Page;
 
         // reference the TLC collection directly... maybe? TODO is this a good idea ot a terrible one?
         _commands = tlcManager!.TopLevelCommands;
