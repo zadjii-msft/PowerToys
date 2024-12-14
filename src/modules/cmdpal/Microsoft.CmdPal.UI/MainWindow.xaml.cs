@@ -237,12 +237,17 @@ public sealed partial class MainWindow : Window,
     private const uint WM_HOTKEY = 0x0312;
 #pragma warning restore SA1310 // Field names should not contain underscore
 
-    internal void SetupHotkey()
+    private void SetupHotkey()
     {
         // For somee reason `.` is not in the VirtualKey enum. Whatever.
         var vk = (VirtualKey)DOT_KEY;
         var modifiers = HOT_KEY_MODIFIERS.MOD_CONTROL | HOT_KEY_MODIFIERS.MOD_WIN;
         var success = PInvoke.RegisterHotKey(_hwnd, 0, modifiers, (uint)vk);
+
+        // LOAD BEARING: If you don't stick the pointer to HotKeyPrc into a
+        // member (and instead like, use a local), then the pointer we marshal
+        // into the WindowLongPtr will be useless after we leave this function,
+        // and our **WindProc will explode**.
         _hotkeyWndProc = HotKeyPrc;
         var hotKeyPrcPointer = Marshal.GetFunctionPointerForDelegate(_hotkeyWndProc);
         _originalWndProc = Marshal.GetDelegateForFunctionPointer<WNDPROC>(PInvoke.SetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, hotKeyPrcPointer));
