@@ -208,6 +208,9 @@
   <data name="window_walker_top_level_command_title" xml:space="preserve">
     <value>Switch between open windows</value>
   </data>
+  <data name="switch_to_command_title" xml:space="preserve">
+    <value>Switch to</value>
+  </data>
   <data name="VirtualDesktopHelper_AllDesktops" xml:space="preserve">
     <value>On all Desktops</value>
   </data>

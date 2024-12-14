@@ -78,7 +78,12 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         Name = model.Command?.Name ?? string.Empty;
         Title = model.Title;
         Subtitle = model.Subtitle;
-        Icon = model.Icon;
+
+        var listIcon = model.Icon;
+        Icon = !string.IsNullOrEmpty(listIcon.Icon) ?
+            listIcon :
+            Command.Unsafe!.Icon;
+
         MoreCommands = model.MoreCommands
             .Where(contextItem => contextItem is ICommandContextItem)
             .Select(contextItem => (contextItem as ICommandContextItem)!)
@@ -129,7 +134,8 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
                 this.Subtitle = model.Subtitle;
                 break;
             case nameof(Icon):
-                this.Icon = model.Icon;
+                var listIcon = model.Icon;
+                Icon = !string.IsNullOrEmpty(listIcon.Icon) ? listIcon : Command.Unsafe!.Icon;
                 break;
 
                 // TODO! Icon

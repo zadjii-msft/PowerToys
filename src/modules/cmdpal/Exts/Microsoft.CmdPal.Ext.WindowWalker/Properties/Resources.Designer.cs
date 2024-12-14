@@ -61,6 +61,15 @@ namespace Microsoft.CmdPal.Ext.WindowWalker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Switch to.
+        /// </summary>
+        public static string switch_to_command_title {
+            get {
+                return ResourceManager.GetString("switch_to_command_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to On all Desktops.
         /// </summary>
         public static string VirtualDesktopHelper_AllDesktops {
