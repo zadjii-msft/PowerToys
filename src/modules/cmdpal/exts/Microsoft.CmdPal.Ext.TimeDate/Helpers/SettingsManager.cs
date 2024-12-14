@@ -18,6 +18,8 @@ public class SettingsManager
     private readonly string _filePath;
     private readonly Settings _settings = new();
 
+    private static SettingsManager? instance;
+
     private readonly List<ChoiceSetSetting.Choice> _calendarFirstWeekRuleChoices =
     [
         new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_Setting_UseSystemSetting, "-1"),
@@ -29,11 +31,20 @@ public class SettingsManager
     private readonly List<ChoiceSetSetting.Choice> _firstDayofWeekChoices = GetSortedListForWeekDaySetting();
 
     private readonly ChoiceSetSetting _calendarFirstWeekRuleChoiceSet;
-    private readonly ChoiceSetSetting _firstDayofWeekChoiceSet;
+    private readonly ChoiceSetSetting _firstDayOfWeekChoiceSet;
+    private readonly ToggleSetting _onlyDateTimeNowGlobal = new(nameof(OnlyDateTimeNowGlobal), Resources.Microsoft_plugin_timedate_SettingOnlyDateTimeNowGlobal, Resources.Microsoft_plugin_timedate_SettingOnlyDateTimeNowGlobal_Description, true);
+    private readonly ToggleSetting _timeWithSeconds = new(nameof(TimeWithSeconds), Resources.Microsoft_plugin_timedate_SettingTimeWithSeconds, Resources.Microsoft_plugin_timedate_SettingTimeWithSeconds_Description, false);
+    private readonly ToggleSetting _dateWithWeekday = new(nameof(DateWithWeekday), Resources.Microsoft_plugin_timedate_SettingDateWithWeekday, Resources.Microsoft_plugin_timedate_SettingDateWithWeekday_Description, false);
 
     public string CalendarFirstWeekRule => _calendarFirstWeekRuleChoiceSet.Value ?? string.Empty;
 
-    public string FirstDayofWeek => _firstDayofWeekChoiceSet.Value ?? string.Empty;
+    public string FirstDayOfWeek => _firstDayOfWeekChoiceSet.Value ?? string.Empty;
+
+    public bool OnlyDateTimeNowGlobal => _onlyDateTimeNowGlobal.Value;
+
+    public bool TimeWithSeconds => _timeWithSeconds.Value;
+
+    public bool DateWithWeekday => _dateWithWeekday.Value;
 
     internal static string SettingsJsonPath()
     {
@@ -52,13 +63,25 @@ public class SettingsManager
         _filePath = SettingsJsonPath();
 
         _calendarFirstWeekRuleChoiceSet = new(nameof(_calendarFirstWeekRuleChoiceSet), Resources.Microsoft_plugin_timedate_SettingFirstWeekRule, Resources.Microsoft_plugin_timedate_SettingFirstWeekRule_Description, _calendarFirstWeekRuleChoices);
-        _firstDayofWeekChoiceSet = new(nameof(_firstDayofWeekChoiceSet), Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek, string.Empty, _firstDayofWeekChoices);
+        _firstDayOfWeekChoiceSet = new(nameof(_firstDayOfWeekChoiceSet), Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek, string.Empty, _firstDayofWeekChoices);
 
         _settings.Add(_calendarFirstWeekRuleChoiceSet);
-        _settings.Add(_firstDayofWeekChoiceSet);
+        _settings.Add(_firstDayOfWeekChoiceSet);
+        _settings.Add(_onlyDateTimeNowGlobal);
+        _settings.Add(_timeWithSeconds);
+        _settings.Add(_dateWithWeekday);
 
         // Load settings from file upon initialization
         LoadSettings();
+    }
+
+    internal static SettingsManager Instance
+    {
+        get
+        {
+            instance ??= new SettingsManager();
+            return instance;
+        }
     }
 
     public Settings GetSettings() => _settings;

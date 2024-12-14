@@ -19,12 +19,12 @@ internal sealed partial class SettingsPage : FormPage
         return s;
     }
 
-    public SettingsPage(SettingsManager settingsManager)
+    public SettingsPage()
     {
         Name = Properties.Resources.settings_page_name;
         Icon = new("\uE713"); // Settings icon
-        _settings = settingsManager.GetSettings();
-        _settingsManager = settingsManager;
+        _settingsManager = SettingsManager.Instance;
+        _settings = _settingsManager.GetSettings();
 
         _settings.SettingsChanged += SettingsChanged;
     }
