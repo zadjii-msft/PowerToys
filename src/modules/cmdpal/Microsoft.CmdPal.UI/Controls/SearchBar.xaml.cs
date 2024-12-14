@@ -107,10 +107,20 @@ public sealed partial class SearchBar : UserControl, ICurrentPageAware
 
             e.Handled = true;
         }
+        else if (e.Key == VirtualKey.Back)
+        {
+            // hack
+            if (CurrentPageViewModel != null)
+            {
+                CurrentPageViewModel.Filter = FilterBox.Text;
+            }
+        }
     }
 
     private void FilterBox_TextChanged(object sender, TextChangedEventArgs e)
     {
+        Debug.WriteLine($"FilterBox_TextChanged: {FilterBox.Text}");
+
         // TODO: We could encapsulate this in a Behavior if we wanted to bind to the Filter property.
         _debounceTimer.Debounce(
             () =>

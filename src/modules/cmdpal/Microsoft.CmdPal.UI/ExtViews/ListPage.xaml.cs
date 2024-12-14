@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
@@ -89,8 +90,12 @@ public sealed partial class ListPage : Page,
                             var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
 
                             ViewModel = lvm;
+
+                            // lvm.FilteredItems.CollectionChanged += FilteredItems_CollectionChanged;
                             WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(result ? lvm : null));
                             LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
+
+                            // ItemsList.SelectedIndex = 0;
                         });
                     }
                 });
@@ -111,6 +116,8 @@ public sealed partial class ListPage : Page,
 
         base.OnNavigatedTo(e);
     }
+
+    private void FilteredItems_CollectionChanged1(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => throw new NotImplementedException();
 
     protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
     {
@@ -185,13 +192,46 @@ public sealed partial class ListPage : Page,
             if (e.OldValue is ListViewModel old)
             {
                 old.PropertyChanged -= @this.ViewModel_PropertyChanged;
+
+                // old.FilteredItems.CollectionChanged -= @this.FilteredItems_CollectionChanged;
+                old.ItemsUpdated -= @this.Page_ItemsUpdated;
             }
 
             if (e.NewValue is ListViewModel page)
             {
                 page.PropertyChanged += @this.ViewModel_PropertyChanged;
+
+                // page.FilteredItems.CollectionChanged += @this.FilteredItems_CollectionChanged;
+                page.ItemsUpdated += @this.Page_ItemsUpdated;
             }
         }
+    }
+
+    private void Page_ItemsUpdated(ListViewModel sender, object args)
+    {
+        Debug.WriteLine($"Page_ItemsUpdated(\'{ItemsList.SelectedItem == null}\')");
+
+        // Debug.WriteLine($"  on {Thread.CurrentThread.Name}");
+        if (ItemsList.SelectedItem == null)
+        {
+            ItemsList.SelectedIndex = 0;
+        }
+    }
+
+    private void FilteredItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        // if (ItemsList.SelectedItem is ListItemViewModel item)
+        // {
+        //    ItemsList.ScrollIntoView(item);
+        // }
+        // Debug.WriteLine($"FilteredItems_CollectionChanged({ItemsList.SelectedItem})");
+        // Debug.WriteLine($"  on {Thread.CurrentThread.Name}");
+
+        // if (ItemsList.SelectedItem == null)
+        // {
+        //    // ItemsList.SelectedIndex = 0;
+        //    Debug.WriteLine($"select 0");
+        // }
     }
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -203,6 +243,10 @@ public sealed partial class ListPage : Page,
             {
                 LoadedState = ViewModelLoadedState.Error;
             }
+        }
+        else if (prop == nameof(ViewModel.FilteredItems))
+        {
+            Debug.WriteLine($"ViewModel.FilteredItems {ItemsList.SelectedItem}");
         }
     }
 }

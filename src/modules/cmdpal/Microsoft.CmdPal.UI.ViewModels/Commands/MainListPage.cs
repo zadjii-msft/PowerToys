@@ -4,6 +4,7 @@
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -66,6 +67,7 @@ public partial class MainListPage : DynamicListPage
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
         /* handle changes to the filter text here */
+        Debug.WriteLine($"UpdateSearchText '{oldSearch}' -> '{newSearch}'");
 
         // Cleared out the filter text? easy. Reset _filteredItems, and bail out.
         if (string.IsNullOrEmpty(newSearch))
