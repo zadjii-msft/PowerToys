@@ -24,6 +24,7 @@ public sealed partial class ShellPage :
     IRecipient<ShowDetailsMessage>,
     IRecipient<HideDetailsMessage>,
     IRecipient<HandleCommandResultMessage>,
+    IRecipient<ClearSearchMessage>,
     IRecipient<LaunchUriMessage>
 {
     private readonly SlideNavigationTransitionInfo _slideRightTransition = new() { Effect = SlideNavigationTransitionEffect.FromRight };
@@ -44,6 +45,7 @@ public sealed partial class ShellPage :
         WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
 
+        WeakReferenceMessenger.Default.Register<ClearSearchMessage>(this);
         WeakReferenceMessenger.Default.Register<LaunchUriMessage>(this);
 
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
@@ -188,6 +190,8 @@ public sealed partial class ShellPage :
     public void Receive(LaunchUriMessage message) => _ = Launcher.LaunchUriAsync(message.Uri);
 
     public void Receive(HandleCommandResultMessage message) => HandleCommandResult(message.Result.Unsafe);
+
+    public void Receive(ClearSearchMessage message) => SearchBox.ClearSearch();
 
     private void HideDetails() => ViewModel.IsDetailsVisible = false;
 
