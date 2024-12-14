@@ -40,6 +40,11 @@ public sealed partial class ActionBar : UserControl,
 
     public void Receive(OpenContextMenuMessage message)
     {
+        if (!ViewModel.ShouldShowContextMenu)
+        {
+            return;
+        }
+
         var options = new FlyoutShowOptions
         {
             ShowMode = FlyoutShowMode.Standard,
