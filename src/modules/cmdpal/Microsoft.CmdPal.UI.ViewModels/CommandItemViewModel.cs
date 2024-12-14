@@ -138,7 +138,6 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
                 Icon = !string.IsNullOrEmpty(listIcon.Icon) ? listIcon : Command.Unsafe!.Icon;
                 break;
 
-                // TODO! Icon
                 // TODO! MoreCommands array, which needs to also raise HasMoreCommands
         }
 
