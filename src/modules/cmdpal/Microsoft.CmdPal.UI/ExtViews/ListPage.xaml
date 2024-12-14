@@ -36,9 +36,9 @@
             <StackPanel
                 Padding="4,2,4,2"
                 VerticalAlignment="Center"
+                Background="{x:Bind help:OptionalColorBrushCacheProvider.Convert(Background, x:False), Mode=OneWay}"
                 BorderBrush="{ThemeResource TextBoxBorderThemeBrush}"
                 BorderThickness="1"
-                Background="{x:Bind help:OptionalColorBrushCacheProvider.Convert(Background, x:False), Mode=OneWay}"
                 CornerRadius="4"
                 Orientation="Horizontal">
                 <cpcontrols:IconBox
@@ -46,14 +46,15 @@
                     Width="12"
                     Height="12"
                     Margin="0,0,4,0"
+                    Foreground="{x:Bind help:OptionalColorBrushCacheProvider.Convert(Foreground, x:True), Mode=OneWay}"
                     SourceKey="{x:Bind Icon, Mode=OneWay}"
                     SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}"
                     Visibility="{x:Bind HasIcon, Mode=OneWay}" />
 
                 <TextBlock
                     VerticalAlignment="Center"
-                    Foreground="{x:Bind help:OptionalColorBrushCacheProvider.Convert(Foreground, x:True), Mode=OneWay}"
                     FontSize="12"
+                    Foreground="{x:Bind help:OptionalColorBrushCacheProvider.Convert(Foreground, x:True), Mode=OneWay}"
                     Text="{x:Bind Text, Mode=OneWay}" />
             </StackPanel>
         </DataTemplate>
