@@ -6,15 +6,26 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class TopLevelCommandManager(IServiceProvider _serviceProvider) : ObservableObject
+public partial class TopLevelCommandManager : ObservableObject,
+    IRecipient<ReloadCommandsMessage>
 {
+    private readonly IServiceProvider _serviceProvider;
+
     private IEnumerable<ICommandProvider>? _builtInCommands;
+
+    public TopLevelCommandManager(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+        WeakReferenceMessenger.Default.Register<ReloadCommandsMessage>(this);
+    }
 
     public ObservableCollection<TopLevelCommandWrapper> TopLevelCommands { get; set; } = [];
 
@@ -47,6 +58,22 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider) :
         {
             TopLevelCommands.Add(new(new(i), true));
         }
+    }
+
+    public async Task ReloadAllCommandsAsync()
+    {
+        // Oh dear this may have reavealed the awful truth that we load
+        // extensions on the UI thread.
+        //
+        // If we stick this in a BG task, then it explodes, because
+        // TopLevelCommands is Observable, so adding things to it can only
+        // happen on the UI thread. Yike.
+        IsLoading = true;
+        var extensionService = _serviceProvider.GetService<IExtensionService>()!;
+        await extensionService.SignalStopExtensionsAsync();
+        TopLevelCommands.Clear();
+        await LoadBuiltinsAsync();
+        await LoadExtensionsAsync();
     }
 
     // Load commands from our extensions.
@@ -92,4 +119,7 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider) :
 
         return null;
     }
+
+    public void Receive(ReloadCommandsMessage message) =>
+        ReloadAllCommandsAsync().ConfigureAwait(false);
 }
