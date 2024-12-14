@@ -250,7 +250,7 @@ namespace Microsoft.CmdPal.Ext.Shell.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execute shell commands.
+        ///   Looks up a localized string similar to Run commands.
         /// </summary>
         public static string shell_command_name {
             get {

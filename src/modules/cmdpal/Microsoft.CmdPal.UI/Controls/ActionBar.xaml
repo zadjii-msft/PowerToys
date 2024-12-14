@@ -45,7 +45,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Padding="8" ColumnSpacing="8">
+    <Grid Padding="8" ColumnSpacing="8" MinHeight="56">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
