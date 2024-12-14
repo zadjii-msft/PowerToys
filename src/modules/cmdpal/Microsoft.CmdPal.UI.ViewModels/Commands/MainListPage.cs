@@ -31,6 +31,7 @@ public partial class MainListPage : DynamicListPage
     {
         Name = "Command Palette";
         Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\StoreLogo.scale-200.png"));
+        ShowDetails = true;
         _serviceProvider = serviceProvider;
 
         var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>()!;

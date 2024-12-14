@@ -44,8 +44,10 @@ public sealed partial class SearchBar : UserControl, ICurrentPageAware
         if (d is SearchBar @this
             && e.NewValue is PageViewModel page)
         {
-            // TODO: In some cases we probably want commands to clear a filter somewhere in the process, so we need to figure out when that is.
+            // TODO: In some cases we probably want commands to clear a filter
+            // somewhere in the process, so we need to figure out when that is.
             @this.FilterBox.Text = page.Filter;
+            @this.FilterBox.Select(@this.FilterBox.Text.Length, 0);
         }
     }
 
@@ -53,6 +55,8 @@ public sealed partial class SearchBar : UserControl, ICurrentPageAware
     {
         this.InitializeComponent();
     }
+
+    public void ClearSearch() => this.FilterBox.Text = string.Empty;
 
     private void BackButton_Tapped(object sender, TappedRoutedEventArgs e) => WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
 
