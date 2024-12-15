@@ -72,7 +72,7 @@ public sealed partial class ActionBar : UserControl,
             if (e.Key == VirtualKey.Enter)
             {
                 ViewModel?.InvokeItemCommand.Execute(item);
-
+                MoreCommandsButton.Flyout.Hide();
                 e.Handled = true;
             }
         }
@@ -91,6 +91,8 @@ public sealed partial class ActionBar : UserControl,
         if (listItem.DataContext is CommandContextItemViewModel item)
         {
             ViewModel?.InvokeItemCommand.Execute(item);
+            MoreCommandsButton.Flyout.Hide();
+            e.Handled = true;
         }
     }
 

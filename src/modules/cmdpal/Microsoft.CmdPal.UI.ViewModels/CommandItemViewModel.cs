@@ -11,6 +11,7 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public partial class CommandItemViewModel : ExtensionObjectViewModel
 {
     private readonly ExtensionObject<ICommandItem> _commandItemModel = new(null);
+    private CommandContextItemViewModel? _defaultCommandContextItem;
 
     // These are properties that are "observable" from the extension object
     // itself, in the sense that they get raised by PropChanged events from the
@@ -40,20 +41,10 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
     {
         get
         {
-            var command = _commandItemModel.Unsafe?.Command;
-            var model = new CommandContextItem(command!);
-            CommandContextItemViewModel defaultCommand = new(model, PageContext)
-            {
-                Name = Name,
-                Title = Name,
-                Subtitle = Subtitle,
-                Icon = Icon,
-                Command = new(command),
+            List<CommandContextItemViewModel> l = _defaultCommandContextItem == null ?
+                [_defaultCommandContextItem] :
+                new();
 
-                // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
-            };
-
-            var l = new List<CommandContextItemViewModel> { defaultCommand };
             l.AddRange(MoreCommands);
             return l;
         }
@@ -75,6 +66,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         }
 
         Command = new(model.Command);
+
         Name = model.Command?.Name ?? string.Empty;
         Title = model.Title;
         Subtitle = model.Subtitle;
@@ -84,11 +76,15 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
             listIcon :
             Command.Unsafe!.Icon;
 
-        MoreCommands = model.MoreCommands
-            .Where(contextItem => contextItem is ICommandContextItem)
-            .Select(contextItem => (contextItem as ICommandContextItem)!)
-            .Select(contextItem => new CommandContextItemViewModel(contextItem, PageContext))
-            .ToList();
+        var more = model.MoreCommands;
+        if (more != null)
+        {
+            MoreCommands = more
+                .Where(contextItem => contextItem is ICommandContextItem)
+                .Select(contextItem => (contextItem as ICommandContextItem)!)
+                .Select(contextItem => new CommandContextItemViewModel(contextItem, PageContext))
+                .ToList();
+        }
 
         // Here, we're already theoretically in the async context, so we can
         // use Initialize straight up
@@ -96,6 +92,17 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         {
             contextItem.InitializeProperties();
         });
+
+        _defaultCommandContextItem = new(new CommandContextItem(model.Command!), PageContext)
+        {
+            Name = Name,
+            Title = Name,
+            Subtitle = Subtitle,
+            Icon = Icon,
+            Command = new(model.Command),
+
+            // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
+        };
 
         model.PropChanged += Model_PropChanged;
 
