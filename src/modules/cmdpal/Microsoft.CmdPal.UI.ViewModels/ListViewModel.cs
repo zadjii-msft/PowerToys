@@ -10,6 +10,7 @@ using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -27,6 +28,8 @@ public partial class ListViewModel : PageViewModel
     public ObservableCollection<ListItemViewModel> Items { get; set; } = [];
 
     private readonly ExtensionObject<IListPage> _model;
+
+    public event TypedEventHandler<ListViewModel, object>? ItemsUpdated;
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
@@ -70,6 +73,7 @@ public partial class ListViewModel : PageViewModel
         {
             // But for all normal pages, we should run our fuzzy match on them.
             ApplyFilter();
+            ItemsUpdated?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -121,17 +125,15 @@ public partial class ListViewModel : PageViewModel
             // FilteredItems. The extension already did any filtering it cared about.
             ListHelpers.InPlaceUpdateList(FilteredItems, Items);
         }
+
+        ItemsUpdated?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
     /// Apply our current filter text to the list of items, and update
     /// FilteredItems to match the results.
     /// </summary>
-    private void ApplyFilter()
-    {
-        Collection<ListItemViewModel> filtered = [.. FilterList(Items, Filter).ToList()];
-        ListHelpers.InPlaceUpdateList(FilteredItems, filtered);
-    }
+    private void ApplyFilter() => ListHelpers.InPlaceUpdateList(FilteredItems, FilterList(Items, Filter));
 
     /// <summary>
     /// Helper to generate a weighting for a given list item, based on title,
@@ -169,7 +171,17 @@ public partial class ListViewModel : PageViewModel
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
     [RelayCommand]
-    private void InvokeItem(ListItemViewModel item) => WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
+    private void InvokeItem(ListItemViewModel item) =>
+        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
+
+    [RelayCommand]
+    private void InvokeSecondaryCommand(ListItemViewModel item)
+    {
+        if (item.SecondaryCommand != null)
+        {
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command));
+        }
+    }
 
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item)

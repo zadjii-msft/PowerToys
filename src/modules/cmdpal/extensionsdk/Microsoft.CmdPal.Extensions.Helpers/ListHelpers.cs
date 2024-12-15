@@ -39,16 +39,38 @@ public class ListHelpers
             .Select(score => score.ListItem);
     }
 
-    public static void InPlaceUpdateList<T>(Collection<T> original, Collection<T> newContents)
+    /// <summary>
+    /// Modifies the contents of `original` in-place, to match those of
+    /// `newContents`. The canonical use being:
+    /// ```cs
+    /// ListHelpers.InPlaceUpdateList(FilteredItems, FilterList(ItemsToFilter, TextToFilterOn));
+    /// ```
+    /// </summary>
+    /// <typeparam name="T">Any type that can be compared for equality</typeparam>
+    /// <param name="original">Collection to modify</param>
+    /// <param name="newContents">The enumerable which `original` should match</param>
+    public static void InPlaceUpdateList<T>(Collection<T> original, IEnumerable<T> newContents)
         where T : class
     {
-        for (var i = 0; i < original.Count && i < newContents.Count; i++)
+        // Short circuit - new contents should just be empty
+        if (!newContents.Any())
         {
+            original.Clear();
+            return;
+        }
+
+        var i = 0;
+        foreach (var newItem in newContents)
+        {
+            if (i >= original.Count)
+            {
+                break;
+            }
+
             for (var j = i; j < original.Count; j++)
             {
                 var og_2 = original[j];
-                var newItem_2 = newContents[i];
-                var areEqual_2 = og_2.Equals(newItem_2);
+                var areEqual_2 = og_2.Equals(newItem);
                 if (areEqual_2)
                 {
                     for (var k = i; k < j; k++)
@@ -62,7 +84,6 @@ public class ListHelpers
             }
 
             var og = original[i];
-            var newItem = newContents[i];
             var areEqual = og.Equals(newItem);
 
             // Is this new item already in the list?
@@ -73,21 +94,27 @@ public class ListHelpers
             else
             {
                 // it isn't. Add it.
-                original.Insert(i, newContents[i]);
+                original.Insert(i, newItem);
             }
+
+            i++;
         }
 
         // Remove any extra trailing items from the destination
-        while (original.Count > newContents.Count)
+        while (original.Count > newContents.Count())
         {
             // RemoveAtEnd
             original.RemoveAt(original.Count - 1);
         }
 
         // Add any extra trailing items from the source
-        while (original.Count < newContents.Count)
+        if (original.Count < newContents.Count())
         {
-            original.Add(newContents[original.Count]);
+            var remaining = newContents.Skip(original.Count);
+            foreach (var item in remaining)
+            {
+                original.Add(item);
+            }
         }
     }
 }
