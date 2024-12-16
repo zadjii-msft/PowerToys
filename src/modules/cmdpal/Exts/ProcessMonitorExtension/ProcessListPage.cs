@@ -17,7 +17,7 @@ internal sealed partial class ProcessListPage : ListPage
     {
         this.Icon = new("\ue9d9");
         this.Name = "Process Monitor";
-        this.Loading = true;
+        this.IsLoading = true;
     }
 
     public override IListItem[] GetItems() => DoGetItems();
