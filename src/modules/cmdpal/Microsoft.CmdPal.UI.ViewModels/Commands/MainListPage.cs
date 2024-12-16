@@ -61,7 +61,7 @@ public partial class MainListPage : DynamicListPage
         }
 
         return string.IsNullOrEmpty(SearchText)
-            ? _commands.Select(tlc => tlc).ToArray()
+            ? _commands.Select(tlc => tlc).Where(tlc => !string.IsNullOrEmpty(tlc.Title)).ToArray()
             : _filteredItems?.ToArray() ?? [];
     }
 
@@ -69,6 +69,11 @@ public partial class MainListPage : DynamicListPage
     {
         /* handle changes to the filter text here */
         Debug.WriteLine($"UpdateSearchText '{oldSearch}' -> '{newSearch}'");
+
+        foreach (var command in _commands)
+        {
+            command.TryUpdateFallbackText(newSearch);
+        }
 
         // Cleared out the filter text? easy. Reset _filteredItems, and bail out.
         if (string.IsNullOrEmpty(newSearch))

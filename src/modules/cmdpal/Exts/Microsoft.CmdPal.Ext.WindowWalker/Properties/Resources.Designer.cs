@@ -286,6 +286,24 @@ namespace Microsoft.CmdPal.Ext.WindowWalker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show windows in most-recently-used order.
+        /// </summary>
+        public static string windowwalker_SettingInMruOrder {
+            get {
+                return ResourceManager.GetString("windowwalker_SettingInMruOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When disabled, windows will be sorted by title.
+        /// </summary>
+        public static string windowwalker_SettingInMruOrder_Description {
+            get {
+                return ResourceManager.GetString("windowwalker_SettingInMruOrder_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Kill process and its child processes.
         /// </summary>
         public static string windowwalker_SettingKillProcessTree {
