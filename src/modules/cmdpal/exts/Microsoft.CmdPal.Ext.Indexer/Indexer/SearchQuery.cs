@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
@@ -30,7 +31,7 @@ internal sealed class SearchQuery : IDisposable
 
     public string SearchText { get; private set; }
 
-    public List<SearchResult> SearchResults { get; private set; } = [];
+    public ConcurrentQueue<SearchResult> SearchResults { get; private set; } = [];
 
     public SearchQuery()
     {
@@ -184,7 +185,7 @@ internal sealed class SearchQuery : IDisposable
                 return false;
             }
 
-            SearchResults.Add(searchResult);
+            SearchResults.Enqueue(searchResult);
             return true;
         }
         catch (Exception ex)

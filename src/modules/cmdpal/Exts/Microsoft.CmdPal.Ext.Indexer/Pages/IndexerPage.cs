@@ -5,8 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Indexer.Data;
@@ -20,6 +18,7 @@ namespace Microsoft.CmdPal.Ext.Indexer;
 internal sealed partial class IndexerPage : DynamicListPage, IDisposable
 {
     private readonly Lock _lockObject = new(); // Lock object for synchronization
+    private readonly List<IListItem> _indexerListItems = [];
 
     private SearchQuery _searchQuery = new();
 
@@ -68,8 +67,6 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
             return [];
         }
 
-        var items = new List<IndexerListItem>();
-
         Stopwatch stopwatch = new();
         stopwatch.Start();
 
@@ -80,9 +77,10 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
                 var cookie = _searchQuery.Cookie;
                 if (cookie == _queryCookie)
                 {
-                    foreach (var result in _searchQuery.SearchResults)
+                    SearchResult result;
+                    while (!_searchQuery.SearchResults.IsEmpty && _searchQuery.SearchResults.TryDequeue(out result))
                     {
-                        items.Add(new IndexerListItem(new IndexerItem
+                        _indexerListItems.Add(new IndexerListItem(new IndexerItem
                         {
                             FileName = result.ItemDisplayName,
                             FullPath = result.LaunchUri,
@@ -96,9 +94,9 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
         }
 
         stopwatch.Stop();
-        Logger.LogDebug($"Build ListItems: {stopwatch.ElapsedMilliseconds} ms, results: {items.Count}, query: \"{SearchText}\"");
+        Logger.LogDebug($"Build ListItems: {stopwatch.ElapsedMilliseconds} ms, results: {_indexerListItems.Count}, query: \"{SearchText}\"");
 
-        return [.. items];
+        return [.. _indexerListItems];
     }
 
     private uint Query(string searchText)
@@ -111,10 +109,9 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
         _queryCookie++;
         lock (_lockObject)
         {
-            if (!CanReuseQuery(_searchQuery.SearchText, searchText))
-            {
-                _searchQuery.CancelOutstandingQueries();
-            }
+            _searchQuery.CancelOutstandingQueries();
+            _searchQuery.SearchResults.Clear();
+            _indexerListItems.Clear();
 
             // Just forward on to the helper with the right callback for feeding us results
             // Set up the binding for the items
@@ -126,41 +123,6 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
         _searchQuery.WaitForQueryCompletedEvent();
 
         return _queryCookie;
-    }
-
-    private bool CanReuseQuery(string oldQuery, string newQuery)
-    {
-        if (newQuery.Length == 0 || oldQuery == null || oldQuery.Length > newQuery.Length)
-        {
-            return false;
-        }
-        else if (oldQuery.Length == 0)
-        {
-            Logger.LogInfo("CanReuseQuery: oldQuery is empty");
-            return true;
-        }
-
-        try
-        {
-            var oldQueryLower = oldQuery.ToLower(CultureInfo.CurrentCulture);
-            var newQueryLower = newQuery.ToLower(CultureInfo.CurrentCulture);
-
-            var isPrefix = oldQueryLower.Zip(newQueryLower, (c1, c2) => c1 == c2)
-                        .TakeWhile(match => match)
-                        .Count() == oldQueryLower.Length;
-
-            if (isPrefix)
-            {
-                Logger.LogInfo("CanReuseQuery: isPrefix");
-                return true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError("CanReuseQuery exception", ex);
-        }
-
-        return false;
     }
 
     public void Dispose()
