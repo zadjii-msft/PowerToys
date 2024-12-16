@@ -79,8 +79,8 @@ public partial class App : Application
         services.AddSingleton<ICommandProvider, AllAppsCommandProvider>();
         services.AddSingleton<ICommandProvider, ShellCommandsProvider>();
         services.AddSingleton<ICommandProvider, CalculatorCommandProvider>();
-        services.AddSingleton<ICommandProvider, BookmarksCommandProvider>();
         services.AddSingleton<ICommandProvider, IndexerActionsProvider>();
+        services.AddSingleton<ICommandProvider, BookmarksCommandProvider>();
         services.AddSingleton<ICommandProvider, SettingsCommandProvider>();
         services.AddSingleton<ICommandProvider, QuitCommandProvider>();
         services.AddSingleton<ICommandProvider, ReloadExtensionsCommandProvider>();
