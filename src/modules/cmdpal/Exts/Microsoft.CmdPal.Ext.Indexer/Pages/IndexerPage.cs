@@ -25,10 +25,12 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
 
     private uint _queryCookie = 10;
 
+    private IListItem[] _last = [];
+
     public IndexerPage()
     {
         Icon = new("\ue729");
-        Name = "Indexer";
+        Name = "File search";
         PlaceholderText = "Search for files and folders...";
 
         _searchQuery.Init();
@@ -43,13 +45,14 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
                 IsLoading = true;
                 Logger.LogDebug($"Update {oldSearch} -> {newSearch}");
                 StartQuery(newSearch);
+                _last = DoGetItems();
                 IsLoading = false;
                 RaiseItemsChanged(0);
             });
         }
     }
 
-    public override IListItem[] GetItems() => DoGetItems();
+    public override IListItem[] GetItems() => _last;
 
     private void StartQuery(string query)
     {

@@ -19,7 +19,7 @@ public partial class IndexerActionsProvider : CommandProvider
         return [
             new CommandItem(new IndexerPage())
             {
-                Title = "Indexer",
+                Title = "File search",
                 Subtitle = "Search indexed files",
             }
         ];
