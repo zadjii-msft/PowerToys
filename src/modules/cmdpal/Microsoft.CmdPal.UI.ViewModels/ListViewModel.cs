@@ -95,7 +95,7 @@ public partial class ListViewModel : PageViewModel
             foreach (var item in newItems)
             {
                 ListItemViewModel viewModel = new(item, this);
-                viewModel.InitializeProperties();
+                viewModel.SafeInitializeProperties();
                 newViewModels.Add(viewModel);
             }
 
