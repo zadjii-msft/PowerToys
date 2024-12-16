@@ -57,7 +57,6 @@ public partial class SamplesListPage : ListPage
            Title = "Sample settings page",
            Subtitle = "A demo of the settings helpers",
        },
-
        new ListItem(new EvilSamplesPage())
        {
            Title = "Evil samples",

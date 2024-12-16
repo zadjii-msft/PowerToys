@@ -6,6 +6,7 @@ using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Ext.Bookmarks;
 using Microsoft.CmdPal.Ext.Calc;
+using Microsoft.CmdPal.Ext.Indexer;
 using Microsoft.CmdPal.Ext.Registry;
 using Microsoft.CmdPal.Ext.Settings;
 using Microsoft.CmdPal.Ext.Shell;
@@ -79,6 +80,7 @@ public partial class App : Application
         services.AddSingleton<ICommandProvider, ShellCommandsProvider>();
         services.AddSingleton<ICommandProvider, CalculatorCommandProvider>();
         services.AddSingleton<ICommandProvider, BookmarksCommandProvider>();
+        services.AddSingleton<ICommandProvider, IndexerActionsProvider>();
         services.AddSingleton<ICommandProvider, SettingsCommandProvider>();
         services.AddSingleton<ICommandProvider, QuitCommandProvider>();
         services.AddSingleton<ICommandProvider, ReloadExtensionsCommandProvider>();
