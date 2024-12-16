@@ -112,21 +112,28 @@ public partial class ListViewModel : PageViewModel
             throw;
         }
 
-        // Now that our Items contains everything we want, it's time for us to
-        // re-evaluate our Filter on those items.
-        if (!_isDynamic)
-        {
-            // A static list? Great! Just run the filter.
-            ApplyFilter();
-        }
-        else
-        {
-            // A dynamic list? Even better! Just stick everything into
-            // FilteredItems. The extension already did any filtering it cared about.
-            ListHelpers.InPlaceUpdateList(FilteredItems, Items);
-        }
+        Task.Factory.StartNew(
+            () =>
+            {
+                // Now that our Items contains everything we want, it's time for us to
+                // re-evaluate our Filter on those items.
+                if (!_isDynamic)
+                {
+                    // A static list? Great! Just run the filter.
+                    ApplyFilter();
+                }
+                else
+                {
+                    // A dynamic list? Even better! Just stick everything into
+                    // FilteredItems. The extension already did any filtering it cared about.
+                    ListHelpers.InPlaceUpdateList(FilteredItems, Items);
+                }
 
-        ItemsUpdated?.Invoke(this, EventArgs.Empty);
+                ItemsUpdated?.Invoke(this, EventArgs.Empty);
+            },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            PageContext.Scheduler);
     }
 
     /// <summary>
