@@ -1,10 +1,10 @@
 {
   "profiles": {
-    "MastodonExtension (Package)": {
+    "VirtualDesktopExtension (Package)": {
       "commandName": "MsixPackage",
       "doNotLaunchApp": true
     },
-    "MastodonExtension (Unpackaged)": {
+    "VirtualDesktopExtension (Unpackaged)": {
       "commandName": "Project"
     }
   }
