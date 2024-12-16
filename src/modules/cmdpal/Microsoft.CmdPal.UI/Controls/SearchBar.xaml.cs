@@ -18,7 +18,9 @@ using VirtualKey = Windows.System.VirtualKey;
 
 namespace Microsoft.CmdPal.UI.Controls;
 
-public sealed partial class SearchBar : UserControl, ICurrentPageAware
+public sealed partial class SearchBar : UserControl,
+    IRecipient<GoHomeMessage>,
+    ICurrentPageAware
 {
     /// <summary>
     /// Gets the <see cref="DispatcherQueueTimer"/> that we create to track keyboard input and throttle/debounce before we make queries.
@@ -54,6 +56,7 @@ public sealed partial class SearchBar : UserControl, ICurrentPageAware
     public SearchBar()
     {
         this.InitializeComponent();
+        WeakReferenceMessenger.Default.Register<GoHomeMessage>(this);
     }
 
     public void ClearSearch() => this.FilterBox.Text = string.Empty;
@@ -143,4 +146,6 @@ public sealed partial class SearchBar : UserControl, ICurrentPageAware
             //// If we're not already waiting, and this is blanking out or the first character type, we'll start filtering immediately instead to appear more responsive and either clear the filter to get back home faster or at least chop to the first starting letter.
             immediate: FilterBox.Text.Length <= 1);
     }
+
+    public void Receive(GoHomeMessage message) => ClearSearch();
 }

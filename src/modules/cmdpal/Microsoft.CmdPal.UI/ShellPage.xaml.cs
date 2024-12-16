@@ -206,6 +206,6 @@ public sealed partial class ShellPage :
             GoBack();
         }
 
-        SearchBox.ClearSearch();
+        WeakReferenceMessenger.Default.Send<GoHomeMessage>();
     }
 }
