@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
@@ -44,9 +43,11 @@ internal sealed class SearchQuery : IDisposable
 
         // Copy the property ID into the allocated memory
         Marshal.WriteInt32(dbPropIdSet.rgPropertyIDs, 8); // MSIDXSPROP_WHEREID
+
+        Init();
     }
 
-    public void Init()
+    private void Init()
     {
         // Create all the objects we will want cached
         try
@@ -89,9 +90,9 @@ internal sealed class SearchQuery : IDisposable
                 queryTpTimer.Dispose();
                 queryTpTimer = null;
             }
-        }
 
-        Init();
+            Init();
+        }
     }
 
     public void Execute(string searchText, uint cookie)
@@ -121,14 +122,38 @@ internal sealed class SearchQuery : IDisposable
 
     private void ExecuteSyncInternal()
     {
-        try
+        lock (_lockObject)
         {
             var queryStr = QueryStringBuilder.GenerateQuery(SearchText, reuseWhereID);
-            ExecuteQueryStringSync(queryStr);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError("Exception at SearchUXQueryHelper ExecuteSyncInternal", ex);
+            try
+            {
+                // We need to generate a search query string with the search text the user entered above
+                if (currentRowset != null)
+                {
+                    if (reuseRowset != null)
+                    {
+                        Marshal.ReleaseComObject(reuseRowset);
+                    }
+
+                    // We have a previous rowset, this means the user is typing and we should store this
+                    // recapture the where ID from this so the next ExecuteSync call will be faster
+                    reuseRowset = currentRowset;
+                    reuseWhereID = GetReuseWhereId(reuseRowset);
+                }
+
+                currentRowset = ExecuteCommand(queryStr);
+
+                SearchResults.Clear();
+                FetchRows();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Error executing query", ex);
+            }
+            finally
+            {
+                queryCompletedEvent.Set();
+            }
         }
     }
 
@@ -253,42 +278,6 @@ internal sealed class SearchQuery : IDisposable
             {
                 Marshal.FreeCoTaskMem(prghRows);
             }
-        }
-    }
-
-    private void ExecuteQueryStringSync(string queryStr)
-    {
-        try
-        {
-            lock (_lockObject)
-            {
-                // We need to generate a search query string with the search text the user entered above
-                if (currentRowset != null)
-                {
-                    if (reuseRowset != null)
-                    {
-                        Marshal.ReleaseComObject(reuseRowset);
-                    }
-
-                    // We have a previous rowset, this means the user is typing and we should store this
-                    // recapture the where ID from this so the next ExecuteSync call will be faster
-                    reuseRowset = currentRowset;
-                    reuseWhereID = GetReuseWhereId(reuseRowset);
-                }
-
-                currentRowset = ExecuteCommand(queryStr);
-
-                SearchResults.Clear();
-                FetchRows();
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError("Error executing query", ex);
-        }
-        finally
-        {
-            queryCompletedEvent.Set();
         }
     }
 

@@ -30,8 +30,6 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
         Icon = new("\ue729");
         Name = "Indexer";
         PlaceholderText = "Search for files and folders...";
-
-        _searchQuery.Init();
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
