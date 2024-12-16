@@ -20,17 +20,14 @@ internal sealed partial class ProcessListPage : ListPage
         this.Loading = true;
     }
 
-    public override IListItem[] GetItems()
-    {
-        this.Loading = true;
-        var items = DoGetItems();
-        this.Loading = false;
-        return items;
-    }
+    public override IListItem[] GetItems() => DoGetItems();
+
+    internal void UpdateItems() => this.RaiseItemsChanged(-1);
 
     private IListItem[] DoGetItems()
     {
         var items = GetRunningProcesses();
+        this.IsLoading = false;
         var s = items
             .OrderByDescending(p => p.Memory)
             .Select((process) => new ListItem(new SwitchToProcess(process))
@@ -38,7 +35,7 @@ internal sealed partial class ProcessListPage : ListPage
                 Title = process.Name,
                 Subtitle = $"PID: {process.ProcessId}",
                 MoreCommands = [
-                    new CommandContextItem(new TerminateProcess(process))
+                    new CommandContextItem(new TerminateProcess(process, this))
                 ],
             }).ToArray();
         return s;

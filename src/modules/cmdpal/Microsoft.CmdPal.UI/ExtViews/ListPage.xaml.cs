@@ -33,7 +33,7 @@ public sealed partial class ListPage : Page,
 
     // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register(nameof(ViewModel), typeof(ListViewModel), typeof(ListPage), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(ViewModel), typeof(ListViewModel), typeof(ListPage), new PropertyMetadata(null, OnViewModelChanged));
 
     public ViewModelLoadedState LoadedState
     {
@@ -99,12 +99,8 @@ public sealed partial class ListPage : Page,
                             var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
 
                             ViewModel = lvm;
-                            WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(lvm));
+                            WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(result ? lvm : null));
                             LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
-                            if (!result)
-                            {
-                                WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(null));
-                            }
                         });
                     }
                 });
@@ -112,7 +108,7 @@ public sealed partial class ListPage : Page,
             else
             {
                 ViewModel = lvm;
-                WeakReferenceMessenger.Default.Send<UpdateActionBarPage>(new(lvm));
+                WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(lvm));
                 LoadedState = ViewModelLoadedState.Loaded;
             }
         }
@@ -136,11 +132,21 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Unregister<ShowExceptionMessage>(this);
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too agressive at pruning methods bound in XAML")]
     private void ListView_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is ListItemViewModel item)
         {
             ViewModel?.InvokeItemCommand.Execute(item);
+        }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too agressive at pruning methods bound in XAML")]
+    private void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ItemsList.SelectedItem is ListItemViewModel item)
+        {
+            ViewModel?.UpdateSelectedItemCommand.Execute(item);
         }
     }
 
@@ -174,11 +180,31 @@ public sealed partial class ListPage : Page,
         }
     }
 
-    private void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (ItemsList.SelectedItem is ListItemViewModel item)
+        if (d is ListPage @this)
         {
-            ViewModel?.UpdateSelectedItemCommand.Execute(item);
+            if (e.OldValue is ListViewModel old)
+            {
+                old.PropertyChanged -= @this.ViewModel_PropertyChanged;
+            }
+
+            if (e.NewValue is ListViewModel page)
+            {
+                page.PropertyChanged += @this.ViewModel_PropertyChanged;
+            }
+        }
+    }
+
+    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        var prop = e.PropertyName;
+        if (prop == nameof(ViewModel.ErrorMessage) && ViewModel != null)
+        {
+            if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
+            {
+                LoadedState = ViewModelLoadedState.Error;
+            }
         }
     }
 
