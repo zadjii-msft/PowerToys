@@ -52,8 +52,11 @@ public class ListHelpers
     public static void InPlaceUpdateList<T>(Collection<T> original, IEnumerable<T> newContents)
         where T : class
     {
+        // we're not changing newContents - stash this so we don't re-evaluate it every time
+        var numberOfNew = newContents.Count();
+
         // Short circuit - new contents should just be empty
-        if (!newContents.Any())
+        if (numberOfNew == 0)
         {
             original.Clear();
             return;
@@ -101,14 +104,14 @@ public class ListHelpers
         }
 
         // Remove any extra trailing items from the destination
-        while (original.Count > newContents.Count())
+        while (original.Count > numberOfNew)
         {
             // RemoveAtEnd
             original.RemoveAt(original.Count - 1);
         }
 
         // Add any extra trailing items from the source
-        if (original.Count < newContents.Count())
+        if (original.Count < numberOfNew)
         {
             var remaining = newContents.Skip(original.Count);
             foreach (var item in remaining)
