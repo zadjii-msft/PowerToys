@@ -140,11 +140,7 @@ public partial class ListViewModel : PageViewModel
     /// Apply our current filter text to the list of items, and update
     /// FilteredItems to match the results.
     /// </summary>
-    private void ApplyFilter()
-    {
-        Collection<ListItemViewModel> filtered = [.. FilterList(Items, Filter).ToList()];
-        ListHelpers.InPlaceUpdateList(FilteredItems, filtered);
-    }
+    private void ApplyFilter() => ListHelpers.InPlaceUpdateList(FilteredItems, FilterList(Items, Filter));
 
     /// <summary>
     /// Helper to generate a weighting for a given list item, based on title,
