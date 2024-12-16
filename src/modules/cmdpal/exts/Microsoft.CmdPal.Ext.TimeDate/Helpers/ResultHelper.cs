@@ -30,7 +30,7 @@ internal static class ResultHelper
     /// Gets a result with an error message that only numbers can't be parsed
     /// </summary>
     /// <returns>Element of type <see cref="Result"/>.</returns>
-    internal static ListItem CreateNumberErrorResult() => new(new NoOpCommand())
+    internal static TimeDateListItem CreateNumberErrorResult() => new((int)ScoreType.Default)
     {
         Title = Resources.Microsoft_plugin_timedate_ErrorResultTitle,
         Subtitle = Resources.Microsoft_plugin_timedate_ErrorResultSubTitle,

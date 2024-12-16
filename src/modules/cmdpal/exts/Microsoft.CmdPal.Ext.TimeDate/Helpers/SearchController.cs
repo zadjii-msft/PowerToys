@@ -26,10 +26,10 @@ internal static class SearchController
     /// </summary>
     /// <param name="query">Search query object</param>
     /// <returns>List of Wox <see cref="Result"/>s.</returns>
-    internal static List<ListItem> ExecuteSearch(string query)
+    internal static List<TimeDateListItem> ExecuteSearch(string query)
     {
         var availableFormats = new List<AvailableResult>();
-        List<ListItem> results = [];
+        List<TimeDateListItem> results = [];
         var isEmptySearchInput = string.IsNullOrEmpty(query);
 
         if (Regex.IsMatch(query, @".+" + Regex.Escape(InputDelimiter) + @".+"))
@@ -60,7 +60,7 @@ internal static class SearchController
             // Generate list with all results
             foreach (var f in availableFormats)
             {
-                results.Add(new ListItem(new NoOpCommand())
+                results.Add(new TimeDateListItem((int)ScoreType.Default)
                 {
                     Title = f.Value ?? string.Empty,
                     Subtitle = $"{f.Label} - {Resources.Microsoft_plugin_timedate_SubTitleNote}",
@@ -80,7 +80,7 @@ internal static class SearchController
 
                 if (resultMatchScore > 0)
                 {
-                    results.Add(new ListItem(new NoOpCommand())
+                    results.Add(new TimeDateListItem(resultMatchScore)
                     {
                         Title = f.Value ?? string.Empty,
                         Subtitle = $"{f.Label} - {Resources.Microsoft_plugin_timedate_SubTitleNote}",
@@ -88,7 +88,6 @@ internal static class SearchController
                         // IcoPath = f.GetIconPath(iconTheme),
 
                         // Action = _ => ResultHelper.CopyToClipBoard(f.Value),
-                        // Score = resultMatchScore,
                     });
                 }
             }
@@ -100,7 +99,7 @@ internal static class SearchController
             results.Add(ResultHelper.CreateNumberErrorResult());
         }
 
-        return results;
+        return results.OrderByDescending(x => x.Score).ToList();
     }
 
     private static int GetMatchScore(string query, string label, string tags)

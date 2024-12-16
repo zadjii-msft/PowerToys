@@ -19,7 +19,7 @@ internal sealed partial class TimeDateListPage : DynamicListPage
 
     public override void UpdateSearchText(string oldSearch, string newSearch) => RaiseItemsChanged(0);
 
-    private List<ListItem> Query(string query) => SearchController.ExecuteSearch(query);
+    private List<TimeDateListItem> Query(string query) => SearchController.ExecuteSearch(query);
 
     public override IListItem[] GetItems() => [.. Query(SearchText)];
 }
