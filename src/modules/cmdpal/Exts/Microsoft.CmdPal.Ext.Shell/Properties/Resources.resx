@@ -185,6 +185,6 @@
     <value>Settings</value>
   </data>
   <data name="list_placeholder_text" xml:space="preserve">
-    <value>Type tthe name of a command to run</value>
+    <value>Type the name of a command to run</value>
   </data>
 </root>
