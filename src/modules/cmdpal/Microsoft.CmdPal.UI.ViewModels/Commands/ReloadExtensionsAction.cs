@@ -9,11 +9,13 @@ using Microsoft.CmdPal.UI.ViewModels.Messages;
 
 namespace Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 
-public partial class ReloadExtensionsAction : InvokableCommand, IFallbackHandler
+public partial class ReloadExtensionsAction : InvokableCommand
 {
     public ReloadExtensionsAction()
     {
         Icon = new("\uE72C"); // Refresh icon
+
+        // Name = "Reload";
     }
 
     public override ICommandResult Invoke()
@@ -21,6 +23,4 @@ public partial class ReloadExtensionsAction : InvokableCommand, IFallbackHandler
         WeakReferenceMessenger.Default.Send<ReloadCommandsMessage>();
         return CommandResult.GoHome();
     }
-
-    public void UpdateQuery(string query) => Name = query.StartsWith('r') ? "Reload" : string.Empty;
 }

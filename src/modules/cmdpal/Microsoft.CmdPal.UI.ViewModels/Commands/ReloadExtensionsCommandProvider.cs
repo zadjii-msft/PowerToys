@@ -12,15 +12,9 @@ namespace Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 /// </summary>
 public partial class ReloadExtensionsCommandProvider : CommandProvider
 {
-    private readonly ReloadExtensionsAction reloadAction = new();
+    private readonly FallbackReloadItem _fallbackReloadItem = new();
 
-    public override ICommandItem[] TopLevelCommands()
-    {
-        return [];
-    }
+    public override ICommandItem[] TopLevelCommands() => [];
 
-    public override IFallbackCommandItem[] FallbackCommands()
-    {
-        return [new FallbackCommandItem(reloadAction) { Subtitle = "Reload Command Palette extensions" }];
-    }
+    public override IFallbackCommandItem[] FallbackCommands() => [_fallbackReloadItem];
 }

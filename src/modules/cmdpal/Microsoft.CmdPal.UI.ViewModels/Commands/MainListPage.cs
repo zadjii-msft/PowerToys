@@ -67,7 +67,7 @@ public partial class MainListPage : DynamicListPage
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        /* handle changes to the filter text here */
+        // Handle changes to the filter text here
         Debug.WriteLine($"UpdateSearchText '{oldSearch}' -> '{newSearch}'");
 
         if (!string.IsNullOrEmpty(SearchText))
@@ -79,11 +79,8 @@ public partial class MainListPage : DynamicListPage
             }
         }
 
-        foreach (var command in _commands)
-        {
-            command.TryUpdateFallbackText(newSearch);
-        }
-
+        // This gets called on a background thread, because ListViewModel
+        // updates the .SearchText of all extensions on a BG thread.
         foreach (var command in _commands)
         {
             command.TryUpdateFallbackText(newSearch);
