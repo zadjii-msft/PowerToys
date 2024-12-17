@@ -65,12 +65,13 @@ public partial class MainListPage : DynamicListPage
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        /* handle changes to the filter text here */
+        // Handle changes to the filter text here
 
+        // This gets called on a background thread, because ListViewModel
+        // updates the .SearchText of all extensions on a BG thread.
         foreach (var command in _commands)
         {
-            TODO intead of making this async doube check that were setting .SearchText async 
-            command.TryUpdateFallbackText(newSearch).ConfigureAwait(false);
+            command.TryUpdateFallbackText(newSearch);
         }
 
         // Cleared out the filter text? easy. Reset _filteredItems, and bail out.
