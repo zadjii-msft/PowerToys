@@ -45,6 +45,14 @@
     </UserControl.Resources>
 
     <Grid Padding="8" ColumnSpacing="8">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <!--  Inner core  -->
+                <GradientStop Offset="0" Color="#40ff6600" />
+                <!--  Outer fade  -->
+                <GradientStop Offset="1" Color="#00ff6600" />
+            </LinearGradientBrush>
+        </Grid.Background>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
@@ -56,7 +64,9 @@
             Width="20"
             Height="20"
             Margin="12,0,0,0"
-            Background="{ThemeResource AccentFillColorDefaultBrush}"
+            Background="#ff6600"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
             CornerRadius="{StaticResource ControlCornerRadius}" />
 
         <TextBlock

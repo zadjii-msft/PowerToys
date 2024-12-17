@@ -11,6 +11,7 @@
     mc:Ignorable="d">
 
     <Grid>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -28,9 +29,15 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="0,1,0,1">
             <Frame Name="RootFrame" IsNavigationStackEnabled="True" />
+
         </Grid>
 
 
-        <controls:ActionBar Grid.Row="2" VerticalAlignment="Top" />
+        <controls:ActionBar Grid.Row="2" VerticalAlignment="Top">
+            <controls:ActionBar.Lights>
+                <controls:HoverLight />
+                <controls:AmbLight />
+            </controls:ActionBar.Lights>
+        </controls:ActionBar>
     </Grid>
 </Page>
