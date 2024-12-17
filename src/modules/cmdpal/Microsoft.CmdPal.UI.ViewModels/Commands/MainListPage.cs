@@ -69,7 +69,8 @@ public partial class MainListPage : DynamicListPage
 
         foreach (var command in _commands)
         {
-            command.TryUpdateFallbackText(newSearch);
+            TODO intead of making this async doube check that were setting .SearchText async 
+            command.TryUpdateFallbackText(newSearch).ConfigureAwait(false);
         }
 
         // Cleared out the filter text? easy. Reset _filteredItems, and bail out.

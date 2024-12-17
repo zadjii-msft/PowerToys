@@ -83,7 +83,7 @@ public partial class TopLevelCommandWrapper : ListItem
         }
     }
 
-    public void TryUpdateFallbackText(string newQuery)
+    public async Task TryUpdateFallbackText(string newQuery)
     {
         if (!_isFallback)
         {
@@ -92,7 +92,7 @@ public partial class TopLevelCommandWrapper : ListItem
 
         try
         {
-            _ = Task.Run(() =>
+            await Task.Run(() =>
             {
                 var model = Model.Unsafe;
                 if (model is IFallbackCommandItem fallback)
