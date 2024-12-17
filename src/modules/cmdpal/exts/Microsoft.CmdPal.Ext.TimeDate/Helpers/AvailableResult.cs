@@ -2,6 +2,9 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
+
 namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 
 internal sealed class AvailableResult
@@ -31,14 +34,14 @@ internal sealed class AvailableResult
     /// </summary>
     /// <param name="theme">Theme</param>
     /// <returns>Path</returns>
-    internal string GetIconPath(string theme)
+    internal IconDataType GetIcon()
     {
         return IconType switch
         {
-            ResultIconType.Time => $"Images\\time.{theme}.png",
-            ResultIconType.Date => $"Images\\calendar.{theme}.png",
-            ResultIconType.DateTime => $"Images\\timeDate.{theme}.png",
-            _ => string.Empty,
+            ResultIconType.Time => new("\uE823"), // Recent icon
+            ResultIconType.Date => new("\uE787"), // Calendar icon
+            ResultIconType.DateTime => new("\uEC92"), // DateTime icon
+            _ => new(string.Empty),
         };
     }
 }

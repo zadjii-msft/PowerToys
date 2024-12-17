@@ -10,7 +10,7 @@ namespace Microsoft.CmdPal.Ext.TimeDate.Pages;
 
 internal sealed partial class SettingsPage : FormPage
 {
-    private readonly Settings _settings;
+    private readonly Microsoft.CmdPal.Extensions.Helpers.Settings _settings;
     private readonly SettingsManager _settingsManager;
 
     public override IForm[] Forms()
@@ -29,5 +29,5 @@ internal sealed partial class SettingsPage : FormPage
         _settings.SettingsChanged += SettingsChanged;
     }
 
-    private void SettingsChanged(object sender, Settings args) => _settingsManager.SaveSettings();
+    private void SettingsChanged(object sender, Microsoft.CmdPal.Extensions.Helpers.Settings args) => _settingsManager.SaveSettings();
 }

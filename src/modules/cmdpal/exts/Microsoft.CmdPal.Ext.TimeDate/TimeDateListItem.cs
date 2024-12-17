@@ -18,6 +18,12 @@ internal sealed partial class TimeDateListItem : ListItem
 
     public int Score => _score;
 
+    public TimeDateListItem(int score, string text)
+        : base(new CopyTextCommand(text))
+    {
+        _score = score;
+    }
+
     public TimeDateListItem(int score)
         : base(new NoOpCommand())
     {

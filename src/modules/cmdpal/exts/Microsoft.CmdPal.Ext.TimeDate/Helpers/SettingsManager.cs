@@ -16,7 +16,7 @@ namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 public class SettingsManager
 {
     private readonly string _filePath;
-    private readonly Settings _settings = new();
+    private readonly Microsoft.CmdPal.Extensions.Helpers.Settings _settings = new();
 
     private static SettingsManager? instance;
 
@@ -84,7 +84,7 @@ public class SettingsManager
         }
     }
 
-    public Settings GetSettings() => _settings;
+    public Microsoft.CmdPal.Extensions.Helpers.Settings GetSettings() => _settings;
 
     public void SaveSettings()
     {

@@ -60,14 +60,11 @@ internal static class SearchController
             // Generate list with all results
             foreach (var f in availableFormats)
             {
-                results.Add(new TimeDateListItem((int)ScoreType.Default)
+                results.Add(new TimeDateListItem((int)ScoreType.Default, f.Value ?? string.Empty)
                 {
                     Title = f.Value ?? string.Empty,
-                    Subtitle = $"{f.Label} - {Resources.Microsoft_plugin_timedate_SubTitleNote}",
-
-                    // TODO FIX ICON
-                    // IcoPath = f.GetIconPath(iconTheme),
-                    // Action = _ => ResultHelper.CopyToClipBoard(f.Value),
+                    Subtitle = $"{f.Label}",
+                    Icon = f.GetIcon(),
                 });
             }
         }
@@ -80,14 +77,11 @@ internal static class SearchController
 
                 if (resultMatchScore > 0)
                 {
-                    results.Add(new TimeDateListItem(resultMatchScore)
+                    results.Add(new TimeDateListItem(resultMatchScore, f.Value ?? string.Empty)
                     {
                         Title = f.Value ?? string.Empty,
-                        Subtitle = $"{f.Label} - {Resources.Microsoft_plugin_timedate_SubTitleNote}",
-
-                        // IcoPath = f.GetIconPath(iconTheme),
-
-                        // Action = _ => ResultHelper.CopyToClipBoard(f.Value),
+                        Subtitle = $"{f.Label}",
+                        Icon = f.GetIcon(),
                     });
                 }
             }
