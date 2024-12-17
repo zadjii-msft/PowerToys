@@ -167,5 +167,6 @@ public sealed class MainViewModel : IDisposable
         this.AddAlias(new CommandAlias("=", "com.microsoft.cmdpal.calculator", true));
         this.AddAlias(new CommandAlias(">", "com.microsoft.cmdpal.shell", true));
         this.AddAlias(new CommandAlias("<", "com.microsoft.cmdpal.windowwalker", true));
+        this.AddAlias(new CommandAlias(")", "com.microsoft.cmdpal.timedate", true));
     }
 }
