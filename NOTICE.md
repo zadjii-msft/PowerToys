@@ -1317,7 +1317,7 @@ EXHIBIT A -Mozilla Public License.
 - ControlzEx 6.0.0
 - HelixToolkit 2.24.0
 - HelixToolkit.Core.Wpf 2.24.0
-- HtmlAgilityPack 1.11.70
+- HtmlAgilityPack 1.11.71
 - hyjiacan.pinyin4net 4.1.1
 - Interop.Microsoft.Office.Interop.OneNote 1.1.0.2
 - LazyCache 2.4.0
