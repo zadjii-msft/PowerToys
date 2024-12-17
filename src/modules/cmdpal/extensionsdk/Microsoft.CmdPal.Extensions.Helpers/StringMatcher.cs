@@ -16,6 +16,7 @@ public class StringMatcher
     public StringMatcher(/*IAlphabet alphabet = null*/)
     {
         // _alphabet = alphabet;
+        UserSettingSearchPrecision = SearchPrecisionScore.Regular;
     }
 
     private static StringMatcher? _instance;
