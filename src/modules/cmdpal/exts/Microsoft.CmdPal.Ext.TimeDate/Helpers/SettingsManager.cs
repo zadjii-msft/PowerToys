@@ -63,7 +63,7 @@ public class SettingsManager
         _filePath = SettingsJsonPath();
 
         _calendarFirstWeekRuleChoiceSet = new(nameof(_calendarFirstWeekRuleChoiceSet), Resources.Microsoft_plugin_timedate_SettingFirstWeekRule, Resources.Microsoft_plugin_timedate_SettingFirstWeekRule_Description, _calendarFirstWeekRuleChoices);
-        _firstDayOfWeekChoiceSet = new(nameof(_firstDayOfWeekChoiceSet), Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek, string.Empty, _firstDayofWeekChoices);
+        _firstDayOfWeekChoiceSet = new(nameof(_firstDayOfWeekChoiceSet), Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek, Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek, _firstDayofWeekChoices);
 
         _settings.Add(_calendarFirstWeekRuleChoiceSet);
         _settings.Add(_firstDayOfWeekChoiceSet);
