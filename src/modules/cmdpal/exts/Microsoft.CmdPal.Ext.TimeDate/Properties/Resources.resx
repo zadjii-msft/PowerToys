@@ -363,4 +363,7 @@
   <data name="settings_page_name" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="Microsoft_plugin_timedate_get_timestamps" xml:space="preserve">
+    <value>Get timestamps</value>
+  </data>
 </root>

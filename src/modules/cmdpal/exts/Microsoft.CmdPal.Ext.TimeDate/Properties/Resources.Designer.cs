@@ -196,6 +196,15 @@ namespace Microsoft.CmdPal.Ext.TimeDate.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Get timestamps.
+        /// </summary>
+        internal static string Microsoft_plugin_timedate_get_timestamps {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_timedate_get_timestamps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hour.
         /// </summary>
         internal static string Microsoft_plugin_timedate_Hour {

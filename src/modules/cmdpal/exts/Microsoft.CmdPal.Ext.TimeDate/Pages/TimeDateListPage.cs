@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using Microsoft.CmdPal.Ext.TimeDate.Helpers;
+using Microsoft.CmdPal.Ext.TimeDate.Properties;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -13,8 +14,9 @@ internal sealed partial class TimeDateListPage : DynamicListPage
 {
     public TimeDateListPage()
     {
+        Title = Resources.Microsoft_plugin_timedate_plugin_name;
         Icon = new(string.Empty);
-        Name = "Time & Date";
+        Name = Resources.Microsoft_plugin_timedate_get_timestamps;
         Id = "com.microsoft.cmdpal.timedate";
     }
 
