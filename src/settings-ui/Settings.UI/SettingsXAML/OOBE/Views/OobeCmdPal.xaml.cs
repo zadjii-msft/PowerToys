@@ -18,7 +18,7 @@ namespace Microsoft.PowerToys.Settings.UI.OOBE.Views
         public OobeCmdPal()
         {
             this.InitializeComponent();
-            ViewModel = new OobePowerToysModule(OobeShellPage.OobeShellHandler.Modules[(int)PowerToysModules.CmdNotFound]);
+            ViewModel = new OobePowerToysModule(OobeShellPage.OobeShellHandler.Modules[(int)PowerToysModules.CmdPal]);
             DataContext = ViewModel;
         }
 
