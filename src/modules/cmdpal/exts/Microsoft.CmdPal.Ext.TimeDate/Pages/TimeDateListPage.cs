@@ -15,7 +15,7 @@ internal sealed partial class TimeDateListPage : DynamicListPage
     {
         Icon = new(string.Empty);
         Name = "Time & Date";
-        Id = "microsoft.com.cmdpal.timedate";
+        Id = "com.microsoft.cmdpal.timedate";
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch) => RaiseItemsChanged(0);
