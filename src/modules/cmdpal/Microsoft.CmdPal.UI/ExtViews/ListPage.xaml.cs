@@ -5,7 +5,6 @@
 using System.Diagnostics;
 using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.UI.Dispatching;
@@ -114,14 +113,18 @@ public sealed partial class ListPage : Page,
             // TODO: Handle failure case
             System.Diagnostics.Debug.WriteLine(lvm.InitializeCommand.ExecutionTask.Exception);
 
-            _ = _queue.EnqueueAsync(() =>
+            // TODO GH #239 switch back when using the new MD text block
+            // _ = _queue.EnqueueAsync(() =>
+            _queue.TryEnqueue(new(() =>
             {
                 LoadedState = ViewModelLoadedState.Error;
-            });
+            }));
         }
         else
         {
-            _ = _queue.EnqueueAsync(() =>
+            // TODO GH #239 switch back when using the new MD text block
+            // _ = _queue.EnqueueAsync(() =>
+            _queue.TryEnqueue(new(() =>
             {
                 var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
 
@@ -132,7 +135,7 @@ public sealed partial class ListPage : Page,
 
                 // Immediately select the first item in the list
                 ItemsList.SelectedIndex = 0;
-            });
+            }));
         }
     }
 
@@ -268,12 +271,14 @@ public sealed partial class ListPage : Page,
 
     public void Receive(ShowExceptionMessage message)
     {
-        _ = _queue.EnqueueAsync(() =>
+        // TODO GH #239 switch back when using the new MD text block
+        // _ = _queue.EnqueueAsync(() =>
+        _queue.TryEnqueue(new(() =>
         {
             var ex = message.Exception;
             ErrorMessage = $"{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\nThis is due to a bug in the extension's code.";
             LoadedState = ViewModelLoadedState.Error;
-        });
+        }));
     }
 }
 

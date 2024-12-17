@@ -84,6 +84,11 @@ public partial class MainListPage : DynamicListPage
             command.TryUpdateFallbackText(newSearch);
         }
 
+        foreach (var command in _commands)
+        {
+            command.TryUpdateFallbackText(newSearch);
+        }
+
         // Cleared out the filter text? easy. Reset _filteredItems, and bail out.
         if (string.IsNullOrEmpty(newSearch))
         {
