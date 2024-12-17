@@ -7,7 +7,7 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class DetailsViewModel(IDetails _details, TaskScheduler Scheduler) : ExtensionObjectViewModel
+public partial class DetailsViewModel(IDetails _details, IPageContext context) : ExtensionObjectViewModel(context)
 {
     private readonly ExtensionObject<IDetails> _detailsModel = new(_details);
 
@@ -31,8 +31,8 @@ public partial class DetailsViewModel(IDetails _details, TaskScheduler Scheduler
             return;
         }
 
-        Title = model.Title;
-        Body = model.Body;
+        Title = model.Title ?? string.Empty;
+        Body = model.Body ?? string.Empty;
         HeroImage = model.HeroImage;
 
         UpdateProperty(nameof(Title));
@@ -40,6 +40,4 @@ public partial class DetailsViewModel(IDetails _details, TaskScheduler Scheduler
         UpdateProperty(nameof(HeroImage));
         UpdateProperty(nameof(HasHeroImage));
     }
-
-    protected void UpdateProperty(string propertyName) => Task.Factory.StartNew(() => { OnPropertyChanged(propertyName); }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
 }

@@ -4,12 +4,13 @@
 
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
+using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
+using Windows.System;
 
 namespace Microsoft.CmdPal.UI;
 
@@ -22,7 +23,8 @@ public sealed partial class ShellPage :
     IRecipient<NavigateToDetailsMessage>,
     IRecipient<PerformCommandMessage>,
     IRecipient<ShowDetailsMessage>,
-    IRecipient<HideDetailsMessage>
+    IRecipient<HideDetailsMessage>,
+    IRecipient<LaunchUriMessage>
 {
     private readonly DrillInNavigationTransitionInfo _drillInNavigationTransitionInfo = new();
 
@@ -44,6 +46,8 @@ public sealed partial class ShellPage :
         WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
 
+        WeakReferenceMessenger.Default.Register<LaunchUriMessage>(this);
+
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
     }
 
@@ -53,6 +57,8 @@ public sealed partial class ShellPage :
     {
         if (RootFrame.CanGoBack)
         {
+            HideDetails();
+
             RootFrame.GoBack();
             HideDetails();
             RootFrame.ForwardStack.Clear();
@@ -61,7 +67,7 @@ public sealed partial class ShellPage :
         else
         {
             // If we can't go back then we must be at the top and thus escape again should quit.
-            WeakReferenceMessenger.Default.Send<QuitMessage>();
+            WeakReferenceMessenger.Default.Send<DismissMessage>();
         }
     }
 
@@ -98,11 +104,34 @@ public sealed partial class ShellPage :
                     ViewModel.CurrentPage = pageViewModel;
                 });
             }
-
-            // else if markdown, forms, TODO
+            else if (command is IFormPage formsPage)
+            {
+                _ = DispatcherQueue.TryEnqueue(() =>
+                {
+                    // Also hide our details pane about here, if we had one
+                    HideDetails();
+                    var pageViewModel = new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext());
+                    RootFrame.Navigate(typeof(FormsPage), pageViewModel, _slideRightTransition);
+                    SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+                    WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(pageViewModel));
+                });
+            }
+            else if (command is IMarkdownPage markdownPage)
+            {
+                _ = DispatcherQueue.TryEnqueue(() =>
+                {
+                    // Also hide our details pane about here, if we had one
+                    HideDetails();
+                    var pageViewModel = new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext());
+                    RootFrame.Navigate(typeof(MarkdownPage), pageViewModel, _slideRightTransition);
+                    SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+                    WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(pageViewModel));
+                });
+            }
             else if (command is IInvokableCommand invokable)
             {
-                invokable.Invoke();
+                // TODO Handle results
+                _ = invokable.Invoke();
             }
         }
         catch (Exception)
@@ -120,4 +149,6 @@ public sealed partial class ShellPage :
     public void Receive(HideDetailsMessage message) => HideDetails();
 
     private void HideDetails() => ViewModel.IsDetailsVisible = false;
+
+    public void Receive(LaunchUriMessage message) => _ = Launcher.LaunchUriAsync(message.Uri);
 }

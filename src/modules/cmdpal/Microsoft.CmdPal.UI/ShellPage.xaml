@@ -3,12 +3,11 @@
     x:Class="Microsoft.CmdPal.UI.ShellPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:controls="using:Microsoft.CmdPal.UI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:cpcontrols="using:Microsoft.CmdPal.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:help="using:Microsoft.CmdPal.UI.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI.MarkdownTextBlock"
-    xmlns:local="using:Microsoft.CmdPal.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="Transparent"
     mc:Ignorable="d">
@@ -30,7 +29,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <controls:SearchBar
+        <cpcontrols:SearchBar
             x:Name="SearchBox"
             Grid.Row="0"
             VerticalAlignment="Top"
@@ -68,16 +67,14 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Border
+                <cpcontrols:IconBox
                     x:Name="HeroImageBorder"
                     Width="64"
                     Height="64"
-                    Visibility="{x:Bind ViewModel.Details.HasHeroImage, Mode=OneWay}">
-                    <!--  LoadIconBehavior will magically fill this border up with an icon  -->
-                    <Interactivity:Interaction.Behaviors>
-                        <local:LoadIconBehavior Source="{x:Bind ViewModel.Details.HeroImage, Mode=OneWay}" />
-                    </Interactivity:Interaction.Behaviors>
-                </Border>
+                    x:Load="{x:Bind IsLoaded, Mode=OneWay}"
+                    SourceKey="{x:Bind ViewModel.Details.HeroImage, Mode=OneWay}"
+                    SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}"
+                    Visibility="{x:Bind ViewModel.Details.HasHeroImage, Mode=OneWay}" />
 
                 <TextBlock
                     Grid.Row="1"
@@ -100,7 +97,7 @@
 
         </Grid>
 
-        <controls:ActionBar
+        <cpcontrols:ActionBar
             Grid.Row="2"
             VerticalAlignment="Top"
             CurrentPageViewModel="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />

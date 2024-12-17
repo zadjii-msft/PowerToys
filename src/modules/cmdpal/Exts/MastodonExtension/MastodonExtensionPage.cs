@@ -52,11 +52,15 @@ internal sealed partial class MastodonExtensionPage : ListPage
                     new Tag()
                     {
                         Icon = new("\ue734"), // FavoriteStar
+                        Background = ColorHelpers.FromRgb(255, 255, 0), // Yellow
+                        Foreground = ColorHelpers.FromRgb(64, 64, 0), // Dark Yellow
                         Text = p.Favorites.ToString(CultureInfo.CurrentCulture),
                     },
                     new Tag()
                     {
                         Icon = new("\ue8ee"), // RepeatAll
+                        Background = ColorHelpers.FromRgb(86, 58, 204), // Mastodon color
+                        Foreground = ColorHelpers.FromRgb(255, 255, 255), // White
                         Text = p.Boosts.ToString(CultureInfo.CurrentCulture),
                     },
                 ], // */
@@ -148,7 +152,7 @@ public partial class MastodonExtensionActionsProvider : CommandProvider
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
-public partial class MastodonPostForm : IForm
+public partial class MastodonPostForm : Form
 {
     private readonly MastodonStatus post;
 
@@ -157,7 +161,7 @@ public partial class MastodonPostForm : IForm
         this.post = post;
     }
 
-    public string DataJson()
+    public override string DataJson()
     {
         return $$"""
 {
@@ -171,11 +175,9 @@ public partial class MastodonPostForm : IForm
 """;
     }
 
-    public string StateJson() => throw new NotImplementedException();
+    public override ICommandResult SubmitForm(string payload) => CommandResult.Dismiss();
 
-    public ICommandResult SubmitForm(string payload) => CommandResult.Dismiss();
-
-    public string TemplateJson()
+    public override string TemplateJson()
     {
         var img_block = string.Empty;
         if (post.MediaAttachments.Count > 0)
@@ -203,7 +205,7 @@ public partial class MastodonPostForm : IForm
                                 {
                                     "type": "Image",
                                     "url": "${author_avatar_url}",
-                                    "size": "Small",
+                                    "size": "Medium",
                                     "style": "Person"
                                 }
                             ]
