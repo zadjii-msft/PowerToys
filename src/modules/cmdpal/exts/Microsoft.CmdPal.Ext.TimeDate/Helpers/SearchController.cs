@@ -99,15 +99,12 @@ internal static class SearchController
     private static int GetMatchScore(string query, string label, string tags)
     {
         // Get match for label (or for tags if label score is <1)
-        var matcher = new StringMatcher();
-        matcher.UserSettingSearchPrecision = SearchPrecisionScore.Regular;
-
-        var score = matcher.FuzzyMatch(query, label).Score;
+        var score = StringMatcher.FuzzySearch(query, label).Score;
         if (score < 1)
         {
             foreach (var t in tags.Split(";"))
             {
-                var tagScore = matcher.FuzzyMatch(query, t.Trim()).Score / 2;
+                var tagScore = StringMatcher.FuzzySearch(query, t.Trim()).Score / 2;
                 if (tagScore > score)
                 {
                     score = tagScore / 2;
