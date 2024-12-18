@@ -1,15 +1,20 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.CmdPal.UI.ViewModels.Messages;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
 public abstract partial class ExtensionObjectViewModel : ObservableObject
 {
+    public IPageContext PageContext { get; set; }
+
+    public ExtensionObjectViewModel(IPageContext? context)
+    {
+        PageContext = context ?? (this is IPageContext c ? c : throw new ArgumentException("You need to pass in an IErrorContext"));
+    }
+
     public async virtual Task InitializePropertiesAsync()
     {
         var t = new Task(() =>
@@ -20,7 +25,7 @@ public abstract partial class ExtensionObjectViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex);
+                PageContext.ShowException(ex);
             }
         });
         t.Start();
@@ -29,5 +34,13 @@ public abstract partial class ExtensionObjectViewModel : ObservableObject
 
     public abstract void InitializeProperties();
 
-    protected void ShowException(Exception ex) => WeakReferenceMessenger.Default.Send<ShowExceptionMessage>(new(ex));
+    protected void UpdateProperty(string propertyName) =>
+        Task.Factory.StartNew(
+            () =>
+        {
+            OnPropertyChanged(propertyName);
+        },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            PageContext.Scheduler);
 }

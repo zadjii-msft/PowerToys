@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -11,17 +11,21 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public partial class CommandItemViewModel : ExtensionObjectViewModel
 {
     private readonly ExtensionObject<ICommandItem> _commandItemModel = new(null);
+    private CommandContextItemViewModel? _defaultCommandContextItem;
 
-    protected TaskScheduler Scheduler { get; private set; }
-
-    // private bool _initialized;
+    // These are properties that are "observable" from the extension object
+    // itself, in the sense that they get raised by PropChanged events from the
+    // extension. However, we don't want to actually make them
+    // [ObservableProperty]s, because PropChanged comes in off the UI thread,
+    // and ObservableProperty is not smart enough to raise the PropertyChanged
+    // on the UI thread.
     public string Name { get; private set; } = string.Empty;
 
     public string Title { get; private set; } = string.Empty;
 
     public string Subtitle { get; private set; } = string.Empty;
 
-    public string IconUri { get; private set; } = string.Empty;
+    public IconDataType Icon { get; private set; } = new(string.Empty);
 
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
@@ -31,31 +35,23 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
     public string SecondaryCommandName => HasMoreCommands ? MoreCommands[0].Name : string.Empty;
 
+    public CommandItemViewModel? SecondaryCommand => HasMoreCommands ? MoreCommands[0] : null;
+
     public List<CommandContextItemViewModel> AllCommands
     {
         get
         {
-            var command = _commandItemModel.Unsafe?.Command;
-            var model = new CommandContextItem(command!)
-            {
-            };
-            CommandContextItemViewModel defaultCommand = new(model, Scheduler)
-            {
-                Name = Name,
-                Title = Name,
-                Subtitle = Subtitle,
-                IconUri = IconUri,
+            List<CommandContextItemViewModel> l = _defaultCommandContextItem == null ?
+                [_defaultCommandContextItem] :
+                new();
 
-                // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
-            };
-
-            var l = new List<CommandContextItemViewModel> { defaultCommand };
             l.AddRange(MoreCommands);
             return l;
         }
     }
 
-    public CommandItemViewModel(ExtensionObject<ICommandItem> item, TaskScheduler scheduler)
+    public CommandItemViewModel(ExtensionObject<ICommandItem> item, IPageContext errorContext)
+        : base(errorContext)
     {
         _commandItemModel = item;
         Scheduler = scheduler;
@@ -71,15 +67,25 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         }
 
         Command = new(model.Command);
+
         Name = model.Command?.Name ?? string.Empty;
         Title = model.Title;
         Subtitle = model.Subtitle;
-        IconUri = model.Icon.Icon;
-        MoreCommands = model.MoreCommands
-            .Where(contextItem => contextItem is ICommandContextItem)
-            .Select(contextItem => (contextItem as ICommandContextItem)!)
-            .Select(contextItem => new CommandContextItemViewModel(contextItem, Scheduler))
-            .ToList();
+
+        var listIcon = model.Icon;
+        Icon = !string.IsNullOrEmpty(listIcon.Icon) ?
+            listIcon :
+            Command.Unsafe!.Icon;
+
+        var more = model.MoreCommands;
+        if (more != null)
+        {
+            MoreCommands = more
+                .Where(contextItem => contextItem is ICommandContextItem)
+                .Select(contextItem => (contextItem as ICommandContextItem)!)
+                .Select(contextItem => new CommandContextItemViewModel(contextItem, PageContext))
+                .ToList();
+        }
 
         // Here, we're already theoretically in the async context, so we can
         // use Initialize straight up
@@ -87,6 +93,17 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         {
             contextItem.InitializeProperties();
         });
+
+        _defaultCommandContextItem = new(new CommandContextItem(model.Command!), PageContext)
+        {
+            Name = Name,
+            Title = Name,
+            Subtitle = Subtitle,
+            Icon = Icon,
+            Command = new(model.Command),
+
+            // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
+        };
 
         model.PropChanged += Model_PropChanged;
 
@@ -99,9 +116,9 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         {
             FetchProperty(args.PropertyName);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // TODO log? throw?
+            PageContext.ShowException(ex);
         }
     }
 
@@ -124,8 +141,11 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
             case nameof(Subtitle):
                 this.Subtitle = model.Subtitle;
                 break;
+            case nameof(Icon):
+                var listIcon = model.Icon;
+                Icon = !string.IsNullOrEmpty(listIcon.Icon) ? listIcon : Command.Unsafe!.Icon;
+                break;
 
-                // TODO! Icon
                 // TODO! MoreCommands array, which needs to also raise HasMoreCommands
         }
 

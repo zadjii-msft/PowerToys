@@ -1,7 +1,7 @@
 ---
 author: Mike Griese
 created on: 2024-07-19
-last updated: 2024-11-20
+last updated: 2024-12-15
 issue id: n/a
 ---
 
@@ -59,6 +59,7 @@ functionality.
     - [Other types](#other-types)
       - [`ContextItem`s](#contextitems)
       - [`IconDataType`](#icondatatype)
+      - [`OptionalColor`](#optionalcolor)
       - [`Details`](#details)
       - [`INotifyPropChanged`](#inotifypropchanged)
       - [`ICommandProvider`](#icommandprovider)
@@ -537,6 +538,7 @@ interface ICommand requires INotifyPropChanged{
 enum CommandResultKind {
     Dismiss,    // Reset the palette to the main page and dismiss
     GoHome,     // Go back to the main page, but keep it open
+    GoBack,     // Go back one level
     Hide,       // Keep this page open, but hide the palette. 
     KeepOpen,   // Do nothing.
     GoToPage,   // Go to another page. GoToPageArgs will tell you where.
@@ -615,6 +617,8 @@ Use cases for each `CommandResultKind`:
   * Ex: The "Add Quick Link" command is a form. After submitting the form, the
     user should be taken back to the main page, with the query cleared, leaving
     the window open.
+* `GoBack` - Navigate to the previous page, and keep it open. Useful for
+  submitting a form, then going back to the parent page of the form
 * `KeepOpen` - Do nothing. This leaves the palette in its current state, with the
   current page stack and query.
   * Note: if the action navigates to another application, DevPal's default
@@ -640,9 +644,9 @@ information that the host application will then use to render the page.
 ```csharp
 interface IPage requires ICommand {
     String Title { get; };
-    Boolean Loading { get; };
+    Boolean IsLoading { get; };
     
-    Windows.UI.Color AccentColor { get; };
+    OptionalColor AccentColor { get; };
 }
 ```
 
@@ -735,7 +739,7 @@ interface IListPage requires IPage, INotifyItemsChanged {
     Boolean ShowDetails{ get; };
     IFilters Filters { get; };
     IGridProperties GridProperties { get; };
-    Boolean HasMore { get; };
+    Boolean HasMoreItems { get; };
 
     IListItem[] GetItems();     
     void LoadMore();
@@ -930,7 +934,7 @@ class HackerNewsPage: Microsoft.Windows.Run.Extensions.ListPage {
     public bool Loading => true;
     IListItem[] GetItems() {
         List<NewsItem> items = /* do some RSS feed stuff */;
-        this.Loading = false;
+        this.IsLoading = false;
         return items
                 .Select((post) => new NewsListItem(post))
                 .ToArray();
@@ -1117,7 +1121,7 @@ class GithubIssuePage(GithubIssue issue): Microsoft.Windows.Run.Extensions.Markd
     public bool Loading => true;
     public string Body() {
         issue.Body = /* fetch the body from the API */;
-        this.Loading = false;
+        this.IsLoading = false;
         return issue.Body;
     }
     public IContextItem[] Commands => [ new CommandContextItem(new OpenLinkAction(issue)) ];
@@ -1224,6 +1228,32 @@ As a future consideration, we may also consider supporting a base64 encoded
 image in the `Icon` member. Base64 doesn't include `:`, `.` or `\`, the presence
 of any of which would indicate the string is probably a URI, not base64 data.
 
+#### `OptionalColor`
+
+We declare our own `Color` struct to avoid depending on `Windows.UI.Color` and
+to avoid passing around unclothed `uint32s`.
+
+```c#
+struct Color
+{
+    UInt8 R;
+    UInt8 G;
+    UInt8 B;
+    UInt8 A;
+};
+
+struct OptionalColor
+{
+    Boolean HasValue;
+    Microsoft.CmdPal.Extensions.Color Color;
+};
+```
+
+We also define `OptionalColor` as a helper struct here. Yes, this is also just
+an `IReference<Color>`. However, `IReference` has some weird ownership semantics
+that just make it a pain for something as simple as "maybe this color doesn't
+have a value set". 
+
 #### `Details`
 
 This represents additional information that can be displayed about an action or
@@ -1248,7 +1278,8 @@ block, and the generator will pull this into the file first.   -->
 interface ITag {
     IconDataType Icon { get; };
     String Text { get; };
-    Windows.UI.Color Color { get; };
+    OptionalColor Foreground { get; };
+    OptionalColor Background { get; };
     String ToolTip { get; };
     ICommand Command { get; };
 };
@@ -1542,7 +1573,7 @@ class HackerNewsPage: Microsoft.Windows.Run.Extensions.ListPage {
     public bool Loading => true;
     IListItem[] GetItems(String query) {
         List<NewsItem> items = /* do some RSS feed stuff */;
-        this.Loading = false;
+        this.IsLoading = false;
         return items
                 .Select((post) => new NewsListItem(post))
                 .ToArray();
@@ -1776,7 +1807,7 @@ classDiagram
     IPage --|> ICommand
     class IPage  {
         String Title
-        Boolean Loading
+        Boolean IsLoading
     }
 
     IInvokableCommand --|> ICommand
@@ -1884,7 +1915,7 @@ classDiagram
     class ITag {
         IconDataType Icon
         String Text
-        Windows.UI.Color Color
+        Color Color
         String ToolTip
         ICommand Command
     }

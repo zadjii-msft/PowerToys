@@ -2,37 +2,35 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Windows.UI;
-
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
 public partial class Page : Command, IPage
 {
     private bool _loading;
     private string _title = string.Empty;
-    private Color _accentColor;
+    private OptionalColor _accentColor;
 
-    public bool Loading
+    public virtual bool IsLoading
     {
         get => _loading;
         set
         {
             _loading = value;
-            OnPropertyChanged(nameof(Loading));
+            OnPropertyChanged(nameof(IsLoading));
         }
     }
 
-    public string Title
+    public virtual string Title
     {
         get => _title;
         set
         {
             _title = value;
-            OnPropertyChanged(nameof(Name));
+            OnPropertyChanged(nameof(Title));
         }
     }
 
-    public Color AccentColor
+    public virtual OptionalColor AccentColor
     {
         get => _accentColor;
         set
