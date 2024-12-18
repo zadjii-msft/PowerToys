@@ -7,8 +7,8 @@
     xmlns:cpcontrols="using:Microsoft.CmdPal.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:help="using:Microsoft.CmdPal.UI.Helpers"
-    xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
     Background="Transparent"
     mc:Ignorable="d">
 
@@ -23,25 +23,6 @@
     </Page.Resources>
 
     <Grid>
-
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-
-                <VisualState x:Name="DetailsCollapsed" />
-
-                <VisualState x:Name="DetailsVisible">
-                    <VisualState.StateTriggers>
-                        <StateTrigger IsActive="{x:Bind ViewModel.IsDetailsVisible, Mode=OneWay}" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="DetailsContent.Visibility" Value="Visible" />
-                        <Setter Target="DetailsColumn.Width" Value="2*" />
-                    </VisualState.Setters>
-                </VisualState>
-
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -61,16 +42,26 @@
             BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
             BorderThickness="0,1,0,1">
 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition x:Name="DetailsColumn" Width="Auto" />
             </Grid.ColumnDefinitions>
+
+            <ProgressBar
+                VerticalAlignment="Top"
+                IsIndeterminate="True"
+                Visibility="{x:Bind ViewModel.CurrentPage.IsLoading, Mode=OneWay}" />
 
             <Frame
                 Name="RootFrame"
                 Grid.Column="0"
                 IsNavigationStackEnabled="True" />
 
+            <!--  TODO: It may make sense for Details to be its own component as well for better encapsulation of concerns  -->
             <Grid
                 x:Name="DetailsContent"
                 Grid.Column="1"
@@ -105,23 +96,58 @@
                     Visibility="{x:Bind ViewModel.Details.Title, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}" />
 
                 <ScrollViewer Grid.Row="2" HorizontalAlignment="Stretch">
-                    <toolkit:MarkdownTextBlock 
-                        Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}"
+                    <toolkit:MarkdownTextBlock
                         Background="Transparent"
                         Header3FontSize="12"
                         Header3FontWeight="Normal"
                         Header3Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        IsTextSelectionEnabled="True"/>
+                        IsTextSelectionEnabled="True"
+                        Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}" />
                 </ScrollViewer>
             </Grid>
             <!--  /DetailsContent  -->
 
+            <ScrollView
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                MaxHeight="120"
+                Background="{ThemeResource SystemControlErrorBackgroundColor}"
+                BorderBrush="{ThemeResource SystemControlErrorTextForegroundBrush}"
+                BorderThickness="0,1,0,0"
+                Visibility="{x:Bind ViewModel.CurrentPage.ErrorMessage, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}">
+                <TextBlock Margin="16" IsTextSelectionEnabled="True">
+                    <Run
+                        FontSize="18"
+                        Foreground="{ThemeResource SystemErrorTextColor}"
+                        Text="Error(s) on page:" />
+                    <LineBreak />
+                    <Run Text="{x:Bind ViewModel.CurrentPage.ErrorMessage, Mode=OneWay}" />
+                </TextBlock>
+            </ScrollView>
         </Grid>
 
         <cpcontrols:ActionBar
             Grid.Row="2"
             VerticalAlignment="Top"
             CurrentPageViewModel="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+
+                <VisualState x:Name="DetailsCollapsed" />
+
+                <VisualState x:Name="DetailsVisible">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{x:Bind ViewModel.IsDetailsVisible, Mode=OneWay}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="DetailsContent.Visibility" Value="Visible" />
+                        <Setter Target="DetailsColumn.Width" Value="2*" />
+                    </VisualState.Setters>
+                </VisualState>
+
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 
 </Page>
