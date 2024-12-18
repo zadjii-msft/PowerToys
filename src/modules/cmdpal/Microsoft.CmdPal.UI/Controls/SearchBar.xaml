@@ -41,7 +41,7 @@
             AutomationProperties.AccessibilityView="Raw"
             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
             Glyph="&#xE721;"
-            Visibility="{x:Bind Nested, Mode=OneWay, Converter={StaticResource ReverseBoolToVisibilityConverter}}" />
+            Visibility="{x:Bind CurrentPageViewModel.IsNested, Mode=OneWay, Converter={StaticResource ReverseBoolToVisibilityConverter}}" />
         <Button
             x:Name="BackButton"
             Height="32"
@@ -53,17 +53,17 @@
             CornerRadius="16"
             FontSize="16"
             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-            IsEnabled="{x:Bind Nested, Mode=OneWay}"
+            IsEnabled="{x:Bind CurrentPageViewModel.IsNested, Mode=OneWay}"
             Tapped="BackButton_Tapped"
             ToolTipService.ToolTip="Back"
-            Visibility="{x:Bind Nested}">
+            Visibility="{x:Bind CurrentPageViewModel.IsNested, Mode=OneWay}">
             <StackPanel
                 Grid.Column="1"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Orientation="Horizontal"
                 Spacing="8"
-                Visibility="{x:Bind Nested}">
+                Visibility="{x:Bind CurrentPageViewModel.IsNested, Mode=OneWay}">
 
                 <Viewbox Width="16" Height="16">
                     <!-- <ContentControl VerticalAlignment="Center" Content="{x:Bind ViewModel.Command.IcoElement}" />-->
