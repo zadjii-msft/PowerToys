@@ -113,13 +113,6 @@
                 Tapped="SecondaryButton_Tapped"
                 Visibility="{x:Bind ViewModel.HasSecondaryCommand, Mode=OneWay}">
 
-                <!--<cpcontrols:IconBox
-                        Width="16"
-                        Height="16"
-                        Margin="4,4,4,4"
-                        SourceKey="{x:Bind ViewModel.SecondaryAction.Icon, Mode=OneWay}"
-                        SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}" />-->
-
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock
                         VerticalAlignment="Center"
