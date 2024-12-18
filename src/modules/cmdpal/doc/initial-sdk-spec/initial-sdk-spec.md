@@ -189,7 +189,7 @@ applications. However, there may be apps out there that (for whatever reason)
 still don't have a package identity. We need a way to allow these apps to
 register themselves as extensions.
 
-We can't just ask the COM catalog for all CLSIDs that implement the a particular
+We can't just ask the COM catalog for all CLSIDs that implement a particular
 COM interface, unfortunately. This means we'll need another well-known location
 in the registry for unpackaged apps to write their extension CLSID's into.
 
@@ -1467,7 +1467,7 @@ don't match any of the commands in the list.
 
 If an extension's own list page wants to implement a similar fallback mechanism
 - it's free to use `IDynamicListPage` to listen for changes to the query and
-have it's own ListItem it updates manually.
+have its own ListItem it updates manually.
 
 > [!IMPORTANT] 
 > If your extension has top-level `FallbackCommandItem`s, then
@@ -1981,7 +1981,7 @@ follow - these are not part of the current SDK spec.
 >
 > A thought: what if a action returns a `ActionResult.Entity`, then that takes
 > devpal back home, but leaves the entity in the query box. This would allow for
-> a Quicksilver-like "thing, do" flow. That command would pre-populate the
+> a Quicksilver-like "thing, do" flow. That command would prepopulate the
 > parameters. So we would then filter top-level commands based on things that can
 > accept the entity in the search box.
 >

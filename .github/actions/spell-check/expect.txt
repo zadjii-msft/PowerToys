@@ -663,7 +663,6 @@ imageresizersettings
 imagingdevices
 ime
 imgflip
-imgur
 inbox
 inetcpl
 Infobar
@@ -1590,7 +1589,6 @@ TLayout
 tlb
 tlbimp
 tlc
-TLDR
 TMPVAR
 TNP
 Toolhelp
@@ -1840,7 +1838,6 @@ XElement
 xfd
 XFile
 XIncrement
-XJSNh
 XNamespace
 Xoshiro
 XPels

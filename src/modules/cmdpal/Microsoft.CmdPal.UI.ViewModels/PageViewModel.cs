@@ -53,7 +53,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     {
         // TODO: We may want a SemaphoreSlim lock here.
 
-        // TODO: We may want to investigate using some sort of AsyncEnumerable or populating these as they come in to the UI layer
+        // TODO: We may want to investigate using some sort of AsyncEnumerable or populating these as they come into the UI layer
         //       Though we have to think about threading here and circling back to the UI thread with a TaskScheduler.
         try
         {
