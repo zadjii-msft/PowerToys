@@ -231,3 +231,6 @@ _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
 
 # ignore long runs of a single character:
 \b([A-Za-z])\g{-1}{3,}\b
+
+# Process Process (typename varname)
+Process (?:-n |)-t (\w+)\s+\g{-1}
