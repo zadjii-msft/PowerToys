@@ -239,4 +239,4 @@ _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
 \bimgur\.com/[^.]+
 
 # Process Process (typename varname)
-Process (?:-n |)-t (\w+)\s+\g{-1}
+Process Process
