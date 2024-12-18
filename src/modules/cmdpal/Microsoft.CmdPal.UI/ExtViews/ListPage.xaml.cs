@@ -123,7 +123,7 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Unregister<ActivateSelectedListItemMessage>(this);
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too agressive at pruning methods bound in XAML")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]
     private void ListView_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is ListItemViewModel item)
@@ -132,7 +132,7 @@ public sealed partial class ListPage : Page,
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too agressive at pruning methods bound in XAML")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]
     private void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (ItemsList.SelectedItem is ListItemViewModel item)

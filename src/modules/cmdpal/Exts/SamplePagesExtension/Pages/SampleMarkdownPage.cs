@@ -80,7 +80,7 @@ Result:
 
 Result:
 
-![paintin'](https://i.imgur.com/93XJSNh.png)
+![painting'](https://i.imgur.com/93XJSNh.png)
 
 ### Links
 

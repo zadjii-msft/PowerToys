@@ -25,13 +25,10 @@ AFFINETRANSFORM
 affordances
 AFX
 AGGREGATABLE
-agressive
-agressively
 ahk
 AHybrid
 akv
 ALarger
-Aliias
 ALLAPPS
 ALLINPUT
 Allman
@@ -81,7 +78,6 @@ ASingle
 ASSOCCHANGED
 ASSOCF
 ASSOCSTR
-asynchonously
 ASYNCWINDOWPLACEMENT
 ASYNCWINDOWPOS
 atl
@@ -365,7 +361,6 @@ DPolicy
 DPSAPI
 DQTAT
 DQTYPE
-dragable
 DRAWCLIPBOARD
 DRAWFRAME
 drawingcolor
@@ -428,7 +423,6 @@ EResize
 ERole
 ERRORIMAGE
 ERRORTITLE
-Errrors
 erwrite
 ESettings
 ESPN
@@ -467,8 +461,7 @@ EXTRINSICPROPERTIES
 eyetracker
 FANCYZONESDRAWLAYOUTTEST
 FANCYZONESEDITOR
-FARPROC
-favourites
+FARPROCk
 fdw
 fff
 FILEEXPLORER
@@ -542,7 +535,6 @@ gpo
 GPOCA
 gpp
 gpu
-Griese
 gsl
 GSM
 gtm
@@ -550,11 +542,9 @@ guiddata
 GUITHREADINFO
 GValue
 gwl
-GWLP
-Hande
+GWLPk
 hangeul
 Hanzi
-harcoded
 Hardlines
 hardlinks
 HARDWAREINPUT
@@ -673,8 +663,6 @@ imagingdevices
 ime
 imgflip
 imgur
-implementaions
-implmenting
 inbox
 inetcpl
 Infobar
@@ -703,7 +691,6 @@ installscopeperuser
 INSTALLSTARTMENUSHORTCUT
 INSTALLSTATE
 Inste
-intederminate
 Interlop
 INTRESOURCE
 INVALIDARG
@@ -1054,8 +1041,6 @@ ntdll
 ntfs
 NTSTATUS
 NTZm
-nullability
-nullness
 nullonfailure
 numberbox
 nwc
@@ -1097,7 +1082,6 @@ OWNDC
 OWRj
 Packagemanager
 PACL
-paintin
 PAINTSTRUCT
 PALETTEWINDOW
 PARENTNOTIFY
@@ -1257,7 +1241,6 @@ QUICKTIP
 QUNS
 QXZ
 RAII
-raisee
 RAlt
 Rasterization
 Rasterize
@@ -1269,7 +1252,6 @@ rbhid
 rclsid
 READMODE
 READOBJECTS
-realease
 reblogs
 recents
 RECTDESTINATION
@@ -1280,8 +1262,6 @@ Redist
 reencode
 reencoded
 REFCLSID
-refelct
-refering
 REFGUID
 REFIID
 REGCLS
@@ -1309,7 +1289,6 @@ remoteip
 Removelnk
 renamable
 RENAMEONCOLLISION
-renamve
 reparented
 reparenting
 reportfileaccesses
@@ -1380,7 +1359,6 @@ searchterm
 searchtext
 SEARCHUI
 secpol
-seearch
 SENDCHANGE
 sendvirtualinput
 seperators
@@ -1420,7 +1398,6 @@ SHFILEOPSTRUCT
 SHGDN
 SHGDNF
 SHGFI
-shich
 shinfo
 shlwapi
 shmem
@@ -1446,7 +1423,6 @@ SHOWNOACTIVATE
 SHOWNORMAL
 SHOWWINDOW
 shtypes
-shurg
 sia
 SIATTRIBFLAGS
 SICHINT
@@ -1475,8 +1451,6 @@ SMTO
 SNAPPROCESS
 snwprintf
 softline
-somee
-sooon
 SOURCECLIENTAREAONLY
 sourced
 sourcedoc
@@ -1663,7 +1637,6 @@ UNCPRIORITY
 UNDNAME
 UNICODETEXT
 Uniquifies
-unistalls
 unitconverter
 unittests
 UNLEN
@@ -1747,7 +1720,6 @@ VSTHRD
 VSTT
 vswhere
 Vtbl
-vulnerbilities
 WANTMAPPINGHANDLE
 WANTPALM
 wasdk
@@ -1890,7 +1862,6 @@ YResolution
 YStr
 YTM
 YVIRTUALSCREEN
-zadjii
 ZEROINIT
 zonable
 zoneset
