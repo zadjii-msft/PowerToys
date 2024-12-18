@@ -306,7 +306,7 @@ namespace til // Terminal Implementation Library. Also: "Today I Learned"
         }
 
 #pragma warning(push)
-#pragma warning(disable : 26429) // Symbol 'data1' is never tested for nullness, it can be marked as not_null
+#pragma warning(disable : 26429) // Symbol 'data1' is never tested for null, it can be marked as not_null
 #pragma warning(disable : 26481) // Don't use pointer arithmetic. Use span instead
         auto remaining = str1.size();
         auto data1 = str1.data();

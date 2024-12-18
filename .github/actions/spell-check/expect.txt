@@ -1041,7 +1041,6 @@ ntdll
 ntfs
 NTSTATUS
 NTZm
-nullness
 nullonfailure
 numberbox
 nwc
