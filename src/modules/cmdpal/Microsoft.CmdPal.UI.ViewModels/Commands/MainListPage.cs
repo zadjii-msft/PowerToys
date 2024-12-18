@@ -40,6 +40,8 @@ public partial class MainListPage : DynamicListPage
         // reference the TLC collection directly... maybe? TODO is this a good idea ot a terrible one?
         _commands = tlcManager.TopLevelCommands;
         _commands.CollectionChanged += Commands_CollectionChanged;
+
+        IsLoading = true;
     }
 
     private void TlcManager_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

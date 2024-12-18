@@ -14,12 +14,13 @@ public partial class ReloadExtensionsAction : InvokableCommand
     public ReloadExtensionsAction()
     {
         Icon = new("\uE72C"); // Refresh icon
-
-        // Name = "Reload";
     }
 
     public override ICommandResult Invoke()
     {
+        // 1% bodgy: clear the search before reloading, so that we tell in-proc
+        // fallback handlers the empty search text
+        WeakReferenceMessenger.Default.Send<ClearSearchMessage>();
         WeakReferenceMessenger.Default.Send<ReloadCommandsMessage>();
         return CommandResult.GoHome();
     }

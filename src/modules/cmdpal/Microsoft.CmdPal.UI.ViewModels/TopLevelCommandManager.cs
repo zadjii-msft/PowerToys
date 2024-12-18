@@ -72,12 +72,6 @@ public partial class TopLevelCommandManager : ObservableObject,
 
     public async Task ReloadAllCommandsAsync()
     {
-        // Oh dear this may have reavealed the awful truth that we load
-        // extensions on the UI thread.
-        //
-        // If we stick this in a BG task, then it explodes, because
-        // TopLevelCommands is Observable, so adding things to it can only
-        // happen on the UI thread. Yike.
         IsLoading = true;
         var extensionService = _serviceProvider.GetService<IExtensionService>()!;
         await extensionService.SignalStopExtensionsAsync();
