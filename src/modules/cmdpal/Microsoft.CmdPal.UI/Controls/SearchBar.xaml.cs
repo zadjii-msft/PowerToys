@@ -59,7 +59,7 @@ public sealed partial class SearchBar : UserControl,
         WeakReferenceMessenger.Default.Register<GoHomeMessage>(this);
     }
 
-    public void ClearSearch() => this.FilterBox.Text = string.Empty;
+    private void ClearSearch() => this.FilterBox.Text = string.Empty;
 
     private void BackButton_Tapped(object sender, TappedRoutedEventArgs e) => WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
 
