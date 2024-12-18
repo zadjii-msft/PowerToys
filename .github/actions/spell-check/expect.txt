@@ -1263,7 +1263,6 @@ Redist
 reencode
 reencoded
 REFCLSID
-refelct
 REFGUID
 REFIID
 REGCLS
