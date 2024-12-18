@@ -13,10 +13,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
-    <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
-    <ProjectPriFileName>Microsoft.CmdPal.UI.pri</ProjectPriFileName>
   </PropertyGroup>
-
 
   <PropertyGroup>
     <!-- This lets us actually reference types from Microsoft.Terminal.UI -->
@@ -54,6 +51,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" />
+	<PackageReference Include="CommunityToolkit.WinUI.Animations" />
     <PackageReference Include="CommunityToolkit.WinUI.Extensions" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Markdown" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
