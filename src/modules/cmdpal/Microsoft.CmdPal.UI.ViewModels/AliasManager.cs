@@ -10,12 +10,12 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class AliasManager : ObservableObject
 {
-    private readonly TopLevelCommandManager _tlcManager;
+    private readonly TopLevelCommandManager _topLevelCommandManager;
     private readonly Dictionary<string, CommandAlias> _aliases = [];
 
     public AliasManager(TopLevelCommandManager tlcManager)
     {
-        _tlcManager = tlcManager;
+        _topLevelCommandManager = tlcManager;
         PopulateDefaultAliases();
     }
 
@@ -27,11 +27,11 @@ public partial class AliasManager : ObservableObject
         {
             try
             {
-                var tlc = _tlcManager.LookupCommand(alias.CommandId);
-                if (tlc != null)
+                var topLevelCommand = _topLevelCommandManager.LookupCommand(alias.CommandId);
+                if (topLevelCommand != null)
                 {
                     WeakReferenceMessenger.Default.Send<ClearSearchMessage>();
-                    WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(new(tlc.Command)));
+                    WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(new(topLevelCommand.Command)));
                     return true;
                 }
             }

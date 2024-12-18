@@ -138,7 +138,7 @@ public sealed partial class SearchBar : UserControl,
         Debug.WriteLine($"FilterBox_TextChanged: {FilterBox.Text}");
 
         // TERRIBLE HACK TODO GH #245
-        // There's weird wacky bugs with the debouncer currently. We're trying
+        // There's weird wacky bugs with debounce currently. We're trying
         // to get them ingested, but while we wait for the toolkit feeds to
         // bubble, just manually send the first character, always
         // (otherwise aliases just stop working)
