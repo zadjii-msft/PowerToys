@@ -461,7 +461,7 @@ EXTRINSICPROPERTIES
 eyetracker
 FANCYZONESDRAWLAYOUTTEST
 FANCYZONESEDITOR
-FARPROCk
+FARPROC
 fdw
 fff
 FILEEXPLORER
@@ -542,7 +542,7 @@ guiddata
 GUITHREADINFO
 GValue
 gwl
-GWLPk
+GWLP
 hangeul
 Hanzi
 Hardlines
@@ -1041,6 +1041,7 @@ ntdll
 ntfs
 NTSTATUS
 NTZm
+nullness
 nullonfailure
 numberbox
 nwc
@@ -1262,6 +1263,7 @@ Redist
 reencode
 reencoded
 REFCLSID
+refelct
 REFGUID
 REFIID
 REGCLS
@@ -1636,6 +1638,7 @@ uncompilable
 UNCPRIORITY
 UNDNAME
 UNICODETEXT
+uninstalls
 Uniquifies
 unitconverter
 unittests
