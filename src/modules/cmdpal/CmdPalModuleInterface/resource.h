@@ -5,7 +5,7 @@
 //////////////////////////////
 // Non-localizable
 
-#define FILE_DESCRIPTION "PowerToys Comand Palette Module"
+#define FILE_DESCRIPTION "PowerToys Command Palette Module"
 #define INTERNAL_NAME "PowerToys.CmdPalModuleInterface"
 #define ORIGINAL_FILENAME "PowerToys.CmdPalModuleInterface.dll"
 

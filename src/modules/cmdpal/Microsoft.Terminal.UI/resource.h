@@ -5,7 +5,7 @@
 //////////////////////////////
 // Non-localizable
 
-#define FILE_DESCRIPTION "PowerToys Comand Palette Terminal UI"
+#define FILE_DESCRIPTION "PowerToys Command Palette Terminal UI"
 #define INTERNAL_NAME "Microsoft.Terminal.UI"
 #define ORIGINAL_FILENAME "Microsoft.Terminal.UI.dll"
 

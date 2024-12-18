@@ -66,7 +66,7 @@ namespace Microsoft.PowerToys.Settings.UI
 
         public bool ShowScoobe { get; set; }
 
-        // TODO(stefan): REVERT THIS TO DASHBOARD PAGE!!!! SPELCHHHHEEK FAIL
+        // TODO GH #245 Revert this to Views.DashboardPage
         public Type StartupPage { get; set; } = typeof(Views.GeneralPage);
 
         public static Action<string> IPCMessageReceivedCallback { get; set; }
