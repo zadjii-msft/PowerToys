@@ -18,12 +18,14 @@ public partial class TopLevelCommandManager : ObservableObject,
     IRecipient<ReloadCommandsMessage>
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly TaskScheduler _taskScheduler;
 
     private IEnumerable<ICommandProvider>? _builtInCommands;
 
     public TopLevelCommandManager(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _taskScheduler = _serviceProvider.GetService<TaskScheduler>()!;
         WeakReferenceMessenger.Default.Register<ReloadCommandsMessage>(this);
     }
 
@@ -46,18 +48,26 @@ public partial class TopLevelCommandManager : ObservableObject,
         return true;
     }
 
+    // May be called from a background thread
     private async Task LoadTopLevelCommandsFromProvider(CommandProviderWrapper commandProvider)
     {
         await commandProvider.LoadTopLevelCommands();
-        foreach (var i in commandProvider.TopLevelItems)
-        {
-            TopLevelCommands.Add(new(new(i), false));
-        }
+        await Task.Factory.StartNew(
+            () =>
+            {
+                foreach (var i in commandProvider.TopLevelItems)
+                {
+                    TopLevelCommands.Add(new(new(i), false));
+                }
 
-        foreach (var i in commandProvider.FallbackItems)
-        {
-            TopLevelCommands.Add(new(new(i), true));
-        }
+                foreach (var i in commandProvider.FallbackItems)
+                {
+                    TopLevelCommands.Add(new(new(i), true));
+                }
+            },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            _taskScheduler);
     }
 
     public async Task ReloadAllCommandsAsync()
@@ -73,10 +83,10 @@ public partial class TopLevelCommandManager : ObservableObject,
         await extensionService.SignalStopExtensionsAsync();
         TopLevelCommands.Clear();
         await LoadBuiltinsAsync();
-        await LoadExtensionsAsync();
+        _ = Task.Run(LoadExtensionsAsync);
     }
 
-    // Load commands from our extensions.
+    // Load commands from our extensions. Called on a background thread.
     // Currently, this
     // * queries the package catalog,
     // * starts all the extensions,
