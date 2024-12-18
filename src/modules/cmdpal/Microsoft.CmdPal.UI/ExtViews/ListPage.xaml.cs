@@ -5,7 +5,6 @@
 using System.Diagnostics;
 using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.UI.Dispatching;
@@ -104,25 +103,29 @@ public sealed partial class ListPage : Page,
             // TODO: Handle failure case
             System.Diagnostics.Debug.WriteLine(lvm.InitializeCommand.ExecutionTask.Exception);
 
-            _ = _queue.EnqueueAsync(() =>
+            // TODO GH #239 switch back when using the new MD text block
+            // _ = _queue.EnqueueAsync(() =>
+            _queue.TryEnqueue(new(() =>
             {
                 LoadedState = ViewModelLoadedState.Error;
-            });
+            }));
         }
         else
         {
-            _ = _queue.EnqueueAsync(() =>
-            {
-                var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
+            // TODO GH #239 switch back when using the new MD text block
+            // _ = _queue.EnqueueAsync(() =>
+            _queue.TryEnqueue(new(() =>
+{
+    var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
 
-                ViewModel = lvm;
+    ViewModel = lvm;
 
-                WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(result ? lvm : null));
-                LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
+    WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(result ? lvm : null));
+    LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
 
-                // Immediately select the first item in the list
-                ItemsList.SelectedIndex = 0;
-            });
+    // Immediately select the first item in the list
+    ItemsList.SelectedIndex = 0;
+}));
         }
     }
 
