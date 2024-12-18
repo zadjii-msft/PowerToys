@@ -13,8 +13,9 @@ using Microsoft.UI.Xaml.Documents;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 
-namespace Microsoft.CmdPal.UI.Controls.Tag;
-public sealed class Tag : Control
+namespace Microsoft.CmdPal.UI.Controls;
+
+public partial class Tag : Control
 {
     public Tag()
     {

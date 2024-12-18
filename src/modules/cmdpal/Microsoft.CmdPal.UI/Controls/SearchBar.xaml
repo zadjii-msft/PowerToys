@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:Microsoft.CmdPal.UI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -24,7 +25,6 @@
 
     <!--  Back button and search box  -->
     <Grid
-        Margin="0,-10,0,0"
         Padding="0,12,0,12"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch">
@@ -49,14 +49,17 @@
             Padding="12,0,12,0"
             HorizontalAlignment="Right"
             VerticalAlignment="Center"
-            Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+      
             CornerRadius="16"
             FontSize="16"
             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-            IsEnabled="{x:Bind CurrentPageViewModel.IsNested, Mode=OneWay}"
+            IsEnabled="{x:Bind Nested, Mode=OneWay}"
+            Style="{StaticResource SubtleButtonStyle}"
             Tapped="BackButton_Tapped"
             ToolTipService.ToolTip="Back"
-            Visibility="{x:Bind CurrentPageViewModel.IsNested, Mode=OneWay}">
+            Visibility="{x:Bind Nested, Mode=OneWay}">
+            <!--Content="{ui:FontIcon Glyph=&#xE72B;,
+                            FontSize=14}"-->
             <StackPanel
                 Grid.Column="1"
                 HorizontalAlignment="Left"
