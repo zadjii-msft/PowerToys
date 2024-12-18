@@ -75,6 +75,7 @@ Gershaft
 Giordani
 Gokce
 gordon
+Griese
 grzhan
 Guo
 hanselman
@@ -87,6 +88,7 @@ Howett
 htcfreek
 Huynh
 Ionut
+jamrobot
 Jaswal
 jefflord
 Jordi
@@ -199,3 +201,4 @@ xamlstyler
 Xavalon
 Xbox
 Youdao
+zadjii

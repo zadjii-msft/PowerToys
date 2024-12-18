@@ -51,7 +51,7 @@ public partial class FormViewModel(IForm _form, IPageContext context) : Extensio
             // with the exception
             AdaptiveCardTemplate template = new(ErrorCardJson);
 
-            // todo: we could probably stick Card.Errrors in there too
+            // todo: we could probably stick Card.Errors in there too
             var dataJson = $$"""
 {
     "error_message": {{JsonSerializer.Serialize(e.Message)}},
@@ -91,8 +91,7 @@ public partial class FormViewModel(IForm _form, IPageContext context) : Extensio
                 if (model != null)
                 {
                     var result = model.SubmitForm(inputString);
-
-                    // TODO Handle results
+                    WeakReferenceMessenger.Default.Send<HandleCommandResultMessage>(new(new(result)));
                 }
             }
             catch (Exception ex)

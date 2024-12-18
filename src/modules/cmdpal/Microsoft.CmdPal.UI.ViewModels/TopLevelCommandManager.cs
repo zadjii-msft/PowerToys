@@ -107,6 +107,19 @@ public partial class TopLevelCommandManager : ObservableObject,
         return true;
     }
 
+    public TopLevelCommandWrapper? LookupCommand(string id)
+    {
+        foreach (var command in TopLevelCommands)
+        {
+            if (command.Id == id)
+            {
+                return command;
+            }
+        }
+
+        return null;
+    }
+
     public void Receive(ReloadCommandsMessage message) =>
         ReloadAllCommandsAsync().ConfigureAwait(false);
 }
