@@ -125,7 +125,7 @@ public sealed partial class SearchBar : UserControl,
         }
         else if (e.Key == VirtualKey.Back)
         {
-            // hack
+            // hack TODO GH #245
             if (CurrentPageViewModel != null)
             {
                 CurrentPageViewModel.Filter = FilterBox.Text;
@@ -137,7 +137,7 @@ public sealed partial class SearchBar : UserControl,
     {
         Debug.WriteLine($"FilterBox_TextChanged: {FilterBox.Text}");
 
-        // TERRIBLE HACK
+        // TERRIBLE HACK TODO GH #245
         // There's weird wacky bugs with the debouncer currently. We're trying
         // to get them ingested, but while we wait for the toolkit feeds to
         // bubble, just manually send the first character, always
