@@ -9,9 +9,9 @@
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI.MarkdownTextBlock"
     xmlns:local="using:Microsoft.CmdPal.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:viewmodels="using:Microsoft.CmdPal.UI.ViewModels"
     Background="Transparent"
     mc:Ignorable="d">
@@ -43,9 +43,12 @@
                                     BorderThickness="1,1,1,2"
                                     CornerRadius="{StaticResource OverlayCornerRadius}">
 
-                                    <labs:MarkdownTextBlock
+                                    <toolkit:MarkdownTextBlock
                                         Background="Transparent"
-                                        Config="{x:Bind local:MarkdownPage.MarkdownConfig}"
+                                        Header3FontSize="12"
+                                        Header3FontWeight="Normal"
+                                        Header3Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        IsTextSelectionEnabled="True"
                                         Text="{x:Bind}" />
                                 </Grid>
                             </DataTemplate>
