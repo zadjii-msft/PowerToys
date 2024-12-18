@@ -66,7 +66,7 @@ public partial class ListViewModel : PageViewModel
             }
             catch (Exception ex)
             {
-                ShowException(ex);
+                ShowException(ex, _model?.Unsafe?.Name);
             }
         }
         else
@@ -108,7 +108,7 @@ public partial class ListViewModel : PageViewModel
         }
         catch (Exception ex)
         {
-            ShowException(ex);
+            ShowException(ex, _model?.Unsafe?.Name);
             throw;
         }
 

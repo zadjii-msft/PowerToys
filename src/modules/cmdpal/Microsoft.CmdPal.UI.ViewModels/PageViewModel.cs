@@ -61,7 +61,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         }
         catch (Exception ex)
         {
-            ShowException(ex);
+            ShowException(ex, _pageModel?.Unsafe?.Name);
             return Task.FromResult(false);
         }
 
@@ -98,9 +98,9 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
             var propName = args.PropertyName;
             FetchProperty(propName);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            ShowException(e);
+            ShowException(ex, _pageModel?.Unsafe?.Name);
         }
     }
 
@@ -140,12 +140,15 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         UpdateProperty(propertyName);
     }
 
-    public void ShowException(Exception ex)
+    public void ShowException(Exception ex, string? extensionHint = null)
     {
+        // Set the extensionHint to the Page Title (if we have one, and one not provided).
+        extensionHint ??= _pageModel?.Unsafe?.Title;
+
         Task.Factory.StartNew(
             () =>
         {
-            ErrorMessage += $"{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\nThis is due to a bug in the extension's code.";
+            ErrorMessage += $"A bug occurred in {$"the \"{extensionHint}\"" ?? "an unknown's"} extension's code:\n{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\n";
         },
             CancellationToken.None,
             TaskCreationOptions.None,
@@ -155,7 +158,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
 
 public interface IPageContext
 {
-    public void ShowException(Exception ex);
+    public void ShowException(Exception ex, string? extensionHint = null);
 
     public TaskScheduler Scheduler { get; }
 }
