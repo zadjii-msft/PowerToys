@@ -113,15 +113,15 @@
                 MaxHeight="120"
                 Background="{ThemeResource SystemControlErrorBackgroundColor}"
                 BorderBrush="{ThemeResource SystemControlErrorTextForegroundBrush}"
-                BorderThickness="0,1,0,0"
+                BorderThickness="0,1,0,1"
+                CornerRadius="0"
                 Visibility="{x:Bind ViewModel.CurrentPage.ErrorMessage, Converter={StaticResource StringNotEmptyToVisibilityConverter}, Mode=OneWay}">
-                <TextBlock Margin="16" IsTextSelectionEnabled="True">
+                <TextBlock Margin="16,8,16,16" IsTextSelectionEnabled="True">
                     <Run
-                        FontSize="18"
+                        FontWeight="SemiBold"
                         Foreground="{ThemeResource SystemErrorTextColor}"
                         Text="Error(s) on page:" />
-                    <LineBreak />
-                    <Run Text="{x:Bind ViewModel.CurrentPage.ErrorMessage, Mode=OneWay}" />
+                    <LineBreak /><Run Text="{x:Bind ViewModel.CurrentPage.ErrorMessage, Mode=OneWay}" />
                 </TextBlock>
             </ScrollView>
         </Grid>
