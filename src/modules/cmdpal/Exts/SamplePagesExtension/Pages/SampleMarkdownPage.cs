@@ -84,11 +84,11 @@ Result:
 
 ### Links
 
-    [example](http://example.com)
+    [link](http://example.com)
     
 Result:
 
-[example](http://example.com)
+[link](http://example.com)
 
 ### Blockquotes
 
