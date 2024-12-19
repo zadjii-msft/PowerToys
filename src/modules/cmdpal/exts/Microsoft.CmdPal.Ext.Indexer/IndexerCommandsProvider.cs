@@ -7,9 +7,9 @@ using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.Indexer;
 
-public partial class IndexerActionsProvider : CommandProvider
+public partial class IndexerCommandsProvider : CommandProvider
 {
-    public IndexerActionsProvider()
+    public IndexerCommandsProvider()
     {
         DisplayName = "Indexer Commands";
     }

@@ -55,7 +55,7 @@ public sealed class MainViewModel : IDisposable
 
     internal MainViewModel()
     {
-        BuiltInCommands.Add(new IndexerActionsProvider());
+        BuiltInCommands.Add(new IndexerCommandsProvider());
         BuiltInCommands.Add(new BookmarksCommandProvider());
         BuiltInCommands.Add(new CalculatorCommandProvider());
         BuiltInCommands.Add(new SettingsCommandProvider());
