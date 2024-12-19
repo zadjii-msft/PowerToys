@@ -11,13 +11,13 @@ using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Microsoft.CmdPal.Ext.WebSearch.Commands;
 
-internal sealed partial class OpenCommandInShell : InvokableCommand
+internal sealed partial class SearchWebCommand : InvokableCommand
 {
     private readonly SettingsManager _settingsManager;
 
     public string Arguments { get; internal set; } = string.Empty;
 
-    internal OpenCommandInShell(string arguments, SettingsManager settingsManager)
+    internal SearchWebCommand(string arguments, SettingsManager settingsManager)
     {
         Arguments = arguments;
         BrowserInfo.UpdateIfTimePassed();
@@ -28,7 +28,7 @@ internal sealed partial class OpenCommandInShell : InvokableCommand
 
     public override CommandResult Invoke()
     {
-        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, Arguments))
+        if (!Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, $"? {Arguments}"))
         {
             // TODO GH# 138 --> actually display feedback from the extension somewhere.
             return CommandResult.KeepOpen();
@@ -36,7 +36,7 @@ internal sealed partial class OpenCommandInShell : InvokableCommand
 
         if (_settingsManager.ShowHistory != Resources.history_none)
         {
-            _settingsManager.SaveHistory(new HistoryItem(Arguments[2..], DateTime.Now));
+            _settingsManager.SaveHistory(new HistoryItem(Arguments, DateTime.Now));
         }
 
         return CommandResult.Dismiss();

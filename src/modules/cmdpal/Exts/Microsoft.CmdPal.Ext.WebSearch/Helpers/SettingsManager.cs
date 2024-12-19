@@ -123,7 +123,7 @@ public class SettingsManager
             var listItems = new List<ListItem>();
             foreach (var historyItem in historyItems)
             {
-                listItems.Add(new ListItem(new OpenCommandInShell($"? {historyItem.SearchString}", this))
+                listItems.Add(new ListItem(new SearchWebCommand(historyItem.SearchString, this))
                 {
                     Title = historyItem.SearchString,
                     Subtitle = historyItem.Timestamp.ToString("g", CultureInfo.InvariantCulture), // Ensures consistent formatting

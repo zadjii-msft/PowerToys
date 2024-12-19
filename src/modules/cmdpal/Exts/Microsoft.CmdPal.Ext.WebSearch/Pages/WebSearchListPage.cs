@@ -58,12 +58,11 @@ internal sealed partial class WebSearchListPage : DynamicListPage
         }
 
         var results = new List<ListItem>();
-        var arguments = "? ";
 
         // empty query
         if (string.IsNullOrEmpty(query))
         {
-            results.Add(new ListItem(new OpenCommandInShell(arguments, _settingsManager))
+            results.Add(new ListItem(new SearchWebCommand(string.Empty, _settingsManager))
             {
                 Title = Properties.Resources.plugin_description,
                 Subtitle = string.Format(CultureInfo.CurrentCulture, PluginInBrowserName, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),
@@ -73,8 +72,7 @@ internal sealed partial class WebSearchListPage : DynamicListPage
         else
         {
             var searchTerm = query;
-            var searchArgs = $"? {searchTerm}";
-            var result = new ListItem(new OpenCommandInShell(searchArgs, _settingsManager))
+            var result = new ListItem(new SearchWebCommand(searchTerm, _settingsManager))
             {
                 Title = searchTerm,
                 Subtitle = string.Format(CultureInfo.CurrentCulture, PluginOpen, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),

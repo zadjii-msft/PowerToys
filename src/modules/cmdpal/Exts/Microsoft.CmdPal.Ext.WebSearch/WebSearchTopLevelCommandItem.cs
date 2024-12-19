@@ -37,8 +37,7 @@ public partial class WebSearchTopLevelCommandItem : CommandItem, IFallbackHandle
         else
         {
             Title = query;
-            var searchArgs = $"? {query}";
-            Command = new OpenCommandInShell(searchArgs, _settingsManager);
+            Command = new SearchWebCommand(query, _settingsManager);
         }
     }
 }
