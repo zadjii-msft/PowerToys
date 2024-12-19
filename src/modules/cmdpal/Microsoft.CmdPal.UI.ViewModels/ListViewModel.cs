@@ -108,6 +108,8 @@ public partial class ListViewModel : PageViewModel
         }
         catch (Exception ex)
         {
+            // TODO: Move this within the for loop, so we can catch issues with individual items
+            // Create a special ListItemViewModel for errors and use an ItemTemplateSelector in the ListPage to display error items differently.
             ShowException(ex, _model?.Unsafe?.Name);
             throw;
         }

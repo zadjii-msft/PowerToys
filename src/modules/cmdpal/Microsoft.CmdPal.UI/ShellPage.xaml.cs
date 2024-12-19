@@ -132,9 +132,16 @@ public sealed partial class ShellPage :
                 _ = invokable.Invoke();
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // TODO logging
+            if (command is IPageContext page)
+            {
+                page.ShowException(ex);
+            }
+            else
+            {
+                // TODO: Logging
+            }
         }
     }
 
