@@ -61,7 +61,8 @@ internal static partial class ResultHelper
     {
         if (executingEmptyRecycleBinTask)
         {
-            _ = MessageBox.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxButton.OK, MessageBoxImage.Information);
+            // TODO GH #138: We really need some message box equal functionality
+            // _ = MessageBox.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
