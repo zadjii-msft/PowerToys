@@ -22,10 +22,11 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class ShellPage :
     Page,
     IRecipient<NavigateBackMessage>,
-    IRecipient<NavigateToDetailsMessage>,
     IRecipient<PerformCommandMessage>,
     IRecipient<ShowDetailsMessage>,
     IRecipient<HideDetailsMessage>,
+    IRecipient<ClearSearchMessage>,
+    IRecipient<HandleCommandResultMessage>,
     IRecipient<LaunchUriMessage>
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
@@ -42,29 +43,23 @@ public sealed partial class ShellPage :
 
         // how we are doing navigation around
         WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
-        WeakReferenceMessenger.Default.Register<NavigateToDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
+        WeakReferenceMessenger.Default.Register<HandleCommandResultMessage>(this);
 
         WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
 
+        WeakReferenceMessenger.Default.Register<ClearSearchMessage>(this);
         WeakReferenceMessenger.Default.Register<LaunchUriMessage>(this);
 
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
     }
 
-    public void Receive(NavigateToDetailsMessage message) => RootFrame.Navigate(typeof(ListDetailPage), message.ListItem, _drillInNavigationTransitionInfo);
-
     public void Receive(NavigateBackMessage message)
     {
         if (RootFrame.CanGoBack)
         {
-            HideDetails();
-
-            RootFrame.GoBack();
-            HideDetails();
-            RootFrame.ForwardStack.Clear();
-            SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+            GoBack();
         }
         else
         {
@@ -140,7 +135,8 @@ public sealed partial class ShellPage :
             else if (command is IInvokableCommand invokable)
             {
                 // TODO Handle results
-                _ = invokable.Invoke();
+                var result = invokable.Invoke();
+                HandleCommandResult(result);
             }
         }
         catch (Exception ex)
@@ -156,6 +152,51 @@ public sealed partial class ShellPage :
         }
     }
 
+    private void HandleCommandResult(ICommandResult? result)
+    {
+        try
+        {
+            if (result != null)
+            {
+                var kind = result.Kind;
+                switch (kind)
+                {
+                    case CommandResultKind.Dismiss:
+                        {
+                            // Reset the palette to the main page and dismiss
+                            GoHome();
+                            WeakReferenceMessenger.Default.Send<DismissMessage>();
+                            break;
+                        }
+
+                    case CommandResultKind.GoHome:
+                        {
+                            // Go back to the main page, but keep it open
+                            GoHome();
+                            break;
+                        }
+
+                    case CommandResultKind.Hide:
+                        {
+                            // Keep this page open, but hide the palette.
+                            WeakReferenceMessenger.Default.Send<DismissMessage>();
+
+                            break;
+                        }
+
+                    case CommandResultKind.KeepOpen:
+                        {
+                            // Do nothing.
+                            break;
+                        }
+                }
+            }
+        }
+        catch
+        {
+        }
+    }
+
     public void Receive(ShowDetailsMessage message)
     {
         ViewModel.Details = message.Details;
@@ -164,7 +205,29 @@ public sealed partial class ShellPage :
 
     public void Receive(HideDetailsMessage message) => HideDetails();
 
+    public void Receive(LaunchUriMessage message) => _ = Launcher.LaunchUriAsync(message.Uri);
+
+    public void Receive(HandleCommandResultMessage message) => HandleCommandResult(message.Result.Unsafe);
+
     private void HideDetails() => ViewModel.IsDetailsVisible = false;
 
-    public void Receive(LaunchUriMessage message) => _ = Launcher.LaunchUriAsync(message.Uri);
+    public void Receive(ClearSearchMessage message) => SearchBox.ClearSearch();
+
+    private void GoBack()
+    {
+        HideDetails();
+        RootFrame.GoBack();
+        RootFrame.ForwardStack.Clear();
+        SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+    }
+
+    private void GoHome()
+    {
+        while (RootFrame.CanGoBack)
+        {
+            GoBack();
+        }
+
+        WeakReferenceMessenger.Default.Send<GoHomeMessage>();
+    }
 }
