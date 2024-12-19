@@ -235,4 +235,6 @@ public sealed partial class ShellPage :
 
         WeakReferenceMessenger.Default.Send<GoHomeMessage>();
     }
+
+    private void BackButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e) => WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
 }
