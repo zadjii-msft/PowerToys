@@ -221,7 +221,7 @@ public sealed partial class ShellPage :
         // Note: That we restore the VM state below in RootFrame_Navigated call back after this occurs.
         // In the future, we may want to manage the back stack ourselves vs. relying on Frame
         // We could replace Frame with a ContentPresenter, but then have to manage transition animations ourselves.
-        // However, then we have more fine grained control on the back stack, managing the VM cache, and not
+        // However, then we have more fine-grained control on the back stack, managing the VM cache, and not
         // having that all be a black box, though then we wouldn't cache the XAML page itself, but sometimes that is a drawback.
         // However, we do a good job here, see ForwardStack.Clear below, and BackStack.Clear above about managing that.
         RootFrame.GoBack();
