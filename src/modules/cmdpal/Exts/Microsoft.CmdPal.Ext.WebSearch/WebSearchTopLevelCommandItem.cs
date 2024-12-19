@@ -20,7 +20,7 @@ public partial class WebSearchTopLevelCommandItem : CommandItem, IFallbackHandle
     public WebSearchTopLevelCommandItem(SettingsManager settingsManager)
         : base(new WebSearchListPage(settingsManager))
     {
-        Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WebSearch.dark.png"));
+        Icon = new("\uf6fa"); // WebSearch icon
         SetDefaultTitle();
         _settingsManager = settingsManager;
     }
