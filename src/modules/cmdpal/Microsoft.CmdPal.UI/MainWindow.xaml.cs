@@ -2,8 +2,11 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Input;
@@ -11,19 +14,24 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Foundation;
 using Windows.Graphics;
+using Windows.System;
 using Windows.UI;
 using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 using WinRT;
 
 namespace Microsoft.CmdPal.UI;
 
 public sealed partial class MainWindow : Window,
+    IRecipient<DismissMessage>,
     IRecipient<QuitMessage>
 {
     private readonly HWND _hwnd;
+    private WNDPROC? _hotkeyWndProc;
+    private WNDPROC? _originalWndProc;
 
     private DesktopAcrylicController? _acrylicController;
     private SystemBackdropConfiguration? _configurationSource;
@@ -37,6 +45,7 @@ public sealed partial class MainWindow : Window,
         PositionCentered();
         SetAcrylic();
 
+        WeakReferenceMessenger.Default.Register<DismissMessage>(this);
         WeakReferenceMessenger.Default.Register<QuitMessage>(this);
 
         // Hide our titlebar.
@@ -47,11 +56,16 @@ public sealed partial class MainWindow : Window,
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
         SizeChanged += WindowSizeChanged;
         RootShellPage.Loaded += RootShellPage_Loaded;
+
+        // This will prevent our window from appearing in alt+tab or the taskbar.
+        // You'll _need_ to use the hotkey to summon it.
+        SetupHotkey();
+        AppWindow.IsShownInSwitchers = System.Diagnostics.Debugger.IsAttached;
     }
 
     private void RootShellPage_Loaded(object sender, RoutedEventArgs e) =>
 
-        // Now that our content has loaded, we can update our dragable regions
+        // Now that our content has loaded, we can update our draggable regions
         UpdateRegionsForCustomTitleBar();
 
     private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs args) => UpdateRegionsForCustomTitleBar();
@@ -118,6 +132,24 @@ public sealed partial class MainWindow : Window,
             };
     }
 
+    public void Receive(QuitMessage message) =>
+        Close();
+
+    public void Receive(DismissMessage message) =>
+        PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_HIDE);
+
+    internal void MainWindow_Closed(object sender, WindowEventArgs args)
+    {
+        var serviceProvider = App.Current.Services;
+        var extensionService = serviceProvider.GetService<IExtensionService>()!;
+        extensionService.SignalStopExtensionsAsync();
+
+        // WinUI bug is causing a crash on shutdown when FailFastOnErrors is set to true (#51773592).
+        // Workaround by turning it off before shutdown.
+        App.Current.DebugSettings.FailFastOnErrors = false;
+        DisposeAcrylic();
+    }
+
     private void DisposeAcrylic()
     {
         if (_acrylicController != null)
@@ -128,11 +160,7 @@ public sealed partial class MainWindow : Window,
         }
     }
 
-    public void Receive(QuitMessage message) => Close();
-
-    private void MainWindow_Closed(object sender, WindowEventArgs args) => DisposeAcrylic();
-
-    // Updates our window s.t. the top of the window is dragable.
+    // Updates our window s.t. the top of the window is draggable.
     private void UpdateRegionsForCustomTitleBar()
     {
         // Specify the interactive regions of the title bar.
@@ -173,14 +201,78 @@ public sealed partial class MainWindow : Window,
             _Height: (int)Math.Round(bounds.Height * scale));
     }
 
+    internal void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+    {
+        if (args.WindowActivationState == WindowActivationState.Deactivated)
+        {
+            // If there's a debugger attached...
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                // ... then don't hide the window when it loses focus.
+                return;
+            }
+            else
+            {
+                PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_HIDE);
+            }
+        }
+
+        if (_configurationSource != null)
+        {
+            _configurationSource.IsInputActive = args.WindowActivationState != WindowActivationState.Deactivated;
+        }
+    }
+
     public void Summon()
     {
         PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_SHOW);
         PInvoke.SetForegroundWindow(_hwnd);
-
-        // Windows.Win32.PInvoke.SetFocus(hwnd);
         PInvoke.SetActiveWindow(_hwnd);
 
         // MainPage.ViewModel.Summon();
+    }
+
+#pragma warning disable SA1310 // Field names should not contain underscore
+    private const uint DOT_KEY = 0xBE;
+    private const uint WM_HOTKEY = 0x0312;
+#pragma warning restore SA1310 // Field names should not contain underscore
+
+    private void SetupHotkey()
+    {
+        // For some reason `.` is not in the VirtualKey enum. Whatever.
+        var vk = (VirtualKey)DOT_KEY;
+        var modifiers = HOT_KEY_MODIFIERS.MOD_CONTROL | HOT_KEY_MODIFIERS.MOD_WIN;
+        var success = PInvoke.RegisterHotKey(_hwnd, 0, modifiers, (uint)vk);
+
+        // LOAD BEARING: If you don't stick the pointer to HotKeyPrc into a
+        // member (and instead like, use a local), then the pointer we marshal
+        // into the WindowLongPtr will be useless after we leave this function,
+        // and our **WindProc will explode**.
+        _hotkeyWndProc = HotKeyPrc;
+        var hotKeyPrcPointer = Marshal.GetFunctionPointerForDelegate(_hotkeyWndProc);
+        _originalWndProc = Marshal.GetDelegateForFunctionPointer<WNDPROC>(PInvoke.SetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, hotKeyPrcPointer));
+    }
+
+    private LRESULT HotKeyPrc(
+        HWND hwnd,
+        uint uMsg,
+        WPARAM wParam,
+        LPARAM lParam)
+    {
+        if (uMsg == WM_HOTKEY)
+        {
+            if (!this.Visible)
+            {
+                Summon();
+            }
+            else
+            {
+                PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_HIDE);
+            }
+
+            return (LRESULT)IntPtr.Zero;
+        }
+
+        return PInvoke.CallWindowProc(_originalWndProc, hwnd, uMsg, wParam, lParam);
     }
 }

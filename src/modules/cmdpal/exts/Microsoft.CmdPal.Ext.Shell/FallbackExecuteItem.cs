@@ -17,17 +17,15 @@ internal sealed partial class FallbackExecuteItem : FallbackCommandItem
     {
         _executeItem = (ExecuteItem)this.Command!;
         Title = string.Empty;
+        _executeItem.Name = string.Empty;
         Subtitle = Properties.Resources.generic_run_command;
         Icon = new("\uE756");
-
-        // TODO: this is a bug in the current POC. I don't think Fallback items
-        // get icons set correctly.
-        _executeItem.Icon = Icon;
     }
 
     public override void UpdateQuery(string query)
     {
         _executeItem.Cmd = query;
+        _executeItem.Name = string.IsNullOrEmpty(query) ? string.Empty : Properties.Resources.generic_run_command;
         Title = query;
     }
 }

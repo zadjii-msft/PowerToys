@@ -8,7 +8,7 @@ namespace SamplePagesExtension;
 
 internal sealed partial class SampleMarkdownPage : MarkdownPage
 {
-    private readonly string _markdown = @"
+    public static readonly string SampleMarkdownText = @"
 # Markdown Guide
 
 Markdown is a lightweight markup language with plain text formatting syntax. It's often used to format readme files, for writing messages in online forums, and to create rich text using a simple, plain text editor.
@@ -80,15 +80,15 @@ Result:
 
 Result:
 
-![paintin'](https://i.imgur.com/93XJSNh.png)
+![painting](https://i.imgur.com/93XJSNh.png)
 
 ### Links
 
-    [link](http://example.com)
+    [example](http://example.com)
     
 Result:
 
-[link](http://example.com)
+[example](http://example.com)
 
 ### Blockquotes
 
@@ -167,8 +167,5 @@ Result:
         Name = "Sample Markdown Page";
     }
 
-    public override string[] Bodies()
-    {
-        return [_markdown];
-    }
+    public override string[] Bodies() => [SampleMarkdownText];
 }

@@ -218,7 +218,10 @@
                 "PowerToys.VideoConferenceProxyFilter_arm64.dll",
 
                 "WinUI3Apps\\PowerToys.Settings.dll",
-                "WinUI3Apps\\PowerToys.Settings.exe"
+                "WinUI3Apps\\PowerToys.Settings.exe",
+
+                "PowerToys.CmdPalModuleInterface.dll",
+                "*Microsoft.CmdPal.UI_*.msix"
             ],
             "SigningInfo": {
                 "Operations": [
@@ -327,6 +330,7 @@
                 "WinUI3Apps\\TestableIO.System.IO.Abstractions.dll",
                 "TestableIO.System.IO.Abstractions.Wrappers.dll",
                 "WinUI3Apps\\TestableIO.System.IO.Abstractions.Wrappers.dll",
+                "WinUI3Apps\\OpenAI.dll",
                 "ColorCode.Core.dll", 
                 "ColorCode.UWP.dll",
                 "UnitsNet.dll",

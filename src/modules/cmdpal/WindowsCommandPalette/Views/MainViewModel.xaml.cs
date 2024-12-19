@@ -13,6 +13,7 @@ using Microsoft.CmdPal.Ext.WebSearch;
 using Microsoft.CmdPal.Ext.WindowsServices;
 using Microsoft.CmdPal.Ext.WindowsSettings;
 using Microsoft.CmdPal.Ext.WindowsTerminal;
+using Microsoft.CmdPal.Ext.WindowWalker;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Windows.Foundation;
@@ -64,6 +65,7 @@ public sealed class MainViewModel : IDisposable
         BuiltInCommands.Add(new RegistryCommandsProvider());
         BuiltInCommands.Add(new WindowsSettingsCommandsProvider());
         BuiltInCommands.Add(new ShellCommandsProvider());
+        BuiltInCommands.Add(new WindowWalkerCommandsProvider());
         BuiltInCommands.Add(new WebSearchCommandsProvider());
 
         ResetTopLevel();
@@ -127,7 +129,7 @@ public sealed class MainViewModel : IDisposable
 
     public bool CheckAlias(string searchText)
     {
-        // var foundAliias = searchText == "vd";
+        // var foundAlias = searchText == "vd";
         // var aliasTarget = "com.zadjii.VirtualDesktopsList";
         if (_aliases.TryGetValue(searchText, out var alias))
         {
@@ -164,6 +166,7 @@ public sealed class MainViewModel : IDisposable
         this.AddAlias(new CommandAlias("$", "com.microsoft.cmdpal.windowsSettings", true));
         this.AddAlias(new CommandAlias("=", "com.microsoft.cmdpal.calculator", true));
         this.AddAlias(new CommandAlias(">", "com.microsoft.cmdpal.shell", true));
+        this.AddAlias(new CommandAlias("<", "com.microsoft.cmdpal.windowwalker", true));
         this.AddAlias(new CommandAlias("??", "com.microsoft.cmdpal.websearch", true));
     }
 }
