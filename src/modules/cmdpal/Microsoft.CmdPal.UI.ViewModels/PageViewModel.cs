@@ -73,6 +73,8 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
             () =>
             {
                 IsInitialized = true;
+
+                // TODO: Do we want an event/signal here that the Page Views can listen to? (i.e. ListPage setting the selected index to 0, however, in async world the user may have already started navigating around page...)
             },
             CancellationToken.None,
             TaskCreationOptions.None,

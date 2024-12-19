@@ -31,8 +31,6 @@ public sealed partial class ShellPage :
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
 
-    private readonly DrillInNavigationTransitionInfo _drillInNavigationTransitionInfo = new();
-
     private readonly SlideNavigationTransitionInfo _slideRightTransition = new() { Effect = SlideNavigationTransitionEffect.FromRight };
 
     public ShellViewModel ViewModel { get; private set; } = App.Current.Services.GetService<ShellViewModel>()!;
