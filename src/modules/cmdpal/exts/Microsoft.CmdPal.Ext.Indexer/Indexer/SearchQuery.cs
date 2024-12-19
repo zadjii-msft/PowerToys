@@ -12,6 +12,7 @@ using Microsoft.CmdPal.Ext.Indexer.Indexer.Utils;
 using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Windows.Win32;
+using Windows.Win32.System.Search;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 
@@ -159,18 +160,13 @@ internal sealed class SearchQuery : IDisposable
         }
     }
 
-    private bool HandleRow(IGetRow getRow, IntPtr rowHandle)
+    private bool HandleRow(IGetRow getRow, nuint rowHandle)
     {
         object propertyStorePtr = null;
 
         try
         {
-            var res = getRow.GetRowFromHROW(null, rowHandle, typeof(IPropertyStore).GUID, out propertyStorePtr);
-            if (res != 0)
-            {
-                Logger.LogError($"Error getting row from HROW: {res}");
-                return false;
-            }
+            getRow.GetRowFromHROW(null, rowHandle, typeof(IPropertyStore).GUID, out propertyStorePtr);
 
             var propertyStore = (IPropertyStore)propertyStorePtr;
             if (propertyStore == null)
@@ -247,7 +243,7 @@ internal sealed class SearchQuery : IDisposable
                 for (var i = 0; i < rowCountReturned; i++)
                 {
                     var rowHandle = Marshal.ReadIntPtr(prghRows, i * IntPtr.Size);
-                    if (!HandleRow(getRow, rowHandle))
+                    if (!HandleRow(getRow, (nuint)rowHandle))
                     {
                         break;
                     }
