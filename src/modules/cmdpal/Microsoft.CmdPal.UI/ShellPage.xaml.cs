@@ -86,7 +86,7 @@ public sealed partial class ShellPage :
             // Otherwise the logic is mostly the same, outside the main page.
             if (command is IPage page)
             {
-                _ = DispatcherQueue.TryEnqueue(() =>
+                _ = _queue.TryEnqueue(() =>
                 {
                     // Also hide our details pane about here, if we had one
                     HideDetails();
