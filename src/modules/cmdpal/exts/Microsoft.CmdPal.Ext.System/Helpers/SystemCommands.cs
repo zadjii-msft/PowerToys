@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Microsoft.CmdPal.Ext.System.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.System.Helpers;
@@ -38,18 +39,15 @@ internal static class SystemCommands
     /// <returns>A list of all results</returns>
     internal static List<ListItem> GetSystemCommands(bool isUefi, bool splitRecycleBinResults, bool confirmCommands, bool emptyRBSuccessMessage, string iconTheme, CultureInfo culture)
     {
-        var results = new List<Result>();
+        var results = new List<ListItem>();
         results.AddRange(new[]
         {
-            new Result
+            new ListItem(new ResultHelper.ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_shutdown_computer_confirmation, () => Helper.OpenInShell("shutdown", "/s /hybrid /t 0"));
+
             {
                 Title = Resources.ResourceManager.GetString("Microsoft_plugin_sys_shutdown_computer", culture),
-                SubTitle = Resources.ResourceManager.GetString("Microsoft_plugin_sys_shutdown_computer_description", culture),
-                IcoPath = $"Images\\shutdown.{iconTheme}.png",
-                Action = c =>
-                {
-                    return ResultHelper.ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_shutdown_computer_confirmation, () => Helper.OpenInShell("shutdown", "/s /hybrid /t 0"));
-                },
+                Subtitle = Resources.ResourceManager.GetString("Microsoft_plugin_sys_shutdown_computer_description", culture),
+                Icon = new("\uE7E8"), // PowerButton Icon
             },
             new Result
             {
