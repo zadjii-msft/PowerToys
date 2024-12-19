@@ -2,9 +2,9 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.UI.Dispatching;
@@ -20,8 +20,7 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class ListPage : Page,
     IRecipient<NavigateNextCommand>,
     IRecipient<NavigatePreviousCommand>,
-    IRecipient<ActivateSelectedListItemMessage>,
-    IRecipient<ActivateSecondaryCommandMessage>
+    IRecipient<ActivateSelectedListItemMessage>
 {
     public ListViewModel? ViewModel
     {
@@ -45,63 +44,12 @@ public sealed partial class ListPage : Page,
             ViewModel = lvm;
         }
 
-        if (e.NavigationMode == NavigationMode.Back)
-        {
-            // Upon navigating _back_ to this page, immediately select the
-            // first item in the list
-            ItemsList.SelectedIndex = 0;
-        }
-
         // RegisterAll isn't AOT compatible
         WeakReferenceMessenger.Default.Register<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Register<NavigatePreviousCommand>(this);
         WeakReferenceMessenger.Default.Register<ActivateSelectedListItemMessage>(this);
-        WeakReferenceMessenger.Default.Register<ActivateSecondaryCommandMessage>(this);
 
         base.OnNavigatedTo(e);
-    }
-
-    private async Task InitializeViewmodel(ListViewModel lvm)
-    {
-        // You know, this creates the situation where we wait for
-        // both loading page properties, AND the items, before we
-        // display anything.
-        //
-        // We almost need to do an async await on initialize, then
-        // just a fire-and-forget on FetchItems.
-        lvm.InitializeCommand.Execute(null);
-
-        await lvm.InitializeCommand.ExecutionTask!;
-
-        if (lvm.InitializeCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
-        {
-            // TODO: Handle failure case
-            System.Diagnostics.Debug.WriteLine(lvm.InitializeCommand.ExecutionTask.Exception);
-
-            // TODO GH #239 switch back when using the new MD text block
-            // _ = _queue.EnqueueAsync(() =>
-            _queue.TryEnqueue(new(() =>
-            {
-                LoadedState = ViewModelLoadedState.Error;
-            }));
-        }
-        else
-        {
-            // TODO GH #239 switch back when using the new MD text block
-            // _ = _queue.EnqueueAsync(() =>
-            _queue.TryEnqueue(new(() =>
-{
-    var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
-
-    ViewModel = lvm;
-
-    WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(result ? lvm : null));
-    LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
-
-    // Immediately select the first item in the list
-    ItemsList.SelectedIndex = 0;
-}));
-        }
     }
 
     protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -111,10 +59,9 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Unregister<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Unregister<NavigatePreviousCommand>(this);
         WeakReferenceMessenger.Default.Unregister<ActivateSelectedListItemMessage>(this);
-        WeakReferenceMessenger.Default.Unregister<ActivateSecondaryCommandMessage>(this);
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too agressive at pruning methods bound in XAML")]
     private void ListView_ItemClick(object sender, ItemClickEventArgs e)
     {
         if (e.ClickedItem is ListItemViewModel item)
@@ -123,26 +70,13 @@ public sealed partial class ListPage : Page,
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too agressive at pruning methods bound in XAML")]
     private void ItemsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // Debug.WriteLine("ItemsList_SelectionChanged");
-        // Debug.WriteLine($"  +{e.AddedItems.Count} / -{e.RemovedItems.Count}");
-        // Debug.WriteLine($"  selected='{ItemsList.SelectedItem}'");
         if (ItemsList.SelectedItem is ListItemViewModel item)
         {
             ViewModel?.UpdateSelectedItemCommand.Execute(item);
         }
-
-        // There's mysterious behavior here, where the selection seemingly
-        // changes to _nothing_ when we're backspacing to a single character.
-        // And at that point, seemingly the item that's getting removed is not
-        // a member of FilteredItems. Very bizarre.
-        //
-        // Might be able to fix in the future by stashing the removed item
-        // here, then in Page_ItemsUpdated trying to select that cached item if
-        // it's in the list (otherwise, clear the cache), but that seems
-        // aggressively bodgy for something that mostly just works today.
     }
 
     public void Receive(NavigateNextCommand message)
