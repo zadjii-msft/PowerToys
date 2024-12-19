@@ -23,6 +23,7 @@ public sealed partial class ShellPage :
     IRecipient<PerformCommandMessage>,
     IRecipient<ShowDetailsMessage>,
     IRecipient<HideDetailsMessage>,
+    IRecipient<ClearSearchMessage>,
     IRecipient<HandleCommandResultMessage>,
     IRecipient<LaunchUriMessage>
 {
@@ -42,6 +43,7 @@ public sealed partial class ShellPage :
         WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
 
+        WeakReferenceMessenger.Default.Register<ClearSearchMessage>(this);
         WeakReferenceMessenger.Default.Register<LaunchUriMessage>(this);
 
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
@@ -81,10 +83,14 @@ public sealed partial class ShellPage :
                 {
                     // Also hide our details pane about here, if we had one
                     HideDetails();
-                    var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext());
+                    var isMainPage = command is MainListPage;
+                    var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext())
+                    {
+                        IsNested = !isMainPage,
+                    };
                     RootFrame.Navigate(typeof(ListPage), pageViewModel, _slideRightTransition);
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
-                    if (command is MainListPage)
+                    if (isMainPage)
                     {
                         // todo bodgy
                         RootFrame.BackStack.Clear();
@@ -188,6 +194,8 @@ public sealed partial class ShellPage :
     public void Receive(HandleCommandResultMessage message) => HandleCommandResult(message.Result.Unsafe);
 
     private void HideDetails() => ViewModel.IsDetailsVisible = false;
+
+    public void Receive(ClearSearchMessage message) => SearchBox.ClearSearch();
 
     private void GoBack()
     {
