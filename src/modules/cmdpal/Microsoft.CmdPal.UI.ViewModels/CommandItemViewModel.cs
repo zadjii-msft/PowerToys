@@ -54,7 +54,6 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         : base(errorContext)
     {
         _commandItemModel = item;
-        Scheduler = scheduler;
     }
 
     //// Called from ListViewModel on background thread started in ListPage.xaml.cs
@@ -151,6 +150,4 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
         UpdateProperty(propertyName);
     }
-
-    protected void UpdateProperty(string propertyName) => Task.Factory.StartNew(() => { OnPropertyChanged(propertyName); }, CancellationToken.None, TaskCreationOptions.None, Scheduler);
 }

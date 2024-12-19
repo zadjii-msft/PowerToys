@@ -111,11 +111,6 @@ public partial class ListViewModel : PageViewModel
             ShowException(ex);
             throw;
         }
-        catch (Exception ex)
-        {
-            ShowException(ex);
-            throw;
-        }
 
         Task.Factory.StartNew(
             () =>
