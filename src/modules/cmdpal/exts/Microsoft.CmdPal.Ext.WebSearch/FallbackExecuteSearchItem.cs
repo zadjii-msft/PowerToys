@@ -22,15 +22,11 @@ internal sealed partial class FallbackExecuteSearchItem : FallbackCommandItem
         Title = string.Empty;
         Subtitle = string.Format(CultureInfo.CurrentCulture, PluginOpen, BrowserInfo.Name ?? BrowserInfo.MSEdgeName);
         Icon = new("\uF6FA"); // WebSearch icon
-
-        // TODO: this is a bug in the current POC. I don't think Fallback items
-        // get icons set correctly.
-        _executeItem.Icon = Icon;
     }
 
     public override void UpdateQuery(string query)
     {
-        _executeItem.Arguments = $"? {query}";
-        Title = query;
+        _executeItem.Arguments = query;
+        Title = string.IsNullOrEmpty(query) ? string.Empty : query;
     }
 }
