@@ -93,10 +93,15 @@ public sealed partial class ShellPage :
                     // Also hide our details pane about here, if we had one
                     HideDetails();
 
+                    var isMainPage = command is MainListPage;
+
                     // Construct our ViewModel of the appropriate type and pass it the UI Thread context.
                     PageViewModel pageViewModel = page switch
                     {
-                        IListPage listPage => new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext()),
+                        IListPage listPage => new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext())
+                        {
+                            IsNested = !isMainPage,
+                        },
                         IFormPage formsPage => new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext()),
                         IMarkdownPage markdownPage => new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext()),
                         _ => throw new NotSupportedException(),
@@ -120,7 +125,7 @@ public sealed partial class ShellPage :
                     // Refocus on the Search for continual typing on the next search request
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
 
-                    if (command is MainListPage)
+                    if (isMainPage)
                     {
                         // todo bodgy
                         RootFrame.BackStack.Clear();
