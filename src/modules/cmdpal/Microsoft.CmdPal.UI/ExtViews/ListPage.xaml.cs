@@ -22,8 +22,6 @@ public sealed partial class ListPage : Page,
     IRecipient<NavigatePreviousCommand>,
     IRecipient<ActivateSelectedListItemMessage>
 {
-    private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
-
     public ListViewModel? ViewModel
     {
         get => (ListViewModel?)GetValue(ViewModelProperty);
@@ -32,17 +30,7 @@ public sealed partial class ListPage : Page,
 
     // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register(nameof(ViewModel), typeof(ListViewModel), typeof(ListPage), new PropertyMetadata(null, OnViewModelChanged));
-
-    public ViewModelLoadedState LoadedState
-    {
-        get => (ViewModelLoadedState)GetValue(LoadedStateProperty);
-        set => SetValue(LoadedStateProperty, value);
-    }
-
-    // Using a DependencyProperty as the backing store for LoadedState.  This enables animation, styling, binding, etc...
-    public static readonly DependencyProperty LoadedStateProperty =
-        DependencyProperty.Register(nameof(LoadedState), typeof(ViewModelLoadedState), typeof(ListPage), new PropertyMetadata(ViewModelLoadedState.Loading));
+        DependencyProperty.Register(nameof(ViewModel), typeof(ListViewModel), typeof(ListPage), new PropertyMetadata(null));
 
     public ListPage()
     {
@@ -51,59 +39,9 @@ public sealed partial class ListPage : Page,
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-        LoadedState = ViewModelLoadedState.Loading;
         if (e.Parameter is ListViewModel lvm)
         {
-            if (!lvm.IsInitialized
-                && lvm.InitializeCommand != null)
-            {
-                ViewModel = null;
-
-                _ = Task.Run(async () =>
-                {
-                    // You know, this creates the situation where we wait for
-                    // both loading page properties, AND the items, before we
-                    // display anything.
-                    //
-                    // We almost need to do an async await on initialize, then
-                    // just a fire-and-forget on FetchItems.
-                    lvm.InitializeCommand.Execute(null);
-
-                    await lvm.InitializeCommand.ExecutionTask!;
-
-                    if (lvm.InitializeCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
-                    {
-                        // TODO: Handle failure case
-                        System.Diagnostics.Debug.WriteLine(lvm.InitializeCommand.ExecutionTask.Exception);
-
-                        // TODO GH #239 switch back when using the new MD text block
-                        // _ = _queue.EnqueueAsync(() =>
-                        _queue.TryEnqueue(new(() =>
-                        {
-                            LoadedState = ViewModelLoadedState.Error;
-                        }));
-                    }
-                    else
-                    {
-                        // TODO GH #239 switch back when using the new MD text block
-                        // _ = _queue.EnqueueAsync(() =>
-                        _queue.TryEnqueue(new(() =>
-                        {
-                            var result = (bool)lvm.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
-
-                            ViewModel = lvm;
-                            WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(result ? lvm : null));
-                            LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
-                        }));
-                    }
-                });
-            }
-            else
-            {
-                ViewModel = lvm;
-                WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(lvm));
-                LoadedState = ViewModelLoadedState.Loaded;
-            }
+            ViewModel = lvm;
         }
 
         // RegisterAll isn't AOT compatible
@@ -168,34 +106,6 @@ public sealed partial class ListPage : Page,
         if (ItemsList.SelectedItem is ListItemViewModel item)
         {
             ViewModel?.InvokeItemCommand.Execute(item);
-        }
-    }
-
-    private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is ListPage @this)
-        {
-            if (e.OldValue is ListViewModel old)
-            {
-                old.PropertyChanged -= @this.ViewModel_PropertyChanged;
-            }
-
-            if (e.NewValue is ListViewModel page)
-            {
-                page.PropertyChanged += @this.ViewModel_PropertyChanged;
-            }
-        }
-    }
-
-    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        var prop = e.PropertyName;
-        if (prop == nameof(ViewModel.ErrorMessage) && ViewModel != null)
-        {
-            if (!string.IsNullOrEmpty(ViewModel.ErrorMessage))
-            {
-                LoadedState = ViewModelLoadedState.Error;
-            }
         }
     }
 }

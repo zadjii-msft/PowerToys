@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Windows.System;
+using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
 namespace Microsoft.CmdPal.UI;
 
@@ -26,6 +28,8 @@ public sealed partial class ShellPage :
     IRecipient<HideDetailsMessage>,
     IRecipient<LaunchUriMessage>
 {
+    private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
+
     private readonly DrillInNavigationTransitionInfo _drillInNavigationTransitionInfo = new();
 
     private readonly SlideNavigationTransitionInfo _slideRightTransition = new() { Effect = SlideNavigationTransitionEffect.FromRight };
@@ -84,46 +88,53 @@ public sealed partial class ShellPage :
         // Or the command may be a stub. Future us problem.
         try
         {
-            if (command is IListPage listPage)
+            // This could be navigation to another page or invoking of a command, those are our two main branches of logic here.
+            // For different pages, we may construct different view models and navigate to the central frame to different pages,
+            // Otherwise the logic is mostly the same, outside the main page.
+            if (command is IPage page)
             {
                 _ = DispatcherQueue.TryEnqueue(() =>
                 {
                     // Also hide our details pane about here, if we had one
                     HideDetails();
-                    var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext());
-                    RootFrame.Navigate(typeof(ListPage), pageViewModel, _slideRightTransition);
+
+                    // Construct our ViewModel of the appropriate type and pass it the UI Thread context.
+                    PageViewModel pageViewModel = page switch
+                    {
+                        IListPage listPage => new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext()),
+                        IFormPage formsPage => new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext()),
+                        IMarkdownPage markdownPage => new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext()),
+                        _ => throw new NotSupportedException(),
+                    };
+
+                    // Kick off async loading of our ViewModel
+                    ViewModel.LoadPageViewModel(pageViewModel);
+
+                    // Navigate to the appropriate host page for that VM
+                    RootFrame.Navigate(
+                        page switch
+                        {
+                            IListPage => typeof(ListPage),
+                            IFormPage => typeof(FormsPage),
+                            IMarkdownPage => typeof(MarkdownPage),
+                            _ => throw new NotSupportedException(),
+                        },
+                        pageViewModel,
+                        _slideRightTransition);
+
+                    // Refocus on the Search for continual typing on the next search request
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+
                     if (command is MainListPage)
                     {
                         // todo bodgy
                         RootFrame.BackStack.Clear();
                     }
 
+                    // Set our page back in the ViewModel
+                    // Note, this shortcuts and fights a bit with our LoadPageViewModel above, but we want to better fast display and incrementally load anyway
+                    // We just need to reconcile our loading systems a bit more in the future.
                     ViewModel.CurrentPage = pageViewModel;
-                });
-            }
-            else if (command is IFormPage formsPage)
-            {
-                _ = DispatcherQueue.TryEnqueue(() =>
-                {
-                    // Also hide our details pane about here, if we had one
-                    HideDetails();
-                    var pageViewModel = new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext());
-                    RootFrame.Navigate(typeof(FormsPage), pageViewModel, _slideRightTransition);
-                    SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
-                    WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(pageViewModel));
-                });
-            }
-            else if (command is IMarkdownPage markdownPage)
-            {
-                _ = DispatcherQueue.TryEnqueue(() =>
-                {
-                    // Also hide our details pane about here, if we had one
-                    HideDetails();
-                    var pageViewModel = new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext());
-                    RootFrame.Navigate(typeof(MarkdownPage), pageViewModel, _slideRightTransition);
-                    SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
-                    WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(pageViewModel));
                 });
             }
             else if (command is IInvokableCommand invokable)

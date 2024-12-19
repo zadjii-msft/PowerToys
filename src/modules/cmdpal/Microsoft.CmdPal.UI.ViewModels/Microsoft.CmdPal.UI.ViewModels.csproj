@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="CommunityToolkit.Common" />
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="AdaptiveCards.Templating" />
     <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" GeneratePathProperty="true" />
