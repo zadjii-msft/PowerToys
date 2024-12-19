@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -8,7 +8,12 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Ext.Indexer.Native;
+using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Commands;
 
@@ -16,23 +21,32 @@ internal sealed partial class OpenWithCommand : InvokableCommand
 {
     private readonly IndexerItem _item;
 
-    [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern IntPtr ShellExecute(
-        IntPtr hwnd,
-        [MarshalAs(UnmanagedType.LPWStr)] string lpOperation,
-        [MarshalAs(UnmanagedType.LPWStr)] string lpFile,
-        [MarshalAs(UnmanagedType.LPWStr)] string lpParameters,
-        [MarshalAs(UnmanagedType.LPWStr)] string lpDirectory,
-        int nShowCmd);
-
-    private static bool OpenWith(string filename)
+    private static unsafe bool OpenWith(string filename)
     {
-        NativeHelpers.SHELLEXECUTEINFO info = new NativeHelpers.SHELLEXECUTEINFO { };
-        info.CbSize = Marshal.SizeOf(info);
-        info.LpVerb = "openas";
-        info.LpFile = filename;
-        info.NShow = NativeHelpers.SWSHOWNORMAL;
-        return NativeHelpers.ShellExecuteEx(ref info);
+        var filenamePtr = Marshal.StringToHGlobalUni(filename);
+        var verbPtr = Marshal.StringToHGlobalUni("openas");
+
+        try
+        {
+            var filenamePCWSTR = new PCWSTR((char*)filenamePtr);
+            var verbPCWSTR = new PCWSTR((char*)verbPtr);
+
+            var info = new SHELLEXECUTEINFOW
+            {
+                cbSize = (uint)Marshal.SizeOf<SHELLEXECUTEINFOW>(),
+                lpVerb = verbPCWSTR,
+                lpFile = filenamePCWSTR,
+                nShow = (int)SHOW_WINDOW_CMD.SW_SHOWNORMAL,
+                fMask = NativeHelpers.SEEMASKINVOKEIDLIST,
+            };
+
+            return PInvoke.ShellExecuteEx(ref info);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(filenamePtr);
+            Marshal.FreeHGlobal(verbPtr);
+        }
     }
 
     internal OpenWithCommand(IndexerItem item)
@@ -44,21 +58,7 @@ internal sealed partial class OpenWithCommand : InvokableCommand
 
     public override CommandResult Invoke()
     {
-        using (var process = new Process())
-        {
-            process.StartInfo.FileName = _item.FullPath;
-            process.StartInfo.UseShellExecute = true;
-            process.StartInfo.Verb = "openas";
-
-            try
-            {
-                process.Start();
-            }
-            catch (Win32Exception /*ex*/)
-            {
-                // Log.Exception($"Unable to open {path}: {ex.Message}", ex, MethodBase.GetCurrentMethod().DeclaringType);
-            }
-        }
+        OpenWith(_item.FullPath);
 
         return CommandResult.GoHome();
     }

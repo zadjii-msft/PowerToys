@@ -6,6 +6,8 @@ using System;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
 using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
+using Windows.Win32;
+using Windows.Win32.System.Com;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 
@@ -27,13 +29,7 @@ public static class DataSourceManager
 
     private static bool InitializeDataSource()
     {
-        var hr = NativeHelpers.CoCreateInstance(
-            CLSIDCollatorDataSource,
-            null,
-            0x1, // CLSCTX_INPROC_SERVER
-            typeof(IDBInitialize).GUID,
-            out var dataSourceObj);
-
+        var hr = PInvoke.CoCreateInstance(CLSIDCollatorDataSource, null, CLSCTX.CLSCTX_INPROC_SERVER, typeof(IDBInitialize).GUID, out var dataSourceObj);
         if (hr != 0)
         {
             Logger.LogError("CoCreateInstance failed: " + hr);
@@ -47,7 +43,7 @@ public static class DataSourceManager
         }
 
         _dataSource = (IDBInitialize)dataSourceObj;
-        hr = _dataSource.Initialize();
+        hr = (global::Windows.Win32.Foundation.HRESULT)_dataSource.Initialize();
         if (hr != 0)
         {
             Logger.LogError("DB Initialize failed: " + hr);

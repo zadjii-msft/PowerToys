@@ -11,6 +11,7 @@ using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Utils;
 using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
+using Windows.Win32;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 
@@ -332,7 +333,7 @@ internal sealed class SearchQuery : IDisposable
             var res = commandText.SetCommandText(ref dbGuidDefault, queryStr);
             if (res != 0)
             {
-                var err = NativeHelpers.GetErrorInfo(0, out var errorInfo);
+                var err = PInvoke.GetErrorInfo(0, out var errorInfo);
                 if (err == 0 && errorInfo != null)
                 {
                     errorInfo.GetDescription(out var description);

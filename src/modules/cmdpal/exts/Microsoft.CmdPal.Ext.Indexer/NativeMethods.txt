@@ -1,0 +1,4 @@
+SHOW_WINDOW_CMD
+CoCreateInstance
+GetErrorInfo
+ShellExecuteEx
