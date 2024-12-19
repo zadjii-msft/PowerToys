@@ -129,10 +129,8 @@ public sealed partial class ShellPage :
                         RootFrame.BackStack.Clear();
                     }
 
-                    // Set our page back in the ViewModel
-                    // Note, this shortcuts and fights a bit with our LoadPageViewModel above, but we want to better fast display and incrementally load anyway
-                    // We just need to reconcile our loading systems a bit more in the future.
-                    ViewModel.CurrentPage = pageViewModel;
+                    // Note: Originally we set our page back in the ViewModel here, but that now happens in response to the Frame navigating triggered from the above
+                    // See RootFrame_Navigated event handler.
                 });
             }
             else if (command is IInvokableCommand invokable)
@@ -219,7 +217,19 @@ public sealed partial class ShellPage :
     private void GoBack()
     {
         HideDetails();
+
+        // Note: That we restore the VM state below in RootFrame_Navigated call back after this occurs.
+        // In the future, we may want to manage the back stack ourselves vs. relying on Frame
+        // We could replace Frame with a ContentPresenter, but then have to manage transition animations ourselves.
+        // However, then we have more fine grained control on the back stack, managing the VM cache, and not
+        // having that all be a black box, though then we wouldn't cache the XAML page itself, but sometimes that is a drawback.
+        // However, we do a good job here, see ForwardStack.Clear below, and BackStack.Clear above about managing that.
         RootFrame.GoBack();
+
+        // Don't store pages we're navigating away from in the Frame cache
+        // TODO: In the future we probably want a short cache (3-5?) of recent VMs in case the user re-navigates
+        // back to a recent page they visited (like the Pokedex) so we don't have to reload it from  scratch.
+        // That'd be retrieved as we re-navigate in the PerformCommandMessage logic above
         RootFrame.ForwardStack.Clear();
         SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
     }
@@ -235,4 +245,17 @@ public sealed partial class ShellPage :
     }
 
     private void BackButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e) => WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
+
+    private void RootFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        // This listens to the root frame to ensure that we also track the content's page VM as well that we passed as a parameter.
+        // This is currently used for both forward and backward navigation.
+        // As when we go back that we restore ourselves to the proper state within our VM
+        if (e.Parameter is PageViewModel page)
+        {
+            // Note, this shortcuts and fights a bit with our LoadPageViewModel above, but we want to better fast display and incrementally load anyway
+            // We just need to reconcile our loading systems a bit more in the future.
+            ViewModel.CurrentPage = page;
+        }
+    }
 }

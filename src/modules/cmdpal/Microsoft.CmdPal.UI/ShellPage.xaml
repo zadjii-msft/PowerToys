@@ -144,7 +144,10 @@
                     <ColumnDefinition x:Name="DetailsColumn" Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <Frame Name="RootFrame" IsNavigationStackEnabled="True" />
+                <Frame
+                    Name="RootFrame"
+                    IsNavigationStackEnabled="True"
+                    Navigated="RootFrame_Navigated" />
 
                 <Grid
                     x:Name="DetailsContent"
@@ -209,7 +212,9 @@
                 </TextBlock>
             </ScrollView>
         </Grid>
+
         <cpcontrols:ActionBar Grid.Row="1" CurrentPageViewModel="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />
+
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
 
