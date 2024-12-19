@@ -167,6 +167,8 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
             TaskCreationOptions.None,
             Scheduler);
     }
+
+    public override string ToString() => $"{Title} ViewModel";
 }
 
 public interface IPageContext
