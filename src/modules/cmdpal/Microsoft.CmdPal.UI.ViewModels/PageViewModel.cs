@@ -65,7 +65,15 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
             return Task.FromResult(false);
         }
 
-        IsInitialized = true;
+        // Notify we're done back on the UI Thread.
+        Task.Factory.StartNew(
+            () =>
+            {
+                IsInitialized = true;
+            },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            Scheduler);
         return Task.FromResult(true);
     }
 

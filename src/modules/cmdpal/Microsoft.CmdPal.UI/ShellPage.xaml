@@ -19,6 +19,10 @@
                 EmptyValue="Collapsed"
                 NotEmptyValue="Visible" />
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <converters:BoolToVisibilityConverter
+                x:Key="BoolToInvertedVisibilityConverter"
+                FalseValue="Visible"
+                TrueValue="Collapsed" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -43,6 +47,7 @@
             BorderThickness="0,1,0,1">
 
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -52,18 +57,21 @@
             </Grid.ColumnDefinitions>
 
             <ProgressBar
+                Grid.ColumnSpan="2"
                 VerticalAlignment="Top"
                 IsIndeterminate="True"
-                Visibility="{x:Bind ViewModel.CurrentPage.IsLoading, Mode=OneWay}" />
+                Visibility="{x:Bind ViewModel.CurrentPage.IsInitialized, Converter={StaticResource BoolToInvertedVisibilityConverter}, Mode=OneWay}" />
 
             <Frame
                 Name="RootFrame"
+                Grid.Row="1"
                 Grid.Column="0"
                 IsNavigationStackEnabled="True" />
 
             <!--  TODO: It may make sense for Details to be its own component as well for better encapsulation of concerns  -->
             <Grid
                 x:Name="DetailsContent"
+                Grid.Row="1"
                 Grid.Column="1"
                 Padding="8"
                 Background="{ThemeResource LayerFillColorDefaultBrush}"
@@ -108,7 +116,7 @@
             <!--  /DetailsContent  -->
 
             <ScrollView
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.ColumnSpan="2"
                 MaxHeight="120"
                 Background="{ThemeResource SystemControlErrorBackgroundColor}"
