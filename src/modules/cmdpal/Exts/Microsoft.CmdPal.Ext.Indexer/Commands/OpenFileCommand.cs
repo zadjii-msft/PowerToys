@@ -5,6 +5,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using Microsoft.CmdPal.Ext.Indexer.Data;
+using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Commands;
@@ -31,9 +32,9 @@ internal sealed partial class OpenFileCommand : InvokableCommand
             {
                 process.Start();
             }
-            catch (Win32Exception /*ex*/)
+            catch (Win32Exception ex)
             {
-                // Log.Exception($"Unable to open {path}: {ex.Message}", ex, MethodBase.GetCurrentMethod().DeclaringType);
+                Logger.LogError($"Unable to open {_item.FullPath}", ex);
             }
         }
 
