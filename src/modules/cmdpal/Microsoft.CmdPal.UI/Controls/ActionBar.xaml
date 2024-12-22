@@ -117,7 +117,7 @@
                     <TextBlock
                         VerticalAlignment="Center"
                         Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="{x:Bind ViewModel.SecondaryAction.Name, Mode=OneWay}" />
+                        Text="{x:Bind ViewModel.SecondaryAction.Title, Mode=OneWay}" />
                     <StackPanel Orientation="Horizontal" Spacing="2">
                         <Border
                             Padding="4,2,4,2"
