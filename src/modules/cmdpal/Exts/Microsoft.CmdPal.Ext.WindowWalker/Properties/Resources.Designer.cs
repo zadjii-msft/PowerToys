@@ -106,6 +106,15 @@ namespace Microsoft.CmdPal.Ext.WindowWalker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current.
+        /// </summary>
+        public static string windowwalker_CurrentDesktopTag {
+            get {
+                return ResourceManager.GetString("windowwalker_CurrentDesktopTag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Desktop.
         /// </summary>
         public static string windowwalker_Desktop {
@@ -381,6 +390,24 @@ namespace Microsoft.CmdPal.Ext.WindowWalker.Properties {
         public static string windowwalker_SettingTagPid {
             get {
                 return ResourceManager.GetString("windowwalker_SettingTagPid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string windowwalker_VirtualDesktopsCommandName {
+            get {
+                return ResourceManager.GetString("windowwalker_VirtualDesktopsCommandName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Switch Virtual Desktops.
+        /// </summary>
+        public static string windowwalker_VirtualDesktopsCommandTitle {
+            get {
+                return ResourceManager.GetString("windowwalker_VirtualDesktopsCommandTitle", resourceCulture);
             }
         }
     }
