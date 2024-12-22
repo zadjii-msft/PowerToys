@@ -10,6 +10,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     
+    <OutputPath Condition="'$(CommandPaletteBranding)'=='Release'">$(SolutionDir)$(Platform)\$(Configuration)\WinUI3Apps\CmdPalRelease</OutputPath>
+    <OutputPath Condition="'$(CommandPaletteBranding)'=='Preview'">$(SolutionDir)$(Platform)\$(Configuration)\WinUI3Apps\CmdPalPreview</OutputPath>
+    <OutputPath Condition="'$(CommandPaletteBranding)'=='Canary'">$(SolutionDir)$(Platform)\$(Configuration)\WinUI3Apps\CmdPalCanary</OutputPath>
     <OutputPath Condition="'$(CommandPaletteBranding)'=='' or '$(CommandPaletteBranding)'=='Dev'">$(SolutionDir)$(Platform)\$(Configuration)\WinUI3Apps\CmdPalDev</OutputPath>
     <OutputPath Condition="'$(CommandPaletteBranding)'!='' and '$(CommandPaletteBranding)'!='Dev'">$(SolutionDir)$(Platform)\$(Configuration)\WinUI3Apps\CmdPal</OutputPath>
 
