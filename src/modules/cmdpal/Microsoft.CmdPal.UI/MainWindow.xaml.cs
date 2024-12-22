@@ -5,6 +5,7 @@
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Common.Services;
+using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Composition;
@@ -41,6 +42,7 @@ public sealed partial class MainWindow : Window,
         InitializeComponent();
 
         _hwnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
+        CommandPaletteHost.Instance.SetHostHwnd((ulong)_hwnd.Value);
 
         PositionCentered();
         SetAcrylic();

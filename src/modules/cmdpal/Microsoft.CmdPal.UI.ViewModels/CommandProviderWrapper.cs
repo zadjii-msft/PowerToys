@@ -2,8 +2,10 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -24,6 +26,10 @@ public sealed class CommandProviderWrapper
     public CommandProviderWrapper(ICommandProvider provider)
     {
         _commandProvider = provider;
+
+        // Hook the extension back into us
+        _commandProvider.InitializeWithHost(CommandPaletteHost.Instance);
+
         isValid = true;
     }
 
@@ -43,6 +49,10 @@ public sealed class CommandProviderWrapper
         }
 
         _commandProvider = provider;
+
+        // Hook the extension back into us
+        _commandProvider.InitializeWithHost(CommandPaletteHost.Instance);
+
         isValid = true;
     }
 
