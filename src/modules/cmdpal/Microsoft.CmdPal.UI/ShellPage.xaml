@@ -97,6 +97,26 @@
                 <!--  /DetailsContent  -->
             </Grid>
         </Grid>
+
+        <!--
+        Horrifying: You may ask yourself - why is there a Background on this InfoBar? 
+        
+        Well, as it turns out, the Informational InfoBar has a transparent 
+        background. It just cannot be bothered. So, we need to manually give 
+        it one to actually obscure the text beneath it. 
+        -->
+        <InfoBar 
+            Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
+            Margin="16,8,16,8"
+            Grid.Row="0" 
+            Severity="Informational" 
+            VerticalAlignment="Bottom" 
+            IsOpen="True" 
+            HorizontalAlignment="Stretch" 
+            Message="This is a test of the emergency broadcast system">
+            
+        </InfoBar>
+        
         <cpcontrols:ActionBar Grid.Row="1" CurrentPageViewModel="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />
 
         <VisualStateManager.VisualStateGroups>
