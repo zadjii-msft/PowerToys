@@ -28,6 +28,9 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     [ObservableProperty]
     public partial string Filter { get; set; } = string.Empty;
 
+    [ObservableProperty]
+    public partial CommandPaletteHost ExtensionHost { get; private set; }
+
     // These are properties that are "observable" from the extension object
     // itself, in the sense that they get raised by PropChanged events from the
     // extension. However, we don't want to actually make them
@@ -42,12 +45,13 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
 
     public IconDataType Icon { get; private set; } = new(string.Empty);
 
-    public PageViewModel(IPage model, TaskScheduler scheduler)
+    public PageViewModel(IPage model, TaskScheduler scheduler, CommandPaletteHost extensionHost)
         : base(null)
     {
         _pageModel = new(model);
         Scheduler = scheduler;
         PageContext = this;
+        ExtensionHost = extensionHost;
     }
 
     //// Run on background thread from ListPage.xaml.cs

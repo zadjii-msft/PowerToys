@@ -3,110 +3,40 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-/// <summary>
-/// Abstraction of a top-level command. Currently owns just a live ICommandItem
-/// from an extension (or in-proc command provider), but in the future will
-/// also support stub top-level items.
-/// </summary>
-public partial class TopLevelCommandWrapper : ListItem
+public partial class TopLevelCommandWrapper : ICommand
 {
-    public ExtensionObject<ICommandItem> Model { get; }
+    private readonly ExtensionObject<ICommand> _command;
 
-    private readonly bool _isFallback;
+    public event TypedEventHandler<object, PropChangedEventArgs>? PropChanged;
+
+    public string Name { get; private set; } = string.Empty;
 
     public string Id { get; private set; } = string.Empty;
 
-    public TopLevelCommandWrapper(ExtensionObject<ICommandItem> commandItem, bool isFallback)
-        : base(commandItem.Unsafe?.Command ?? new NoOpCommand())
+    public IconDataType Icon { get; private set; } = new(string.Empty);
+
+    public ICommand Command => _command.Unsafe!;
+
+    public CommandPaletteHost? ExtensionHost { get; set; }
+
+    public TopLevelCommandWrapper(ICommand command)
     {
-        _isFallback = isFallback;
-
-        // TODO: In reality, we should do an async fetch when we're created
-        // from an extension object. Probably have an
-        // `static async Task<TopLevelCommandWrapper> FromExtension(ExtensionObject<ICommandItem>)`
-        // or a
-        // `async Task PromoteStub(ExtensionObject<ICommandItem>)`
-        Model = commandItem;
-        try
-        {
-            var model = Model.Unsafe;
-            if (model == null)
-            {
-                return;
-            }
-
-            Id = model.Command?.Id ?? string.Empty;
-
-            Title = model.Title;
-            Subtitle = model.Subtitle;
-            Icon = new(model.Icon.Icon);
-            MoreCommands = model.MoreCommands;
-
-            model.PropChanged += Model_PropChanged;
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine(ex);
-        }
+        _command = new(command);
     }
 
-    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    public void UnsafeInitializeProperties()
     {
-        try
-        {
-            var propertyName = args.PropertyName;
-            var model = Model.Unsafe;
-            if (model == null)
-            {
-                return; // throw?
-            }
+        var model = _command.Unsafe!;
 
-            switch (propertyName)
-            {
-                case nameof(Title):
-                    this.Title = model.Title;
-                    break;
-                case nameof(Subtitle):
-                    this.Subtitle = model.Subtitle;
-                    break;
-                case nameof(Icon):
-                    var listIcon = model.Icon;
-                    Icon = model.Icon;
-                    break;
+        Name = model.Name;
+        Id = model.Id;
+        Icon = model.Icon;
 
-                    // TODO! MoreCommands array, which needs to also raise HasMoreCommands
-            }
-        }
-        catch
-        {
-        }
-    }
-
-    public void TryUpdateFallbackText(string newQuery)
-    {
-        if (!_isFallback)
-        {
-            return;
-        }
-
-        try
-        {
-            _ = Task.Run(() =>
-            {
-                var model = Model.Unsafe;
-                if (model is IFallbackCommandItem fallback)
-                {
-                    fallback.FallbackHandler.UpdateQuery(newQuery);
-                }
-            });
-        }
-        catch (Exception)
-        {
-        }
+        model.PropChanged += this.PropChanged;
     }
 }

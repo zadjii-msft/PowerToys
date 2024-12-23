@@ -4,11 +4,11 @@
 
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Windows.System;
 
@@ -17,8 +17,7 @@ namespace Microsoft.CmdPal.UI;
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
-public sealed partial class ShellPage :
-    Page,
+public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
     IRecipient<NavigateBackMessage>,
     IRecipient<PerformCommandMessage>,
     IRecipient<ShowDetailsMessage>,
@@ -77,6 +76,24 @@ public sealed partial class ShellPage :
         // Or the command may be a stub. Future us problem.
         try
         {
+            var host = ViewModel.CurrentPage?.ExtensionHost ?? CommandPaletteHost.Instance;
+
+            if (command is TopLevelCommandWrapper wrapper)
+            {
+                var tlc = wrapper;
+                command = wrapper.Command;
+                host = tlc.ExtensionHost != null ? tlc.ExtensionHost! : host;
+#if DEBUG
+                if (tlc.ExtensionHost?.Extension != null)
+                {
+                    host.ProcessLogMessage(new LogMessage()
+                    {
+                        Message = $"Activated top-level command from {tlc.ExtensionHost.Extension.ExtensionDisplayName}",
+                    });
+                }
+#endif
+            }
+
             if (command is IListPage listPage)
             {
                 _ = DispatcherQueue.TryEnqueue(() =>
@@ -84,7 +101,7 @@ public sealed partial class ShellPage :
                     // Also hide our details pane about here, if we had one
                     HideDetails();
                     var isMainPage = command is MainListPage;
-                    var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext())
+                    var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext(), host)
                     {
                         IsNested = !isMainPage,
                     };
@@ -105,7 +122,7 @@ public sealed partial class ShellPage :
                 {
                     // Also hide our details pane about here, if we had one
                     HideDetails();
-                    var pageViewModel = new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext());
+                    var pageViewModel = new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext(), host);
                     RootFrame.Navigate(typeof(FormsPage), pageViewModel, _slideRightTransition);
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
                     WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(pageViewModel));
@@ -117,7 +134,7 @@ public sealed partial class ShellPage :
                 {
                     // Also hide our details pane about here, if we had one
                     HideDetails();
-                    var pageViewModel = new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext());
+                    var pageViewModel = new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext(), host);
                     RootFrame.Navigate(typeof(MarkdownPage), pageViewModel, _slideRightTransition);
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
                     WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(pageViewModel));

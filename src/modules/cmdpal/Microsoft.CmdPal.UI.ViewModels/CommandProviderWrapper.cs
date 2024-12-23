@@ -27,6 +27,8 @@ public sealed class CommandProviderWrapper
 
     public IExtensionWrapper? Extension => extensionWrapper;
 
+    public CommandPaletteHost ExtensionHost { get; private set; }
+
     public CommandProviderWrapper(ICommandProvider provider)
     {
         // This ctor is only used for in-proc builtin commands. So the Unsafe!
@@ -34,7 +36,8 @@ public sealed class CommandProviderWrapper
         _commandProvider = new(provider);
 
         // Hook the extension back into us
-        _commandProvider.Unsafe!.InitializeWithHost(CommandPaletteHost.Instance);
+        ExtensionHost = CommandPaletteHost.Instance;
+        _commandProvider.Unsafe!.InitializeWithHost(ExtensionHost);
 
         isValid = true;
     }
@@ -42,6 +45,7 @@ public sealed class CommandProviderWrapper
     public CommandProviderWrapper(IExtensionWrapper extension)
     {
         extensionWrapper = extension;
+        ExtensionHost = new CommandPaletteHost(extension);
         if (!extensionWrapper.IsRunning())
         {
             throw new ArgumentException("You forgot to start the extension. This is a coding error - make sure to call StartExtensionAsync");
@@ -61,8 +65,7 @@ public sealed class CommandProviderWrapper
             var model = _commandProvider.Unsafe!;
 
             // Hook the extension back into us
-            var host = new CommandPaletteHost(extension);
-            model.InitializeWithHost(host);
+            model.InitializeWithHost(ExtensionHost);
 
             DisplayName = model.DisplayName;
 

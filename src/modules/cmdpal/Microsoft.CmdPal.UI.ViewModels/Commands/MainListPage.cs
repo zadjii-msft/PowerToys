@@ -20,7 +20,7 @@ public partial class MainListPage : DynamicListPage
 {
     private readonly IServiceProvider _serviceProvider;
 
-    private readonly ObservableCollection<TopLevelCommandWrapper> _commands;
+    private readonly ObservableCollection<TopLevelCommandItemWrapper> _commands;
 
     private IEnumerable<IListItem>? _filteredItems;
 

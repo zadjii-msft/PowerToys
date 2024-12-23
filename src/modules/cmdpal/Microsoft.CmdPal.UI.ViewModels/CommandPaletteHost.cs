@@ -28,6 +28,8 @@ public sealed partial class CommandPaletteHost : IExtensionHost
 
     private readonly IExtensionWrapper? _source;
 
+    public IExtensionWrapper? Extension => _source;
+
     private CommandPaletteHost()
     {
     }
@@ -54,27 +56,32 @@ public sealed partial class CommandPaletteHost : IExtensionHost
 
         _ = Task.Run(() =>
         {
-            var vm = new LogMessageViewModel(message, _globalLogPageContext);
-            vm.SafeInitializePropertiesSynchronous();
-
-            if (_source != null)
-            {
-                vm.ExtensionPfn = _source.PackageFamilyName;
-            }
-
-            Task.Factory.StartNew(
-                () =>
-                {
-                    LogMessages.Add(vm);
-                },
-                CancellationToken.None,
-                TaskCreationOptions.None,
-                _globalLogPageContext.Scheduler);
+            ProcessLogMessage(message);
         });
 
         // We can't just make a LogMessageViewModel : ExtensionObjectViewModel
         // because we don't necessarily know the page context. Butts.
         return Task.CompletedTask.AsAsyncAction();
+    }
+
+    public void ProcessLogMessage(ILogMessage message)
+    {
+        var vm = new LogMessageViewModel(message, _globalLogPageContext);
+        vm.SafeInitializePropertiesSynchronous();
+
+        if (_source != null)
+        {
+            vm.ExtensionPfn = _source.PackageFamilyName;
+        }
+
+        Task.Factory.StartNew(
+            () =>
+            {
+                LogMessages.Add(vm);
+            },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            _globalLogPageContext.Scheduler);
     }
 
     public void SetHostHwnd(ulong hostHwnd)

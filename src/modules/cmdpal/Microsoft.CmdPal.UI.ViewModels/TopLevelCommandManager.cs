@@ -16,7 +16,7 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider) :
 {
     private IEnumerable<ICommandProvider>? _builtInCommands;
 
-    public ObservableCollection<TopLevelCommandWrapper> TopLevelCommands { get; set; } = [];
+    public ObservableCollection<TopLevelCommandItemWrapper> TopLevelCommands { get; set; } = [];
 
     [ObservableProperty]
     public partial bool IsLoading { get; private set; } = true;
@@ -40,12 +40,20 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider) :
         await commandProvider.LoadTopLevelCommands();
         foreach (var i in commandProvider.TopLevelItems)
         {
-            TopLevelCommands.Add(new(new(i), false));
+            TopLevelCommandItemWrapper wrapper = new(new(i), false)
+            {
+                ExtensionHost = commandProvider.ExtensionHost,
+            };
+            TopLevelCommands.Add(wrapper);
         }
 
         foreach (var i in commandProvider.FallbackItems)
         {
-            TopLevelCommands.Add(new(new(i), true));
+            TopLevelCommandItemWrapper wrapper = new(new(i), true)
+            {
+                ExtensionHost = commandProvider.ExtensionHost,
+            };
+            TopLevelCommands.Add(wrapper);
         }
     }
 
@@ -80,7 +88,7 @@ public partial class TopLevelCommandManager(IServiceProvider _serviceProvider) :
         return true;
     }
 
-    public TopLevelCommandWrapper? LookupCommand(string id)
+    public TopLevelCommandItemWrapper? LookupCommand(string id)
     {
         foreach (var command in TopLevelCommands)
         {
