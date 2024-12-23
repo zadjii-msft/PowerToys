@@ -12,13 +12,17 @@ namespace Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 /// <summary>
 /// Built-in Provider for a top-level command which can quit the application. Invokes the <see cref="QuitAction"/>, which sends a <see cref="QuitMessage"/>.
 /// </summary>
-public partial class QuitCommandProvider : CommandProvider
+public partial class BuiltInsCommandProvider : CommandProvider
 {
     private readonly QuitAction quitAction = new();
+    private readonly ReloadExtensionsAction reloadAction = new();
     private readonly LogMessagesPage logMessagesPage = new();
 
     public override ICommandItem[] TopLevelCommands() => [new CommandItem(logMessagesPage) { Title = "View log" }];
 
     public override IFallbackCommandItem[] FallbackCommands() =>
-        [new FallbackCommandItem(quitAction) { Subtitle = "Exit Command Palette" }];
+        [
+            new FallbackCommandItem(quitAction) { Subtitle = "Exit Command Palette" },
+            new FallbackCommandItem(reloadAction) { Subtitle = "Reload Command Palette extensions" },
+        ];
 }
