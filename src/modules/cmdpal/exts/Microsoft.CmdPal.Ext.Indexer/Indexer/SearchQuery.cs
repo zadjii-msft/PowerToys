@@ -12,7 +12,9 @@ using Microsoft.CmdPal.Ext.Indexer.Indexer.Utils;
 using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Windows.Win32;
+using Windows.Win32.System.Com;
 using Windows.Win32.System.Search;
+using Windows.Win32.UI.Shell.PropertiesSystem;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 
@@ -470,9 +472,9 @@ internal sealed class SearchQuery : IDisposable
             return 0;
         }
 
-        if (prop?.vValue.vt == (ushort)VarEnum.VT_UI4)
+        if (prop?.vValue.Anonymous.Anonymous.vt == VARENUM.VT_UI4)
         {
-            var value = prop?.vValue.unionValue.ulVal;
+            var value = prop?.vValue.Anonymous.Anonymous.Anonymous.ulVal;
             return (uint)value;
         }
 

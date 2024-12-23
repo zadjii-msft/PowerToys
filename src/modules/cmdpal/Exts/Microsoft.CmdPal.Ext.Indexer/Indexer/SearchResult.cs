@@ -7,6 +7,9 @@ using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Utils;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
+using Windows.Win32.System.Com;
+using Windows.Win32.System.Com.StructuredStorage;
+using Windows.Win32.UI.Shell.PropertiesSystem;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 
@@ -37,63 +40,26 @@ internal sealed class SearchResult
         }
     }
 
-    public static SearchResult Create(IPropertyStore propStore)
+    public static unsafe SearchResult Create(IPropertyStore propStore)
     {
-        var itemNameDisplay = default(PROPVARIANT);
-        var itemUrl = default(PROPVARIANT);
-        var kindText = default(PROPVARIANT);
-
         try
         {
-            // Get item name display
             var key = Constants.PKEYItemNameDisplay;
-            var hr = propStore.GetValue(ref key, out itemNameDisplay);
-            if (hr != 0)
-            {
-                Logger.LogError("Get item name display error: " + hr);
-                return null;
-            }
+            propStore.GetValue(&key, out var itemNameDisplay);
 
-            // Get item URL
             key = Constants.PKEYItemUrl;
-            hr = propStore.GetValue(ref key, out itemUrl);
-            if (hr != 0)
-            {
-                Logger.LogError("Get item URL error: " + hr);
-                return null;
-            }
+            propStore.GetValue(&key, out var itemUrl);
 
-            // Get kind text
             key = Constants.PKEYKindText;
-            hr = propStore.GetValue(ref key, out kindText);
-            if (hr != 0)
-            {
-                Logger.LogError("Get kind text error: " + hr);
-                return null;
-            }
+            propStore.GetValue(&key, out var kindText);
 
-            var isFolder = false;
-            if (kindText.vt == (ushort)VarEnum.VT_LPWSTR && kindText.unionValue.pwszVal != IntPtr.Zero)
-            {
-                var kindString = Marshal.PtrToStringUni(kindText.unionValue.pwszVal);
-                if (string.Equals(kindString, "Folder", StringComparison.OrdinalIgnoreCase))
-                {
-                    isFolder = true;
-                }
-            }
-
-            var filePath = Marshal.PtrToStringUni(itemUrl.unionValue.pwszVal);
-            if (filePath == null)
-            {
-                return null;
-            }
-
-            filePath = UrlToFilePathConverter.Convert(filePath);
+            var filePath = GetFilePath(ref itemUrl);
+            var isFolder = IsFoder(ref kindText);
 
             // Create the actual result object
             var searchResult = new SearchResult(
-                Marshal.PtrToStringUni(itemNameDisplay.unionValue.pwszVal),
-                Marshal.PtrToStringUni(itemUrl.unionValue.pwszVal),
+                GetStringFromPropVariant(ref itemNameDisplay),
+                GetStringFromPropVariant(ref itemUrl),
                 filePath,
                 isFolder);
 
@@ -104,11 +70,32 @@ internal sealed class SearchResult
             Logger.LogError("Failed to get property values from propStore.", ex);
             return null;
         }
-        finally
+    }
+
+    private static bool IsFoder(ref PROPVARIANT kindText)
+    {
+        var kindString = GetStringFromPropVariant(ref kindText);
+        return string.Equals(kindString, "Folder", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetFilePath(ref PROPVARIANT itemUrl)
+    {
+        var filePath = GetStringFromPropVariant(ref itemUrl);
+        filePath = UrlToFilePathConverter.Convert(filePath);
+        return filePath;
+    }
+
+    private static string GetStringFromPropVariant(ref PROPVARIANT propVariant)
+    {
+        if (propVariant.Anonymous.Anonymous.vt == VARENUM.VT_LPWSTR)
         {
-            itemNameDisplay.Dispose();
-            itemUrl.Dispose();
-            kindText.Dispose();
+            var pwszVal = propVariant.Anonymous.Anonymous.Anonymous.pwszVal;
+            if (pwszVal != null)
+            {
+                return pwszVal.ToString();
+            }
         }
+
+        return string.Empty;
     }
 }

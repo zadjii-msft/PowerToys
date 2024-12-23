@@ -4,11 +4,12 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
+using Windows.Win32.System.Com.StructuredStorage;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
 
 [StructLayout(LayoutKind.Sequential)]
-public struct DBPROP
+internal struct DBPROP
 {
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
     public uint dwPropertyID;
