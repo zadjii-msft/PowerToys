@@ -26,6 +26,8 @@ public sealed partial class CommandPaletteHost : IExtensionHost
 
     public static ObservableCollection<LogMessageViewModel> LogMessages { get; } = new();
 
+    public ObservableCollection<StatusMessageViewModel> StatusMessages { get; } = new();
+
     private readonly IExtensionWrapper? _source;
 
     public IExtensionWrapper? Extension => _source;
@@ -42,6 +44,12 @@ public sealed partial class CommandPaletteHost : IExtensionHost
     public IAsyncAction ShowStatus(IStatusMessage message)
     {
         Debug.WriteLine(message.Message);
+
+        _ = Task.Run(() =>
+        {
+            ProcessStatusMessage(message);
+        });
+
         return Task.CompletedTask.AsAsyncAction();
     }
 
@@ -78,6 +86,26 @@ public sealed partial class CommandPaletteHost : IExtensionHost
             () =>
             {
                 LogMessages.Add(vm);
+            },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            _globalLogPageContext.Scheduler);
+    }
+
+    public void ProcessStatusMessage(IStatusMessage message)
+    {
+        var vm = new StatusMessageViewModel(message, _globalLogPageContext);
+        vm.SafeInitializePropertiesSynchronous();
+
+        if (_source != null)
+        {
+            vm.ExtensionPfn = _source.PackageFamilyName;
+        }
+
+        Task.Factory.StartNew(
+            () =>
+            {
+                StatusMessages.Add(vm);
             },
             CancellationToken.None,
             TaskCreationOptions.None,

@@ -103,20 +103,27 @@
         
         Well, as it turns out, the Informational InfoBar has a transparent 
         background. It just cannot be bothered. So, we need to manually give 
-        it one to actually obscure the text beneath it. 
+        it one to actually obscure the text beneath it. And you can't just give
+        the infobar itself a Background, because then the other Severtiy's 
+        won't get colorized. 
+        
+        See https://github.com/microsoft/microsoft-ui-xaml/issues/5741
         -->
-        <InfoBar 
+        <StackPanel
             Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
             Margin="16,8,16,8"
-            Grid.Row="0" 
-            Severity="Informational" 
             VerticalAlignment="Bottom" 
-            IsOpen="True" 
             HorizontalAlignment="Stretch" 
-            Message="This is a test of the emergency broadcast system">
-            
-        </InfoBar>
-        
+            CornerRadius="{ThemeResource ControlCornerRadius}"
+            Grid.Row="0" >
+            <InfoBar 
+                Severity="Error" 
+                CornerRadius="{ThemeResource ControlCornerRadius}"
+                IsOpen="{x:Bind ViewModel.CurrentPage.HasStatusMessage, Mode=OneWay}" 
+                Message="{x:Bind ViewModel.CurrentPage.MostRecentStatusMessage.Message, Mode=OneWay}">
+            </InfoBar>
+        </StackPanel>
+
         <cpcontrols:ActionBar Grid.Row="1" CurrentPageViewModel="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />
 
         <VisualStateManager.VisualStateGroups>

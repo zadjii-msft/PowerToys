@@ -33,4 +33,23 @@ public class ExtensionHost
             }).Start();
         }
     }
+
+    public static void ShowStatus(IStatusMessage message)
+    {
+        // TODO this feels like bad async
+        if (Host != null)
+        {
+            // really just fire-and-forget
+            new Task(async () =>
+            {
+                try
+                {
+                    await Host.ShowStatus(message);
+                }
+                catch (Exception)
+                {
+                }
+            }).Start();
+        }
+    }
 }

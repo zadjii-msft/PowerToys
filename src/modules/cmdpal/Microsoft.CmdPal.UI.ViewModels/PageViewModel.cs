@@ -31,6 +31,12 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     [ObservableProperty]
     public partial CommandPaletteHost ExtensionHost { get; private set; }
 
+    public bool HasStatusMessage => MostRecentStatusMessage != null;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
+    public partial StatusMessageViewModel? MostRecentStatusMessage { get; private set; } = null;
+
     // These are properties that are "observable" from the extension object
     // itself, in the sense that they get raised by PropChanged events from the
     // extension. However, we don't want to actually make them
@@ -52,6 +58,27 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         Scheduler = scheduler;
         PageContext = this;
         ExtensionHost = extensionHost;
+
+        ExtensionHost.StatusMessages.CollectionChanged += StatusMessages_CollectionChanged;
+        UpdateHasStatusMessage();
+    }
+
+    private void StatusMessages_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        UpdateHasStatusMessage();
+    }
+
+    private void UpdateHasStatusMessage()
+    {
+        if (ExtensionHost.StatusMessages.Any())
+        {
+            var last = ExtensionHost.StatusMessages.Last();
+            MostRecentStatusMessage = last;
+        }
+        else
+        {
+            MostRecentStatusMessage = null;
+        }
     }
 
     //// Run on background thread from ListPage.xaml.cs
