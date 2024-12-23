@@ -17,7 +17,7 @@ public partial class LogMessagesPage : ListPage
         Name = "View log";
         Title = "Log";
         Icon = new("\uE8FD");
-        CommandPaletteHost.Instance.LogMessages.CollectionChanged += LogMessages_CollectionChanged;
+        CommandPaletteHost.LogMessages.CollectionChanged += LogMessages_CollectionChanged;
     }
 
     private void LogMessages_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -28,7 +28,11 @@ public partial class LogMessagesPage : ListPage
             {
                 if (item is LogMessageViewModel logMessageViewModel)
                 {
-                    var li = new ListItem(new NoOpCommand()) { Title = logMessageViewModel.Message };
+                    var li = new ListItem(new NoOpCommand())
+                    {
+                        Title = logMessageViewModel.Message,
+                        Subtitle = logMessageViewModel.ExtensionPfn,
+                    };
                     _listItems.Insert(0, li);
                 }
             }

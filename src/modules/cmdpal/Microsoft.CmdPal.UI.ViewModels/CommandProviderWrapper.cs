@@ -5,7 +5,7 @@
 using System.Diagnostics;
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
-using Windows.Foundation;
+using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -15,7 +15,7 @@ public sealed class CommandProviderWrapper
 
     private readonly bool isValid;
 
-    private readonly ICommandProvider _commandProvider;
+    private readonly ExtensionObject<ICommandProvider> _commandProvider;
 
     private readonly IExtensionWrapper? extensionWrapper;
 
@@ -23,12 +23,18 @@ public sealed class CommandProviderWrapper
 
     public IFallbackCommandItem[] FallbackItems { get; private set; } = [];
 
+    public string DisplayName { get; private set; } = string.Empty;
+
+    public IExtensionWrapper? Extension => extensionWrapper;
+
     public CommandProviderWrapper(ICommandProvider provider)
     {
-        _commandProvider = provider;
+        // This ctor is only used for in-proc builtin commands. So the Unsafe!
+        // calls are pretty dang safe actually.
+        _commandProvider = new(provider);
 
         // Hook the extension back into us
-        _commandProvider.InitializeWithHost(CommandPaletteHost.Instance);
+        _commandProvider.Unsafe!.InitializeWithHost(CommandPaletteHost.Instance);
 
         isValid = true;
     }
@@ -48,12 +54,26 @@ public sealed class CommandProviderWrapper
             throw new ArgumentException("extension didn't actually implement ICommandProvider");
         }
 
-        _commandProvider = provider;
+        _commandProvider = new(provider);
 
-        // Hook the extension back into us
-        _commandProvider.InitializeWithHost(CommandPaletteHost.Instance);
+        try
+        {
+            var model = _commandProvider.Unsafe!;
 
-        isValid = true;
+            // Hook the extension back into us
+            var host = new CommandPaletteHost(extension);
+            model.InitializeWithHost(host);
+
+            DisplayName = model.DisplayName;
+
+            isValid = true;
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine("Failed to initialize CommandProvider for extension.");
+            Debug.WriteLine($"Extension was {extensionWrapper!.PackageFamilyName}");
+            Debug.WriteLine(e);
+        }
     }
 
     public async Task LoadTopLevelCommands()
@@ -63,12 +83,26 @@ public sealed class CommandProviderWrapper
             return;
         }
 
-        var t = new Task<ICommandItem[]>(_commandProvider.TopLevelCommands);
-        t.Start();
-        var commands = await t.ConfigureAwait(false);
+        ICommandItem[]? commands = null;
+        IFallbackCommandItem[]? fallbacks = null;
 
-        // On a BG thread here
-        var fallbacks = _commandProvider.FallbackCommands();
+        try
+        {
+            var model = _commandProvider.Unsafe!;
+
+            var t = new Task<ICommandItem[]>(model.TopLevelCommands);
+            t.Start();
+            commands = await t.ConfigureAwait(false);
+
+            // On a BG thread here
+            fallbacks = model.FallbackCommands();
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine("Failed to load commands from extension");
+            Debug.WriteLine($"Extension was {extensionWrapper!.PackageFamilyName}");
+            Debug.WriteLine(e);
+        }
 
         if (commands != null)
         {

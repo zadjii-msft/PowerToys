@@ -4,6 +4,7 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
 using Windows.Foundation;
 
@@ -23,7 +24,18 @@ public sealed partial class CommandPaletteHost : IExtensionHost
 
     public string LanguageOverride => string.Empty;
 
-    public ObservableCollection<LogMessageViewModel> LogMessages { get; } = new();
+    public static ObservableCollection<LogMessageViewModel> LogMessages { get; } = new();
+
+    private readonly IExtensionWrapper? _source;
+
+    private CommandPaletteHost()
+    {
+    }
+
+    public CommandPaletteHost(IExtensionWrapper source)
+    {
+        _source = source;
+    }
 
     public IAsyncAction ShowStatus(IStatusMessage message)
     {
@@ -44,6 +56,11 @@ public sealed partial class CommandPaletteHost : IExtensionHost
         {
             var vm = new LogMessageViewModel(message, _globalLogPageContext);
             vm.SafeInitializePropertiesSynchronous();
+
+            if (_source != null)
+            {
+                vm.ExtensionPfn = _source.PackageFamilyName;
+            }
 
             Task.Factory.StartNew(
                 () =>
