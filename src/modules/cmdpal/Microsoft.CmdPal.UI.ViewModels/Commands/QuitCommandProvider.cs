@@ -4,6 +4,7 @@
 
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CmdPal.UI.ViewModels.Commands;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 
 namespace Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
@@ -14,8 +15,9 @@ namespace Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 public partial class QuitCommandProvider : CommandProvider
 {
     private readonly QuitAction quitAction = new();
+    private readonly LogMessagesPage logMessagesPage = new();
 
-    public override ICommandItem[] TopLevelCommands() => [];
+    public override ICommandItem[] TopLevelCommands() => [new CommandItem(logMessagesPage) { Title = "View log" }];
 
     public override IFallbackCommandItem[] FallbackCommands() =>
         [new FallbackCommandItem(quitAction) { Subtitle = "Exit Command Palette" }];
