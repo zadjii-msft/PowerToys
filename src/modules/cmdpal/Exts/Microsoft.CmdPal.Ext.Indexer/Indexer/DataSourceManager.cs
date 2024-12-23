@@ -8,10 +8,11 @@ using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Windows.Win32;
 using Windows.Win32.System.Com;
+using Windows.Win32.System.Search;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer;
 
-public static class DataSourceManager
+internal static class DataSourceManager
 {
     private static readonly Guid CLSIDCollatorDataSource = new("9E175B8B-F52A-11D8-B9A5-505054503030");
 
@@ -43,12 +44,7 @@ public static class DataSourceManager
         }
 
         _dataSource = (IDBInitialize)dataSourceObj;
-        hr = (global::Windows.Win32.Foundation.HRESULT)_dataSource.Initialize();
-        if (hr != 0)
-        {
-            Logger.LogError("DB Initialize failed: " + hr);
-            return false;
-        }
+        _dataSource.Initialize();
 
         return true;
     }

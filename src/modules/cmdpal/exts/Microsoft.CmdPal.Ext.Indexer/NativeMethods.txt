@@ -2,6 +2,9 @@ SHOW_WINDOW_CMD
 CoCreateInstance
 GetErrorInfo
 ICommandText
+IDBCreateCommand
+IDBCreateSession
+IDBInitialize
 IGetRow
 IPropertyStore
 ShellExecuteEx

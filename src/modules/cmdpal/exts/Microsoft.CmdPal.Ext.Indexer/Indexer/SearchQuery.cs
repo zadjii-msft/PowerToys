@@ -304,18 +304,18 @@ internal sealed class SearchQuery : IDisposable
         try
         {
             var session = (IDBCreateSession)DataSourceManager.GetDataSource();
-            var hr = session.CreateSession(null, typeof(IDBCreateCommand).GUID, out sessionPtr);
-            if (hr != 0 || sessionPtr == null)
+            session.CreateSession(null, typeof(IDBCreateCommand).GUID, out sessionPtr);
+            if (sessionPtr == null)
             {
-                Logger.LogError("CreateSession failed: " + hr);
+                Logger.LogError("CreateSession failed");
                 return null;
             }
 
             var createCommand = (IDBCreateCommand)sessionPtr;
-            hr = createCommand.CreateCommand(null, typeof(ICommandText).GUID, out commandPtr);
-            if (hr != 0 || commandPtr == null)
+            createCommand.CreateCommand(null, typeof(ICommandText).GUID, out commandPtr);
+            if (commandPtr == null)
             {
-                Logger.LogError("CreateCommand failed: " + hr);
+                Logger.LogError("CreateCommand failed");
                 return null;
             }
 
