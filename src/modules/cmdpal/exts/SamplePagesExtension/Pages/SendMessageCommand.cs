@@ -13,7 +13,16 @@ internal sealed partial class SendMessageCommand : InvokableCommand
 
     public override ICommandResult Invoke()
     {
-        var message = new StatusMessage() { Message = $"I am status message no.{sentMessages++}" };
+        var kind = MessageState.Info;
+        switch (sentMessages % 4)
+        {
+            case 0: kind = MessageState.Info; break;
+            case 1: kind = MessageState.Success; break;
+            case 2: kind = MessageState.Warning; break;
+            case 3: kind = MessageState.Error; break;
+        }
+
+        var message = new StatusMessage() { Message = $"I am status message no.{sentMessages++}", State = kind };
         ExtensionHost.ShowStatus(message);
         return CommandResult.KeepOpen();
     }

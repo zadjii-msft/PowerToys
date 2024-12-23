@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:cpcontrols="using:Microsoft.CmdPal.UI.Controls"
+    xmlns:cmdpalui="using:Microsoft.CmdPal.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:help="using:Microsoft.CmdPal.UI.Helpers"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,7 +19,9 @@
                 x:Key="StringNotEmptyToVisibilityConverter"
                 EmptyValue="Collapsed"
                 NotEmptyValue="Visible" />
+            
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <cmdpalui:MessageStateToSeverityConverter x:Key="MessageStateToSeverityConverter" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -117,7 +120,7 @@
             CornerRadius="{ThemeResource ControlCornerRadius}"
             Grid.Row="0" >
             <InfoBar 
-                Severity="Error" 
+                Severity="{x:Bind ViewModel.CurrentPage.MostRecentStatusMessage.State, Mode=OneWay, Converter={StaticResource MessageStateToSeverityConverter}}"
                 CornerRadius="{ThemeResource ControlCornerRadius}"
                 IsOpen="{x:Bind ViewModel.CurrentPage.HasStatusMessage, Mode=OneWay}" 
                 Message="{x:Bind ViewModel.CurrentPage.MostRecentStatusMessage.Message, Mode=OneWay}">
