@@ -11,4 +11,9 @@ namespace Microsoft.CmdPal.Ext.Indexer.Native;
 internal sealed class NativeHelpers
 {
     public const uint SEEMASKINVOKEIDLIST = 12;
+
+    internal static class OleDb
+    {
+        public static readonly Guid DbGuidDefault = new("C8B521FB-5CF3-11CE-ADE5-00AA0044773D");
+    }
 }

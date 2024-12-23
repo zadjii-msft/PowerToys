@@ -297,7 +297,7 @@ internal sealed class SearchQuery : IDisposable
         }
     }
 
-    private IRowset ExecuteCommand(string queryStr)
+    private unsafe IRowset ExecuteCommand(string queryStr)
     {
         object sessionPtr = null;
         object commandPtr = null;
@@ -327,26 +327,8 @@ internal sealed class SearchQuery : IDisposable
                 return null;
             }
 
-            Guid dbGuidDefault = new("C8B521FB-5CF3-11CE-ADE5-00AA0044773D");
-            var res = commandText.SetCommandText(ref dbGuidDefault, queryStr);
-            if (res != 0)
-            {
-                var err = PInvoke.GetErrorInfo(0, out var errorInfo);
-                if (err == 0 && errorInfo != null)
-                {
-                    errorInfo.GetDescription(out var description);
-                    Logger.LogError($"SetCommandText Error: {description}");
-                }
-
-                return null;
-            }
-
-            res = commandText.Execute(null, typeof(IRowset).GUID, 0, out var _, out var rowsetPointer);
-            if (res != 0)
-            {
-                Logger.LogError($"Execute Error: {res}");
-                return null;
-            }
+            commandText.SetCommandText(in NativeHelpers.OleDb.DbGuidDefault, queryStr);
+            commandText.Execute(null, typeof(IRowset).GUID, null, null, out var rowsetPointer);
 
             return rowsetPointer as IRowset;
         }

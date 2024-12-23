@@ -1,6 +1,7 @@
 SHOW_WINDOW_CMD
 CoCreateInstance
 GetErrorInfo
+ICommandText
 IGetRow
 IPropertyStore
 ShellExecuteEx
