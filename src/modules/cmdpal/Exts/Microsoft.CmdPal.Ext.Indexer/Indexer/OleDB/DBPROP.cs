@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.InteropServices;
-using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
 using Windows.Win32.System.Com.StructuredStorage;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;

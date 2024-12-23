@@ -7,7 +7,6 @@ using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
-using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Utils;
 using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;

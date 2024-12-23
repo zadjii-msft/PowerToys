@@ -3,9 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Runtime.InteropServices;
-using Microsoft.CmdPal.Ext.Indexer.Indexer.Propsys;
 using Microsoft.CmdPal.Ext.Indexer.Indexer.Utils;
+using Microsoft.CmdPal.Ext.Indexer.Native;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Windows.Win32.System.Com;
 using Windows.Win32.System.Com.StructuredStorage;
@@ -22,10 +21,6 @@ internal sealed class SearchResult
     public string LaunchUri { get; init; }
 
     public bool IsFolder { get; init; }
-
-    public SearchResult()
-    {
-    }
 
     public SearchResult(string name, string url, string filePath, bool isFolder)
     {
@@ -44,13 +39,13 @@ internal sealed class SearchResult
     {
         try
         {
-            var key = Constants.PKEYItemNameDisplay;
+            var key = NativeHelpers.PropertyKeys.PKEYItemNameDisplay;
             propStore.GetValue(&key, out var itemNameDisplay);
 
-            key = Constants.PKEYItemUrl;
+            key = NativeHelpers.PropertyKeys.PKEYItemUrl;
             propStore.GetValue(&key, out var itemUrl);
 
-            key = Constants.PKEYKindText;
+            key = NativeHelpers.PropertyKeys.PKEYKindText;
             propStore.GetValue(&key, out var kindText);
 
             var filePath = GetFilePath(ref itemUrl);
