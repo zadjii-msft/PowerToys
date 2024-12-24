@@ -21,7 +21,6 @@ internal sealed class SearchQuery : IDisposable
 {
     private readonly Lock _lockObject = new(); // Lock object for synchronization
     private readonly DBPROPIDSET dbPropIdSet;
-    private static readonly Guid IIDIRowsetInfo = new("0C733A55-2A1C-11CE-ADE5-00AA0044773D");
 
     private const uint QueryTimerThreshold = 85;
     private uint reuseWhereID;
@@ -367,7 +366,8 @@ internal sealed class SearchQuery : IDisposable
             var rowsetPtr = Marshal.GetIUnknownForObject(rowset);
 
             // Query for IRowsetInfo interface
-            var res = Marshal.QueryInterface(rowsetPtr, in IIDIRowsetInfo, out rowsetInfoPtr);
+            var rowsetInfoGuid = typeof(IRowsetInfo).GUID;
+            var res = Marshal.QueryInterface(rowsetPtr, in rowsetInfoGuid, out rowsetInfoPtr);
             if (res != 0)
             {
                 Logger.LogError($"Error getting IRowsetInfo interface: {res}");
