@@ -358,12 +358,13 @@ internal sealed class SearchQuery : IDisposable
             return null;
         }
 
+        var rowsetPtr = IntPtr.Zero;
         var rowsetInfoPtr = IntPtr.Zero;
 
         try
         {
             // Get the IUnknown pointer for the IRowset object
-            var rowsetPtr = Marshal.GetIUnknownForObject(rowset);
+            rowsetPtr = Marshal.GetIUnknownForObject(rowset);
 
             // Query for IRowsetInfo interface
             var rowsetInfoGuid = typeof(IRowsetInfo).GUID;
@@ -389,6 +390,12 @@ internal sealed class SearchQuery : IDisposable
             if (rowsetInfoPtr != IntPtr.Zero)
             {
                 Marshal.Release(rowsetInfoPtr); // Release the IRowsetInfo pointer
+            }
+
+            // Release the IUnknown pointer for the IRowset object
+            if (rowsetPtr != IntPtr.Zero)
+            {
+                Marshal.Release(rowsetPtr);
             }
         }
     }
