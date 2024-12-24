@@ -27,17 +27,17 @@ public interface IRowset
 
     [PreserveSig]
     int GetNextRows(
-       IntPtr hReserved,               // HCHAPTER hReserved
-       long lRowsOffset,               // DBROWOFFSET lRowsOffset
-       long cRows,                     // DBROWCOUNT cRows
-       out uint pcRowsObtained,        // DBCOUNTITEM *pcRowsObtained
-       out IntPtr prghRows);             // HROW **prghRows
+       IntPtr hReserved,
+       long lRowsOffset,
+       long cRows,
+       out uint pcRowsObtained,
+       out IntPtr prghRows);
 
     [PreserveSig]
     int ReleaseRows(
-        uint cRows,                                // DBCOUNTITEM cRows
-        [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] IntPtr[] rghRows, // HROW rghRows[]
-        IntPtr rgRowOptions,                       // DBROWOPTIONS rgRowOptions[] (can be null)
-        [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] uint[] rgRefCounts, // ULONG rgRefCounts[] (can be null)
+        uint cRows,
+        [In, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] IntPtr[] rghRows,
+        IntPtr rgRowOptions,
+        [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] uint[] rgRefCounts,
         [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] int[] rgRowStatus);
 }

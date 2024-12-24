@@ -69,7 +69,7 @@ internal sealed class SearchQuery : IDisposable
                 return;
             }
 
-            // Execute a synchronous query on file/mapi items to prime the index and keep that handle around
+            // Execute a synchronous query on file items to prime the index and keep that handle around
             PrimeIndexAndCacheWhereId();
         }
         catch (Exception ex)
