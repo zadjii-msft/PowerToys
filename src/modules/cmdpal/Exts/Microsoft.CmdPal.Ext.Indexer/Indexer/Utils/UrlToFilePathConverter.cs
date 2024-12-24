@@ -10,7 +10,7 @@ public class UrlToFilePathConverter
 {
     public static string Convert(string url)
     {
-        var result = url.Replace('/', '\\'); // replace all '/' to '\\'
+        var result = url.Replace('/', '\\'); // replace all '/' to '\'
 
         var fileProtocolString = "file:";
         var indexProtocolFound = url.IndexOf(fileProtocolString, StringComparison.CurrentCultureIgnoreCase);
