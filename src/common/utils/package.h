@@ -3,6 +3,8 @@
 #include <Windows.h>
 
 #include <exception>
+#include <filesystem>
+#include <regex>
 #include <string>
 
 #include <winrt/Windows.ApplicationModel.h>
@@ -57,7 +59,7 @@ namespace package {
         return false;
     }
 
-    inline bool RegisterSparsePackage(std::wstring externalLocation, std::wstring sparsePkgPath)
+    inline bool RegisterSparsePackage(const std::wstring& externalLocation, const std::wstring& sparsePkgPath)
     {
         using namespace winrt::Windows::Foundation;
         using namespace winrt::Windows::Management::Deployment;
@@ -108,5 +110,154 @@ namespace package {
 
             return false;
         }
+    }
+
+
+    //// Packages to unregister
+    //const std::vector<std::wstring> packagesToRemoveDisplayName{ { L"PowerRenameContextMenu" }, { L"ImageResizerContextMenu" }, { L"FileLocksmithContextMenu" }, { L"NewPlusContextMenu" } };
+
+    inline bool UnRegisterPackage(const std::wstring& pkgDisplayName)
+    {
+        using namespace winrt::Windows::Foundation;
+        using namespace winrt::Windows::Management::Deployment;
+
+        try
+        {
+            PackageManager packageManager;
+            const static auto packages = packageManager.FindPackages();
+
+            for (auto const& package : packages)
+            {
+                const auto& packageFullName = std::wstring{ package.Id().FullName() };
+
+                if (packageFullName.contains(pkgDisplayName))
+                {
+                    auto deploymentOperation{ packageManager.RemovePackageAsync(packageFullName) };
+                    deploymentOperation.get();
+
+                    // Check the status of the operation
+                    if (deploymentOperation.Status() == AsyncStatus::Error)
+                    {
+                        auto deploymentResult{ deploymentOperation.GetResults() };
+                        auto errorCode = deploymentOperation.ErrorCode();
+                        auto errorText = deploymentResult.ErrorText();
+
+                        Logger::error(L"Unregister {} package failed. ErrorCode: {}, ErrorText: {}", packageFullName, std::to_wstring(errorCode), errorText);
+                    }
+                    else if (deploymentOperation.Status() == AsyncStatus::Canceled)
+                    {
+                        Logger::error(L"Unregister {} package canceled.", packageFullName);
+                    }
+                    else if (deploymentOperation.Status() == AsyncStatus::Completed)
+                    {
+                        Logger::info(L"Unregister {} package completed.", packageFullName);
+                    }
+                    else
+                    {
+                        Logger::debug(L"Unregister {} package started.", packageFullName);
+                    }
+
+                    break;
+                }
+            }
+        }
+        catch (std::exception& e)
+        {
+            Logger::error("Exception thrown while trying to unregister package: {}", e.what());
+            return false;
+        }
+
+        return true;
+    }
+
+    inline std::vector<std::wstring> FindMsixFile(const std::wstring& directoryPath)
+    {
+        if (directoryPath.empty())
+        {
+            return {};
+        }
+
+        if (!std::filesystem::exists(directoryPath))
+        {
+            Logger::error(L"The directory '" + directoryPath + L"' does not exist.");
+        }
+
+        const std::regex pattern(R"(^.+\.(appx|msix|msixbundle)$)", std::regex_constants::icase);
+        std::vector<std::wstring> matchedFiles;
+
+        try
+        {
+            for (const auto& entry : std::filesystem::recursive_directory_iterator(directoryPath))
+            {
+                if (entry.is_regular_file())
+                {
+                    const auto& fileName = entry.path().filename().string();
+                    if (std::regex_match(fileName, pattern))
+                    {
+                        matchedFiles.push_back(entry.path());
+                        break;
+                    }
+                }
+            }
+        }
+        catch (const std::exception& ex)
+        {
+            Logger::error("An error occurred while searching for MSIX files: " + std::string(ex.what()));
+        }
+
+        return matchedFiles;
+    }
+
+    inline bool RegisterPackage(std::wstring pkgPath)
+    {
+        using namespace winrt::Windows::Foundation;
+        using namespace winrt::Windows::Management::Deployment;
+
+        try
+        {
+            Uri packageUri{ pkgPath };
+
+            PackageManager packageManager;
+
+            // Declare use of an external location
+            AddPackageOptions options;
+            options.ForceAppShutdown(true);
+
+            IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> deploymentOperation = packageManager.AddPackageByUriAsync(packageUri, options);
+            deploymentOperation.get();
+
+            // Check the status of the operation
+            if (deploymentOperation.Status() == AsyncStatus::Error)
+            {
+                auto deploymentResult{ deploymentOperation.GetResults() };
+                auto errorCode = deploymentOperation.ErrorCode();
+                auto errorText = deploymentResult.ErrorText();
+
+                Logger::error(L"Register {} package failed. ErrorCode: {}, ErrorText: {}", pkgPath, std::to_wstring(errorCode), errorText);
+                return false;
+            }
+            else if (deploymentOperation.Status() == AsyncStatus::Canceled)
+            {
+                Logger::error(L"Register {} package canceled.", pkgPath);
+                return false;
+            }
+            else if (deploymentOperation.Status() == AsyncStatus::Completed)
+            {
+                Logger::info(L"Register {} package completed.", pkgPath);
+            }
+            else
+            {
+                Logger::debug(L"Register {} package started.", pkgPath);
+            }
+
+        }
+        catch (std::exception& e)
+        {
+            Logger::error("Exception thrown while trying to register package: {}", e.what());
+
+            return false;
+        }
+
+        return true;
     }
 }

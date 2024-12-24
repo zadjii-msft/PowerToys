@@ -11,6 +11,7 @@
 #include "../../src/common/updating/installer.h"
 #include "../../src/common/version/version.h"
 #include "../../src/common/Telemetry/EtwTrace/EtwTrace.h"
+#include "../../src/common/utils/package.h"
 
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Foundation.h>
@@ -1199,46 +1200,12 @@ UINT __stdcall UnRegisterContextMenuPackagesCA(MSIHANDLE hInstall)
         // Packages to unregister
         const std::vector<std::wstring> packagesToRemoveDisplayName{ { L"PowerRenameContextMenu" }, { L"ImageResizerContextMenu" }, { L"FileLocksmithContextMenu" }, { L"NewPlusContextMenu" } };
 
-        PackageManager packageManager;
-
-        for (auto const& package : packageManager.FindPackages())
+        for (auto const& package : packagesToRemoveDisplayName)
         {
-            const auto& packageFullName = std::wstring{ package.Id().FullName() };
-
-            for (const auto& packageToRemove : packagesToRemoveDisplayName)
+            if (!package::UnRegisterPackage(package))
             {
-                if (packageFullName.contains(packageToRemove))
-                {
-                    auto deploymentOperation{ packageManager.RemovePackageAsync(packageFullName) };
-                    deploymentOperation.get();
-
-                    // Check the status of the operation
-                    if (deploymentOperation.Status() == AsyncStatus::Error)
-                    {
-                        auto deploymentResult{ deploymentOperation.GetResults() };
-                        auto errorCode = deploymentOperation.ErrorCode();
-                        auto errorText = deploymentResult.ErrorText();
-
-                        Logger::error(L"Unregister {} package failed. ErrorCode: {}, ErrorText: {}", packageFullName, std::to_wstring(errorCode), errorText);
-
-                        er = ERROR_INSTALL_FAILURE;
-                    }
-                    else if (deploymentOperation.Status() == AsyncStatus::Canceled)
-                    {
-                        Logger::error(L"Unregister {} package canceled.", packageFullName);
-
-                        er = ERROR_INSTALL_FAILURE;
-                    }
-                    else if (deploymentOperation.Status() == AsyncStatus::Completed)
-                    {
-                        Logger::info(L"Unregister {} package completed.", packageFullName);
-                    }
-                    else
-                    {
-                        Logger::debug(L"Unregister {} package started.", packageFullName);
-                    }
-                }
-
+                Logger::error(L"Failed to unregister package: " + package);
+                er = ERROR_INSTALL_FAILURE;
             }
         }
     }
