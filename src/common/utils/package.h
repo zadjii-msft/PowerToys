@@ -170,7 +170,7 @@ namespace package {
         return true;
     }
 
-    inline std::vector<std::wstring> FindMsixFile(const std::wstring& directoryPath)
+    inline std::vector<std::wstring> FindMsixFile(const std::wstring& directoryPath, bool recursive)
     {
         if (directoryPath.empty())
         {
@@ -187,15 +187,33 @@ namespace package {
 
         try
         {
-            for (const auto& entry : std::filesystem::recursive_directory_iterator(directoryPath))
+            if (recursive)
             {
-                if (entry.is_regular_file())
+                for (const auto& entry : std::filesystem::recursive_directory_iterator(directoryPath))
                 {
-                    const auto& fileName = entry.path().filename().string();
-                    if (std::regex_match(fileName, pattern))
+                    if (entry.is_regular_file())
                     {
-                        matchedFiles.push_back(entry.path());
-                        break;
+                        const auto& fileName = entry.path().filename().string();
+                        if (std::regex_match(fileName, pattern))
+                        {
+                            matchedFiles.push_back(entry.path());
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (const auto& entry : std::filesystem::directory_iterator(directoryPath))
+                {
+                    if (entry.is_regular_file())
+                    {
+                        const auto& fileName = entry.path().filename().string();
+                        if (std::regex_match(fileName, pattern))
+                        {
+                            matchedFiles.push_back(entry.path());
+                            break;
+                        }
                     }
                 }
             }
@@ -208,7 +226,7 @@ namespace package {
         return matchedFiles;
     }
 
-    inline bool RegisterPackage(std::wstring pkgPath)
+    inline bool RegisterPackage(std::wstring pkgPath, std::vector<std::wstring> dependencies)
     {
         using namespace winrt::Windows::Foundation;
         using namespace winrt::Windows::Management::Deployment;
@@ -220,10 +238,25 @@ namespace package {
             PackageManager packageManager;
 
             // Declare use of an external location
-            AddPackageOptions options;
-            options.ForceAppShutdown(true);
+            DeploymentOptions options = DeploymentOptions::ForceApplicationShutdown;
 
-            IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> deploymentOperation = packageManager.AddPackageByUriAsync(packageUri, options);
+            Collections::IVector<Uri> uris = winrt::single_threaded_vector<Uri>();
+            if (!dependencies.empty())
+            {
+                for (const auto& dependency : dependencies)
+                {
+                    try
+                    {
+                        uris.Append(Uri(dependency));
+                    }
+                    catch (const winrt::hresult_error& ex)
+                    {
+                        Logger::error(L"Error creating Uri for dependency: %s", ex.message().c_str());
+                    }
+                }
+            }
+
+            IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> deploymentOperation = packageManager.AddPackageAsync(packageUri, uris, options);
             deploymentOperation.get();
 
             // Check the status of the operation

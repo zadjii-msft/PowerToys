@@ -1185,6 +1185,49 @@ LExit:
     return WcaFinalize(er);
 }
 
+UINT __stdcall InstallCmdPalPackageCA(MSIHANDLE hInstall)
+{
+    using namespace winrt::Windows::Foundation;
+    using namespace winrt::Windows::Management::Deployment;
+
+    HRESULT hr = S_OK;
+    UINT er = ERROR_SUCCESS;
+    std::wstring installationFolder;
+
+    hr = WcaInitialize(hInstall, "InstallCmdPalPackage");
+    hr = getInstallFolder(hInstall, installationFolder);
+
+    try
+    {
+        MessageBox(NULL, installationFolder.c_str(), L"install dir Path", MB_OK);
+
+        auto msix = package::FindMsixFile(installationFolder + L"\\WinUI3Apps\\CmdPal\\", false);
+        auto dependencies = package::FindMsixFile(installationFolder + L"\\WinUI3Apps\\CmdPal\\Dependencies\\", true);
+
+        if (!msix.empty())
+        {
+            auto msixPath = msix[0];
+
+            if (!package::RegisterPackage(msixPath, dependencies))
+            {
+                Logger::error(L"Failed to install CmdPal package");
+                er = ERROR_INSTALL_FAILURE;
+            }
+        }
+    }
+    catch (std::exception& e)
+    {
+        std::string errorMessage{ "Exception thrown while trying to install CmdPal package: " };
+        errorMessage += e.what();
+        Logger::error(errorMessage);
+
+        er = ERROR_INSTALL_FAILURE;
+    }
+
+    er = er == ERROR_SUCCESS ? (SUCCEEDED(hr) ? ERROR_SUCCESS : ERROR_INSTALL_FAILURE) : er;
+    return WcaFinalize(er);
+}
+
 UINT __stdcall UnRegisterContextMenuPackagesCA(MSIHANDLE hInstall)
 {
     using namespace winrt::Windows::Foundation;
