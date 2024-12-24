@@ -8,15 +8,10 @@ using System.Runtime.InteropServices;
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
 
 [ComImport]
-[Guid("0C733A55-2A1C-11CE-ADE5-00AA0044773D")] // IID_IRowsetInfo
+[Guid("0C733A55-2A1C-11CE-ADE5-00AA0044773D")]
 [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 public interface IRowsetInfo
 {
-    // HRESULT GetProperties(
-    //     ULONG cPropertyIDSets,
-    //     const DBPROPIDSET rgPropertyIDSets[],
-    //     ULONG *pcPropertySets,
-    //     DBPROPSET **prgPropertySets);
     [PreserveSig]
     int GetProperties(
         uint cPropertyIDSets,
@@ -24,19 +19,12 @@ public interface IRowsetInfo
         out ulong pcPropertySets,
         out IntPtr prgPropertySets);
 
-    // HRESULT GetReferencedRowset(
-    //     DBORDINAL iOrdinal,
-    //     REFIID riid,
-    //     IUnknown **ppReferencedRowset);
     [PreserveSig]
     int GetReferencedRowset(
         uint iOrdinal,
         [In] ref Guid riid,
         [Out, MarshalAs(UnmanagedType.Interface)] out object ppReferencedRowset);
 
-    // HRESULT GetSpecification(
-    //     REFIID riid,
-    //     IUnknown **ppSpecification);
     [PreserveSig]
     int GetSpecification(
         [In] ref Guid riid,
