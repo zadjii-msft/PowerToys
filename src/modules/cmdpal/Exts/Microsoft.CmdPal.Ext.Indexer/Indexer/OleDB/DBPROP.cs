@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.InteropServices;
+using Windows.Win32.Storage.IndexServer;
 using Windows.Win32.System.Com.StructuredStorage;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
