@@ -12,7 +12,7 @@ internal sealed class QueryStringBuilder
     private const string Select = "SELECT";
     private const string Properties = "System.ItemUrl, System.ItemNameDisplay, path, System.Search.EntryID, System.Kind, System.KindText, System.Search.GatherTime, System.Search.QueryPropertyHits";
     private const string FromIndex = "FROM SystemIndex WHERE";
-    private const string ScopeFileConditions = " SCOPE='file:' AND SCOPE <> 'file://C:/users/tltay'";
+    private const string ScopeFileConditions = "SCOPE='file:'";
     private const string OrderConditions = "ORDER BY System.Search.Rank, System.DateModified, System.ItemNameDisplay DESC";
     private const string SelectQueryWithScope = Select + " " + Properties + " " + FromIndex + " (" + ScopeFileConditions + ")";
     private const string SelectQueryWithScopeAndOrderConditions = SelectQueryWithScope + " " + OrderConditions;
