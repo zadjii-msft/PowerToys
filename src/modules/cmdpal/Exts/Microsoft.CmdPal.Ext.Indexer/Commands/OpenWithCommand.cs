@@ -2,13 +2,10 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Ext.Indexer.Native;
-using Microsoft.CmdPal.Ext.Indexer.Utils;
+using Microsoft.CmdPal.Ext.Indexer.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -52,7 +49,7 @@ internal sealed partial class OpenWithCommand : InvokableCommand
     internal OpenWithCommand(IndexerItem item)
     {
         this._item = item;
-        this.Name = "Open with";
+        this.Name = Resources.Indexer_Command_OpenWith;
         this.Icon = new("\uE7AC");
     }
 

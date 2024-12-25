@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.CmdPal.Ext.Indexer.Data;
+using Microsoft.CmdPal.Ext.Indexer.Properties;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -18,7 +19,7 @@ internal sealed partial class ShowFileInFolderCommand : InvokableCommand
     internal ShowFileInFolderCommand(IndexerItem item)
     {
         this._item = item;
-        this.Name = "Show in folder";
+        this.Name = Resources.Indexer_Command_ShowInFolder;
         this.Icon = new("\uE838");
     }
 

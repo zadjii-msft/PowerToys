@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.CmdPal.Ext.Indexer.Properties;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -11,7 +12,7 @@ public partial class IndexerCommandsProvider : CommandProvider
 {
     public IndexerCommandsProvider()
     {
-        DisplayName = "Indexer Commands";
+        DisplayName = Resources.IndexerCommandsProvider_DisplayName;
     }
 
     public override ICommandItem[] TopLevelCommands()
@@ -19,8 +20,8 @@ public partial class IndexerCommandsProvider : CommandProvider
         return [
             new CommandItem(new IndexerPage())
             {
-                Title = "Indexer",
-                Subtitle = "Search indexed files",
+                Title = Resources.Indexer_Title,
+                Subtitle = Resources.Indexer_Subtitle,
             }
         ];
     }

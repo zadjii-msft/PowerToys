@@ -6,6 +6,7 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Ext.Indexer.Native;
+using Microsoft.CmdPal.Ext.Indexer.Properties;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Windows.Win32;
@@ -50,7 +51,7 @@ internal sealed partial class OpenPropertiesCommand : InvokableCommand
     internal OpenPropertiesCommand(IndexerItem item)
     {
         this._item = item;
-        this.Name = "Properties";
+        this.Name = Resources.Indexer_Command_OpenProperties;
         this.Icon = new("\uE90F");
     }
 

@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.CmdPal.Ext.Indexer.Data;
+using Microsoft.CmdPal.Ext.Indexer.Properties;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -18,7 +19,7 @@ internal sealed partial class OpenInConsoleCommand : InvokableCommand
     internal OpenInConsoleCommand(IndexerItem item)
     {
         this._item = item;
-        this.Name = "Open path in console";
+        this.Name = Resources.Indexer_Command_OpenPathInConsole;
         this.Icon = new("\uE756");
     }
 

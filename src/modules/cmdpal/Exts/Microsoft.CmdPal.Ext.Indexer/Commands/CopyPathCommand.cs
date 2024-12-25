@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Ext.Indexer.Data;
+using Microsoft.CmdPal.Ext.Indexer.Properties;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Windows.ApplicationModel.DataTransfer;
 
@@ -15,7 +16,7 @@ internal sealed partial class CopyPathCommand : InvokableCommand
     internal CopyPathCommand(IndexerItem item)
     {
         this._item = item;
-        this.Name = "Copy path";
+        this.Name = Resources.Indexer_Command_CopyPath;
         this.Icon = new("\uE8c8");
     }
 

@@ -5,6 +5,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using Microsoft.CmdPal.Ext.Indexer.Data;
+using Microsoft.CmdPal.Ext.Indexer.Properties;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -17,7 +18,7 @@ internal sealed partial class OpenFileCommand : InvokableCommand
     internal OpenFileCommand(IndexerItem item)
     {
         this._item = item;
-        this.Name = "Open";
+        this.Name = Resources.Indexer_Command_OpenFile;
         this.Icon = new("\uE8E5");
     }
 

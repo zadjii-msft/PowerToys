@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Ext.Indexer.Indexer;
+using Microsoft.CmdPal.Ext.Indexer.Properties;
 using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -27,8 +28,8 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
     public IndexerPage()
     {
         Icon = new("\ue729");
-        Name = "Indexer";
-        PlaceholderText = "Search for files and folders...";
+        Name = Resources.Indexer_Title;
+        PlaceholderText = Resources.Indexer_PlaceholderText;
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
