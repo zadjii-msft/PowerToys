@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <regex>
 #include <string>
+#include <optional>
 
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Foundation.h>
@@ -14,6 +15,11 @@
 #include "../logger/logger.h"
 
 namespace package {
+
+    using namespace winrt::Windows::Foundation;
+    using namespace winrt::Windows::ApplicationModel;
+    using namespace winrt::Windows::Management::Deployment;
+
     inline BOOL IsWin11OrGreater()
     {
         OSVERSIONINFOEX osvi{};
@@ -39,31 +45,30 @@ namespace package {
             dwlConditionMask);
     }
 
-    inline bool IsPackageRegistered(std::wstring packageDisplayName)
+    inline std::optional<Package> GetRegisteredPackage(std::wstring packageDisplayName)
     {
-        using namespace winrt::Windows::Foundation;
-        using namespace winrt::Windows::Management::Deployment;
-
         PackageManager packageManager;
 
-        for (auto const& package : packageManager.FindPackagesForUser({}))
+        for (const auto& package : packageManager.FindPackagesForUser({}))
         {
             const auto& packageFullName = std::wstring{ package.Id().FullName() };
 
             if (packageFullName.contains(packageDisplayName))
             {
-                return true;
+                return { package };
             }
         }
 
-        return false;
+        return {};
+    }
+
+    inline bool IsPackageRegistered(std::wstring packageDisplayName)
+    {
+        return GetRegisteredPackage(packageDisplayName).has_value();
     }
 
     inline bool RegisterSparsePackage(const std::wstring& externalLocation, const std::wstring& sparsePkgPath)
     {
-        using namespace winrt::Windows::Foundation;
-        using namespace winrt::Windows::Management::Deployment;
-
         try
         {
             Uri externalUri{ externalLocation };
@@ -118,9 +123,6 @@ namespace package {
 
     inline bool UnRegisterPackage(const std::wstring& pkgDisplayName)
     {
-        using namespace winrt::Windows::Foundation;
-        using namespace winrt::Windows::Management::Deployment;
-
         try
         {
             PackageManager packageManager;
@@ -226,9 +228,6 @@ namespace package {
 
     inline bool RegisterPackage(std::wstring pkgPath, std::vector<std::wstring> dependencies)
     {
-        using namespace winrt::Windows::Foundation;
-        using namespace winrt::Windows::Management::Deployment;
-
         try
         {
             Uri packageUri{ pkgPath };

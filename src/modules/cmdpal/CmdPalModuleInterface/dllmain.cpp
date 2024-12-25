@@ -10,6 +10,8 @@
 #include <common/utils/resources.h>
 #include <common/utils/package.h>
 #include <common/utils/process_path.h>
+#include <Psapi.h>
+#include <TlHelp32.h>
 
 HINSTANCE g_hInst_cmdPal = 0;
 
@@ -40,6 +42,80 @@ private:
     //contains the non localized key of the powertoy
     std::wstring app_key;
 
+    void LaunchApp()
+    {
+        auto package = package::GetRegisteredPackage(L"Microsoft.CmdPal");
+
+        if (package.has_value())
+        {
+            auto getAppListEntriesOperation = package->GetAppListEntriesAsync();
+            auto appEntries = getAppListEntriesOperation.get();
+
+            if (appEntries.Size() > 0)
+            {
+                winrt::Windows::Foundation::IAsyncOperation<bool> launchOperation = appEntries.GetAt(0).LaunchAsync();
+                launchOperation.get();
+            }
+            else
+            {
+                Logger::error(L"No app entries found for the package.");
+            }
+        }
+        else
+        {
+            Logger::error(L"CmdPal package is not registered.");
+        }
+    }
+
+    std::vector<DWORD> GetProcessesIdByName(const std::wstring& processName)
+    {
+        std::vector<DWORD> processIds;
+        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+        if (snapshot != INVALID_HANDLE_VALUE)
+        {
+            PROCESSENTRY32 processEntry;
+            processEntry.dwSize = sizeof(PROCESSENTRY32);
+
+            if (Process32First(snapshot, &processEntry))
+            {
+                do
+                {
+                    if (_wcsicmp(processEntry.szExeFile, processName.c_str()) == 0)
+                    {
+                        processIds.push_back(processEntry.th32ProcessID);
+                    }
+                } while (Process32Next(snapshot, &processEntry));
+            }
+
+            CloseHandle(snapshot);
+        }
+
+        return processIds;
+    }
+
+    void TerminateCmdPal()
+    {
+        auto processIds = GetProcessesIdByName(L"Microsoft.CmdPal.UI.exe");
+
+        if (processIds.size() == 0)
+        {
+            Logger::trace(L"Nothing To PROCESS_TERMINATE");
+            return;
+        }
+
+        for (DWORD pid : processIds)
+        {
+            HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
+
+            if (hProcess != NULL)
+            {
+                TerminateProcess(hProcess, 0);
+                CloseHandle(hProcess);
+            }
+        }
+    }
+
 public:
     CmdPal()
     {
@@ -60,6 +136,7 @@ public:
     virtual void destroy() override
     {
         Logger::trace("CmdPal::destroy()");
+        TerminateCmdPal();
         delete this;
     }
 
@@ -120,11 +197,14 @@ public:
         Logger::trace("CmdPal::enable()");
 
         m_enabled = true;
-    };
+
+        LaunchApp();
+    }
 
     virtual void disable()
     {
         Logger::trace("CmdPal::disable()");
+        TerminateCmdPal();
     }
 
     virtual bool on_hotkey(size_t) override

@@ -1316,6 +1316,7 @@ UINT __stdcall TerminateProcessesCA(MSIHANDLE hInstall)
         L"PowerToys.WorkspacesLauncherUI.exe",
         L"PowerToys.WorkspacesEditor.exe",
         L"PowerToys.WorkspacesWindowArranger.exe",
+        L"Microsoft.CmdPal.UI.exe",
         L"PowerToys.exe",
     };
 
