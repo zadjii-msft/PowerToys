@@ -198,6 +198,43 @@ public:
 
         m_enabled = true;
 
+        try
+        {
+            if (!package::GetRegisteredPackage(L"Microsoft.CmdPal").has_value())
+            {
+                Logger::info(L"CmdPal not installed. Installing...");
+
+                std::wstring installationFolder = get_module_folderpath();
+#if _DEBUG
+                std::wstring archSubdir = L"x64";
+#ifdef _M_ARM64
+                archSubdir = L"ARM64";
+#endif
+                auto msix = package::FindMsixFile(installationFolder + L"\\WinUI3Apps\\CmdPal\\AppPackages\\Microsoft.CmdPal.UI_0.0.1.0_Debug_Test\\", false);
+                auto dependencies = package::FindMsixFile(installationFolder + L"\\WinUI3Apps\\CmdPal\\AppPackages\\Microsoft.CmdPal.UI_0.0.1.0_Debug_Test\\Dependencies\\" + archSubdir + L"\\", true);
+#else
+                auto msix = package::FindMsixFile(installationFolder + L"\\WinUI3Apps\\CmdPal\\", false);
+                auto dependencies = package::FindMsixFile(installationFolder + L"\\WinUI3Apps\\CmdPal\\Dependencies\\", true);
+#endif
+
+                if (!msix.empty())
+                {
+                    auto msixPath = msix[0];
+
+                    if (!package::RegisterPackage(msixPath, dependencies))
+                    {
+                        Logger::error(L"Failed to install CmdPal package");
+                    }
+                }
+            }
+        }
+        catch (std::exception& e)
+        {
+            std::string errorMessage{ "Exception thrown while trying to install CmdPal package: " };
+            errorMessage += e.what();
+            Logger::error(errorMessage);
+        }
+
         LaunchApp();
     }
 
