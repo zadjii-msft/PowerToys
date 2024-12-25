@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using ManagedCommon;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Ext.Indexer.Indexer;
 using Microsoft.CmdPal.Ext.Indexer.Properties;
-using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -30,6 +30,8 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
         Icon = new("\ue729");
         Name = Resources.Indexer_Title;
         PlaceholderText = Resources.Indexer_PlaceholderText;
+
+        Logger.InitializeLogger("\\CmdPal\\Indexer\\Logs");
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)

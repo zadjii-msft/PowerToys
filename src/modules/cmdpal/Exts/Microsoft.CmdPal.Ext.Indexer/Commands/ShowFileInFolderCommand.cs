@@ -5,9 +5,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using ManagedCommon;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CmdPal.Ext.Indexer.Properties;
-using Microsoft.CmdPal.Ext.Indexer.Utils;
 using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Commands;

@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using Microsoft.CmdPal.Ext.Indexer.Indexer.OleDB;
-using Microsoft.CmdPal.Ext.Indexer.Native;
-using Microsoft.CmdPal.Ext.Indexer.Utils;
+using ManagedCommon;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using Windows.Win32.System.Search;
