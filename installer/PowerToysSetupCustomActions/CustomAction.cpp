@@ -35,7 +35,7 @@ TRACELOGGING_DEFINE_PROVIDER(
     TraceLoggingOptionProjectTelemetry());
 
 const DWORD USERNAME_DOMAIN_LEN = DNLEN + UNLEN + 2; // Domain Name + '\' + User Name + '\0'
-const DWORD USERNAME_LEN = UNLEN + 1; // User Name + '\0'
+const DWORD USERNAME_LEN = UNLEN + 1;                // User Name + '\0'
 
 static const wchar_t* POWERTOYS_EXE_COMPONENT = L"{A2C66D91-3485-4D00-B04D-91844E6B345B}";
 static const wchar_t* POWERTOYS_UPGRADE_CODE = L"{42B84BF7-5FBF-473B-9C8B-049DC16F7708}";
@@ -58,10 +58,10 @@ inline bool isDataDiagnosticEnabled()
 {
     HKEY key{};
     if (RegOpenKeyExW(HKEY_CURRENT_USER,
-                        DataDiagnosticsRegKey,
-                        0,
-                        KEY_READ,
-                        &key) != ERROR_SUCCESS)
+        DataDiagnosticsRegKey,
+        0,
+        KEY_READ,
+        &key) != ERROR_SUCCESS)
     {
         return false;
     }
@@ -70,13 +70,13 @@ inline bool isDataDiagnosticEnabled()
     DWORD size = sizeof(isDataDiagnosticsEnabled);
 
     if (RegGetValueW(
-            HKEY_CURRENT_USER,
-            DataDiagnosticsRegKey,
-            DataDiagnosticsRegValueName,
-            RRF_RT_REG_DWORD,
-            nullptr,
-            &isDataDiagnosticsEnabled,
-            &size) != ERROR_SUCCESS)
+        HKEY_CURRENT_USER,
+        DataDiagnosticsRegKey,
+        DataDiagnosticsRegValueName,
+        RRF_RT_REG_DWORD,
+        nullptr,
+        &isDataDiagnosticsEnabled,
+        &size) != ERROR_SUCCESS)
     {
         RegCloseKey(key);
         return false;
@@ -85,7 +85,6 @@ inline bool isDataDiagnosticEnabled()
 
     return isDataDiagnosticsEnabled == 1;
 }
-
 
 HRESULT getInstallFolder(MSIHANDLE hInstall, std::wstring& installationDir)
 {
@@ -227,39 +226,41 @@ UINT __stdcall LaunchPowerToysCA(MSIHANDLE hInstall)
 
     BOOL isSystemUser = IsLocalSystem();
 
-    if (isSystemUser) {
+    if (isSystemUser)
+    {
 
-        auto action = [&commandLine](HANDLE userToken) {
-            STARTUPINFO startupInfo{ .cb = sizeof(STARTUPINFO),  .wShowWindow = SW_SHOWNORMAL };
-            PROCESS_INFORMATION processInformation;
-
-            PVOID lpEnvironment = NULL;
-            CreateEnvironmentBlock(&lpEnvironment, userToken, FALSE);
-
-            CreateProcessAsUser(
-                userToken,
-                NULL,
-                commandLine.data(),
-                NULL,
-                NULL,
-                FALSE,
-                CREATE_DEFAULT_ERROR_MODE | CREATE_UNICODE_ENVIRONMENT,
-                lpEnvironment,
-                NULL,
-                &startupInfo,
-                &processInformation);
-
-            if (!CloseHandle(processInformation.hProcess))
+        auto action = [&commandLine](HANDLE userToken)
             {
-                return false;
-            }
-            if (!CloseHandle(processInformation.hThread))
-            {
-                return false;
-            }
+                STARTUPINFO startupInfo{ .cb = sizeof(STARTUPINFO), .wShowWindow = SW_SHOWNORMAL };
+                PROCESS_INFORMATION processInformation;
 
-            return true;
-        };
+                PVOID lpEnvironment = NULL;
+                CreateEnvironmentBlock(&lpEnvironment, userToken, FALSE);
+
+                CreateProcessAsUser(
+                    userToken,
+                    NULL,
+                    commandLine.data(),
+                    NULL,
+                    NULL,
+                    FALSE,
+                    CREATE_DEFAULT_ERROR_MODE | CREATE_UNICODE_ENVIRONMENT,
+                    lpEnvironment,
+                    NULL,
+                    &startupInfo,
+                    &processInformation);
+
+                if (!CloseHandle(processInformation.hProcess))
+                {
+                    return false;
+                }
+                if (!CloseHandle(processInformation.hThread))
+                {
+                    return false;
+                }
+
+                return true;
+            };
 
         if (!ImpersonateLoggedInUserAndDoSomething(action))
         {
@@ -269,7 +270,7 @@ UINT __stdcall LaunchPowerToysCA(MSIHANDLE hInstall)
     }
     else
     {
-        STARTUPINFO startupInfo{ .cb = sizeof(STARTUPINFO),  .wShowWindow = SW_SHOWNORMAL };
+        STARTUPINFO startupInfo{ .cb = sizeof(STARTUPINFO), .wShowWindow = SW_SHOWNORMAL };
 
         PROCESS_INFORMATION processInformation;
 
@@ -670,7 +671,6 @@ UINT __stdcall UninstallCommandNotFoundModuleCA(MSIHANDLE hInstall)
     command += "-NoProfile -NonInteractive -NoLogo -WindowStyle Hidden -ExecutionPolicy Unrestricted -File \"" + winrt::to_string(installationFolder) + "\\WinUI3Apps\\Assets\\Settings\\Scripts\\DisableModule.ps1" + "\"";
 #endif
 
-
     system(command.c_str());
 
 LExit:
@@ -848,8 +848,7 @@ UINT __stdcall TelemetryLogInstallSuccessCA(MSIHANDLE hInstall)
         TraceLoggingWideString(get_product_version().c_str(), "Version"),
         ProjectTelemetryPrivacyDataTag(ProjectTelemetryTag_ProductAndServicePerformance),
         TraceLoggingBoolean(TRUE, "UTCReplace_AppSessionGuid"),
-        TraceLoggingKeyword(PROJECT_KEYWORD_MEASURE)
-        );
+        TraceLoggingKeyword(PROJECT_KEYWORD_MEASURE));
 
 LExit:
     er = SUCCEEDED(hr) ? ERROR_SUCCESS : ERROR_INSTALL_FAILURE;
@@ -1199,8 +1198,6 @@ UINT __stdcall InstallCmdPalPackageCA(MSIHANDLE hInstall)
 
     try
     {
-        MessageBox(NULL, installationFolder.c_str(), L"install dir Path", MB_OK);
-
         auto msix = package::FindMsixFile(installationFolder + L"\\WinUI3Apps\\CmdPal\\", false);
         auto dependencies = package::FindMsixFile(installationFolder + L"\\WinUI3Apps\\CmdPal\\Dependencies\\", true);
 
@@ -1241,7 +1238,7 @@ UINT __stdcall UnRegisterContextMenuPackagesCA(MSIHANDLE hInstall)
     try
     {
         // Packages to unregister
-        const std::vector<std::wstring> packagesToRemoveDisplayName{ { L"PowerRenameContextMenu" }, { L"ImageResizerContextMenu" }, { L"FileLocksmithContextMenu" }, { L"NewPlusContextMenu" } };
+        const std::vector<std::wstring> packagesToRemoveDisplayName{ {L"PowerRenameContextMenu"}, {L"ImageResizerContextMenu"}, {L"FileLocksmithContextMenu"}, {L"NewPlusContextMenu"}, {L"Microsoft.CmdPal"} };
 
         for (auto const& package : packagesToRemoveDisplayName)
         {
@@ -1350,17 +1347,18 @@ UINT __stdcall TerminateProcessesCA(MSIHANDLE hInstall)
             if (processName == processToTerminate)
             {
                 const DWORD timeout = 500;
-                auto windowEnumerator = [](HWND hwnd, LPARAM procIDPtr) -> BOOL {
-                    auto targetProcID = *reinterpret_cast<const DWORD*>(procIDPtr);
-                    DWORD windowProcID = 0;
-                    GetWindowThreadProcessId(hwnd, &windowProcID);
-                    if (windowProcID == targetProcID)
+                auto windowEnumerator = [](HWND hwnd, LPARAM procIDPtr) -> BOOL
                     {
-                        DWORD_PTR _{};
-                        SendMessageTimeoutA(hwnd, WM_CLOSE, 0, 0, SMTO_BLOCK, timeout, &_);
-                    }
-                    return TRUE;
-                };
+                        auto targetProcID = *reinterpret_cast<const DWORD*>(procIDPtr);
+                        DWORD windowProcID = 0;
+                        GetWindowThreadProcessId(hwnd, &windowProcID);
+                        if (windowProcID == targetProcID)
+                        {
+                            DWORD_PTR _{};
+                            SendMessageTimeoutA(hwnd, WM_CLOSE, 0, 0, SMTO_BLOCK, timeout, &_);
+                        }
+                        return TRUE;
+                    };
                 EnumWindows(windowEnumerator, reinterpret_cast<LPARAM>(&procID));
                 Sleep(timeout);
                 TerminateProcess(hProcess, 0);
@@ -1377,15 +1375,15 @@ UINT __stdcall TerminateProcessesCA(MSIHANDLE hInstall)
 void initSystemLogger()
 {
     static std::once_flag initLoggerFlag;
-    std::call_once(initLoggerFlag, []() {
-        WCHAR temp_path[MAX_PATH];
-        auto ret = GetTempPath(MAX_PATH, temp_path);
-
-        if (ret)
+    std::call_once(initLoggerFlag, []()
         {
-            Logger::init("PowerToysMSI", std::wstring{ temp_path } + L"\\PowerToysMSIInstaller", L"");
-        }
-        });
+            WCHAR temp_path[MAX_PATH];
+            auto ret = GetTempPath(MAX_PATH, temp_path);
+
+            if (ret)
+            {
+                Logger::init("PowerToysMSI", std::wstring{ temp_path } + L"\\PowerToysMSIInstaller", L"");
+            } });
 }
 
 // DllMain - Initialize and cleanup WiX custom action utils.

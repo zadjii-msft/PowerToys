@@ -197,7 +197,6 @@ namespace package {
                         if (std::regex_match(fileName, pattern))
                         {
                             matchedFiles.push_back(entry.path());
-                            break;
                         }
                     }
                 }
@@ -212,7 +211,6 @@ namespace package {
                         if (std::regex_match(fileName, pattern))
                         {
                             matchedFiles.push_back(entry.path());
-                            break;
                         }
                     }
                 }
