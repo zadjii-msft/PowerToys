@@ -242,6 +242,8 @@ public:
     {
         Logger::trace("CmdPal::disable()");
         TerminateCmdPal();
+
+        m_enabled = false;
     }
 
     virtual bool on_hotkey(size_t) override
