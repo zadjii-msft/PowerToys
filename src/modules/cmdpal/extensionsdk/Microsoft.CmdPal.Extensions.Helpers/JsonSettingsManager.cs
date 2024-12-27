@@ -66,7 +66,32 @@ public abstract class JsonSettingsManager
             // Serialize the main dictionary to JSON and save it to the file
             var settingsJson = _settings.ToJson();
 
-            File.WriteAllText(FilePath, settingsJson);
+            // Is it valid JSON?
+            if (JsonNode.Parse(settingsJson) is JsonObject newSettings)
+            {
+                // Now, read the existing content from the file
+                var oldContent = File.Exists(FilePath) ? File.ReadAllText(FilePath) : "{}";
+
+                // Is it valid JSON?
+                if (JsonNode.Parse(oldContent) is JsonObject savedSettings)
+                {
+                    foreach (var item in newSettings)
+                    {
+                        savedSettings[item.Key] = item.Value != null ? item.Value.DeepClone() : null;
+                    }
+
+                    var serialized = savedSettings.ToJsonString();
+                    File.WriteAllText(FilePath, serialized);
+                }
+                else
+                {
+                    ExtensionHost.LogMessage(new LogMessage() { Message = "Failed to parse settings file as JsonObject." });
+                }
+            }
+            else
+            {
+                ExtensionHost.LogMessage(new LogMessage() { Message = "Failed to parse settings file as JsonObject." });
+            }
         }
         catch (Exception ex)
         {

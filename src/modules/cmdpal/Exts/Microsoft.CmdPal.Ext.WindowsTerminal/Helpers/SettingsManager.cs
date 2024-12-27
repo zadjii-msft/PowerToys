@@ -12,9 +12,27 @@ namespace Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
 
 public class SettingsManager : JsonSettingsManager
 {
-    private readonly ToggleSetting _showHiddenProfiles = new(nameof(ShowHiddenProfiles), Resources.show_hidden_profiles, Resources.show_hidden_profiles, false);
-    private readonly ToggleSetting _openNewTab = new(nameof(OpenNewTab), Resources.open_new_tab, Resources.open_new_tab, false);
-    private readonly ToggleSetting _openQuake = new(nameof(OpenQuake), Resources.open_quake, Resources.open_quake_description, false);
+    private static readonly string _namespace = "wt";
+
+    private static string Namespaced(string propertyName) => $"{_namespace}.{propertyName}";
+
+    private readonly ToggleSetting _showHiddenProfiles = new(
+        Namespaced(nameof(ShowHiddenProfiles)),
+        Resources.show_hidden_profiles,
+        Resources.show_hidden_profiles,
+        false);
+
+    private readonly ToggleSetting _openNewTab = new(
+        Namespaced(nameof(OpenNewTab)),
+        Resources.open_new_tab,
+        Resources.open_new_tab,
+        false);
+
+    private readonly ToggleSetting _openQuake = new(
+        Namespaced(nameof(OpenQuake)),
+        Resources.open_quake,
+        Resources.open_quake_description,
+        false);
 
     public bool ShowHiddenProfiles => _showHiddenProfiles.Value;
 
@@ -31,7 +49,7 @@ public class SettingsManager : JsonSettingsManager
         var directory = Path.GetDirectoryName(path) ?? string.Empty;
 
         // now, the state is just next to the exe
-        return Path.Combine(directory, "wt_state.json");
+        return Path.Combine(directory, "state.json");
     }
 
     public SettingsManager()
