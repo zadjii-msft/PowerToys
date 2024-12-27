@@ -4730,4 +4730,10 @@ Activate by holding the key for the character you want to add an accent to, then
   <data name="Enable_Module.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Enable module</value>
   </data>
+  <data name="Run_CheckOutCmdPal.Title" xml:space="preserve">
+    <value>Check out Command Palette - new and better PowerToys Run v2</value>
+  </data>
+  <data name="Run_NavigateCmdPalSettings.Content" xml:space="preserve">
+    <value>Learn more</value>
+  </data>
 </root>
