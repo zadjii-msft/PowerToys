@@ -10,11 +10,11 @@ namespace Microsoft.CmdPal.Ext.WindowWalker.Helpers;
 
 public class SettingsManager : JsonSettingsManager
 {
-    private static SettingsManager? instance;
-
     private static readonly string _namespace = "wt";
 
     private static string Namespaced(string propertyName) => $"{_namespace}.{propertyName}";
+
+    private static SettingsManager? instance;
 
     private readonly ToggleSetting _resultsFromVisibleDesktopOnly = new(
         Namespaced(nameof(ResultsFromVisibleDesktopOnly)),

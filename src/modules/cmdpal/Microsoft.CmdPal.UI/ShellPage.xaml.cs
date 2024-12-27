@@ -21,6 +21,7 @@ public sealed partial class ShellPage :
     Page,
     IRecipient<NavigateBackMessage>,
     IRecipient<PerformCommandMessage>,
+    IRecipient<OpenSettingsMessage>,
     IRecipient<ShowDetailsMessage>,
     IRecipient<HideDetailsMessage>,
     IRecipient<ClearSearchMessage>,
@@ -31,6 +32,8 @@ public sealed partial class ShellPage :
 
     public ShellViewModel ViewModel { get; private set; } = App.Current.Services.GetService<ShellViewModel>()!;
 
+    private readonly SettingsViewModel _settingsViewModel;
+
     public ShellPage()
     {
         this.InitializeComponent();
@@ -39,12 +42,16 @@ public sealed partial class ShellPage :
         WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
         WeakReferenceMessenger.Default.Register<HandleCommandResultMessage>(this);
+        WeakReferenceMessenger.Default.Register<OpenSettingsMessage>(this);
 
         WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
 
         WeakReferenceMessenger.Default.Register<ClearSearchMessage>(this);
         WeakReferenceMessenger.Default.Register<LaunchUriMessage>(this);
+
+        var settings = App.Current.Services.GetService<SettingsModel>()!;
+        _settingsViewModel = new(settings);
 
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
     }
@@ -179,6 +186,21 @@ public sealed partial class ShellPage :
         catch
         {
         }
+    }
+
+    public void Receive(OpenSettingsMessage message)
+    {
+        _ = DispatcherQueue.TryEnqueue(() =>
+        {
+            // Also hide our details pane about here, if we had one
+            HideDetails();
+
+            // var pageViewModel = new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext());
+            RootFrame.Navigate(typeof(SettingsPage), _settingsViewModel, _slideRightTransition);
+
+            // SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+            WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(null));
+        });
     }
 
     public void Receive(ShowDetailsMessage message)
