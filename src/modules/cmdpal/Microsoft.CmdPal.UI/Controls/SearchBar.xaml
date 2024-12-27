@@ -110,6 +110,7 @@
             MinHeight="32"
             VerticalAlignment="Stretch"
             VerticalContentAlignment="Stretch"
+            PreviewKeyDown="FilterBox_PreviewKeyDown"
             KeyDown="FilterBox_KeyDown"
             PlaceholderText="Type here to search..."
             Style="{StaticResource SearchTextBoxStyle}"

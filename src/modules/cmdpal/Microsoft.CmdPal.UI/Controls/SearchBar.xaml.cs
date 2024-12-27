@@ -33,8 +33,6 @@ public sealed partial class SearchBar : UserControl,
         set => SetValue(CurrentPageViewModelProperty, value);
     }
 
-    private string _previousText = string.Empty;
-
     // Using a DependencyProperty as the backing store for CurrentPageViewModel.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty CurrentPageViewModelProperty =
         DependencyProperty.Register(nameof(CurrentPageViewModel), typeof(PageViewModel), typeof(SearchBar), new PropertyMetadata(null, OnCurrentPageViewModelChanged));
@@ -130,12 +128,14 @@ public sealed partial class SearchBar : UserControl,
             {
                 CurrentPageViewModel.Filter = FilterBox.Text;
             }
+        }
+    }
 
-            if (string.IsNullOrEmpty(_previousText))
-            {
-                WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
-                e.Handled = true;
-            }
+    private void FilterBox_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (string.IsNullOrEmpty(FilterBox.Text) && e.Key == VirtualKey.Back)
+        {
+            WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
         }
     }
 
@@ -175,9 +175,6 @@ public sealed partial class SearchBar : UserControl,
             interval: TimeSpan.FromMilliseconds(100),
             //// If we're not already waiting, and this is blanking out or the first character type, we'll start filtering immediately instead to appear more responsive and either clear the filter to get back home faster or at least chop to the first starting letter.
             immediate: FilterBox.Text.Length <= 1);
-
-        // Update the _previousText to the current text for the next KeyDown event
-        _previousText = FilterBox.Text;
     }
 
     public void Receive(GoHomeMessage message) => ClearSearch();
