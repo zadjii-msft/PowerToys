@@ -2,7 +2,9 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
@@ -13,6 +15,12 @@ public abstract class JsonSettingsManager
     public Settings Settings => _settings;
 
     public string FilePath { get; init; } = string.Empty;
+
+    private static readonly JsonSerializerOptions _serializerOptions = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() },
+    };
 
     public Settings GetSettings()
     {
@@ -80,7 +88,7 @@ public abstract class JsonSettingsManager
                         savedSettings[item.Key] = item.Value != null ? item.Value.DeepClone() : null;
                     }
 
-                    var serialized = savedSettings.ToJsonString();
+                    var serialized = savedSettings.ToJsonString(_serializerOptions);
                     File.WriteAllText(FilePath, serialized);
                 }
                 else

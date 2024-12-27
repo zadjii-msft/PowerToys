@@ -11,8 +11,6 @@ namespace Microsoft.CmdPal.Ext.Shell.Helpers;
 
 public class SettingsManager : JsonSettingsManager
 {
-    // private readonly string _filePath;
-    // private readonly Settings _settings = new();
     private static readonly string _namespace = "shell";
 
     private static string Namespaced(string propertyName) => $"{_namespace}.{propertyName}";
@@ -75,53 +73,4 @@ public class SettingsManager : JsonSettingsManager
         // Load settings from file upon initialization
         LoadSettings();
     }
-
-    // public Settings GetSettings()
-    // {
-    //    return _settings;
-    // }
-
-    // public void SaveSettings()
-    // {
-    //    try
-    //    {
-    //        // Serialize the main dictionary to JSON and save it to the file
-    //        var settingsJson = _settings.ToJson();
-
-    // File.WriteAllText(_filePath, settingsJson);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        ExtensionHost.LogMessage(new LogMessage() { Message = ex.ToString() });
-    //    }
-    // }
-
-    // public void LoadSettings()
-    // {
-    //    if (!File.Exists(_filePath))
-    //    {
-    //        ExtensionHost.LogMessage(new LogMessage() { Message = "The provided settings file does not exist" });
-    //        return;
-    //    }
-
-    // try
-    //    {
-    //        // Read the JSON content from the file
-    //        var jsonContent = File.ReadAllText(_filePath);
-
-    // // Is it valid JSON?
-    //        if (JsonNode.Parse(jsonContent) is JsonObject savedSettings)
-    //        {
-    //            _settings.Update(jsonContent);
-    //        }
-    //        else
-    //        {
-    //            ExtensionHost.LogMessage(new LogMessage() { Message = "Failed to parse settings file as JsonObject." });
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        ExtensionHost.LogMessage(new LogMessage() { Message = ex.ToString() });
-    //    }
-    // }
 }
