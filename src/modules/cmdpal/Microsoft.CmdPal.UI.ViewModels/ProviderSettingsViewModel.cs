@@ -2,10 +2,8 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.CmdPal.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -17,5 +15,9 @@ public partial class ProviderSettingsViewModel(CommandProviderWrapper _provider,
 
     public IconDataType Icon => _provider.Icon;
 
-    public bool IsEnabled => _providerSettings.IsEnabled;
+    public bool IsEnabled
+    {
+        get => _providerSettings.IsEnabled;
+        set => _providerSettings.IsEnabled = value;
+    }
 }

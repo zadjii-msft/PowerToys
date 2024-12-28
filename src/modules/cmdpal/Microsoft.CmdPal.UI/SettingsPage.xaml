@@ -42,10 +42,13 @@
             <StackPanel MaxWidth="1000"
                         HorizontalAlignment="Stretch"
                         Spacing="{StaticResource SettingsCardSpacing}">
-                <win:StackPanel.ChildrenTransitions>
+                
+                <!--I got these from the samples, but they break XAML hot-reloading, so I commented them out. -->
+                
+                <!--<win:StackPanel.ChildrenTransitions>
                     <win:EntranceThemeTransition FromVerticalOffset="50" />
                     <win:RepositionThemeTransition IsStaggeringEnabled="False" />
-                </win:StackPanel.ChildrenTransitions>
+                </win:StackPanel.ChildrenTransitions>-->
                 
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="Section 1" />
@@ -100,7 +103,7 @@
                                 Most of what follows is lited directly from 
                                 https://github.com/CommunityToolkit/Windows/blob/main/components/SettingsControls/src/SettingsCard/SettingsCard.xaml
                                 -->
-                                <Grid
+                                <Grid HorizontalAlignment="Stretch"
                                     Margin="0, -12, 0, 0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*" />
@@ -146,6 +149,20 @@
                                                   TextWrapping="Wrap">
                                         </ContentPresenter>
                                     </StackPanel>
+
+                                    <!--
+                                    Because of this insane XAML thing we're 
+                                    doing, we can't effectively put content
+                                    here on the right. Sad. 
+                                    --> 
+                                    
+                                    <!--<ContentPresenter
+                                        Grid.Column="2"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        HorizontalContentAlignment="Right">
+                                        <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=TwoWay}"/>
+                                    </ContentPresenter>-->
                                 </Grid>
                                 
                             </controls:SettingsCard>
