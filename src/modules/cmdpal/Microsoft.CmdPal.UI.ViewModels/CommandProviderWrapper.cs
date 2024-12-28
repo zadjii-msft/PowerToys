@@ -23,11 +23,14 @@ public sealed class CommandProviderWrapper
 
     public string DisplayName { get; private set; } = string.Empty;
 
+    public IconDataType Icon { get; private set; } = new(string.Empty);
+
     public CommandProviderWrapper(ICommandProvider provider)
     {
         _commandProvider = provider;
         isValid = true;
         DisplayName = provider.DisplayName;
+        Icon = provider.Icon;
     }
 
     public CommandProviderWrapper(IExtensionWrapper extension)
@@ -64,6 +67,7 @@ public sealed class CommandProviderWrapper
         var fallbacks = _commandProvider.FallbackCommands();
 
         DisplayName = _commandProvider.DisplayName;
+        Icon = _commandProvider.Icon;
 
         if (commands != null)
         {

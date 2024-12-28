@@ -12,6 +12,7 @@ public partial class RegistryCommandsProvider : CommandProvider
     public RegistryCommandsProvider()
     {
         DisplayName = $"Windows Registry";
+        Icon = new("\uE74C"); // OEM
     }
 
     public override ICommandItem[] TopLevelCommands()

@@ -14,7 +14,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsCardEnabled { get; set; } = true;
 
-    public ObservableCollection<string> CommandProviders { get; } = [];
+    public ObservableCollection<CommandProviderWrapper> CommandProviders { get; } = [];
 
     public SettingsViewModel(SettingsModel settings)
     {

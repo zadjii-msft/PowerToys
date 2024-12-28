@@ -30,6 +30,12 @@
                 <Setter Property="Margin" Value="1,30,0,6" />
             </Style.Setters>
         </Style>
+
+        <StackLayout
+            x:Name="VerticalStackLayout"
+            Orientation="Vertical"
+            Spacing="{StaticResource SettingsCardSpacing}" />
+        
     </Page.Resources>
     <ScrollViewer Padding="8">
         <Grid Padding="8">
@@ -71,13 +77,77 @@
 
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="Extensions" />
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.CommandProviders, Mode=OneWay}">
+
+
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.CommandProviders, Mode=OneWay}"
+                        Layout="{StaticResource VerticalStackLayout}">
                     <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="x:String">
-                            <controls:SettingsCard Description="An extension"
-                                       Header="{x:Bind}"
-                                       IsClickEnabled="True"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xE768;}">
+                        <DataTemplate x:DataType="viewmodels:CommandProviderWrapper">
+                            <controls:SettingsCard
+                                ContentAlignment="Left"
+                                IsClickEnabled="True">
+                                <!--
+                                What we're doing here is 90% stupid.
+                                
+                                The SettingsCard APIs only explicitly allow an 
+                                Icon as the content for the HeaderIcon property. 
+                                We of course, have to do the goofy async IconBox thing.
+                                
+                                To manage this, we have to basically re-create
+                                the layout of the SettingsCard HeaderIcon, 
+                                Header & Description, all within the Content.
+                                
+                                Most of what follows is lited directly from 
+                                https://github.com/CommunityToolkit/Windows/blob/main/components/SettingsControls/src/SettingsCard/SettingsCard.xaml
+                                -->
+                                <Grid
+                                    Margin="0, -12, 0, 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" MinWidth="0" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Viewbox
+                                        Grid.RowSpan="1"
+                                        MaxWidth="20"
+                                        MaxHeight="20"
+                                        Margin="2,0,20,0">
+                                        <cpcontrols:IconBox
+                                            Width="20"
+                                            Height="20"
+                                            Margin="0,0,0,0"
+                                            win:AutomationProperties.AccessibilityView="Raw"
+                                            SourceKey="{x:Bind Icon, Mode=OneWay}"
+                                            SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}" />
+                                    </Viewbox>
+
+                                    <StackPanel
+                                        Grid.Column="1"
+                                        Margin="0,0,24,0"
+                                        VerticalAlignment="Center"
+                                        Orientation="Vertical">
+                                        <ContentPresenter
+                                                  Grid.Column="1"
+                                                  HorizontalAlignment="Left"
+                                                  win:HighContrastAdjustment="None"
+                                                  Content="{x:Bind DisplayName, Mode=OneWay}"
+                                                  TextWrapping="Wrap" />
+
+                                        <ContentPresenter
+                                                  Content="{x:Bind DisplayName, Mode=OneWay}"
+                                                  FontSize="12"
+                                                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                  TextWrapping="Wrap">
+                                        </ContentPresenter>
+                                    </StackPanel>
+                                </Grid>
+                                
                             </controls:SettingsCard>
 
                         </DataTemplate>
