@@ -21,10 +21,13 @@ public sealed class CommandProviderWrapper
 
     public IFallbackCommandItem[] FallbackItems { get; private set; } = [];
 
+    public string DisplayName { get; private set; } = string.Empty;
+
     public CommandProviderWrapper(ICommandProvider provider)
     {
         _commandProvider = provider;
         isValid = true;
+        DisplayName = provider.DisplayName;
     }
 
     public CommandProviderWrapper(IExtensionWrapper extension)
@@ -59,6 +62,8 @@ public sealed class CommandProviderWrapper
 
         // On a BG thread here
         var fallbacks = _commandProvider.FallbackCommands();
+
+        DisplayName = _commandProvider.DisplayName;
 
         if (commands != null)
         {

@@ -15,4 +15,11 @@ public partial class SettingsModel(IServiceProvider _serviceProvider) : Observab
     {
         _ = _serviceProvider.GetService<TopLevelCommandManager>();
     }
+
+    public IEnumerable<string> GetCommandProviders()
+    {
+        var manager = _serviceProvider.GetService<TopLevelCommandManager>()!;
+        var allProviders = manager.CommandProviders;
+        return allProviders.Select(provider => provider.DisplayName);
+    }
 }

@@ -32,8 +32,7 @@ public sealed partial class ShellPage :
 
     public ShellViewModel ViewModel { get; private set; } = App.Current.Services.GetService<ShellViewModel>()!;
 
-    private readonly SettingsViewModel _settingsViewModel;
-
+    // private readonly SettingsViewModel _settingsViewModel;
     public ShellPage()
     {
         this.InitializeComponent();
@@ -49,9 +48,6 @@ public sealed partial class ShellPage :
 
         WeakReferenceMessenger.Default.Register<ClearSearchMessage>(this);
         WeakReferenceMessenger.Default.Register<LaunchUriMessage>(this);
-
-        var settings = App.Current.Services.GetService<SettingsModel>()!;
-        _settingsViewModel = new(settings);
 
         RootFrame.Navigate(typeof(LoadingPage), ViewModel);
     }
@@ -196,7 +192,9 @@ public sealed partial class ShellPage :
             HideDetails();
 
             // var pageViewModel = new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext());
-            RootFrame.Navigate(typeof(SettingsPage), _settingsViewModel, _slideRightTransition);
+            var settings = App.Current.Services.GetService<SettingsModel>()!;
+            var settingsViewModel = new SettingsViewModel(settings);
+            RootFrame.Navigate(typeof(SettingsPage), settingsViewModel, _slideRightTransition);
 
             // SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
             WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(null));

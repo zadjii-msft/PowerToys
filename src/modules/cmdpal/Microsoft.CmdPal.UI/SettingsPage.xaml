@@ -40,6 +40,7 @@
                     <win:EntranceThemeTransition FromVerticalOffset="50" />
                     <win:RepositionThemeTransition IsStaggeringEnabled="False" />
                 </win:StackPanel.ChildrenTransitions>
+                
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="Section 1" />
                 <controls:SettingsCard Description="This is a default card, with the Header, HeaderIcon, Description and Content set"
@@ -69,22 +70,19 @@
                 </controls:SettingsExpander>
 
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Text="Section 2" />
-                <controls:SettingsCard Description="Another card to show grouping of cards"
-                                       Header="Another SettingsCard"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xE799;}">
-                    <ComboBox SelectedIndex="0">
-                        <ComboBoxItem>Option 1</ComboBoxItem>
-                        <ComboBoxItem>Option 2</ComboBoxItem>
-                        <ComboBoxItem>Option 3</ComboBoxItem>
-                    </ComboBox>
-                </controls:SettingsCard>
-
-                <controls:SettingsCard Description="Another card to show grouping of cards"
-                                       Header="Yet another SettingsCard"
+                           Text="Extensions" />
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.CommandProviders, Mode=OneWay}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <controls:SettingsCard Description="An extension"
+                                       Header="{x:Bind}"
+                                       IsClickEnabled="True"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xE768;}">
-                    <Button Content="Content" />
-                </controls:SettingsCard>
+                            </controls:SettingsCard>
+
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
 
                 <!--  Example 'About' section  -->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
