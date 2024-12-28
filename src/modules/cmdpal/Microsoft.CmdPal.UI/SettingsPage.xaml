@@ -82,7 +82,7 @@
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.CommandProviders, Mode=OneWay}"
                         Layout="{StaticResource VerticalStackLayout}">
                     <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="viewmodels:CommandProviderWrapper">
+                        <DataTemplate x:DataType="viewmodels:ProviderSettingsViewModel">
                             <controls:SettingsCard
                                 ContentAlignment="Left"
                                 IsClickEnabled="True">
@@ -140,7 +140,7 @@
                                                   TextWrapping="Wrap" />
 
                                         <ContentPresenter
-                                                  Content="{x:Bind DisplayName, Mode=OneWay}"
+                                                  Content="{x:Bind ExtensionName, Mode=OneWay}"
                                                   FontSize="12"
                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                   TextWrapping="Wrap">

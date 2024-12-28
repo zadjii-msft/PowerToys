@@ -19,6 +19,7 @@ public partial class WindowsSettingsCommandsProvider : CommandProvider
     public WindowsSettingsCommandsProvider()
     {
         DisplayName = $"Windows Settings";
+        Icon = new("\uE713"); // Settings
 
         _windowsSettings = JsonSettingsListHelper.ReadAllPossibleSettings();
         _searchSettingsListItem = new CommandItem(new WindowsSettingsListPage(_windowsSettings))

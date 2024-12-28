@@ -4,25 +4,43 @@
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly SettingsModel _settings;
+    private readonly IServiceProvider _serviceProvider;
 
     [ObservableProperty]
     public partial bool IsCardEnabled { get; set; } = true;
 
-    public ObservableCollection<CommandProviderWrapper> CommandProviders { get; } = [];
+    public ObservableCollection<ProviderSettingsViewModel> CommandProviders { get; } = [];
 
-    public SettingsViewModel(SettingsModel settings)
+    public SettingsViewModel(SettingsModel settings, IServiceProvider serviceProvider)
     {
         _settings = settings;
+        _serviceProvider = serviceProvider;
 
-        foreach (var item in _settings.GetCommandProviders())
+        var activeProviders = GetCommandProviders();
+        var allProviderSettings = _settings.ProviderSettings;
+
+        foreach (var item in activeProviders)
         {
-            CommandProviders.Add(item);
+            var providerSettings = allProviderSettings.TryGetValue(item.ProviderId, out var value) ?
+                value :
+                new ProviderSettings(item);
+
+            var settingsModel = new ProviderSettingsViewModel(item, providerSettings);
+            CommandProviders.Add(settingsModel);
         }
+    }
+
+    private IEnumerable<CommandProviderWrapper> GetCommandProviders()
+    {
+        var manager = _serviceProvider.GetService<TopLevelCommandManager>()!;
+        var allProviders = manager.CommandProviders;
+        return allProviders;
     }
 }

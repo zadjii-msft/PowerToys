@@ -19,6 +19,8 @@ public partial class WindowWalkerCommandsProvider : CommandProvider
     public WindowWalkerCommandsProvider()
     {
         DisplayName = Resources.windowwalker_name;
+        Icon = new("\ue8f9"); // SwitchApps
+
         _windowWalkerPageItem = new CommandItem(new WindowWalkerListPage())
         {
             Title = Resources.window_walker_top_level_command_title,

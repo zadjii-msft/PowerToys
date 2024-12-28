@@ -11,15 +11,10 @@ public partial class SettingsModel(IServiceProvider _serviceProvider) : Observab
 {
     public string TestString { get; set; } = string.Empty;
 
+    public Dictionary<string, ProviderSettings> ProviderSettings { get; set; } = [];
+
     public void FooBar()
     {
         _ = _serviceProvider.GetService<TopLevelCommandManager>();
-    }
-
-    public IEnumerable<CommandProviderWrapper> GetCommandProviders()
-    {
-        var manager = _serviceProvider.GetService<TopLevelCommandManager>()!;
-        var allProviders = manager.CommandProviders;
-        return allProviders;
     }
 }

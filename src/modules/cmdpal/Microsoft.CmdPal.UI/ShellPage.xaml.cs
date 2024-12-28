@@ -193,7 +193,7 @@ public sealed partial class ShellPage :
 
             // var pageViewModel = new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext());
             var settings = App.Current.Services.GetService<SettingsModel>()!;
-            var settingsViewModel = new SettingsViewModel(settings);
+            var settingsViewModel = new SettingsViewModel(settings, App.Current.Services);
             RootFrame.Navigate(typeof(SettingsPage), settingsViewModel, _slideRightTransition);
 
             // SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
