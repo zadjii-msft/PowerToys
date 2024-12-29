@@ -2,6 +2,8 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.PowerToys.Settings.UI.Library;
@@ -20,4 +22,16 @@ public partial class SettingsModel(IServiceProvider _serviceProvider) : Observab
     {
         _ = _serviceProvider.GetService<TopLevelCommandManager>();
     }
+
+    public void Save()
+    {
+        var s = JsonSerializer.Serialize(this, _serializerOptions);
+        _ = s;
+    }
+
+    private static readonly JsonSerializerOptions _serializerOptions = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() },
+    };
 }

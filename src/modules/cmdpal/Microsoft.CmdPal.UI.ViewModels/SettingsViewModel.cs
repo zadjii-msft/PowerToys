@@ -50,4 +50,9 @@ public partial class SettingsViewModel : ObservableObject
         var allProviders = manager.CommandProviders;
         return allProviders;
     }
+
+    public void Save()
+    {
+        _settings.Save();
+    }
 }
