@@ -5,6 +5,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.PowerToys.Settings.UI.Library;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -15,6 +16,12 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool IsCardEnabled { get; set; } = true;
+
+    public HotkeySettings? Hotkey
+    {
+        get => _settings.Hotkey;
+        set => _settings.Hotkey = value;
+    }
 
     public ObservableCollection<ProviderSettingsViewModel> CommandProviders { get; } = [];
 

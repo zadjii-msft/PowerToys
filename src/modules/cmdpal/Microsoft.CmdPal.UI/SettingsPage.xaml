@@ -62,7 +62,7 @@
                 <controls:SettingsCard Description="This key will open the Command Palette"
                                        Header="Activation key"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}">
-                    <ptcontrols:ShortcutControl  />
+                    <ptcontrols:ShortcutControl HotkeySettings="{x:Bind ViewModel.Hotkey, Mode=TwoWay}"/>
                 </controls:SettingsCard>
 
                 <controls:SettingsExpander Description="The SettingsExpander has the same properties as a SettingsCard"
