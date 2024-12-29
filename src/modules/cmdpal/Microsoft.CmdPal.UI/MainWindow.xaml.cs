@@ -67,8 +67,12 @@ public sealed partial class MainWindow : Window,
         var hotKeyPrcPointer = Marshal.GetFunctionPointerForDelegate(_hotkeyWndProc);
         _originalWndProc = Marshal.GetDelegateForFunctionPointer<WNDPROC>(PInvoke.SetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, hotKeyPrcPointer));
 
+        // Load our settings, and then also wire up a settings changed handler
         HotReloadSettings();
+        App.Current.Services.GetService<SettingsModel>()!.SettingsChanged += SettingsChangedHandler;
     }
+
+    private void SettingsChangedHandler(SettingsModel sender, object? args) => HotReloadSettings();
 
     private void RootShellPage_Loaded(object sender, RoutedEventArgs e) =>
 

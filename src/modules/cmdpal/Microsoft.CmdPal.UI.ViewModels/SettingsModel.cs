@@ -8,6 +8,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.PowerToys.Settings.UI.Library;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -16,20 +17,22 @@ public partial class SettingsModel : ObservableObject
     [JsonIgnore]
     public static readonly string FilePath;
 
-    public string TestString { get; set; } = string.Empty;
+    public event TypedEventHandler<SettingsModel, object?>? SettingsChanged;
 
+    ///////////////////////////////////////////////////////////////////////////
+    // SETTINGS HERE
     public HotkeySettings? Hotkey { get; set; } = new HotkeySettings(true, true, false, false, 0xBE);
 
     public Dictionary<string, ProviderSettings> ProviderSettings { get; set; } = [];
+
+    // END SETTINGS
+    ///////////////////////////////////////////////////////////////////////////
 
     static SettingsModel()
     {
         FilePath = SettingsJsonPath();
     }
 
-    // public SettingsModel()
-    // {
-    // }
     public static SettingsModel LoadSettings()
     {
         if (string.IsNullOrEmpty(FilePath))
@@ -90,6 +93,11 @@ public partial class SettingsModel : ObservableObject
 
                     var serialized = savedSettings.ToJsonString(_serializerOptions);
                     File.WriteAllText(FilePath, serialized);
+
+                    // TODO: Instead of just raising the event here, we should
+                    // have a file change watcher on the settings file, and
+                    // reload the settings then
+                    model.SettingsChanged?.Invoke(model, null);
                 }
                 else
                 {
