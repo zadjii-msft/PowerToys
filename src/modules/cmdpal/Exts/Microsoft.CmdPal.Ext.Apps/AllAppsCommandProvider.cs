@@ -15,6 +15,7 @@ public partial class AllAppsCommandProvider : CommandProvider
 
     public AllAppsCommandProvider()
     {
+        Id = "AllApps";
         DisplayName = "Installed apps";
         Icon = new("\ue71d");
 

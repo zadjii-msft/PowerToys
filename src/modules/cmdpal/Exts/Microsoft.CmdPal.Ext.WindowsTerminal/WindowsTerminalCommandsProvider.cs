@@ -19,6 +19,7 @@ public partial class WindowsTerminalCommandsProvider : CommandProvider
 
     public WindowsTerminalCommandsProvider()
     {
+        Id = "WindowsTerminalProfiles";
         DisplayName = Resources.extension_name;
         Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WindowsTerminal.dark.png"));
 
