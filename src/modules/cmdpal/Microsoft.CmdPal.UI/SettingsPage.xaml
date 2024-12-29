@@ -38,60 +38,33 @@
             Spacing="{StaticResource SettingsCardSpacing}" />
         
     </Page.Resources>
-    <ScrollViewer Padding="8">
-        <Grid Padding="8">
+    <ScrollViewer Padding="8, 0, 8, 8">
+        <Grid Padding="8, -22, 8, 8">
             <StackPanel MaxWidth="1000"
                         HorizontalAlignment="Stretch"
                         Spacing="{StaticResource SettingsCardSpacing}">
                 
-                <!--I got these from the samples, but they break XAML hot-reloading, so I commented them out. -->
+                <!--
+                I got these from the samples, but they break XAML hot-reloading, 
+                so I commented them out. 
+                -->
                 
                 <!--<win:StackPanel.ChildrenTransitions>
                     <win:EntranceThemeTransition FromVerticalOffset="50" />
                     <win:RepositionThemeTransition IsStaggeringEnabled="False" />
                 </win:StackPanel.ChildrenTransitions>-->
-                
-                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Text="Section 1" />
-                <controls:SettingsCard Description="This is a default card, with the Header, HeaderIcon, Description and Content set"
-                                       Header="This is the Header"
-                                       HeaderIcon="{ui:FontIcon Glyph=&#xE716;}">
 
-                    <Button Content="Test Save"
-                            Tapped="SaveButton_Tapped"
-                            Style="{StaticResource AccentButtonStyle}" />
-                    
-                </controls:SettingsCard>
-                
+                <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                    x:Uid="CmdPalSettingsHeader" />
+
                 <controls:SettingsCard Description="This key will open the Command Palette"
                                        Header="Activation key"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}">
                     <ptcontrols:ShortcutControl HotkeySettings="{x:Bind ViewModel.Hotkey, Mode=TwoWay}"/>
                 </controls:SettingsCard>
 
-                <controls:SettingsExpander Description="The SettingsExpander has the same properties as a SettingsCard"
-                                           Header="SettingsExpander"
-                                           HeaderIcon="{ui:FontIcon Glyph=&#xE91B;}">
-                    <Button Content="Content"
-                            Style="{StaticResource AccentButtonStyle}" />
-
-                    <controls:SettingsExpander.Items>
-                        <controls:SettingsCard Header="A basic SettingsCard within an SettingsExpander">
-                            <Button Content="Button" />
-                        </controls:SettingsCard>
-                        <controls:SettingsCard Description="SettingsCard within an Expander can be made clickable too!"
-                                               Header="This item can be clicked"
-                                               IsClickEnabled="True" />
-
-                        <controls:SettingsCard ContentAlignment="Left">
-                            <CheckBox Content="Here the ContentAlignment is set to Left. This is great for e.g. CheckBoxes or RadioButtons" />
-                        </controls:SettingsCard>
-                    </controls:SettingsExpander.Items>
-                </controls:SettingsExpander>
-
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Text="Extensions" />
-
+                    x:Uid="ExtensionSettingsHeader" />
 
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.CommandProviders, Mode=OneWay}"
                         Layout="{StaticResource VerticalStackLayout}">
@@ -184,7 +157,7 @@
 
                 <!--  Example 'About' section  -->
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Text="About" />
+                    x:Uid="AboutSettingsHeader" />
 
                 <controls:SettingsExpander Description="© 2025. All rights reserved."
                                            Header="Windows Command Palette"
