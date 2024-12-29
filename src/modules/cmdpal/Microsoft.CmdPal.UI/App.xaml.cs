@@ -77,15 +77,13 @@ public partial class App : Application
         services.AddSingleton<ICommandProvider, AllAppsCommandProvider>();
         services.AddSingleton<ICommandProvider, ShellCommandsProvider>();
         services.AddSingleton<ICommandProvider, CalculatorCommandProvider>();
+        services.AddSingleton<ICommandProvider, BuiltInsCommandProvider>(); // Settings comes from here
         services.AddSingleton<ICommandProvider, BookmarksCommandProvider>();
-
-        // services.AddSingleton<ICommandProvider, SettingsCommandProvider>();
         services.AddSingleton<ICommandProvider, WindowsTerminalCommandsProvider>();
         services.AddSingleton<ICommandProvider, WindowsServicesCommandsProvider>();
         services.AddSingleton<ICommandProvider, RegistryCommandsProvider>();
         services.AddSingleton<ICommandProvider, WindowWalkerCommandsProvider>();
         services.AddSingleton<ICommandProvider, WindowsSettingsCommandsProvider>();
-        services.AddSingleton<ICommandProvider, BuiltInsCommandProvider>();
 
         // Models
         services.AddSingleton<TopLevelCommandManager>();

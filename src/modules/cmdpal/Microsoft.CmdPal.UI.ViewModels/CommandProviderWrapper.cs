@@ -21,11 +21,13 @@ public sealed class CommandProviderWrapper
 
     public IFallbackCommandItem[] FallbackItems { get; private set; } = [];
 
+    public string Id { get; private set; } = string.Empty;
+
     public string DisplayName { get; private set; } = string.Empty;
 
     public IconDataType Icon { get; private set; } = new(string.Empty);
 
-    public string ProviderId => $"{extensionWrapper?.PackageFamilyName ?? string.Empty}/{DisplayName}";
+    public string ProviderId => $"{extensionWrapper?.PackageFamilyName ?? string.Empty}/{Id}";
 
     public IExtensionWrapper? Extension => extensionWrapper;
 
@@ -33,6 +35,7 @@ public sealed class CommandProviderWrapper
     {
         _commandProvider = provider;
         isValid = true;
+        Id = provider.Id;
         DisplayName = provider.DisplayName;
         Icon = provider.Icon;
     }
@@ -70,6 +73,7 @@ public sealed class CommandProviderWrapper
         // On a BG thread here
         var fallbacks = _commandProvider.FallbackCommands();
 
+        Id = _commandProvider.Id;
         DisplayName = _commandProvider.DisplayName;
         Icon = _commandProvider.Icon;
 
