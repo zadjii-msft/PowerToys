@@ -23,4 +23,11 @@ public partial class BuiltInsCommandProvider : CommandProvider
             new FallbackCommandItem(quitAction) { Subtitle = "Exit Command Palette" },
             new FallbackCommandItem(reloadAction) { Subtitle = "Reload Command Palette extensions" },
         ];
+
+    public BuiltInsCommandProvider()
+    {
+        Id = "Core";
+        DisplayName = "Built-in commands";
+        Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\StoreLogo.scale-200.png"));
+    }
 }
