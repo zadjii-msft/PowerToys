@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.WinUI;
+using Microsoft.CmdPal.UI;
 using Microsoft.PowerToys.Settings.UI.Helpers;
 using Microsoft.PowerToys.Settings.UI.Library;
 using Microsoft.UI.Xaml;
@@ -136,10 +137,10 @@ public sealed partial class ShortcutControl : UserControl, IDisposable
         shortcutDialog.Opened -= ShortcutDialog_Opened;
         shortcutDialog.Closing -= ShortcutDialog_Closing;
 
-        // if (App.GetSettingsWindow() != null)
-        // {
-        //    App.GetSettingsWindow().Activated -= ShortcutDialog_SettingsWindow_Activated;
-        // }
+        if (App.Current.AppWindow != null)
+        {
+            App.Current.AppWindow.Activated -= ShortcutDialog_SettingsWindow_Activated;
+        }
 
         // Dispose the HotkeySettingsControlHook object to terminate the hook threads when the textbox is unloaded
         hook?.Dispose();
@@ -158,10 +159,10 @@ public sealed partial class ShortcutControl : UserControl, IDisposable
         shortcutDialog.Opened += ShortcutDialog_Opened;
         shortcutDialog.Closing += ShortcutDialog_Closing;
 
-        // if (App.GetSettingsWindow() != null)
-        // {
-        //    App.GetSettingsWindow().Activated += ShortcutDialog_SettingsWindow_Activated;
-        // }
+        if (App.Current.AppWindow != null)
+        {
+            App.Current.AppWindow.Activated += ShortcutDialog_SettingsWindow_Activated;
+        }
     }
 
     private void KeyEventHandler(int key, bool matchValue, int matchValueCode)

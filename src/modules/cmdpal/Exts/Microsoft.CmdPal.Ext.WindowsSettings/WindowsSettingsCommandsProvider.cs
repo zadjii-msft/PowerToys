@@ -18,7 +18,7 @@ public partial class WindowsSettingsCommandsProvider : CommandProvider
 
     public WindowsSettingsCommandsProvider()
     {
-        DisplayName = "Windows.Settings";
+        Id = "Windows.Settings";
         DisplayName = $"Windows Settings";
         Icon = new("\uE713"); // Settings
 

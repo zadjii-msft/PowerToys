@@ -47,6 +47,6 @@ public sealed partial class SettingsPage : Page
 
     private void SaveButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
     {
-        ViewModel?.Save();
+        // ViewModel?.Save();
     }
 }

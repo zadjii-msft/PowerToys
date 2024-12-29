@@ -23,7 +23,7 @@ public partial class SettingsViewModel : ObservableObject
         set
         {
             _settings.Hotkey = value;
-            _settings.Save();
+            Save();
         }
     }
 
@@ -39,13 +39,17 @@ public partial class SettingsViewModel : ObservableObject
 
         foreach (var item in activeProviders)
         {
-            if (!allProviderSettings.ContainsKey(item.ProviderId))
+            if (!allProviderSettings.TryGetValue(item.ProviderId, out var value))
             {
                 allProviderSettings[item.ProviderId] = new ProviderSettings(item);
             }
+            else
+            {
+                value.Connect(item);
+            }
 
-            var providerSettings = allProviderSettings.TryGetValue(item.ProviderId, out var value) ?
-                value :
+            var providerSettings = allProviderSettings.TryGetValue(item.ProviderId, out var value2) ?
+                value2 :
                 new ProviderSettings(item);
 
             var settingsModel = new ProviderSettingsViewModel(item, providerSettings);
@@ -60,8 +64,8 @@ public partial class SettingsViewModel : ObservableObject
         return allProviders;
     }
 
-    public void Save()
+    private void Save()
     {
-        _settings.Save();
+        SettingsModel.SaveSettings(_settings);
     }
 }

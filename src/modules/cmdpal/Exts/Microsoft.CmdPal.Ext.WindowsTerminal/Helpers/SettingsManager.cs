@@ -49,7 +49,7 @@ public class SettingsManager : JsonSettingsManager
         var directory = Path.GetDirectoryName(path) ?? string.Empty;
 
         // now, the state is just next to the exe
-        return Path.Combine(directory, "state.json");
+        return Path.Combine(directory, "settings.json");
     }
 
     public SettingsManager()

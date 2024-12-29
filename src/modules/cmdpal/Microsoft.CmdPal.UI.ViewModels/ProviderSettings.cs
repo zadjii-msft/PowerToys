@@ -30,6 +30,17 @@ public class ProviderSettings
 
     public ProviderSettings(CommandProviderWrapper wrapper)
     {
+        Connect(wrapper);
+    }
+
+    [JsonConstructor]
+    public ProviderSettings(bool isEnabled)
+    {
+        IsEnabled = isEnabled;
+    }
+
+    public void Connect(CommandProviderWrapper wrapper)
+    {
         PackageFamilyName = wrapper.Extension?.PackageFamilyName ?? string.Empty;
         Id = wrapper.DisplayName;
         ProviderDisplayName = wrapper.DisplayName;
