@@ -48,10 +48,11 @@ public sealed partial class ShortcutControl : UserControl, IDisposable
             return;
         }
 
-        // var resourceLoader = Helpers.ResourceLoaderInstance.ResourceLoader;
+        var resourceLoader = Microsoft.CmdPal.UI.Helpers.ResourceLoaderInstance.ResourceLoader;
         var newValue = (bool)(e?.NewValue ?? false);
-
-        var text = newValue ? "Activation_Shortcut_With_Disable_Description" : "Activation_Shortcut_Description";   // resourceLoader.GetString("Activation_Shortcut_With_Disable_Description") : resourceLoader.GetString("Activation_Shortcut_Description");
+        var text = newValue ?
+            resourceLoader.GetString("Activation_Shortcut_With_Disable_Description") :
+            resourceLoader.GetString("Activation_Shortcut_Description");
         description.Text = text;
     }
 
@@ -108,23 +109,23 @@ public sealed partial class ShortcutControl : UserControl, IDisposable
         this.Unloaded += ShortcutControl_Unloaded;
         this.Loaded += ShortcutControl_Loaded;
 
-        // var resourceLoader = Helpers.ResourceLoaderInstance.ResourceLoader;
+        var resourceLoader = Microsoft.CmdPal.UI.Helpers.ResourceLoaderInstance.ResourceLoader;
 
         // We create the Dialog in C# because doing it in XAML is giving WinUI/XAML Island bugs when using dark theme.
         shortcutDialog = new ContentDialog
         {
             XamlRoot = this.XamlRoot,
-            Title = "Activation_Shortcut_Title", // resourceLoader.GetString("Activation_Shortcut_Title"),
+            Title = resourceLoader.GetString("Activation_Shortcut_Title"),
             Content = c,
-            PrimaryButtonText = "Activation_Shortcut_Save", // resourceLoader.GetString("Activation_Shortcut_Save"),
-            SecondaryButtonText = "Activation_Shortcut_Reset", // resourceLoader.GetString("Activation_Shortcut_Reset"),
-            CloseButtonText = "Activation_Shortcut_Cancel", // resourceLoader.GetString("Activation_Shortcut_Cancel"),
+            PrimaryButtonText = resourceLoader.GetString("Activation_Shortcut_Save"),
+            SecondaryButtonText = resourceLoader.GetString("Activation_Shortcut_Reset"),
+            CloseButtonText = resourceLoader.GetString("Activation_Shortcut_Cancel"),
             DefaultButton = ContentDialogButton.Primary,
         };
         shortcutDialog.SecondaryButtonClick += ShortcutDialog_Reset;
         shortcutDialog.RightTapped += ShortcutDialog_Disable;
 
-        AutomationProperties.SetName(EditButton, "Activation_Shortcut_Title"/* resourceLoader.GetString("Activation_Shortcut_Title") */);
+        AutomationProperties.SetName(EditButton, resourceLoader.GetString("Activation_Shortcut_Title"));
 
         OnAllowDisableChanged(this, null);
     }

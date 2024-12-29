@@ -20,7 +20,11 @@ public partial class SettingsViewModel : ObservableObject
     public HotkeySettings? Hotkey
     {
         get => _settings.Hotkey;
-        set => _settings.Hotkey = value;
+        set
+        {
+            _settings.Hotkey = value;
+            _settings.Save();
+        }
     }
 
     public ObservableCollection<ProviderSettingsViewModel> CommandProviders { get; } = [];
@@ -35,6 +39,11 @@ public partial class SettingsViewModel : ObservableObject
 
         foreach (var item in activeProviders)
         {
+            if (!allProviderSettings.ContainsKey(item.ProviderId))
+            {
+                allProviderSettings[item.ProviderId] = new ProviderSettings(item);
+            }
+
             var providerSettings = allProviderSettings.TryGetValue(item.ProviderId, out var value) ?
                 value :
                 new ProviderSettings(item);
