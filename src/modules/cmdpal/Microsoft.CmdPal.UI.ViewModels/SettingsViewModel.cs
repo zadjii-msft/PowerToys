@@ -4,18 +4,29 @@
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.CmdPal.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.PowerToys.Settings.UI.Library;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class SettingsViewModel : ObservableObject
+public partial class SettingsViewModel : ObservableObject, IPageViewModel
 {
     private readonly SettingsModel _settings;
     private readonly IServiceProvider _serviceProvider;
 
-    [ObservableProperty]
-    public partial bool IsCardEnabled { get; set; } = true;
+    public bool IsNested
+    {
+        get => true; set { }
+    }
+
+    public string Filter { get; set; } = string.Empty;
+
+    public string Title => "Settings";
+
+    public bool IsLoading => false;
+
+    public IconDataType Icon => new("\uE713");
 
     public HotkeySettings? Hotkey
     {

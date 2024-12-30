@@ -197,7 +197,7 @@ public sealed partial class ShellPage :
             RootFrame.Navigate(typeof(SettingsPage), settingsViewModel, _slideRightTransition);
 
             // SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
-            WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(null));
+            WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(settingsViewModel));
         });
     }
 
