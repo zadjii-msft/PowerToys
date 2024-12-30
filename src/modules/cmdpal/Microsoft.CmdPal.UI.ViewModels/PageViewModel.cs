@@ -9,7 +9,7 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
+public partial class PageViewModel : ExtensionObjectViewModel, IPageContext, IPageViewModel
 {
     public TaskScheduler Scheduler { get; private set; }
 

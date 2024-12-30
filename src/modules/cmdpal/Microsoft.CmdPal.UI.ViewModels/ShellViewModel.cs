@@ -24,7 +24,7 @@ public partial class ShellViewModel(IServiceProvider _serviceProvider) : Observa
     public partial bool IsDetailsVisible { get; set; }
 
     [ObservableProperty]
-    public partial PageViewModel? CurrentPage { get; set; }
+    public partial IPageViewModel? CurrentPage { get; set; }
 
     [RelayCommand]
     public async Task<bool> LoadAsync()

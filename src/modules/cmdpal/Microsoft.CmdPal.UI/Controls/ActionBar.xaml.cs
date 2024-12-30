@@ -20,15 +20,15 @@ public sealed partial class ActionBar : UserControl,
 {
     public ActionBarViewModel ViewModel { get; set; } = new();
 
-    public PageViewModel? CurrentPageViewModel
+    public IPageViewModel? CurrentPageViewModel
     {
-        get => (PageViewModel?)GetValue(CurrentPageViewModelProperty);
+        get => (IPageViewModel?)GetValue(CurrentPageViewModelProperty);
         set => SetValue(CurrentPageViewModelProperty, value);
     }
 
     // Using a DependencyProperty as the backing store for CurrentPage.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty CurrentPageViewModelProperty =
-        DependencyProperty.Register(nameof(CurrentPageViewModel), typeof(PageViewModel), typeof(ActionBar), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(CurrentPageViewModel), typeof(IPageViewModel), typeof(ActionBar), new PropertyMetadata(null));
 
     public ActionBar()
     {

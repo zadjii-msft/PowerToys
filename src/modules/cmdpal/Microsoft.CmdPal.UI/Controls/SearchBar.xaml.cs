@@ -27,15 +27,15 @@ public sealed partial class SearchBar : UserControl,
     /// </summary>
     private readonly DispatcherQueueTimer _debounceTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
 
-    public PageViewModel? CurrentPageViewModel
+    public IPageViewModel? CurrentPageViewModel
     {
-        get => (PageViewModel?)GetValue(CurrentPageViewModelProperty);
+        get => (IPageViewModel?)GetValue(CurrentPageViewModelProperty);
         set => SetValue(CurrentPageViewModelProperty, value);
     }
 
     // Using a DependencyProperty as the backing store for CurrentPageViewModel.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty CurrentPageViewModelProperty =
-        DependencyProperty.Register(nameof(CurrentPageViewModel), typeof(PageViewModel), typeof(SearchBar), new PropertyMetadata(null, OnCurrentPageViewModelChanged));
+        DependencyProperty.Register(nameof(CurrentPageViewModel), typeof(IPageViewModel), typeof(SearchBar), new PropertyMetadata(null, OnCurrentPageViewModelChanged));
 
     private static void OnCurrentPageViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
