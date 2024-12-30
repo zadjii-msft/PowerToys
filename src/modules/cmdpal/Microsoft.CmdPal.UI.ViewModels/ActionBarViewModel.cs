@@ -11,6 +11,7 @@ using Microsoft.CmdPal.UI.ViewModels.Messages;
 namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class ActionBarViewModel : ObservableObject,
+    IRecipient<NavigateToPageMessage>,
     IRecipient<UpdateActionBarMessage>
 {
     public ListItemViewModel? SelectedItem
@@ -24,7 +25,10 @@ public partial class ActionBarViewModel : ObservableObject,
     }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPrimaryCommand))]
     public partial CommandItemViewModel? PrimaryAction { get; set; }
+
+    public bool HasPrimaryCommand => PrimaryAction != null;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSecondaryCommand))]
@@ -43,8 +47,11 @@ public partial class ActionBarViewModel : ObservableObject,
 
     public ActionBarViewModel()
     {
+        WeakReferenceMessenger.Default.Register<NavigateToPageMessage>(this);
         WeakReferenceMessenger.Default.Register<UpdateActionBarMessage>(this);
     }
+
+    public void Receive(NavigateToPageMessage message) => SelectedItem = null;
 
     public void Receive(UpdateActionBarMessage message) => SelectedItem = message.ViewModel;
 
