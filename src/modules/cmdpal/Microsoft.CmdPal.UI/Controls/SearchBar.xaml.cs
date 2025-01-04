@@ -26,6 +26,7 @@ public sealed partial class SearchBar : UserControl,
     /// Gets the <see cref="DispatcherQueueTimer"/> that we create to track keyboard input and throttle/debounce before we make queries.
     /// </summary>
     private readonly DispatcherQueueTimer _debounceTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
+    private bool _isBackspaceHeld;
 
     public PageViewModel? CurrentPageViewModel
     {
@@ -133,9 +134,32 @@ public sealed partial class SearchBar : UserControl,
 
     private void FilterBox_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (string.IsNullOrEmpty(FilterBox.Text) && e.Key == VirtualKey.Back)
+        if (e.Key == VirtualKey.Back)
         {
-            WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
+            if (string.IsNullOrEmpty(FilterBox.Text))
+            {
+                if (!_isBackspaceHeld)
+                {
+                    // Navigate back on single backspace when empty
+                    WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
+                }
+
+                e.Handled = true;
+            }
+            else
+            {
+                // Mark backspace as held to handle continuous deletion
+                _isBackspaceHeld = true;
+            }
+        }
+    }
+
+    private void FilterBox_PreviewKeyUp(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == VirtualKey.Back)
+        {
+            // Reset the backspace state on key release
+            _isBackspaceHeld = false;
         }
     }
 
