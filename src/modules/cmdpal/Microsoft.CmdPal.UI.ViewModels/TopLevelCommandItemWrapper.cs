@@ -5,7 +5,6 @@
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
-using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -18,7 +17,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
 {
     public ExtensionObject<ICommandItem> Model { get; }
 
-    private readonly bool _isFallback;
+    public bool IsFallback { get; private set; }
 
     public string Id { get; private set; } = string.Empty;
 
@@ -32,7 +31,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
     {
         _topLevelCommand = (TopLevelCommandWrapper)this.Command!;
 
-        _isFallback = isFallback;
+        IsFallback = isFallback;
 
         // TODO: In reality, we should do an async fetch when we're created
         // from an extension object. Probably have an
@@ -99,7 +98,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
 
     public void TryUpdateFallbackText(string newQuery)
     {
-        if (!_isFallback)
+        if (!IsFallback)
         {
             return;
         }
