@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
-    xmlns:cmdpalui="using:Microsoft.CmdPal.UI"
+    xmlns:cmdpalUI="using:Microsoft.CmdPal.UI"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:cpcontrols="using:Microsoft.CmdPal.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -24,7 +24,7 @@
 
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
 
-            <cmdpalui:MessageStateToSeverityConverter x:Key="MessageStateToSeverityConverter" />
+            <cmdpalUI:MessageStateToSeverityConverter x:Key="MessageStateToSeverityConverter" />
 
             <converters:BoolToVisibilityConverter
                 x:Key="BoolToInvertedVisibilityConverter"
@@ -225,7 +225,7 @@
             Well, as it turns out, the Informational InfoBar has a transparent
             background. It just cannot be bothered. So, we need to manually give
             it one to actually obscure the text beneath it. And you can't just give
-            the infobar itself a Background, because then the other Severtiy's
+            the InfoBar itself a Background, because then the other Severity's
             won't get colorized.
             
             See https://github.com/microsoft/microsoft-ui-xaml/issues/5741
