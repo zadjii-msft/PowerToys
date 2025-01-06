@@ -12,7 +12,7 @@
     xmlns:local="using:Microsoft.CmdPal.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:Microsoft.CmdPal.UI.ViewModels"
-    xmlns:ptcontrols="using:Microsoft.PowerToys.Settings.UI.Controls"
+    xmlns:ptControls="using:Microsoft.PowerToys.Settings.UI.Controls"
     Background="Transparent"
     xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     mc:Ignorable="d">
@@ -60,7 +60,7 @@
                 <controls:SettingsCard Description="This key will open the Command Palette"
                                        Header="Activation key"
                                        HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}">
-                    <ptcontrols:ShortcutControl HotkeySettings="{x:Bind ViewModel.Hotkey, Mode=TwoWay}"/>
+                    <ptControls:ShortcutControl HotkeySettings="{x:Bind ViewModel.Hotkey, Mode=TwoWay}"/>
                 </controls:SettingsCard>
 
                 <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
@@ -84,7 +84,7 @@
                                 the layout of the SettingsCard HeaderIcon, 
                                 Header & Description, all within the Content.
                                 
-                                Most of what follows is lited directly from 
+                                Most of what follows is lifted directly from 
                                 https://github.com/CommunityToolkit/Windows/blob/main/components/SettingsControls/src/SettingsCard/SettingsCard.xaml
                                 -->
                                 <Grid HorizontalAlignment="Stretch"
