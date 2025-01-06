@@ -4,6 +4,7 @@
 
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -21,9 +22,13 @@ public sealed class CommandProviderWrapper
 
     public IFallbackCommandItem[] FallbackItems { get; private set; } = [];
 
+    public event TypedEventHandler<CommandProviderWrapper, ItemsChangedEventArgs>? CommandsChanged;
+
     public CommandProviderWrapper(ICommandProvider provider)
     {
         _commandProvider = provider;
+        _commandProvider.ItemsChanged += CommandProvider_ItemsChanged;
+
         isValid = true;
     }
 
@@ -43,6 +48,15 @@ public sealed class CommandProviderWrapper
         }
 
         _commandProvider = provider;
+
+        try
+        {
+            _commandProvider.ItemsChanged += CommandProvider_ItemsChanged;
+        }
+        catch
+        {
+        }
+
         isValid = true;
     }
 
@@ -89,4 +103,9 @@ public sealed class CommandProviderWrapper
     public override bool Equals(object? obj) => obj is CommandProviderWrapper wrapper && isValid == wrapper.isValid;
 
     public override int GetHashCode() => _commandProvider.GetHashCode();
+
+    private void CommandProvider_ItemsChanged(object sender, ItemsChangedEventArgs args)
+    {
+        this.CommandsChanged?.Invoke(this, args);
+    }
 }
