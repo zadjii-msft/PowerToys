@@ -15,11 +15,13 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
     // cannot be marked [ObservableProperty]
     public string Text { get; private set; } = string.Empty;
 
-    public string Tooltip { get; private set; } = string.Empty;
+    public string ToolTip { get; private set; } = string.Empty;
 
     public OptionalColor Foreground { get; private set; }
 
     public OptionalColor Background { get; private set; }
+
+    public OptionalColor BorderBrush { get; private set; }
 
     public IconDataType Icon { get; private set; } = new(string.Empty);
 
@@ -39,13 +41,15 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
         Text = model.Text;
         Foreground = model.Foreground;
         Background = model.Background;
-        Tooltip = model.ToolTip;
+        BorderBrush = model.BorderBrush;
+        ToolTip = model.ToolTip;
         Icon = model.Icon;
 
         UpdateProperty(nameof(Text));
         UpdateProperty(nameof(Foreground));
         UpdateProperty(nameof(Background));
-        UpdateProperty(nameof(Tooltip));
+        UpdateProperty(nameof(BorderBrush));
+        UpdateProperty(nameof(ToolTip));
         UpdateProperty(nameof(Icon));
     }
 }
