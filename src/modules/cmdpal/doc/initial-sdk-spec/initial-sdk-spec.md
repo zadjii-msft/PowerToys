@@ -1353,7 +1353,7 @@ interface IFallbackCommandItem requires ICommandItem {
     IFallbackHandler FallbackHandler{ get; };
 };
 
-interface ICommandProvider requires Windows.Foundation.IClosable
+interface ICommandProvider requires Windows.Foundation.IClosable, INotifyItemsChanged
 {
     String DisplayName { get; };
     IconDataType Icon { get; };
@@ -1377,6 +1377,14 @@ actions, or they can be pages that the user can navigate to.
 `TopLevelCommands` returns a list of `ICommandItem`s. These are basically just a
 simpler form of `IListItem`, which can be displayed even as a stub (as described
 in [Caching](#caching)), before the extension process is loaded.
+
+The `INotifyItemsChanged` interface can be used to let DevPal know at runtime
+that the list of top-level command items has changed. This can be used for
+something like an extension that might require the user to login before
+accessing certain pages within the extension. Command Providers which are
+`Frozen=true` can also use this event to change their list of cached commands,
+since the only time an extension can raise this event is when it's already
+running. 
 
 #### Fallback commands
 
