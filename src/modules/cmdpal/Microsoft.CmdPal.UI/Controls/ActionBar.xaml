@@ -63,10 +63,10 @@
         </Grid.ColumnDefinitions>
 
         <Grid
-                Margin="8,0,0,0"
             x:Name="IconRoot"
+            Margin="8,0,0,0"
             Tapped="PageIcon_Tapped">
-            
+
             <cpcontrols:IconBox
                 x:Name="IconBorder"
                 Width="16"
@@ -74,40 +74,33 @@
                 x:Load="{x:Bind IsLoaded, Mode=OneWay}"
                 CornerRadius="{StaticResource ControlCornerRadius}"
                 SourceKey="{x:Bind CurrentPageViewModel.Icon, Mode=OneWay}"
-                SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}">
-                
-            </cpcontrols:IconBox>
-            <InfoBadge 
-                Visibility="{x:Bind CurrentPageViewModel.HasStatusMessage, Mode=OneWay}"
-                Value="{x:Bind CurrentPageViewModel.StatusMessages.Count, Mode=OneWay}" />
+                SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}" />
+            <InfoBadge Visibility="{x:Bind CurrentPageViewModel.HasStatusMessage, Mode=OneWay}" Value="{x:Bind CurrentPageViewModel.StatusMessages.Count, Mode=OneWay}" />
             <Grid.ContextFlyout>
-                <Flyout 
-        x:Name="StatusMessagesFlyout"
-        Placement="TopEdgeAlignedLeft">
+                <Flyout x:Name="StatusMessagesFlyout" Placement="TopEdgeAlignedLeft">
                     <ItemsRepeater
-            Margin="-8"
-            x:Name="MessagesDropdown"
-            Layout="{StaticResource VerticalStackLayout}"
-            ItemsSource="{x:Bind CurrentPageViewModel.StatusMessages, Mode=OneWay}">
+                        x:Name="MessagesDropdown"
+                        Margin="-8"
+                        ItemsSource="{x:Bind CurrentPageViewModel.StatusMessages, Mode=OneWay}"
+                        Layout="{StaticResource VerticalStackLayout}">
                         <!--<ItemsRepeater.ItemContainerTransitions>
             <TransitionCollection />
         </ItemsRepeater.ItemContainerTransitions>-->
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:StatusMessageViewModel">
                                 <StackPanel
-                        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" 
-                        Margin="0"
-                        VerticalAlignment="Bottom" 
-                        HorizontalAlignment="Stretch" 
-                        CornerRadius="0"
-                        Grid.Row="0" >
-                                    <InfoBar 
-                            Severity="{x:Bind State, Mode=OneWay, Converter={StaticResource MessageStateToSeverityConverter}}"
-                            CornerRadius="{ThemeResource ControlCornerRadius}"
-                            IsClosable="False"
-                            IsOpen="True"
-                            Message="{x:Bind Message, Mode=OneWay}">
-                                    </InfoBar>
+                                    Grid.Row="0"
+                                    Margin="0"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Bottom"
+                                    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                                    CornerRadius="0">
+                                    <InfoBar
+                                        CornerRadius="{ThemeResource ControlCornerRadius}"
+                                        IsClosable="False"
+                                        IsOpen="True"
+                                        Message="{x:Bind Message, Mode=OneWay}"
+                                        Severity="{x:Bind State, Mode=OneWay, Converter={StaticResource MessageStateToSeverityConverter}}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
