@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.CmdPal.Extensions;
@@ -36,6 +37,8 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
     public partial StatusMessageViewModel? MostRecentStatusMessage { get; private set; } = null;
+
+    public ObservableCollection<StatusMessageViewModel> StatusMessages => ExtensionHost.StatusMessages;
 
     // These are properties that are "observable" from the extension object
     // itself, in the sense that they get raised by PropChanged events from the
