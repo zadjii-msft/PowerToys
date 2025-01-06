@@ -35,7 +35,7 @@
         <DataTemplate x:Key="TagTemplate" x:DataType="viewmodels:TagViewModel">
             <cpcontrols:Tag
                 BackgroundColor="{x:Bind Background, Mode=OneWay}"
-                BorderColor="{x:Bind Border, Mode=OneWay}"
+                BorderBrushColor="{x:Bind BorderBrush, Mode=OneWay}"
                 ForegroundColor="{x:Bind Foreground, Mode=OneWay}"
                 HasIcon="{x:Bind HasIcon, Mode=OneWay}"
                 Icon="{x:Bind Icon, Mode=OneWay}"
