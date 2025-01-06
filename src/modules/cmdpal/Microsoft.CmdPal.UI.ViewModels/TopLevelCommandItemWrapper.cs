@@ -57,6 +57,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
             MoreCommands = model.MoreCommands;
 
             model.PropChanged += Model_PropChanged;
+            _topLevelCommand.PropChanged += Model_PropChanged;
         }
         catch (Exception ex)
         {
@@ -77,6 +78,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
 
             switch (propertyName)
             {
+                case nameof(_topLevelCommand.Name):
                 case nameof(Title):
                     this.Title = model.Title;
                     break;

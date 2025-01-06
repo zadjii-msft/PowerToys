@@ -37,6 +37,36 @@ public partial class TopLevelCommandWrapper : ICommand
         Id = model.Id;
         Icon = model.Icon;
 
+        model.PropChanged += Model_PropChanged;
         model.PropChanged += this.PropChanged;
+    }
+
+    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    {
+        try
+        {
+            var propertyName = args.PropertyName;
+            var model = _command.Unsafe;
+            if (model == null)
+            {
+                return; // throw?
+            }
+
+            switch (propertyName)
+            {
+                case nameof(Name):
+                    this.Name = model.Name;
+                    break;
+                case nameof(Icon):
+                    var listIcon = model.Icon;
+                    Icon = model.Icon;
+                    break;
+            }
+
+            PropChanged?.Invoke(this, args);
+        }
+        catch
+        {
+        }
     }
 }
