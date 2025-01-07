@@ -24,7 +24,11 @@ public partial class SettingsViewModel : ObservableObject, IPageViewModel
 
     public string Title => "Settings";
 
+    public string ErrorMessage => string.Empty;
+
     public bool IsLoading => false;
+
+    public bool IsInitialized => true;
 
     public IconDataType Icon => new("\uE713");
 

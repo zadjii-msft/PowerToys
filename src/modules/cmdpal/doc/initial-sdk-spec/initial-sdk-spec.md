@@ -1,7 +1,7 @@
 ---
 author: Mike Griese
 created on: 2024-07-19
-last updated: 2024-12-15
+last updated: 2024-12-31
 issue id: n/a
 ---
 
@@ -53,6 +53,7 @@ functionality.
     - [Pages](#pages)
       - [List Pages](#list-pages)
         - [Updating the list](#updating-the-list)
+        - [Empty content](#empty-content)
         - [Filtering the list](#filtering-the-list)
       - [Markdown Pages](#markdown-pages)
       - [Form Pages](#form-pages)
@@ -740,6 +741,7 @@ interface IListPage requires IPage, INotifyItemsChanged {
     IFilters Filters { get; };
     IGridProperties GridProperties { get; };
     Boolean HasMoreItems { get; };
+    ICommandItem EmptyContent { get; };
 
     IListItem[] GetItems();     
     void LoadMore();
@@ -1001,6 +1003,22 @@ the user to type a query and get a list of issues back.
 9. The extension does the background query to match
 10. The extension raises an `ItemsChanged(5)`, to indicate there are 5 results
 11. CmdPal calls `GetItems` to fetch the items.
+
+##### Empty content
+
+Developers can specify an `EmptyState` to customize the way the list page looks
+when there are no search results. This will control what's displayed to the user
+when both:
+* `IsLoading = false`
+* `GetItems()` returns null or an empty list
+
+This property is observable like anything else, which allows developers to
+change the empty state contextually. For example, consider a "search winget"
+extension:
+
+* If the user hasn't typed anything yet -> `Title="Start typing to search winget"`
+* If the user has typed and no results were found -> `Title="No results found"`,
+  `Subtitle="Your search '...' returned no packages on winget"`
 
 ##### Filtering the list
 
@@ -1353,7 +1371,7 @@ interface IFallbackCommandItem requires ICommandItem {
     IFallbackHandler FallbackHandler{ get; };
 };
 
-interface ICommandProvider requires Windows.Foundation.IClosable
+interface ICommandProvider requires Windows.Foundation.IClosable, INotifyItemsChanged
 {
     String Id { get; };
     String DisplayName { get; };
@@ -1378,6 +1396,14 @@ actions, or they can be pages that the user can navigate to.
 `TopLevelCommands` returns a list of `ICommandItem`s. These are basically just a
 simpler form of `IListItem`, which can be displayed even as a stub (as described
 in [Caching](#caching)), before the extension process is loaded.
+
+The `INotifyItemsChanged` interface can be used to let DevPal know at runtime
+that the list of top-level command items has changed. This can be used for
+something like an extension that might require the user to login before
+accessing certain pages within the extension. Command Providers which are
+`Frozen=true` can also use this event to change their list of cached commands,
+since the only time an extension can raise this event is when it's already
+running. 
 
 `Id` is only necessary to set if your extension implements multiple providers in
 the same package identity. This is an uncommon scenario which most developers

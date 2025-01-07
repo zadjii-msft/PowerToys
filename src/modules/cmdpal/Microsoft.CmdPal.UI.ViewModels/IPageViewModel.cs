@@ -17,4 +17,8 @@ public interface IPageViewModel
     public bool IsLoading { get; }
 
     public IconDataType Icon { get; }
+
+    public bool IsInitialized { get; }
+
+    public string ErrorMessage { get; }
 }

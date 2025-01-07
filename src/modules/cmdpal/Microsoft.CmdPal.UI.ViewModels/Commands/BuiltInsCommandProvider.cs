@@ -17,7 +17,8 @@ public partial class BuiltInsCommandProvider : CommandProvider
     private readonly QuitAction quitAction = new();
     private readonly ReloadExtensionsAction reloadAction = new();
 
-    public override ICommandItem[] TopLevelCommands() => [
+    public override ICommandItem[] TopLevelCommands() =>
+        [
             new CommandItem(openSettings) { Subtitle = "Open Command Palette settings" }
         ];
 

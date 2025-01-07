@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels;
@@ -180,6 +179,12 @@ public sealed partial class ShellPage :
                             break;
                         }
 
+                    case CommandResultKind.GoBack:
+                        {
+                            GoBack();
+                            break;
+                        }
+
                     case CommandResultKind.Hide:
                         {
                             // Keep this page open, but hide the palette.
@@ -208,13 +213,13 @@ public sealed partial class ShellPage :
             // Also hide our details pane about here, if we had one
             HideDetails();
 
-            // var pageViewModel = new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext());
             var settings = App.Current.Services.GetService<SettingsModel>()!;
             var settingsViewModel = new SettingsViewModel(settings, App.Current.Services);
             RootFrame.Navigate(typeof(SettingsPage), settingsViewModel, _slideRightTransition);
 
-            // SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
-            WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(settingsViewModel));
+            ViewModel.CurrentPage = settingsViewModel;
+
+            WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(null));
         });
     }
 

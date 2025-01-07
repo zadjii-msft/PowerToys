@@ -39,7 +39,7 @@
             Spacing="{StaticResource SettingsCardSpacing}" />
 
     </Page.Resources>
-    <ScrollViewer Padding="8,0,8,8">
+    <ScrollViewer Padding="8,0,8,0">
         <Grid Padding="8,-22,8,8">
             <StackPanel
                 MaxWidth="1000"
