@@ -106,6 +106,12 @@ public sealed class CommandProviderWrapper
 
     private void CommandProvider_ItemsChanged(object sender, ItemsChangedEventArgs args)
     {
+        // We don't want to handle this ourselves - we want the
+        // TopLevelCommandManager to know about this, so they can can remove
+        // our old commands from their own list.
+        //
+        // In handling this, a call will be made to `LoadTopLevelCommands` to
+        // retrieve the new items.
         this.CommandsChanged?.Invoke(this, args);
     }
 }
