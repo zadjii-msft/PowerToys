@@ -24,6 +24,15 @@ namespace Microsoft.CmdPal.Extensions
     };
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    runtimeclass IconInfo {
+        IconInfo(String iconString);
+        IconInfo(IconDataType lightIcon, IconDataType darkIcon);
+
+        IconDataType Light { get; };
+        IconDataType Dark { get; };
+    };
+
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     runtimeclass KeyChord
     {
         KeyChord();
@@ -62,7 +71,7 @@ namespace Microsoft.CmdPal.Extensions
     interface ICommand requires INotifyPropChanged{
         String Name{ get; };
         String Id{ get; };
-        IconDataType Icon{ get; };
+        IconInfo Icon{ get; };
     }
     
     enum CommandResultKind {
@@ -106,7 +115,7 @@ namespace Microsoft.CmdPal.Extensions
     interface IFilter requires IFilterItem {
         String Id { get; };
         String Name { get; };
-        IconDataType Icon { get; };
+        IconInfo Icon { get; };
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
@@ -226,7 +235,7 @@ namespace Microsoft.CmdPal.Extensions
     interface ICommandItem requires INotifyPropChanged {
         ICommand Command{ get; };
         IContextItem[] MoreCommands{ get; };
-        IconDataType Icon{ get; };
+        IconInfo Icon{ get; };
         String Title{ get; };
         String Subtitle{ get; };
     } 
@@ -315,7 +324,7 @@ namespace Microsoft.CmdPal.Extensions
     {
         String Id { get; };
         String DisplayName { get; };
-        IconDataType Icon { get; };
+        IconInfo Icon { get; };
         ICommandSettings Settings { get; };
         Boolean Frozen { get; };
     

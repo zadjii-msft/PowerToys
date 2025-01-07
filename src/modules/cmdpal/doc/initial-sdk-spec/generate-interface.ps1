@@ -74,6 +74,15 @@ namespace Microsoft.CmdPal.Extensions
     };
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    runtimeclass IconInfo {
+        IconInfo(String iconString);
+        IconInfo(IconDataType lightIcon, IconDataType darkIcon);
+
+        IconDataType Light { get; };
+        IconDataType Dark { get; };
+    };
+
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     runtimeclass KeyChord
     {
         KeyChord();

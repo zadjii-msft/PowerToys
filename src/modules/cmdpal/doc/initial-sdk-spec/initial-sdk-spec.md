@@ -59,7 +59,7 @@ functionality.
       - [Form Pages](#form-pages)
     - [Other types](#other-types)
       - [`ContextItem`s](#contextitems)
-      - [`IconDataType`](#icondatatype)
+      - [Icons - `IconInfo` and `IconDataType`](#icons---iconinfo-and-icondatatype)
       - [`OptionalColor`](#optionalcolor)
       - [`Details`](#details)
       - [`INotifyPropChanged`](#inotifypropchanged)
@@ -533,7 +533,7 @@ Use `cs` for samples.
 interface ICommand requires INotifyPropChanged{
     String Name{ get; };
     String Id{ get; };
-    IconDataType Icon{ get; };
+    IconInfo Icon{ get; };
 }
 
 enum CommandResultKind {
@@ -708,7 +708,7 @@ interface IContextItem {}
 interface ICommandItem requires INotifyPropChanged {
     ICommand Command{ get; };
     IContextItem[] MoreCommands{ get; };
-    IconDataType Icon{ get; };
+    IconInfo Icon{ get; };
     String Title{ get; };
     String Subtitle{ get; };
 } 
@@ -1037,7 +1037,7 @@ interface ISeparatorFilterItem requires IFilterItem {}
 interface IFilter requires IFilterItem {
     String Id { get; };
     String Name { get; };
-    IconDataType Icon { get; };
+    IconInfo Icon { get; };
 }
 
 interface IFilters {
@@ -1215,7 +1215,7 @@ flyout. Mostly, these are just commands and seperators.
 If an `ICommandContextItem` has `MoreCommands`, then when it's invoked, we'll
 create a sub-menu with those items in it.
 
-#### `IconDataType`
+#### Icons - `IconInfo` and `IconDataType`
 
 This is a wrapper type for passing information about an icon to DevPal. This
 allows extensions to specify apps in a variety of ways, including:
@@ -1235,6 +1235,13 @@ struct IconDataType {
 
     String Icon { get; };
     Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
+}
+struct IconInfo {
+    IconInfo(String iconString);
+    IconInfo(IconDataType lightIcon, IconDataType darkIcon);
+
+    IconDataType Light { get; };
+    IconDataType Dark { get; };
 }
 ```
 
@@ -1375,7 +1382,7 @@ interface ICommandProvider requires Windows.Foundation.IClosable, INotifyItemsCh
 {
     String Id { get; };
     String DisplayName { get; };
-    IconDataType Icon { get; };
+    IconInfo Icon { get; };
     ICommandSettings Settings { get; };
     Boolean Frozen { get; };
 
