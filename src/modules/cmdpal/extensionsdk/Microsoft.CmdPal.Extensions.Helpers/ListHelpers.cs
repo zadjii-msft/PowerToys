@@ -11,7 +11,7 @@ public class ListHelpers
     // Generate a score for a list item.
     public static int ScoreListItem(string query, ICommandItem listItem)
     {
-        if (string.IsNullOrEmpty(query))
+        if (string.IsNullOrEmpty(query) || string.IsNullOrWhiteSpace(query))
         {
             return 1;
         }
@@ -42,6 +42,17 @@ public class ListHelpers
             .OrderByDescending(score => score.Score);
         return scores
             .Select(score => score.ListItem);
+    }
+
+    public static IEnumerable<T> FilterList<T>(IEnumerable<T> items, string query, Func<string, T, int> scoreFunction)
+        where T : class
+    {
+        var scores = items
+            .Select(li => new Scored<T>() { Item = li, Score = scoreFunction(query, li) })
+            .Where(score => score.Score > 0)
+            .OrderByDescending(score => score.Score);
+        return scores
+            .Select(score => score.Item);
     }
 
     /// <summary>
@@ -131,4 +142,10 @@ public struct ScoredListItem
 {
     public int Score;
     public IListItem ListItem;
+}
+
+public struct Scored<T>
+{
+    public int Score;
+    public T Item;
 }
