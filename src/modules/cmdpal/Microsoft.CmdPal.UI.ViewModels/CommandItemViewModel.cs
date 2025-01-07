@@ -42,8 +42,8 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         get
         {
             List<CommandContextItemViewModel> l = _defaultCommandContextItem == null ?
-                [_defaultCommandContextItem] :
-                new();
+                new() :
+                [_defaultCommandContextItem];
 
             l.AddRange(MoreCommands);
             return l;
@@ -117,7 +117,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         }
         catch (Exception ex)
         {
-            PageContext.ShowException(ex);
+            PageContext.ShowException(ex, _commandItemModel?.Unsafe?.Title);
         }
     }
 
