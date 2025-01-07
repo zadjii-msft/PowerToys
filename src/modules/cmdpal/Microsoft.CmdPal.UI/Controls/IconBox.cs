@@ -107,7 +107,7 @@ public partial class IconBox : ContentControl
                         //
                         // So, if the icon we get back was a font icon,
                         // and the glyph for that icon is NOT in the range of
-                        // segoe icons, then let's give the icon some extra space
+                        // Segoe icons, then let's give the icon some extra space
                         @this.Padding = new Thickness(0);
 
                         if (eventArgs.Key is IconDataType iconData &&
