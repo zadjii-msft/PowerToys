@@ -33,12 +33,6 @@ public partial class Tag : Control
         set => SetValue(ForegroundColorProperty, value);
     }
 
-    public OptionalColor? BorderBrushColor
-    {
-        get => (OptionalColor?)GetValue(BorderBrushColorProperty);
-        set => SetValue(BorderBrushColorProperty, value);
-    }
-
     public bool? HasIcon
     {
         get => (bool?)GetValue(HasIconProperty);
