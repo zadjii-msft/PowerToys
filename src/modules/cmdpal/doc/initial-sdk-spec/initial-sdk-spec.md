@@ -1,13 +1,13 @@
 ---
 author: Mike Griese
 created on: 2024-07-19
-last updated: 2024-12-31
+last updated: 2025-01-08
 issue id: n/a
 ---
 
 # Run v2 Extensions SDK
 
-_aka "DevPal", "PT Run v2", "DevSearch", "Windows Command Palette", this thing has many names. I'll use DevPal throughout the doc_
+_aka "DevPal", "PT Run v2", "DevSearch", "Windows Command Palette", this thing has many names. I'll use "DevPal" throughout the doc_
 
 > [NOTE!]
 > Are you here to just see what the SDK looks like? Skip to the [Actions
@@ -1217,8 +1217,8 @@ create a sub-menu with those items in it.
 
 #### Icons - `IconInfo` and `IconDataType`
 
-This is a wrapper type for passing information about an icon to DevPal. This
-allows extensions to specify apps in a variety of ways, including:
+`IconDataType` is a wrapper type for passing information about an icon to
+DevPal. This allows extensions to specify apps in a variety of ways, including:
 
 * A URL to an image on the web or filesystem
 * A string for an emoji or Segoe Fluent icon
@@ -1226,6 +1226,9 @@ allows extensions to specify apps in a variety of ways, including:
 * A `IRandomAccessStreamReference` to raw image data. This would be for
   extensions that want to pass us raw image data, which isn't necessarily a file
   which DevPal can load itself.
+
+When specifying icons, elements can specify both the light theme and dark theme
+versions of an icon with `IconInfo`.
 
 <!-- In .CS because it's manually added to the idl -->
 ```cs
@@ -1584,9 +1587,12 @@ For example, we should have something like:
 
 ```cs
 class OpenUrlAction(string targetUrl, ActionResult result) : Microsoft.Windows.Run.Extensions.InvokableCommand {
-    public string Name => "Open";
-    public IconDataType Icon => "\uE8A7"; // OpenInNewWindow
-    public ActionResult Invoke() {
+    public OpenUrlAction()
+    {
+        Name = "Open";
+        Icon = new("\uE8A7"); // OpenInNewWindow
+    }
+    public CommandResult Invoke() {
         Process.Start(new ProcessStartInfo(targetUrl) { UseShellExecute = true });
         return result;
     }
@@ -1598,12 +1604,17 @@ that no longer do we need to add additional classes for the actions. We just use
 the helper:
 
 ```cs
-class NewsListItem(NewsPost post) : Microsoft.Windows.Run.Extensions.ListItem {
-    public string Title => post.Title;
-    public string Subtitle => post.Url;
+class NewsListItem : Microsoft.Windows.Run.Extensions.ListItem {
+    private NewsPost _post;
+    public NewsListItem(NewsPost post)
+    {
+        _post = post;
+        Title = post.Title;
+        Subtitle = post.Url;
+    }
     public IContextItem[] Commands => [
-        new CommandContextItem(new Microsoft.Windows.Run.Extensions.OpenUrlAction(post.Url, ActionResult.KeepOpen)),
-        new CommandContextItem(new Microsoft.Windows.Run.Extensions.OpenUrlAction(post.CommentsUrl, ActionResult.KeepOpen){
+        new CommandContextItem(new OpenUrlAction(post.Url, CommandResult.KeepOpen)),
+        new CommandContextItem(new OpenUrlAction(post.CommentsUrl, CommandResult.KeepOpen){
             Name = "Open comments",
             Icon = "\uE8F2" // ChatBubbles
         })
@@ -1611,7 +1622,10 @@ class NewsListItem(NewsPost post) : Microsoft.Windows.Run.Extensions.ListItem {
     public ITag[] Tags => [ new Tag(){ Text=post.Poster, new Tag(){ Text=post.Points } } ];
 }
 class HackerNewsPage: Microsoft.Windows.Run.Extensions.ListPage {
-    public bool Loading => true;
+    public HackerNewsPage()
+    {
+        Loading = true;
+    }
     IListItem[] GetItems(String query) {
         List<NewsItem> items = /* do some RSS feed stuff */;
         this.IsLoading = false;
@@ -1843,7 +1857,7 @@ classDiagram
     class ICommand {
         String Name
         String Id
-        IconDataType Icon
+        IconInfo Icon
     }
     IPage --|> ICommand
     class IPage  {
@@ -1888,7 +1902,7 @@ classDiagram
     class IFilter  {
         String Id
         String Name
-        IconDataType Icon
+        IconInfo Icon
     }
 
     class IFilters {
@@ -1904,7 +1918,7 @@ classDiagram
 
     %% IListItem --|> INotifyPropChanged
     class IListItem  {
-        IconDataType Icon
+        IconInfo Icon
         String Title
         String Subtitle
         ICommand Command
@@ -1947,14 +1961,14 @@ classDiagram
     }
 
     class IDetails {
-        IconDataType HeroImage
+        IconInfo HeroImage
         String Title
         String Body
         IDetailsElement[] Metadata
     }
 
     class ITag {
-        IconDataType Icon
+        IconInfo Icon
         String Text
         Color Color
         String ToolTip
@@ -1979,7 +1993,7 @@ classDiagram
 
     class ICommandProvider {
         String DisplayName
-        IconDataType Icon
+        IconInfo Icon
         Boolean Frozen
 
         ICommandItem[] TopLevelCommands()

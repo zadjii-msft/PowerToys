@@ -212,6 +212,8 @@ public sealed partial class ShellPage :
         ViewModel.Details = message.Details;
         ViewModel.IsDetailsVisible = true;
 
+        // Trigger a re-evaluation of whether we have a hero image based on
+        // the current theme
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
     }
 
@@ -270,13 +272,20 @@ public sealed partial class ShellPage :
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether determines if the current Details have a HeroImage, given the theme
+    /// we're currently in. This needs to be evaluated in the view, because the
+    /// viewModel doesn't actually know what the current theme is.
+    /// </summary>
     public bool HasHeroImage
     {
         get
         {
             var requestedTheme = ActualTheme;
             var iconInfo = ViewModel.Details?.HeroImage;
-            var data = requestedTheme == Microsoft.UI.Xaml.ElementTheme.Dark ? iconInfo?.Dark : iconInfo?.Light;
+            var data = requestedTheme == Microsoft.UI.Xaml.ElementTheme.Dark ?
+                iconInfo?.Dark :
+                iconInfo?.Light;
 
             // We have an icon, AND EITHER:
             //      We have a string icon, OR
