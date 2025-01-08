@@ -32,5 +32,14 @@ public static partial class IconCacheProvider
 
             deferral.Complete();
         }
+        else if (args.Key is IconInfo iconInfo)
+        {
+            var deferral = args.GetDeferral();
+
+            var data = args.Theme == Microsoft.UI.Xaml.ElementTheme.Dark ? iconInfo.Dark : iconInfo.Light;
+            args.Value = await IconService.GetIconSource(data);
+
+            deferral.Complete();
+        }
     }
 }

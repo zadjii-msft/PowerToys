@@ -13,9 +13,9 @@ public partial class DetailsViewModel(IDetails _details, IPageContext context) :
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
-    public IconDataType HeroImage { get; private set; } = new(string.Empty);
+    public IconInfo HeroImage { get; private set; } = new(string.Empty);
 
-    public bool HasHeroImage => !string.IsNullOrEmpty(HeroImage.Icon) || HeroImage.Data != null;
+    // public bool HasHeroImage => !string.IsNullOrEmpty(HeroImage.Icon) || HeroImage.Data != null;
 
     // TODO: Metadata is an array of IDetailsElement,
     // where IDetailsElement = {IDetailsTags, IDetailsLink, IDetailsSeparator}
@@ -38,6 +38,7 @@ public partial class DetailsViewModel(IDetails _details, IPageContext context) :
         UpdateProperty(nameof(Title));
         UpdateProperty(nameof(Body));
         UpdateProperty(nameof(HeroImage));
-        UpdateProperty(nameof(HasHeroImage));
+
+        // UpdateProperty(nameof(HasHeroImage));
     }
 }

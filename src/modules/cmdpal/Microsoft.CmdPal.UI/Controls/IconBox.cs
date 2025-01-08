@@ -91,7 +91,8 @@ public partial class IconBox : ContentControl
                 // _ = @this._queue.EnqueueAsync(() =>
                 @this._queue.TryEnqueue(new(() =>
                 {
-                    var eventArgs = new SourceRequestedEventArgs(e.NewValue);
+                    var requestedTheme = @this.ActualTheme;
+                    var eventArgs = new SourceRequestedEventArgs(e.NewValue, requestedTheme);
 
                     if (@this.SourceRequested != null)
                     {

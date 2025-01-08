@@ -1301,7 +1301,7 @@ block, and the generator will pull this into the file first.   -->
 
 ```c#
 interface ITag {
-    IconDataType Icon { get; };
+    IconInfo Icon { get; };
     String Text { get; };
     OptionalColor Foreground { get; };
     OptionalColor Background { get; };
@@ -1316,7 +1316,7 @@ interface IDetailsElement {
     IDetailsData Data { get; };
 }
 interface IDetails {
-    IconDataType HeroImage { get; };
+    IconInfo HeroImage { get; };
     String Title { get; };
     String Body { get; };
     IDetailsElement[] Metadata { get; };

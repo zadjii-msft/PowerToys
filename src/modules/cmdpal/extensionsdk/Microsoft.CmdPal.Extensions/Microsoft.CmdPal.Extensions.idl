@@ -140,7 +140,7 @@ namespace Microsoft.CmdPal.Extensions
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface ITag {
-        IconDataType Icon { get; };
+        IconInfo Icon { get; };
         String Text { get; };
         OptionalColor Foreground { get; };
         OptionalColor Background { get; };
@@ -158,7 +158,7 @@ namespace Microsoft.CmdPal.Extensions
     }
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IDetails {
-        IconDataType HeroImage { get; };
+        IconInfo HeroImage { get; };
         String Title { get; };
         String Body { get; };
         IDetailsElement[] Metadata { get; };

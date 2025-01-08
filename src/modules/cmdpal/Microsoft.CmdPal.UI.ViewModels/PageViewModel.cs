@@ -40,7 +40,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
 
     public bool IsLoading { get; private set; } = true;
 
-    public IconDataType Icon { get; private set; } = new(string.Empty);
+    public IconInfo Icon { get; private set; } = new(string.Empty);
 
     public PageViewModel(IPage model, TaskScheduler scheduler)
         : base(null)
