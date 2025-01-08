@@ -21,8 +21,6 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
 
     public OptionalColor Background { get; private set; }
 
-    public OptionalColor BorderBrush { get; private set; }
-
     public IconDataType Icon { get; private set; } = new(string.Empty);
 
     public bool HasIcon => !string.IsNullOrEmpty(Icon.Icon);
@@ -41,14 +39,12 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
         Text = model.Text;
         Foreground = model.Foreground;
         Background = model.Background;
-        BorderBrush = model.BorderBrush;
         ToolTip = model.ToolTip;
         Icon = model.Icon;
 
         UpdateProperty(nameof(Text));
         UpdateProperty(nameof(Foreground));
         UpdateProperty(nameof(Background));
-        UpdateProperty(nameof(BorderBrush));
         UpdateProperty(nameof(ToolTip));
         UpdateProperty(nameof(Icon));
     }

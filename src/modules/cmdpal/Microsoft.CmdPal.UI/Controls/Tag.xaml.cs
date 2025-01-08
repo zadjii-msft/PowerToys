@@ -63,9 +63,6 @@ public partial class Tag : Control
     public static readonly DependencyProperty BackgroundColorProperty =
         DependencyProperty.Register(nameof(BackgroundColor), typeof(OptionalColor), typeof(Tag), new PropertyMetadata(null, OnBackgroundColorPropertyChanged));
 
-    public static readonly DependencyProperty BorderBrushColorProperty =
-    DependencyProperty.Register(nameof(BorderBrushColor), typeof(OptionalColor), typeof(Tag), new PropertyMetadata(null, OnBorderColorPropertyChanged));
-
     public static readonly DependencyProperty HasIconProperty =
     DependencyProperty.Register(nameof(HasIcon), typeof(bool), typeof(Tag), new PropertyMetadata(null));
 
@@ -95,6 +92,7 @@ public partial class Tag : Control
         if (OptionalColorBrushCacheProvider.Convert(tag.ForegroundColor.Value) is SolidColorBrush brush)
         {
             tag.Foreground = brush;
+            tag.BorderBrush = brush;
         }
     }
 
@@ -108,19 +106,6 @@ public partial class Tag : Control
         if (OptionalColorBrushCacheProvider.Convert(tag.BackgroundColor.Value) is SolidColorBrush brush)
         {
             tag.Background = brush;
-        }
-    }
-
-    private static void OnBorderColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is not Tag tag || tag.BorderBrushColor is null || !tag.BorderBrushColor.HasValue)
-        {
-            return;
-        }
-
-        if (OptionalColorBrushCacheProvider.Convert(tag.BorderBrushColor.Value) is SolidColorBrush brush)
-        {
-            tag.BorderBrush = brush;
         }
     }
 }
