@@ -16,10 +16,13 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     private readonly ExtensionObject<IPage> _pageModel;
 
     [ObservableProperty]
-    public partial bool IsInitialized { get; private set; }
+    public partial bool IsInitialized { get; protected set; }
 
     [ObservableProperty]
-    public partial string ErrorMessage { get; private set; } = string.Empty;
+    public partial string ErrorMessage { get; protected set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool IsNested { get; set; } = true;
 
     // This is set from the SearchBar
     [ObservableProperty]
@@ -31,15 +34,15 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     // [ObservableProperty]s, because PropChanged comes in off the UI thread,
     // and ObservableProperty is not smart enough to raise the PropertyChanged
     // on the UI thread.
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; protected set; } = string.Empty;
 
-    public string Title { get => string.IsNullOrEmpty(field) ? Name : field; private set; } = string.Empty;
+    public string Title { get => string.IsNullOrEmpty(field) ? Name : field; protected set; } = string.Empty;
 
-    public bool IsLoading { get; private set; } = true;
+    public bool IsLoading { get; protected set; } = true;
 
-    public IconDataType Icon { get; private set; } = new(string.Empty);
+    public IconDataType Icon { get; protected set; } = new(string.Empty);
 
-    public PageViewModel(IPage model, TaskScheduler scheduler)
+    public PageViewModel(IPage? model, TaskScheduler scheduler)
         : base(null)
     {
         _pageModel = new(model);
@@ -61,11 +64,21 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         }
         catch (Exception ex)
         {
-            ShowException(ex);
+            ShowException(ex, _pageModel?.Unsafe?.Name);
             return Task.FromResult(false);
         }
 
-        IsInitialized = true;
+        // Notify we're done back on the UI Thread.
+        Task.Factory.StartNew(
+            () =>
+            {
+                IsInitialized = true;
+
+                // TODO: Do we want an event/signal here that the Page Views can listen to? (i.e. ListPage setting the selected index to 0, however, in async world the user may have already started navigating around page...)
+            },
+            CancellationToken.None,
+            TaskCreationOptions.None,
+            Scheduler);
         return Task.FromResult(true);
     }
 
@@ -98,9 +111,9 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
             var propName = args.PropertyName;
             FetchProperty(propName);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            ShowException(e);
+            ShowException(ex, _pageModel?.Unsafe?.Name);
         }
     }
 
@@ -140,22 +153,27 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         UpdateProperty(propertyName);
     }
 
-    public void ShowException(Exception ex)
+    public void ShowException(Exception ex, string? extensionHint = null)
     {
+        // Set the extensionHint to the Page Title (if we have one, and one not provided).
+        extensionHint ??= _pageModel?.Unsafe?.Title;
+
         Task.Factory.StartNew(
             () =>
         {
-            ErrorMessage += $"{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\nThis is due to a bug in the extension's code.";
+            ErrorMessage += $"A bug occurred in {$"the \"{extensionHint}\"" ?? "an unknown's"} extension's code:\n{ex.Message}\n{ex.Source}\n{ex.StackTrace}\n\n";
         },
             CancellationToken.None,
             TaskCreationOptions.None,
             Scheduler);
     }
+
+    public override string ToString() => $"{Title} ViewModel";
 }
 
 public interface IPageContext
 {
-    public void ShowException(Exception ex);
+    public void ShowException(Exception ex, string? extensionHint = null);
 
     public TaskScheduler Scheduler { get; }
 }

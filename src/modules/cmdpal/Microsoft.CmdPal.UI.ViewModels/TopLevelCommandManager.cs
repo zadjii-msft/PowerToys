@@ -20,7 +20,8 @@ public partial class TopLevelCommandManager : ObservableObject,
     private readonly IServiceProvider _serviceProvider;
     private readonly TaskScheduler _taskScheduler;
 
-    private IEnumerable<ICommandProvider>? _builtInCommands;
+    private readonly List<CommandProviderWrapper> _builtInCommands = [];
+    private readonly List<CommandProviderWrapper> _extensionCommandProviders = [];
 
     public TopLevelCommandManager(IServiceProvider serviceProvider)
     {
@@ -34,14 +35,19 @@ public partial class TopLevelCommandManager : ObservableObject,
     [ObservableProperty]
     public partial bool IsLoading { get; private set; } = true;
 
+    public IEnumerable<CommandProviderWrapper> CommandProviders => _builtInCommands.Concat(_extensionCommandProviders);
+
     public async Task<bool> LoadBuiltinsAsync()
     {
+        _builtInCommands.Clear();
+
         // Load built-In commands first. These are all in-proc, and
         // owned by our ServiceProvider.
-        _builtInCommands = _serviceProvider.GetServices<ICommandProvider>();
-        foreach (var provider in _builtInCommands)
+        var builtInCommands = _serviceProvider.GetServices<ICommandProvider>();
+        foreach (var provider in builtInCommands)
         {
             CommandProviderWrapper wrapper = new(provider);
+            _builtInCommands.Add(wrapper);
             await LoadTopLevelCommandsFromProvider(wrapper);
         }
 
@@ -92,12 +98,14 @@ public partial class TopLevelCommandManager : ObservableObject,
     {
         var extensionService = _serviceProvider.GetService<IExtensionService>()!;
         var extensions = await extensionService.GetInstalledExtensionsAsync();
+        _extensionCommandProviders.Clear();
         foreach (var extension in extensions)
         {
             try
             {
                 await extension.StartExtensionAsync();
                 CommandProviderWrapper wrapper = new(extension);
+                _extensionCommandProviders.Add(wrapper);
                 await LoadTopLevelCommandsFromProvider(wrapper);
             }
             catch (Exception ex)
