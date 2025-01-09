@@ -24,7 +24,7 @@ public static partial class IconCacheProvider
             return;
         }
 
-        if (args.Key is IconDataType iconData)
+        if (args.Key is IconData iconData)
         {
             var deferral = args.GetDeferral();
 

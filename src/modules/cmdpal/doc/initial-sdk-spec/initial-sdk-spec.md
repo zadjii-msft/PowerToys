@@ -59,7 +59,7 @@ functionality.
       - [Form Pages](#form-pages)
     - [Other types](#other-types)
       - [`ContextItem`s](#contextitems)
-      - [Icons - `IconInfo` and `IconDataType`](#icons---iconinfo-and-icondatatype)
+      - [Icons - `IconInfo` and `IconData`](#icons---iconinfo-and-icondatatype)
       - [`OptionalColor`](#optionalcolor)
       - [`Details`](#details)
       - [`INotifyPropChanged`](#inotifypropchanged)
@@ -1223,9 +1223,9 @@ flyout. Mostly, these are just commands and seperators.
 If an `ICommandContextItem` has `MoreCommands`, then when it's invoked, we'll
 create a sub-menu with those items in it.
 
-#### Icons - `IconInfo` and `IconDataType`
+#### Icons - `IconInfo` and `IconData`
 
-`IconDataType` is a wrapper type for passing information about an icon to
+`IconData` is a wrapper type for passing information about an icon to
 DevPal. This allows extensions to specify apps in a variety of ways, including:
 
 * A URL to an image on the web or filesystem
@@ -1240,19 +1240,19 @@ versions of an icon with `IconInfo`.
 
 <!-- In .CS because it's manually added to the idl -->
 ```cs
-struct IconDataType {
-    IconDataType(String iconString);
-    static IconDataType FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
+struct IconData {
+    IconData(String iconString);
+    static IconData FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
 
     String Icon { get; };
     Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
 }
 struct IconInfo {
     IconInfo(String iconString);
-    IconInfo(IconDataType lightIcon, IconDataType darkIcon);
+    IconInfo(IconData lightIcon, IconData darkIcon);
 
-    IconDataType Light { get; };
-    IconDataType Dark { get; };
+    IconData Light { get; };
+    IconData Dark { get; };
 }
 ```
 
@@ -1853,7 +1853,7 @@ When displaying a page:
 
 ## Class diagram
 
-This is a diagram attempting to show the relationships between the various types we've defined for the SDK. Some elements are omitted for clarity. (Notably, `IconDataType` and `IPropChanged`, which are used in many places.)
+This is a diagram attempting to show the relationships between the various types we've defined for the SDK. Some elements are omitted for clarity. (Notably, `IconData` and `IPropChanged`, which are used in many places.)
 
 The notes on the arrows help indicate the multiplicity of the relationship.
 * "*" means 0 or more (for arrays)

@@ -1,20 +1,20 @@
 #pragma once
-#include "IconDataType.g.h"
+#include "IconData.g.h"
 #include "IconInfo.g.h"
 
 namespace winrt::Microsoft::CmdPal::Extensions::implementation
 {
-    struct IconDataType : IconDataTypeT<IconDataType>
+    struct IconData : IconDataT<IconData>
     {
-        IconDataType(hstring iconPath) :
+        IconData(hstring iconPath) :
             Icon(iconPath){};
 
-        IconDataType(Windows::Storage::Streams::IRandomAccessStreamReference iconData) :
+        IconData(Windows::Storage::Streams::IRandomAccessStreamReference iconData) :
             Data(iconData){};
 
-        static Microsoft::CmdPal::Extensions::IconDataType FromStream(Windows::Storage::Streams::IRandomAccessStreamReference stream)
+        static Microsoft::CmdPal::Extensions::IconData FromStream(Windows::Storage::Streams::IRandomAccessStreamReference stream)
         {
-            return *winrt::make_self<IconDataType>(stream);
+            return *winrt::make_self<IconData>(stream);
         }
         
         til::property<hstring> Icon;
@@ -23,7 +23,7 @@ namespace winrt::Microsoft::CmdPal::Extensions::implementation
 }
 namespace winrt::Microsoft::CmdPal::Extensions::factory_implementation
 {
-    struct IconDataType : IconDataTypeT<IconDataType, implementation::IconDataType>
+    struct IconData : IconDataT<IconData, implementation::IconData>
     {
     };
 }
@@ -36,12 +36,12 @@ namespace winrt::Microsoft::CmdPal::Extensions::implementation
             Light(iconPath),
             Dark(iconPath){};
 
-        IconInfo(Extensions::IconDataType light, Extensions::IconDataType dark) :
+        IconInfo(Extensions::IconData light, Extensions::IconData dark) :
             Light(light),
             Dark(dark) {};
         
-        til::property<Extensions::IconDataType> Light;
-        til::property<Extensions::IconDataType> Dark;       
+        til::property<Extensions::IconData> Light;
+        til::property<Extensions::IconData> Dark;       
     };
 }
 namespace winrt::Microsoft::CmdPal::Extensions::factory_implementation

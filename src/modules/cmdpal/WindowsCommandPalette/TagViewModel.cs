@@ -12,7 +12,7 @@ public sealed class TagViewModel
 {
     private readonly ITag _tag;
 
-    internal IconDataType Icon => _tag.Icon;
+    internal IconData Icon => _tag.Icon;
 
     internal string Text => _tag.Text;
 

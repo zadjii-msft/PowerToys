@@ -14,7 +14,7 @@ public sealed class ContextItemViewModel : INotifyPropertyChanged
 
     internal string Name => Command.Name;
 
-    internal IconDataType Icon => Command.Icon;
+    internal IconData Icon => Command.Icon;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
