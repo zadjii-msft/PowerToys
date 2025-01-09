@@ -13,7 +13,7 @@ public partial class DetailsViewModel(IDetails _details, IPageContext context) :
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
-    public IconInfo HeroImage { get; private set; } = new(string.Empty)
+    public IconInfo HeroImage { get; private set; } = new(string.Empty);
 
     // TODO: Metadata is an array of IDetailsElement,
     // where IDetailsElement = {IDetailsTags, IDetailsLink, IDetailsSeparator}

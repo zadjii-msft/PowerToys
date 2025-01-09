@@ -23,6 +23,7 @@ public sealed partial class ShellPage :
     Page,
     IRecipient<NavigateBackMessage>,
     IRecipient<PerformCommandMessage>,
+    IRecipient<OpenSettingsMessage>,
     IRecipient<ShowDetailsMessage>,
     IRecipient<HideDetailsMessage>,
     IRecipient<ClearSearchMessage>,
@@ -31,6 +32,8 @@ public sealed partial class ShellPage :
     INotifyPropertyChanged
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
+
+    private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
     private readonly SlideNavigationTransitionInfo _slideRightTransition = new() { Effect = SlideNavigationTransitionEffect.FromRight };
 
@@ -46,6 +49,7 @@ public sealed partial class ShellPage :
         WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
         WeakReferenceMessenger.Default.Register<HandleCommandResultMessage>(this);
+        WeakReferenceMessenger.Default.Register<OpenSettingsMessage>(this);
 
         WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
@@ -99,12 +103,12 @@ public sealed partial class ShellPage :
                     // Construct our ViewModel of the appropriate type and pass it the UI Thread context.
                     PageViewModel pageViewModel = page switch
                     {
-                        IListPage listPage => new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext())
+                        IListPage listPage => new ListViewModel(listPage, _mainTaskScheduler)
                         {
                             IsNested = !isMainPage,
                         },
-                        IFormPage formsPage => new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext()),
-                        IMarkdownPage markdownPage => new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext()),
+                        IFormPage formsPage => new FormsPageViewModel(formsPage, _mainTaskScheduler),
+                        IMarkdownPage markdownPage => new MarkdownPageViewModel(markdownPage, _mainTaskScheduler),
                         _ => throw new NotSupportedException(),
                     };
 
@@ -205,6 +209,23 @@ public sealed partial class ShellPage :
         catch
         {
         }
+    }
+
+    public void Receive(OpenSettingsMessage message)
+    {
+        _ = DispatcherQueue.TryEnqueue(() =>
+        {
+            // Also hide our details pane about here, if we had one
+            HideDetails();
+
+            var settings = App.Current.Services.GetService<SettingsModel>()!;
+            var settingsViewModel = new SettingsViewModel(settings, App.Current.Services, _mainTaskScheduler);
+            RootFrame.Navigate(typeof(SettingsPage), settingsViewModel, _slideRightTransition);
+
+            ViewModel.CurrentPage = settingsViewModel;
+
+            WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(null));
+        });
     }
 
     public void Receive(ShowDetailsMessage message)
