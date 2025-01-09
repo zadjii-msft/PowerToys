@@ -1302,6 +1302,7 @@ EXHIBIT A -Mozilla Public License.
 - AdaptiveCards.Templating 2.0.2
 - Appium.WebDriver 4.4.5
 - Azure.AI.OpenAI 1.0.0-beta.17
+- CommunityToolkit.Common 8.4.0
 - CommunityToolkit.Mvvm 8.4.0
 - CommunityToolkit.WinUI.Animations 8.2.241112-preview1
 - CommunityToolkit.WinUI.Collections 8.2.241112-preview1
