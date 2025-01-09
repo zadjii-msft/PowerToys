@@ -11,7 +11,7 @@ public partial class LoadingPageViewModel : PageViewModel
     public LoadingPageViewModel(IPage? model, TaskScheduler scheduler)
         : base(model, scheduler)
     {
-        // IsLoading = true;
-        // IsInitialized = false;
+        ModelIsLoading = true;
+        IsInitialized = false;
     }
 }
