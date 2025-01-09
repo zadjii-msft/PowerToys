@@ -67,9 +67,9 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
         Command = new(model.Command);
 
-        // The way we're using this, this call to initalize Name is
+        // The way we're using this, this call to initialize Name is
         // particularly unsafe. For top-level commands, we wrap the
-        // _CommandItemo_ in a TopLevelCommandWrapper. But the secret prblem
+        // _CommandItem_ in a TopLevelCommandWrapper. But the secret problem
         // is: if the extension crashes, then the next time the MainPage
         // fetches items, we'll grab the TopLevelCommandWrapper, and try to get
         // the .Name out of its Command. But its .Command has died, so we
