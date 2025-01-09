@@ -9,17 +9,17 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class PageViewModel : ExtensionObjectViewModel, IPageContext, IPageViewModel
+public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
 {
     public TaskScheduler Scheduler { get; private set; }
 
     private readonly ExtensionObject<IPage> _pageModel;
 
     [ObservableProperty]
-    public partial bool IsInitialized { get; private set; }
+    public partial bool IsInitialized { get; protected set; }
 
     [ObservableProperty]
-    public partial string ErrorMessage { get; private set; } = string.Empty;
+    public partial string ErrorMessage { get; protected set; } = string.Empty;
 
     [ObservableProperty]
     public partial bool IsNested { get; set; } = true;
@@ -34,15 +34,15 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext, IPa
     // [ObservableProperty]s, because PropChanged comes in off the UI thread,
     // and ObservableProperty is not smart enough to raise the PropertyChanged
     // on the UI thread.
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; protected set; } = string.Empty;
 
-    public string Title { get => string.IsNullOrEmpty(field) ? Name : field; private set; } = string.Empty;
+    public string Title { get => string.IsNullOrEmpty(field) ? Name : field; protected set; } = string.Empty;
 
-    public bool IsLoading { get; private set; } = true;
+    public bool IsLoading { get; protected set; } = true;
 
-    public IconDataType Icon { get; private set; } = new(string.Empty);
+    public IconDataType Icon { get; protected set; } = new(string.Empty);
 
-    public PageViewModel(IPage model, TaskScheduler scheduler)
+    public PageViewModel(IPage? model, TaskScheduler scheduler)
         : base(null)
     {
         _pageModel = new(model);

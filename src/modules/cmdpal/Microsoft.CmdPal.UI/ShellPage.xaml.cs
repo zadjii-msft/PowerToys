@@ -31,6 +31,8 @@ public sealed partial class ShellPage :
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
 
+    private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+
     private readonly SlideNavigationTransitionInfo _slideRightTransition = new() { Effect = SlideNavigationTransitionEffect.FromRight };
 
     public ShellViewModel ViewModel { get; private set; } = App.Current.Services.GetService<ShellViewModel>()!;
@@ -98,12 +100,12 @@ public sealed partial class ShellPage :
                     // Construct our ViewModel of the appropriate type and pass it the UI Thread context.
                     PageViewModel pageViewModel = page switch
                     {
-                        IListPage listPage => new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext())
+                        IListPage listPage => new ListViewModel(listPage, _mainTaskScheduler)
                         {
                             IsNested = !isMainPage,
                         },
-                        IFormPage formsPage => new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext()),
-                        IMarkdownPage markdownPage => new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext()),
+                        IFormPage formsPage => new FormsPageViewModel(formsPage, _mainTaskScheduler),
+                        IMarkdownPage markdownPage => new MarkdownPageViewModel(markdownPage, _mainTaskScheduler),
                         _ => throw new NotSupportedException(),
                     };
 
@@ -214,7 +216,7 @@ public sealed partial class ShellPage :
             HideDetails();
 
             var settings = App.Current.Services.GetService<SettingsModel>()!;
-            var settingsViewModel = new SettingsViewModel(settings, App.Current.Services);
+            var settingsViewModel = new SettingsViewModel(settings, App.Current.Services, _mainTaskScheduler);
             RootFrame.Navigate(typeof(SettingsPage), settingsViewModel, _slideRightTransition);
 
             ViewModel.CurrentPage = settingsViewModel;

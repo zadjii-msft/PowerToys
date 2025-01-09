@@ -3,34 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.CmdPal.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.PowerToys.Settings.UI.Library;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class SettingsViewModel : ObservableObject, IPageViewModel
+public partial class SettingsViewModel : PageViewModel
 {
     private readonly SettingsModel _settings;
     private readonly IServiceProvider _serviceProvider;
-
-    public bool IsNested
-    {
-        get => true; set { }
-    }
-
-    public string Filter { get; set; } = string.Empty;
-
-    public string Title => "Settings";
-
-    public string ErrorMessage => string.Empty;
-
-    public bool IsLoading => false;
-
-    public bool IsInitialized => true;
-
-    public IconDataType Icon => new("\uE713");
 
     public HotkeySettings? Hotkey
     {
@@ -44,10 +25,16 @@ public partial class SettingsViewModel : ObservableObject, IPageViewModel
 
     public ObservableCollection<ProviderSettingsViewModel> CommandProviders { get; } = [];
 
-    public SettingsViewModel(SettingsModel settings, IServiceProvider serviceProvider)
+    public SettingsViewModel(SettingsModel settings, IServiceProvider serviceProvider, TaskScheduler scheduler)
+        : base(null, scheduler)
     {
         _settings = settings;
         _serviceProvider = serviceProvider;
+
+        Icon = new("\uE713");
+        IsInitialized = true;
+        IsLoading = false;
+        Title = "Settings";
 
         var activeProviders = GetCommandProviders();
         var allProviderSettings = _settings.ProviderSettings;

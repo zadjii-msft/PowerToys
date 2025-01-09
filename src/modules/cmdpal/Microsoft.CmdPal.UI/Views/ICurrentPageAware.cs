@@ -8,5 +8,5 @@ namespace Microsoft.CmdPal.UI.Views;
 
 public interface ICurrentPageAware
 {
-    public IPageViewModel? CurrentPageViewModel { get; set; }
+    public PageViewModel? CurrentPageViewModel { get; set; }
 }
