@@ -21,6 +21,6 @@ internal sealed partial class FallbackReloadItem : FallbackCommandItem
     public override void UpdateQuery(string query)
     {
         _reloadAction.Name = query.StartsWith('r') ? "Reload" : string.Empty;
-        Title = query.StartsWith('r') ? "Reload" : string.Empty;
+        Title = _reloadAction.Name;
     }
 }
