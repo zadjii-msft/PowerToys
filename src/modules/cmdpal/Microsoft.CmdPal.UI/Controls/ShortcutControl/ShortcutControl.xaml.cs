@@ -3,16 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.WinUI;
-using Microsoft.CmdPal.UI;
+using Microsoft.CmdPal.UI.Library;
+using Microsoft.CmdPal.UI.ViewModels.Settings;
 using Microsoft.PowerToys.Settings.UI.Helpers;
-using Microsoft.PowerToys.Settings.UI.Library;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Windows.System;
 
-namespace Microsoft.PowerToys.Settings.UI.Controls;
+namespace Microsoft.CmdPal.UI.Controls;
 
 public sealed partial class ShortcutControl : UserControl, IDisposable
 {
