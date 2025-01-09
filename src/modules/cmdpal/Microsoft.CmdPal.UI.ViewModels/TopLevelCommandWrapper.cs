@@ -9,20 +9,12 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 namespace Microsoft.CmdPal.UI.ViewModels;
 
 /// <summary>
-/// Abstraction of a top-level command item. Currently owns just a live ICommandItem
+/// Abstraction of a top-level command. Currently owns just a live ICommandItem
 /// from an extension (or in-proc command provider), but in the future will
 /// also support stub top-level items.
-///
-/// More correctly, this is a "TopLevelCommand**Item**Wrapper". It wraps the
-/// CommandItem, but the ICommand itself is relatively raw.
 /// </summary>
 public partial class TopLevelCommandWrapper : ListItem
 {
-    // We may want to in the future, create our own safe wrapper around the
-    // `ICommand` itself. There's a couple things that we get straight out of
-    // the Command - namely .Nmae and .Icon, and we don't want to have to do a
-    // x-proc call every time just to fetch those (after we've already fetched
-    // them)
     public ExtensionObject<ICommandItem> Model { get; }
 
     private readonly bool _isFallback;
