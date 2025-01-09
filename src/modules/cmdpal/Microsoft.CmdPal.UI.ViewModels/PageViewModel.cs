@@ -15,11 +15,14 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
 
     private readonly ExtensionObject<IPage> _pageModel;
 
-    [ObservableProperty]
-    public partial bool IsInitialized { get; private set; }
+    public bool IsLoading => ModelIsLoading || (!IsInitialized);
 
     [ObservableProperty]
-    public partial string ErrorMessage { get; private set; } = string.Empty;
+    [NotifyPropertyChangedFor(nameof(IsLoading))]
+    public partial bool IsInitialized { get; protected set; }
+
+    [ObservableProperty]
+    public partial string ErrorMessage { get; protected set; } = string.Empty;
 
     [ObservableProperty]
     public partial bool IsNested { get; set; } = true;
@@ -34,15 +37,17 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     // [ObservableProperty]s, because PropChanged comes in off the UI thread,
     // and ObservableProperty is not smart enough to raise the PropertyChanged
     // on the UI thread.
-    public string Name { get; private set; } = string.Empty;
+    public string Name { get; protected set; } = string.Empty;
 
-    public string Title { get => string.IsNullOrEmpty(field) ? Name : field; private set; } = string.Empty;
+    public string Title { get => string.IsNullOrEmpty(field) ? Name : field; protected set; } = string.Empty;
 
-    public bool IsLoading { get; private set; } = true;
+    // This property maps to `IPage.IsLoading`, but we want to expose our own
+    // `IsLoading` property as a combo of this value and `IsInitialized`
+    public bool ModelIsLoading { get; protected set; } = true;
 
-    public IconDataType Icon { get; private set; } = new(string.Empty);
+    public IconDataType Icon { get; protected set; } = new(string.Empty);
 
-    public PageViewModel(IPage model, TaskScheduler scheduler)
+    public PageViewModel(IPage? model, TaskScheduler scheduler)
         : base(null)
     {
         _pageModel = new(model);
@@ -91,13 +96,14 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         }
 
         Name = page.Name;
-        IsLoading = page.IsLoading;
+        ModelIsLoading = page.IsLoading;
         Title = page.Title;
         Icon = page.Icon;
 
         // Let the UI know about our initial properties too.
         UpdateProperty(nameof(Name));
         UpdateProperty(nameof(Title));
+        UpdateProperty(nameof(ModelIsLoading));
         UpdateProperty(nameof(IsLoading));
         UpdateProperty(nameof(Icon));
 
@@ -143,7 +149,8 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
                 this.Title = model.Title ?? string.Empty;
                 break;
             case nameof(IsLoading):
-                this.IsLoading = model.IsLoading;
+                this.ModelIsLoading = model.IsLoading;
+                UpdateProperty(nameof(ModelIsLoading));
                 break;
             case nameof(Icon):
                 this.Icon = model.Icon;
