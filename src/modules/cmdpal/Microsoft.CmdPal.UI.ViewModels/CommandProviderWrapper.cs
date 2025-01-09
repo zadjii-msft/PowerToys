@@ -24,12 +24,25 @@ public sealed class CommandProviderWrapper
 
     public event TypedEventHandler<CommandProviderWrapper, ItemsChangedEventArgs>? CommandsChanged;
 
+    public string Id { get; private set; } = string.Empty;
+
+    public string DisplayName { get; private set; } = string.Empty;
+
+    public IconDataType Icon { get; private set; } = new(string.Empty);
+
+    public string ProviderId => $"{extensionWrapper?.PackageFamilyName ?? string.Empty}/{Id}";
+
+    public IExtensionWrapper? Extension => extensionWrapper;
+
     public CommandProviderWrapper(ICommandProvider provider)
     {
         _commandProvider = provider;
         _commandProvider.ItemsChanged += CommandProvider_ItemsChanged;
 
         isValid = true;
+        Id = provider.Id;
+        DisplayName = provider.DisplayName;
+        Icon = provider.Icon;
     }
 
     public CommandProviderWrapper(IExtensionWrapper extension)
@@ -74,6 +87,10 @@ public sealed class CommandProviderWrapper
         // On a BG thread here
         var fallbacks = _commandProvider.FallbackCommands();
 
+        Id = _commandProvider.Id;
+        DisplayName = _commandProvider.DisplayName;
+        Icon = _commandProvider.Icon;
+
         if (commands != null)
         {
             TopLevelItems = commands;
@@ -107,7 +124,7 @@ public sealed class CommandProviderWrapper
     private void CommandProvider_ItemsChanged(object sender, ItemsChangedEventArgs args)
     {
         // We don't want to handle this ourselves - we want the
-        // TopLevelCommandManager to know about this, so they can can remove
+        // TopLevelCommandManager to know about this, so they can remove
         // our old commands from their own list.
         //
         // In handling this, a call will be made to `LoadTopLevelCommands` to
