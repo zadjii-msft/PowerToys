@@ -21,6 +21,6 @@ public sealed class DetailsViewModel
     {
         this.Title = details.Title;
         this.Body = details.Body;
-        this.HeroImage = details.HeroImage ?? new(string.Empty);
+        this.HeroImage = details.HeroImage?.Dark ?? new(string.Empty);
     }
 }
