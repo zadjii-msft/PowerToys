@@ -4739,9 +4739,6 @@ Activate by holding the key for the character you want to add an accent to, then
   <data name="Enable_Module.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Enable module</value>
   </data>
-  <data name="Enable_Module.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Enable module</value>
-  </data>
   <data name="PowerLauncher_PluginVersion.Text" xml:space="preserve">
     <value>Version</value>
   </data>
