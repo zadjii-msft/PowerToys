@@ -42,7 +42,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
 
     public IconDataType Icon { get; private set; } = new(string.Empty);
 
-    public PageViewModel(IPage model, TaskScheduler scheduler)
+    public PageViewModel(IPage? model, TaskScheduler scheduler)
         : base(null)
     {
         _pageModel = new(model);
