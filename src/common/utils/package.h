@@ -117,10 +117,6 @@ namespace package {
         }
     }
 
-
-    //// Packages to unregister
-    //const std::vector<std::wstring> packagesToRemoveDisplayName{ { L"PowerRenameContextMenu" }, { L"ImageResizerContextMenu" }, { L"FileLocksmithContextMenu" }, { L"NewPlusContextMenu" } };
-
     inline bool UnRegisterPackage(const std::wstring& pkgDisplayName)
     {
         try
