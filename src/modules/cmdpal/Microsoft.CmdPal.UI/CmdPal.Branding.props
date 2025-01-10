@@ -3,7 +3,7 @@
 
   <!-- Default CI builds to release. When we stand up our own CI, we'll change this -->
   <PropertyGroup Condition="'$(CIBuild)'=='true'">
-    <CommandPaletteBranding>Release</CmdPalAssetSuffix>
+    <CommandPaletteBranding>Release</CommandPaletteBranding>
   </PropertyGroup>
 
   <PropertyGroup>
