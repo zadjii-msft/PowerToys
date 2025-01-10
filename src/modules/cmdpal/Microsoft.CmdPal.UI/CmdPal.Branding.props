@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <CmdPalAssetSuffix Condition="'$(CommandPaletteBranding)'=='Release'">Stable</CmdPalAssetSuffix>
+    <CmdPalAssetSuffix Condition="'$(CommandPaletteBranding)'=='Preview'">Stable</CmdPalAssetSuffix>
+    <CmdPalAssetSuffix Condition="'$(CommandPaletteBranding)'=='Canary'">Stable</CmdPalAssetSuffix>
+    <CmdPalAssetSuffix Condition="'$(CommandPaletteBranding)'=='' or '$(CommandPaletteBranding)'=='Dev'">Dev</CmdPalAssetSuffix>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Images -->
+    <Content Include="$(SolutionDir)\src\modules\cmdpal\Microsoft.CmdPal.UI\Assets\$(CmdPalAssetSuffix)\**\*">
+      <DeploymentContent>true</DeploymentContent>
+      <Link>Assets\%(RecursiveDir)%(FileName)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+
+    <AppxManifest Include="Package.appxmanifest" 
+                  Condition="'$(CommandPaletteBranding)'=='Release'" />
+    <AppxManifest Include="Package-Pre.appxmanifest" 
+                  Condition="'$(CommandPaletteBranding)'=='Preview'" />
+    <AppxManifest Include="Package-Can.appxmanifest" 
+                  Condition="'$(CommandPaletteBranding)'=='Canary'" />
+    <AppxManifest Include="Package-Dev.appxmanifest" 
+                  Condition="'$(CommandPaletteBranding)'=='' or '$(CommandPaletteBranding)'=='Dev'" />
+  </ItemGroup>
+
+</Project>
