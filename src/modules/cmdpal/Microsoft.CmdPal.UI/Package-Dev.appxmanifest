@@ -27,7 +27,7 @@
 
   <Properties>
     <DisplayName>Command Palette Dev</DisplayName>
-	  <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <PublisherDisplayName>A Lone Developer</PublisherDisplayName>
 	  <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
