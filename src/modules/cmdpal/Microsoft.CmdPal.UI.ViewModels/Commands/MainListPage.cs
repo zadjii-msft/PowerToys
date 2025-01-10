@@ -5,9 +5,11 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.ViewModels.MainPage;
@@ -16,7 +18,8 @@ namespace Microsoft.CmdPal.UI.ViewModels.MainPage;
 /// This class encapsulates the data we load from built-in providers and extensions to use within the same extension-UI system for a <see cref="ListPage"/>.
 /// TODO: Need to think about how we structure/interop for the page -> section -> item between the main setup, the extensions, and our viewmodels.
 /// </summary>
-public partial class MainListPage : DynamicListPage
+public partial class MainListPage : DynamicListPage,
+    IRecipient<ClearSearchMessage>
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -40,6 +43,10 @@ public partial class MainListPage : DynamicListPage
         // reference the TLC collection directly... maybe? TODO is this a good idea ot a terrible one?
         _commands = tlcManager.TopLevelCommands;
         _commands.CollectionChanged += Commands_CollectionChanged;
+
+        WeakReferenceMessenger.Default.Register<ClearSearchMessage>(this);
+
+        IsLoading = true;
     }
 
     private void TlcManager_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -67,7 +74,7 @@ public partial class MainListPage : DynamicListPage
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        /* handle changes to the filter text here */
+        // Handle changes to the filter text here
         Debug.WriteLine($"UpdateSearchText '{oldSearch}' -> '{newSearch}'");
 
         if (!string.IsNullOrEmpty(SearchText))
@@ -79,6 +86,8 @@ public partial class MainListPage : DynamicListPage
             }
         }
 
+        // This gets called on a background thread, because ListViewModel
+        // updates the .SearchText of all extensions on a BG thread.
         foreach (var command in _commands)
         {
             command.TryUpdateFallbackText(newSearch);
@@ -109,7 +118,7 @@ public partial class MainListPage : DynamicListPage
         }
 
         // Produce a list of everything that matches the current filter.
-        _filteredItems = ListHelpers.FilterList(_filteredItems, SearchText);
+        _filteredItems = ListHelpers.FilterList<IListItem>(_filteredItems, SearchText, ScoreTopLevelItem);
         RaiseItemsChanged(_filteredItems.Count());
     }
 
@@ -130,5 +139,45 @@ public partial class MainListPage : DynamicListPage
             _appsLoading = false;
             IsLoading = ActuallyLoading();
         });
+    }
+
+    // Almost verbatim ListHelpers.ScoreListItem, but also accounting for the
+    // fact that we want fallback handlers down-weighted, so that they don't
+    // _always_ show up first.
+    private static int ScoreTopLevelItem(string query, IListItem topLevelOrAppItem)
+    {
+        if (string.IsNullOrEmpty(query))
+        {
+            return 1;
+        }
+
+        var title = topLevelOrAppItem.Title;
+        if (string.IsNullOrEmpty(title))
+        {
+            return 0;
+        }
+
+        var isFallback = false;
+        if (topLevelOrAppItem is TopLevelCommandWrapper toplevel)
+        {
+            isFallback = toplevel.IsFallback;
+        }
+
+        var nameMatch = StringMatcher.FuzzySearch(query, title);
+        var descriptionMatch = StringMatcher.FuzzySearch(query, topLevelOrAppItem.Subtitle);
+
+        var scores = new[]
+        {
+            nameMatch.Score,
+            (descriptionMatch.Score - 4) / 2,
+            isFallback ? 1 : 0, // Always give fallbacks a chance
+        };
+        var max = scores.Max();
+        return max / (isFallback ? 3 : 1); // but downweight them
+    }
+
+    public void Receive(ClearSearchMessage message)
+    {
+        SearchText = string.Empty;
     }
 }

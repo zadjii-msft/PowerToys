@@ -21,6 +21,8 @@ public partial class TopLevelCommandWrapper : ListItem
 
     public string Id { get; private set; } = string.Empty;
 
+    public bool IsFallback => _isFallback;
+
     public TopLevelCommandWrapper(ExtensionObject<ICommandItem> commandItem, bool isFallback)
         : base(commandItem.Unsafe?.Command ?? new NoOpCommand())
     {
@@ -44,7 +46,7 @@ public partial class TopLevelCommandWrapper : ListItem
 
             Title = model.Title;
             Subtitle = model.Subtitle;
-            Icon = new(model.Icon.Icon);
+            Icon = model.Icon;
             MoreCommands = model.MoreCommands;
 
             model.PropChanged += Model_PropChanged;
@@ -87,6 +89,9 @@ public partial class TopLevelCommandWrapper : ListItem
         }
     }
 
+    // This is only ever called on a background thread, by
+    // MainListPage::UpdateSearchText, which is already running in the
+    // background. So x-proc calls we do in here are okay.
     public void TryUpdateFallbackText(string newQuery)
     {
         if (!_isFallback)
@@ -96,14 +101,11 @@ public partial class TopLevelCommandWrapper : ListItem
 
         try
         {
-            _ = Task.Run(() =>
+            var model = Model.Unsafe;
+            if (model is IFallbackCommandItem fallback)
             {
-                var model = Model.Unsafe;
-                if (model is IFallbackCommandItem fallback)
-                {
-                    fallback.FallbackHandler.UpdateQuery(newQuery);
-                }
-            });
+                fallback.FallbackHandler.UpdateQuery(newQuery);
+            }
         }
         catch (Exception)
         {

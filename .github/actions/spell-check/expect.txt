@@ -205,6 +205,7 @@ coclass
 codereview
 Codespaces
 COINIT
+colid
 colorconv
 colorformat
 colorhistory
@@ -220,7 +221,6 @@ CONFIGW
 CONFLICTINGMODIFIERKEY
 CONFLICTINGMODIFIERSHORTCUT
 CONOUT
-contentdialog
 contentfiles
 CONTEXTHELP
 CONTEXTMENUHANDLER
@@ -279,8 +279,12 @@ datareader
 datatracker
 dataversion
 Dayof
+DBID
 DBLCLKS
 DBLEPSILON
+DBPROP
+DBPROPIDSET
+DBPROPSET
 DCapture
 DCBA
 DCOM
@@ -490,6 +494,7 @@ flac
 flaticon
 flyouts
 FMask
+fmtid
 FOF
 FOFX
 FOLDERID
@@ -611,6 +616,7 @@ HREDRAW
 hres
 hresult
 hrgn
+HROW
 hsb
 HSCROLL
 hsi
@@ -665,6 +671,7 @@ imagingdevices
 ime
 imgflip
 inbox
+Indo
 inetcpl
 Infobar
 INFOEXAMPLE
@@ -700,7 +707,6 @@ INVALIDINDEX
 invalidoperatioexception
 ipcmanager
 IPREVIEW
-ipreviewhandlervisualssetfont
 irprops
 isbi
 ISearch
@@ -763,6 +769,7 @@ lhwnd
 LIBID
 libraryincludes
 lindex
+linkid
 LINKOVERLAY
 LINQTo
 listview
@@ -776,7 +783,7 @@ LOADFROMFILE
 LOBYTE
 localappdata
 LOCALDISPLAY
-LOCALPACKAGE
+localpackage
 LOCALSYSTEM
 LOCATIONCHANGE
 LOGFONT
@@ -914,6 +921,8 @@ mscorlib
 msdata
 MSDL
 MSGFLT
+MSIDXS
+MSIDXSPROP
 msiexec
 MSIFASTINSTALL
 MSIHANDLE
@@ -1039,7 +1048,6 @@ NResize
 nsunt
 NTAPI
 ntdll
-ntfs
 NTSTATUS
 NTZm
 nullonfailure
@@ -1057,6 +1065,7 @@ oldpath
 oldtheme
 oleaut
 OLECHAR
+openas
 opencode
 OPENFILENAME
 opensource
@@ -1073,7 +1082,6 @@ osvi
 OUTOFCONTEXT
 outpin
 Outptr
-outputtype
 outsettings
 OVERLAPPEDWINDOW
 overlaywindow
@@ -1183,6 +1191,8 @@ previouscamera
 PREVIOUSINSTALLFOLDER
 PREVIOUSVERSIONSINSTALLED
 prevpane
+prg
+prgh
 prgms
 pri
 PRINTCLIENT
@@ -1199,6 +1209,7 @@ programdata
 projectname
 PROPBAG
 PROPERTYKEY
+Propset
 PROPVARIANT
 prvpane
 psapi
@@ -1244,6 +1255,7 @@ QUNS
 QXZ
 RAII
 RAlt
+randi
 Rasterization
 Rasterize
 RAWINPUTDEVICE
@@ -1310,6 +1322,7 @@ RGBQUAD
 rgbs
 rgelt
 rgf
+rgh
 rgn
 rgs
 RIDEV
@@ -1320,6 +1333,7 @@ RKey
 RNumber
 rop
 ROUNDSMALL
+ROWSETEXT
 rpcrt
 RRF
 rrr
@@ -1361,6 +1375,7 @@ searchterm
 searchtext
 SEARCHUI
 secpol
+SEEMASKINVOKEIDLIST
 SENDCHANGE
 sendvirtualinput
 seperators
@@ -1664,6 +1679,7 @@ uwp
 vabdq
 validmodulename
 valuegenerator
+VARENUM
 variantassignment
 vcamp
 vcdl
@@ -1744,11 +1760,13 @@ webpage
 websites
 wekyb
 wgpocpl
+WHEREID
 Wholegrain
 wic
 wifi
 wil
 winapi
+winappsdk
 wincolor
 windir
 WINDOWCREATED
@@ -1763,8 +1781,6 @@ windowssettings
 WINDOWSTYLES
 WINDOWSTYLESICON
 WINEVENT
-winexe
-winforms
 winget
 wingetcreate
 Winhook

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\Common.Dotnet.CsWinRT.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -40,6 +40,7 @@
     <None Remove="LoadingPage.xaml" />
     <None Remove="MainPage.xaml" />
     <None Remove="ShellPage.xaml" />
+    <None Remove="SettingsPage.xaml" />
     <None Remove="Styles\Button.xaml" />
     <None Remove="Styles\TextBox.xaml" />
   </ItemGroup>
@@ -85,6 +86,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
     <PackageReference Include="CommunityToolkit.WinUI.Converters" />
     <PackageReference Include="CommunityToolkit.WinUI.Animations" />
     <PackageReference Include="CommunityToolkit.WinUI.Extensions" />
@@ -119,6 +121,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.WebSearch\Microsoft.CmdPal.Ext.WebSearch.csproj" />
+    <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.Indexer\Microsoft.CmdPal.Ext.Indexer.csproj" />
     <ProjectReference Include="..\Microsoft.CmdPal.Common\Microsoft.CmdPal.Common.csproj" />
     <ProjectReference Include="..\Microsoft.CmdPal.UI.ViewModels\Microsoft.CmdPal.UI.ViewModels.csproj" />
 
@@ -127,7 +131,6 @@
     <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.Apps\Microsoft.CmdPal.Ext.Apps.csproj" />
     <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.Bookmark\Microsoft.CmdPal.Ext.Bookmarks.csproj" />
     <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.Calc\Microsoft.CmdPal.Ext.Calc.csproj" />
-    <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.CmdPalSettings\Microsoft.CmdPal.Ext.Settings.csproj" />
     <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.Registry\Microsoft.CmdPal.Ext.Registry.csproj" />
     <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.Shell\Microsoft.CmdPal.Ext.Shell.csproj" />
     <ProjectReference Include="..\Exts\Microsoft.CmdPal.Ext.WindowsServices\Microsoft.CmdPal.Ext.WindowsServices.csproj" />
@@ -163,6 +166,9 @@
     <Page Update="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Controls\SearchBar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -173,6 +179,20 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>
+
+  <!-- <ItemGroup>
+    <Compile Update="Strings\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup> -->
+  <!-- <ItemGroup> -->
+    <!-- <EmbeddedResource Update="Strings\en-us\Resources.resx"> -->
+      <!-- <LastGenOutput>Resources.Designer.cs</LastGenOutput> -->
+      <!-- <Generator>PublicResXFileCodeGenerator</Generator> -->
+    <!-- </EmbeddedResource> -->
+  <!-- </ItemGroup> -->
 
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution

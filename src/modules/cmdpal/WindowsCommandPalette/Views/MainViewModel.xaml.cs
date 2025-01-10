@@ -6,9 +6,10 @@ using System.Collections.ObjectModel;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Ext.Bookmarks;
 using Microsoft.CmdPal.Ext.Calc;
+using Microsoft.CmdPal.Ext.Indexer;
 using Microsoft.CmdPal.Ext.Registry;
-using Microsoft.CmdPal.Ext.Settings;
 using Microsoft.CmdPal.Ext.Shell;
+using Microsoft.CmdPal.Ext.WebSearch;
 using Microsoft.CmdPal.Ext.WindowsServices;
 using Microsoft.CmdPal.Ext.WindowsSettings;
 using Microsoft.CmdPal.Ext.WindowsTerminal;
@@ -50,13 +51,13 @@ public sealed class MainViewModel : IDisposable
 
     public event TypedEventHandler<object, ICommand?>? GoToCommandRequested;
 
-    private readonly Dictionary<string, CommandAlias> _aliases = new();
+    private readonly Dictionary<string, CommandAlias> _aliases = [];
 
     internal MainViewModel()
     {
+        BuiltInCommands.Add(new IndexerCommandsProvider());
         BuiltInCommands.Add(new BookmarksCommandProvider());
         BuiltInCommands.Add(new CalculatorCommandProvider());
-        BuiltInCommands.Add(new SettingsCommandProvider());
         BuiltInCommands.Add(_quitCommandProvider);
         BuiltInCommands.Add(_reloadCommandProvider);
         BuiltInCommands.Add(new WindowsTerminalCommandsProvider());
@@ -65,6 +66,7 @@ public sealed class MainViewModel : IDisposable
         BuiltInCommands.Add(new WindowsSettingsCommandsProvider());
         BuiltInCommands.Add(new ShellCommandsProvider());
         BuiltInCommands.Add(new WindowWalkerCommandsProvider());
+        BuiltInCommands.Add(new WebSearchCommandsProvider());
 
         ResetTopLevel();
 
@@ -98,11 +100,6 @@ public sealed class MainViewModel : IDisposable
         handlers?.Invoke(this, null);
     }
 
-    private static string CreateHash(string? title, string? subtitle)
-    {
-        return title + subtitle;
-    }
-
     public IEnumerable<IListItem> AppItems => LoadedApps ? Apps.GetItems() : [];
 
     // Okay this is definitely bad - Evaluating this re-wraps every app in the list with a new wrapper, holy fuck that's stupid
@@ -120,10 +117,7 @@ public sealed class MainViewModel : IDisposable
         _reloadCommandProvider.Dispose();
     }
 
-    private void AddAlias(CommandAlias a)
-    {
-        _aliases.Add(a.SearchPrefix, a);
-    }
+    private void AddAlias(CommandAlias a) => _aliases.Add(a.SearchPrefix, a);
 
     public bool CheckAlias(string searchText)
     {
@@ -165,5 +159,6 @@ public sealed class MainViewModel : IDisposable
         this.AddAlias(new CommandAlias("=", "com.microsoft.cmdpal.calculator", true));
         this.AddAlias(new CommandAlias(">", "com.microsoft.cmdpal.shell", true));
         this.AddAlias(new CommandAlias("<", "com.microsoft.cmdpal.windowwalker", true));
+        this.AddAlias(new CommandAlias("??", "com.microsoft.cmdpal.websearch", true));
     }
 }

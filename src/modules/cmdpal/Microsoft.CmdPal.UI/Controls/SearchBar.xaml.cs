@@ -22,10 +22,13 @@ public sealed partial class SearchBar : UserControl,
     IRecipient<GoHomeMessage>,
     ICurrentPageAware
 {
+    private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
+
     /// <summary>
     /// Gets the <see cref="DispatcherQueueTimer"/> that we create to track keyboard input and throttle/debounce before we make queries.
     /// </summary>
     private readonly DispatcherQueueTimer _debounceTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
+    private bool _isBackspaceHeld;
 
     public PageViewModel? CurrentPageViewModel
     {
@@ -59,16 +62,19 @@ public sealed partial class SearchBar : UserControl,
 
     public void ClearSearch()
     {
-        Debug.WriteLine("Clear search");
-        this.FilterBox.Text = string.Empty;
-
-        if (CurrentPageViewModel != null)
+        // TODO GH #239 switch back when using the new MD text block
+        // _ = _queue.EnqueueAsync(() =>
+        _queue.TryEnqueue(new(() =>
         {
-            CurrentPageViewModel.Filter = string.Empty;
-        }
-    }
+            Debug.WriteLine("Clear search");
+            this.FilterBox.Text = string.Empty;
 
-    private void BackButton_Tapped(object sender, TappedRoutedEventArgs e) => WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
+            if (CurrentPageViewModel != null)
+            {
+                CurrentPageViewModel.Filter = string.Empty;
+            }
+        }));
+    }
 
     private void FilterBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
@@ -117,6 +123,12 @@ public sealed partial class SearchBar : UserControl,
             {
                 // Clear the search box
                 FilterBox.Text = string.Empty;
+
+                // hack TODO GH #245
+                if (CurrentPageViewModel != null)
+                {
+                    CurrentPageViewModel.Filter = FilterBox.Text;
+                }
             }
 
             e.Handled = true;
@@ -128,6 +140,37 @@ public sealed partial class SearchBar : UserControl,
             {
                 CurrentPageViewModel.Filter = FilterBox.Text;
             }
+        }
+    }
+
+    private void FilterBox_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == VirtualKey.Back)
+        {
+            if (string.IsNullOrEmpty(FilterBox.Text))
+            {
+                if (!_isBackspaceHeld)
+                {
+                    // Navigate back on single backspace when empty
+                    WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
+                }
+
+                e.Handled = true;
+            }
+            else
+            {
+                // Mark backspace as held to handle continuous deletion
+                _isBackspaceHeld = true;
+            }
+        }
+    }
+
+    private void FilterBox_PreviewKeyUp(object sender, KeyRoutedEventArgs e)
+    {
+        if (e.Key == VirtualKey.Back)
+        {
+            // Reset the backspace state on key release
+            _isBackspaceHeld = false;
         }
     }
 
@@ -161,10 +204,10 @@ public sealed partial class SearchBar : UserControl,
                     CurrentPageViewModel.Filter = FilterBox.Text;
                 }
             },
-            //// Couldn't find a good recommendation/resource for value here.
+            //// Couldn't find a good recommendation/resource for value here. PT uses 50ms as default, so that is a reasonable default
             //// This seems like a useful testing site for typing times: https://keyboardtester.info/keyboard-latency-test/
-            //// i.e. if another keyboard press comes in within 100ms of the last, we'll wait before we fire off the request
-            interval: TimeSpan.FromMilliseconds(100),
+            //// i.e. if another keyboard press comes in within 50ms of the last, we'll wait before we fire off the request
+            interval: TimeSpan.FromMilliseconds(50),
             //// If we're not already waiting, and this is blanking out or the first character type, we'll start filtering immediately instead to appear more responsive and either clear the filter to get back home faster or at least chop to the first starting letter.
             immediate: FilterBox.Text.Length <= 1);
     }

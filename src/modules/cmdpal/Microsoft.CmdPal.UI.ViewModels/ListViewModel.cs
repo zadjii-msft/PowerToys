@@ -57,17 +57,22 @@ public partial class ListViewModel : PageViewModel
         // something needs to change, by raising ItemsChanged.
         if (_isDynamic)
         {
-            try
+            // We're getting called on the UI thread.
+            // Hop off to a BG thread to update the extension.
+            _ = Task.Run(() =>
             {
-                if (_model.Unsafe is IDynamicListPage dynamic)
+                try
                 {
-                    dynamic.SearchText = filter;
+                    if (_model.Unsafe is IDynamicListPage dynamic)
+                    {
+                        dynamic.SearchText = filter;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                ShowException(ex);
-            }
+                catch (Exception ex)
+                {
+                    ShowException(ex, _model?.Unsafe?.Name);
+                }
+            });
         }
         else
         {
@@ -95,8 +100,12 @@ public partial class ListViewModel : PageViewModel
             foreach (var item in newItems)
             {
                 ListItemViewModel viewModel = new(item, this);
-                viewModel.InitializeProperties();
-                newViewModels.Add(viewModel);
+
+                // If an item fails to load, silently ignore it.
+                if (viewModel.SafeInitializeProperties())
+                {
+                    newViewModels.Add(viewModel);
+                }
             }
 
             // Now that we have new ViewModels for everything from the
@@ -108,7 +117,9 @@ public partial class ListViewModel : PageViewModel
         }
         catch (Exception ex)
         {
-            ShowException(ex);
+            // TODO: Move this within the for loop, so we can catch issues with individual items
+            // Create a special ListItemViewModel for errors and use an ItemTemplateSelector in the ListPage to display error items differently.
+            ShowException(ex, _model?.Unsafe?.Name);
             throw;
         }
 

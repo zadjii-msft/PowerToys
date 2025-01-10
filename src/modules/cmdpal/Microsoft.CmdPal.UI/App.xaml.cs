@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -6,9 +6,10 @@ using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Ext.Bookmarks;
 using Microsoft.CmdPal.Ext.Calc;
+using Microsoft.CmdPal.Ext.Indexer;
 using Microsoft.CmdPal.Ext.Registry;
-using Microsoft.CmdPal.Ext.Settings;
 using Microsoft.CmdPal.Ext.Shell;
+using Microsoft.CmdPal.Ext.WebSearch;
 using Microsoft.CmdPal.Ext.WindowsServices;
 using Microsoft.CmdPal.Ext.WindowsSettings;
 using Microsoft.CmdPal.Ext.WindowsTerminal;
@@ -78,19 +79,21 @@ public partial class App : Application
         services.AddSingleton<ICommandProvider, AllAppsCommandProvider>();
         services.AddSingleton<ICommandProvider, ShellCommandsProvider>();
         services.AddSingleton<ICommandProvider, CalculatorCommandProvider>();
+        services.AddSingleton<ICommandProvider, IndexerCommandsProvider>();
+        services.AddSingleton<ICommandProvider, BuiltInsCommandProvider>();
         services.AddSingleton<ICommandProvider, BookmarksCommandProvider>();
-        services.AddSingleton<ICommandProvider, SettingsCommandProvider>();
-        services.AddSingleton<ICommandProvider, QuitCommandProvider>();
-        services.AddSingleton<ICommandProvider, ReloadExtensionsCommandProvider>();
         services.AddSingleton<ICommandProvider, WindowsTerminalCommandsProvider>();
         services.AddSingleton<ICommandProvider, WindowsServicesCommandsProvider>();
         services.AddSingleton<ICommandProvider, RegistryCommandsProvider>();
         services.AddSingleton<ICommandProvider, WindowWalkerCommandsProvider>();
         services.AddSingleton<ICommandProvider, WindowsSettingsCommandsProvider>();
+        services.AddSingleton<ICommandProvider, WebSearchCommandsProvider>();
 
         // Models
         services.AddSingleton<TopLevelCommandManager>();
         services.AddSingleton<AliasManager>();
+        var sm = SettingsModel.LoadSettings();
+        services.AddSingleton(sm);
         services.AddSingleton<IExtensionService, ExtensionService>();
 
         // ViewModels

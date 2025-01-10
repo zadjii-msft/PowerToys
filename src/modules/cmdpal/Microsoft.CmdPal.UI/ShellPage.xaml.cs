@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Windows.System;
+using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
 namespace Microsoft.CmdPal.UI;
 
@@ -21,15 +23,23 @@ public sealed partial class ShellPage :
     Page,
     IRecipient<NavigateBackMessage>,
     IRecipient<PerformCommandMessage>,
+    IRecipient<OpenSettingsMessage>,
     IRecipient<ShowDetailsMessage>,
     IRecipient<HideDetailsMessage>,
     IRecipient<ClearSearchMessage>,
     IRecipient<HandleCommandResultMessage>,
-    IRecipient<LaunchUriMessage>
+    IRecipient<LaunchUriMessage>,
+    INotifyPropertyChanged
 {
+    private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
+
+    private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+
     private readonly SlideNavigationTransitionInfo _slideRightTransition = new() { Effect = SlideNavigationTransitionEffect.FromRight };
 
     public ShellViewModel ViewModel { get; private set; } = App.Current.Services.GetService<ShellViewModel>()!;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public ShellPage()
     {
@@ -39,6 +49,7 @@ public sealed partial class ShellPage :
         WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
         WeakReferenceMessenger.Default.Register<HandleCommandResultMessage>(this);
+        WeakReferenceMessenger.Default.Register<OpenSettingsMessage>(this);
 
         WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
@@ -77,50 +88,56 @@ public sealed partial class ShellPage :
         // Or the command may be a stub. Future us problem.
         try
         {
-            if (command is IListPage listPage)
+            // This could be navigation to another page or invoking of a command, those are our two main branches of logic here.
+            // For different pages, we may construct different view models and navigate to the central frame to different pages,
+            // Otherwise the logic is mostly the same, outside the main page.
+            if (command is IPage page)
             {
-                _ = DispatcherQueue.TryEnqueue(() =>
+                _ = _queue.TryEnqueue(() =>
                 {
                     // Also hide our details pane about here, if we had one
                     HideDetails();
+
                     var isMainPage = command is MainListPage;
-                    var pageViewModel = new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext())
+
+                    // Construct our ViewModel of the appropriate type and pass it the UI Thread context.
+                    PageViewModel pageViewModel = page switch
                     {
-                        IsNested = !isMainPage,
+                        IListPage listPage => new ListViewModel(listPage, _mainTaskScheduler)
+                        {
+                            IsNested = !isMainPage,
+                        },
+                        IFormPage formsPage => new FormsPageViewModel(formsPage, _mainTaskScheduler),
+                        IMarkdownPage markdownPage => new MarkdownPageViewModel(markdownPage, _mainTaskScheduler),
+                        _ => throw new NotSupportedException(),
                     };
-                    RootFrame.Navigate(typeof(ListPage), pageViewModel, _slideRightTransition);
+
+                    // Kick off async loading of our ViewModel
+                    ViewModel.LoadPageViewModel(pageViewModel);
+
+                    // Navigate to the appropriate host page for that VM
+                    RootFrame.Navigate(
+                        page switch
+                        {
+                            IListPage => typeof(ListPage),
+                            IFormPage => typeof(FormsPage),
+                            IMarkdownPage => typeof(MarkdownPage),
+                            _ => throw new NotSupportedException(),
+                        },
+                        pageViewModel,
+                        _slideRightTransition);
+
+                    // Refocus on the Search for continual typing on the next search request
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+
                     if (isMainPage)
                     {
                         // todo bodgy
                         RootFrame.BackStack.Clear();
                     }
 
-                    ViewModel.CurrentPage = pageViewModel;
-                });
-            }
-            else if (command is IFormPage formsPage)
-            {
-                _ = DispatcherQueue.TryEnqueue(() =>
-                {
-                    // Also hide our details pane about here, if we had one
-                    HideDetails();
-                    var pageViewModel = new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext());
-                    RootFrame.Navigate(typeof(FormsPage), pageViewModel, _slideRightTransition);
-                    SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
-                    WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(pageViewModel));
-                });
-            }
-            else if (command is IMarkdownPage markdownPage)
-            {
-                _ = DispatcherQueue.TryEnqueue(() =>
-                {
-                    // Also hide our details pane about here, if we had one
-                    HideDetails();
-                    var pageViewModel = new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext());
-                    RootFrame.Navigate(typeof(MarkdownPage), pageViewModel, _slideRightTransition);
-                    SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
-                    WeakReferenceMessenger.Default.Send<NavigateToPageMessage>(new(pageViewModel));
+                    // Note: Originally we set our page back in the ViewModel here, but that now happens in response to the Frame navigating triggered from the above
+                    // See RootFrame_Navigated event handler.
                 });
             }
             else if (command is IInvokableCommand invokable)
@@ -130,9 +147,16 @@ public sealed partial class ShellPage :
                 HandleCommandResult(result);
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // TODO logging
+            if (command is IPageContext page)
+            {
+                page.ShowException(ex);
+            }
+            else
+            {
+                // TODO: Logging
+            }
         }
     }
 
@@ -160,6 +184,12 @@ public sealed partial class ShellPage :
                             break;
                         }
 
+                    case CommandResultKind.GoBack:
+                        {
+                            GoBack();
+                            break;
+                        }
+
                     case CommandResultKind.Hide:
                         {
                             // Keep this page open, but hide the palette.
@@ -181,10 +211,31 @@ public sealed partial class ShellPage :
         }
     }
 
+    public void Receive(OpenSettingsMessage message)
+    {
+        _ = DispatcherQueue.TryEnqueue(() =>
+        {
+            // Also hide our details pane about here, if we had one
+            HideDetails();
+
+            var settings = App.Current.Services.GetService<SettingsModel>()!;
+            var settingsViewModel = new SettingsViewModel(settings, App.Current.Services, _mainTaskScheduler);
+            RootFrame.Navigate(typeof(SettingsPage), settingsViewModel, _slideRightTransition);
+
+            ViewModel.CurrentPage = settingsViewModel;
+
+            WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(null));
+        });
+    }
+
     public void Receive(ShowDetailsMessage message)
     {
         ViewModel.Details = message.Details;
         ViewModel.IsDetailsVisible = true;
+
+        // Trigger a re-evaluation of whether we have a hero image based on
+        // the current theme
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
     }
 
     public void Receive(HideDetailsMessage message) => HideDetails();
@@ -200,7 +251,19 @@ public sealed partial class ShellPage :
     private void GoBack()
     {
         HideDetails();
+
+        // Note: That we restore the VM state below in RootFrame_Navigated call back after this occurs.
+        // In the future, we may want to manage the back stack ourselves vs. relying on Frame
+        // We could replace Frame with a ContentPresenter, but then have to manage transition animations ourselves.
+        // However, then we have more fine-grained control on the back stack, managing the VM cache, and not
+        // having that all be a black box, though then we wouldn't cache the XAML page itself, but sometimes that is a drawback.
+        // However, we do a good job here, see ForwardStack.Clear below, and BackStack.Clear above about managing that.
         RootFrame.GoBack();
+
+        // Don't store pages we're navigating away from in the Frame cache
+        // TODO: In the future we probably want a short cache (3-5?) of recent VMs in case the user re-navigates
+        // back to a recent page they visited (like the Pokedex) so we don't have to reload it from  scratch.
+        // That'd be retrieved as we re-navigate in the PerformCommandMessage logic above
         RootFrame.ForwardStack.Clear();
         SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
     }
@@ -213,5 +276,45 @@ public sealed partial class ShellPage :
         }
 
         WeakReferenceMessenger.Default.Send<GoHomeMessage>();
+    }
+
+    private void BackButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e) => WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
+
+    private void RootFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        // This listens to the root frame to ensure that we also track the content's page VM as well that we passed as a parameter.
+        // This is currently used for both forward and backward navigation.
+        // As when we go back that we restore ourselves to the proper state within our VM
+        if (e.Parameter is PageViewModel page)
+        {
+            // Note, this shortcuts and fights a bit with our LoadPageViewModel above, but we want to better fast display and incrementally load anyway
+            // We just need to reconcile our loading systems a bit more in the future.
+            ViewModel.CurrentPage = page;
+        }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether determines if the current Details have a HeroImage, given the theme
+    /// we're currently in. This needs to be evaluated in the view, because the
+    /// viewModel doesn't actually know what the current theme is.
+    /// </summary>
+    public bool HasHeroImage
+    {
+        get
+        {
+            var requestedTheme = ActualTheme;
+            var iconInfo = ViewModel.Details?.HeroImage;
+            var data = requestedTheme == Microsoft.UI.Xaml.ElementTheme.Dark ?
+                iconInfo?.Dark :
+                iconInfo?.Light;
+
+            // We have an icon, AND EITHER:
+            //      We have a string icon, OR
+            //      we have a data blob
+            var hasIcon = (data != null) &&
+                    (!string.IsNullOrEmpty(data.Icon) ||
+                    data.Data != null);
+            return hasIcon;
+        }
     }
 }
