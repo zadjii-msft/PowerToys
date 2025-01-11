@@ -117,11 +117,13 @@ public partial class SettingsModel : ObservableObject
 
     internal static string SettingsJsonPath()
     {
-        // Get the path to our exe
-        var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        //// Get the path to our exe
+        // var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
-        // Get the directory of the exe
-        var directory = Path.GetDirectoryName(path) ?? string.Empty;
+        //// Get the directory of the exe
+        // var directory = Path.GetDirectoryName(path) ?? string.Empty;
+        var directory = Microsoft.CmdPal.Extensions.Helpers.Settings.BaseSettingsPath("Microsoft.CmdPal");
+        Directory.CreateDirectory(directory);
 
         // now, the settings is just next to the exe
         return Path.Combine(directory, "settings.json");
