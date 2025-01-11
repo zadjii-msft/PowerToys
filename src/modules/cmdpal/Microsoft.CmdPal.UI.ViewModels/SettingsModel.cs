@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Settings;
 using Windows.Foundation;
 
@@ -117,12 +118,7 @@ public partial class SettingsModel : ObservableObject
 
     internal static string SettingsJsonPath()
     {
-        //// Get the path to our exe
-        // var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-
-        //// Get the directory of the exe
-        // var directory = Path.GetDirectoryName(path) ?? string.Empty;
-        var directory = Microsoft.CmdPal.Extensions.Helpers.Utilities.BaseSettingsPath("Microsoft.CmdPal");
+        var directory = Utilities.BaseSettingsPath("Microsoft.CmdPal");
         Directory.CreateDirectory(directory);
 
         // now, the settings is just next to the exe
