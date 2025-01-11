@@ -122,7 +122,7 @@ public partial class SettingsModel : ObservableObject
 
         //// Get the directory of the exe
         // var directory = Path.GetDirectoryName(path) ?? string.Empty;
-        var directory = Microsoft.CmdPal.Extensions.Helpers.Settings.BaseSettingsPath("Microsoft.CmdPal");
+        var directory = Microsoft.CmdPal.Extensions.Helpers.Utilities.BaseSettingsPath("Microsoft.CmdPal");
         Directory.CreateDirectory(directory);
 
         // now, the settings is just next to the exe
