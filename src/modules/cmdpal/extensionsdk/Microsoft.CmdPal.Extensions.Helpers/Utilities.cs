@@ -9,19 +9,31 @@ using Windows.Win32.UI.Shell;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1312:Variable names should begin with lower-case letter", Justification = "It's a Windows constants a ")]
 public class Utilities
 {
     /// <summary>
     /// Used to produce a path to a settings folder which your app can use.
     /// If your app is running packaged, this will return the redirected local
-    /// app data path (Packages/<your_pfn>/LocalState). If not, it'll return
-    /// %LOCALAPPDATA%\settingsFolderName.
+    /// app data path (Packages/{your_pfn}/LocalState). If not, it'll return
+    /// %LOCALAPPDATA%\{settingsFolderName}.
+    ///
+    /// Does not ensure that the directory exists. Callers should call
+    /// CreateDirectory before writing settings files to this directory.
     /// </summary>
-    /// <param name="settingsFolderName"></param>
-    /// <returns></returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1312:Variable names should begin with lower-case letter", Justification = "It's a Windows constants a ")]
+    /// <example>
+    /// var directory = Utilities.BaseSettingsPath("Some.Unique.String.Here");
+    /// Directory.CreateDirectory(directory);
+    /// </example>
+    /// <param name="settingsFolderName">A fallback directory name to use
+    /// inside of %LocalAppData%, in the case this app is not currently running
+    /// in a package context</param>
+    /// <returns>The path to a folder to use for storing settings.</returns>
     public static string BaseSettingsPath(string settingsFolderName)
     {
+        // KF_FLAG_FORCE_APP_DATA_REDIRECTION, when engaged, causes SHGet... to return
+        // the new AppModel paths (Packages/xxx/RoamingState, etc.) for standard path requests.
+        // Using this flag allows us to avoid Windows.Storage.ApplicationData completely.
         var FOLDERID_LocalAppData = new Guid("F1B32785-6FBA-4FCF-9D55-7B8E7F157091");
         var hr = PInvoke.SHGetKnownFolderPath(
             FOLDERID_LocalAppData,
@@ -45,10 +57,13 @@ public class Utilities
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1312:Variable names should begin with lower-case letter", Justification = "It's a Windows constants a ")]
+    /// <summary>
+    /// Can be used to quickly determine if this process is running with package identity.
+    /// </summary>
+    /// <returns>true iff the process is running with package identity</returns>
     public static bool IsPackaged()
     {
-        uint buffersize = 0;
+        uint bufferSize = 0;
         var bytes = Array.Empty<byte>();
 
         // CsWinRT apparently won't generate this constant
@@ -57,7 +72,10 @@ public class Utilities
         {
             fixed (byte* p = bytes)
             {
-                var win32Error = PInvoke.GetCurrentPackageId(ref buffersize, p);
+                // We don't actually need the package ID. We just need to know
+                // if we have a package or not, and APPMODEL_ERROR_NO_PACKAGE
+                // is a quick way to find out.
+                var win32Error = PInvoke.GetCurrentPackageId(ref bufferSize, p);
                 return win32Error != APPMODEL_ERROR_NO_PACKAGE;
             }
         }
