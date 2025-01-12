@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 using Windows.Storage.Streams;
 
@@ -12,6 +11,11 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public partial class IconDataViewModel : ExtensionObjectViewModel
 {
     private readonly ExtensionObject<IconData> _model = new(null);
+
+    // If the extension previously gave us a Data, then died, the data will
+    // throw if we actually try to read it, but the pointer itself won't be
+    // null, so this is relatively safe.
+    public bool HasIcon => !string.IsNullOrEmpty(Icon) || Data.Unsafe != null;
 
     // Locally cached properties from IconData.
     public string Icon { get; private set; } = string.Empty;

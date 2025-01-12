@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
-using Windows.Storage.Streams;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -22,6 +20,10 @@ public partial class IconInfoViewModel : ExtensionObjectViewModel
     public IconDataViewModel Light { get; private set; }
 
     public IconDataViewModel Dark { get; private set; }
+
+    public IconDataViewModel IconForTheme(bool light) => Light = light ? Light : Dark;
+
+    public bool HasIcon(bool light) => IconForTheme(light).HasIcon;
 
     public IconInfoViewModel(IconInfo? icon, IPageContext errorContext)
         : base(errorContext)
