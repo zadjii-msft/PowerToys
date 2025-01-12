@@ -21,7 +21,7 @@ public partial class IconDataViewModel : ObservableObject
     // Locally cached properties from IconData.
     public string Icon { get; private set; } = string.Empty;
 
-    // Streams are not trivially copyable, so we can't copy the data locally
+    // Streams are not trivially copy-able, so we can't copy the data locally
     // first. Hence why we're sticking this into an ExtensionObject
     public ExtensionObject<IRandomAccessStreamReference> Data { get; private set; } = new(null);
 
