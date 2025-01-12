@@ -31,7 +31,8 @@ public partial class SettingsViewModel : PageViewModel
         _settings = settings;
         _serviceProvider = serviceProvider;
 
-        Icon = new(new("\uE713"), PageContext);
+        Icon = new(new("\uE713"));
+        Icon.InitializeProperties();
         IsInitialized = true;
         ModelIsLoading = false;
         Title = "Settings";

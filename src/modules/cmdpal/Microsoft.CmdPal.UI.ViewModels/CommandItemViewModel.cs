@@ -54,7 +54,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         : base(errorContext)
     {
         _commandItemModel = item;
-        Icon = new(null, errorContext);
+        Icon = new(null);
     }
 
     //// Called from ListViewModel on background thread started in ListPage.xaml.cs
@@ -83,7 +83,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
         var listIcon = model.Icon;
         var iconInfo = listIcon ?? Command.Unsafe!.Icon;
-        Icon = new(iconInfo, PageContext);
+        Icon = new(iconInfo);
         Icon.InitializeProperties();
 
         var more = model.MoreCommands;
@@ -133,7 +133,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
             Title = "Error";
             Subtitle = "Item failed to load";
             MoreCommands = [];
-            Icon = new(new("❌"), PageContext); // new("❌");
+            Icon = new(new("❌")); // new("❌");
             Icon.InitializeProperties();
         }
 
@@ -174,7 +174,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
             case nameof(Icon):
                 var listIcon = model.Icon;
                 var iconInfo = listIcon != null ? listIcon : Command.Unsafe!.Icon;
-                Icon = new(iconInfo, PageContext);
+                Icon = new(iconInfo);
                 Icon.InitializeProperties();
                 break;
 

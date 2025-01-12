@@ -53,7 +53,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         _pageModel = new(model);
         Scheduler = scheduler;
         PageContext = this;
-        Icon = new(null, PageContext);
+        Icon = new(null);
     }
 
     //// Run on background thread from ListPage.xaml.cs
@@ -99,7 +99,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         Name = page.Name;
         ModelIsLoading = page.IsLoading;
         Title = page.Title;
-        Icon = new(page.Icon, PageContext);
+        Icon = new(page.Icon);
         Icon.InitializeProperties();
 
         // Let the UI know about our initial properties too.
@@ -155,7 +155,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
                 UpdateProperty(nameof(ModelIsLoading));
                 break;
             case nameof(Icon):
-                this.Icon = new(model.Icon, PageContext);
+                this.Icon = new(model.Icon);
                 break;
         }
 

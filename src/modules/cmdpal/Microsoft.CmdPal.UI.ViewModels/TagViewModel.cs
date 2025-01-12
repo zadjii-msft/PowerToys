@@ -21,7 +21,7 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
 
     public OptionalColor Background { get; private set; }
 
-    public IconInfoViewModel Icon { get; private set; } = new(null, context);
+    public IconInfoViewModel Icon { get; private set; } = new(null);
 
     // TODO Terrible. When we redo the icons in tags, make this something the view exposes
     public bool HasIcon => Icon.HasIcon(true);
@@ -41,7 +41,7 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
         Foreground = model.Foreground;
         Background = model.Background;
         Tooltip = model.ToolTip;
-        Icon = new(model.Icon, PageContext);
+        Icon = new(model.Icon);
         Icon.InitializeProperties();
 
         UpdateProperty(nameof(Text));

@@ -2,12 +2,13 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class IconInfoViewModel : ExtensionObjectViewModel
+public partial class IconInfoViewModel : ObservableObject
 {
     private readonly ExtensionObject<IconInfo> _model = new(null);
 
@@ -25,16 +26,15 @@ public partial class IconInfoViewModel : ExtensionObjectViewModel
 
     public bool HasIcon(bool light) => IconForTheme(light).HasIcon;
 
-    public IconInfoViewModel(IconInfo? icon, IPageContext errorContext)
-        : base(errorContext)
+    public IconInfoViewModel(IconInfo? icon)
     {
         _model = new(icon);
-        Light = new(null, errorContext);
-        Dark = new(null, errorContext);
+        Light = new(null);
+        Dark = new(null);
     }
 
     // Unsafe, needs to be called on BG thread
-    public override void InitializeProperties()
+    public void InitializeProperties()
     {
         var model = _model.Unsafe;
         if (model == null)
@@ -42,10 +42,10 @@ public partial class IconInfoViewModel : ExtensionObjectViewModel
             return;
         }
 
-        Light = new(model.Light, this.PageContext);
+        Light = new(model.Light);
         Light.InitializeProperties();
 
-        Dark = new(model.Dark, this.PageContext);
+        Dark = new(model.Dark);
         Dark.InitializeProperties();
     }
 }
