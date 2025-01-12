@@ -11,7 +11,9 @@ public partial class WindowsServicesCommandsProvider : CommandProvider
 {
     public WindowsServicesCommandsProvider()
     {
+        Id = "Windows.Services";
         DisplayName = $"Windows Services";
+        Icon = new("%windir%\\system32\\filemgmt.dll");
     }
 
     public override ICommandItem[] TopLevelCommands()

@@ -25,7 +25,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
     public string Subtitle { get; private set; } = string.Empty;
 
-    public IconDataType Icon { get; private set; } = new(string.Empty);
+    public IconInfo Icon { get; private set; } = new(string.Empty);
 
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
@@ -42,8 +42,8 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         get
         {
             List<CommandContextItemViewModel> l = _defaultCommandContextItem == null ?
-                [_defaultCommandContextItem] :
-                new();
+                new() :
+                [_defaultCommandContextItem];
 
             l.AddRange(MoreCommands);
             return l;
@@ -67,14 +67,21 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
         Command = new(model.Command);
 
+        // The way we're using this, this call to initialize Name is
+        // particularly unsafe. For top-level commands, we wrap the
+        // _CommandItem_ in a TopLevelCommandWrapper. But the secret problem
+        // is: if the extension crashes, then the next time the MainPage
+        // fetches items, we'll grab the TopLevelCommandWrapper, and try to get
+        // the .Name out of its Command. But its .Command has died, so we
+        // explode here.
+        // (Icon probably has the same issue)
+        // When we have proper stubs for TLC's, this probably won't be an issue anymore.
         Name = model.Command?.Name ?? string.Empty;
         Title = model.Title;
         Subtitle = model.Subtitle;
 
         var listIcon = model.Icon;
-        Icon = !string.IsNullOrEmpty(listIcon.Icon) ?
-            listIcon :
-            Command.Unsafe!.Icon;
+        Icon = listIcon ?? Command.Unsafe!.Icon;
 
         var more = model.MoreCommands;
         if (more != null)
@@ -107,6 +114,26 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         model.PropChanged += Model_PropChanged;
 
         // _initialized = true;
+    }
+
+    public bool SafeInitializeProperties()
+    {
+        try
+        {
+            InitializeProperties();
+            return true;
+        }
+        catch (Exception)
+        {
+            Command = new(null);
+            Name = "Error";
+            Title = "Error";
+            Subtitle = "Item failed to load";
+            MoreCommands = [];
+            Icon = new("❌");
+        }
+
+        return false;
     }
 
     private void Model_PropChanged(object sender, PropChangedEventArgs args)
@@ -142,7 +169,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
                 break;
             case nameof(Icon):
                 var listIcon = model.Icon;
-                Icon = !string.IsNullOrEmpty(listIcon.Icon) ? listIcon : Command.Unsafe!.Icon;
+                Icon = listIcon != null ? listIcon : Command.Unsafe!.Icon;
                 break;
 
                 // TODO! MoreCommands array, which needs to also raise HasMoreCommands
