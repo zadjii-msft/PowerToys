@@ -111,7 +111,17 @@ public partial class IconBox : ContentControl
                         // Segoe icons, then let's give the icon some extra space
                         @this.Padding = new Thickness(0);
 
-                        if (eventArgs.Key is IconData iconData &&
+                        IconData? iconData = null;
+                        if (eventArgs.Key is IconData)
+                        {
+                            iconData = eventArgs.Key as IconData;
+                        }
+                        else if (eventArgs.Key is IconInfo info)
+                        {
+                            iconData = requestedTheme == ElementTheme.Light ? info.Light : info.Dark;
+                        }
+
+                        if (iconData != null &&
                             @this.Source is FontIconSource)
                         {
                             if (!string.IsNullOrEmpty(iconData.Icon) && iconData.Icon.Length <= 2)
