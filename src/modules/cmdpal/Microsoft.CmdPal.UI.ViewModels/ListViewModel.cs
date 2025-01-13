@@ -37,7 +37,7 @@ public partial class ListViewModel : PageViewModel
 
     public string ModelPlaceholderText { get => string.IsNullOrEmpty(field) ? "Type here to search..." : field; private set; } = string.Empty;
 
-    public override string PlaceholderText { get => ModelPlaceholderText; set => base.PlaceholderText = value; }
+    public override string PlaceholderText { get => ModelPlaceholderText; }
 
     public string SearchText { get; private set; } = string.Empty;
 
@@ -261,7 +261,7 @@ public partial class ListViewModel : PageViewModel
                 this.ShowDetails = model.ShowDetails;
                 break;
             case nameof(PlaceholderText):
-                this.PlaceholderText = model.PlaceholderText;
+                this.ModelPlaceholderText = model.PlaceholderText;
                 break;
             case nameof(SearchText):
                 this.SearchText = model.SearchText;

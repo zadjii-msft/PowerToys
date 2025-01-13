@@ -32,7 +32,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     public partial string Filter { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public virtual partial string PlaceholderText { get; set; } = "Type here to search...";
+    public virtual partial string PlaceholderText { get; private set; } = "Type here to search...";
 
     // These are properties that are "observable" from the extension object
     // itself, in the sense that they get raised by PropChanged events from the
