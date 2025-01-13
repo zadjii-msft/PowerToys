@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Text;
 using Microsoft.CmdPal.Ext.WebSearch.Helpers;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Wox.Plugin;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Microsoft.CmdPal.Ext.WebSearch.Commands;
