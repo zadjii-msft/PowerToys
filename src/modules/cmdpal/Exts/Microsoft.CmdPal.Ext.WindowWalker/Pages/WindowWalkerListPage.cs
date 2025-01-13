@@ -22,7 +22,7 @@ internal sealed partial class WindowWalkerListPage : DynamicListPage, IDisposabl
         Icon = new("\ue8f9"); // SwitchApps
         Name = Resources.windowwalker_name;
         Id = "com.microsoft.cmdpal.windowwalker";
-        PlaceholderText = "Search open windows";
+        PlaceholderText = Resources.windowwalker_PlaceholderText;
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch) =>
