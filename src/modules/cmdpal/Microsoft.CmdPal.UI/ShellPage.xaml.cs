@@ -24,6 +24,7 @@ public sealed partial class ShellPage :
     IRecipient<NavigateBackMessage>,
     IRecipient<PerformCommandMessage>,
     IRecipient<OpenSettingsMessage>,
+    IRecipient<HotkeySummonMessage>,
     IRecipient<ShowDetailsMessage>,
     IRecipient<HideDetailsMessage>,
     IRecipient<ClearSearchMessage>,
@@ -36,6 +37,7 @@ public sealed partial class ShellPage :
     private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
     private readonly SlideNavigationTransitionInfo _slideRightTransition = new() { Effect = SlideNavigationTransitionEffect.FromRight };
+    private readonly SuppressNavigationTransitionInfo _noAnimation = new();
 
     public ShellViewModel ViewModel { get; private set; } = App.Current.Services.GetService<ShellViewModel>()!;
 
@@ -50,6 +52,7 @@ public sealed partial class ShellPage :
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
         WeakReferenceMessenger.Default.Register<HandleCommandResultMessage>(this);
         WeakReferenceMessenger.Default.Register<OpenSettingsMessage>(this);
+        WeakReferenceMessenger.Default.Register<HotkeySummonMessage>(this);
 
         WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
@@ -248,7 +251,18 @@ public sealed partial class ShellPage :
 
     public void Receive(ClearSearchMessage message) => SearchBox.ClearSearch();
 
-    private void GoBack()
+    public void Receive(HotkeySummonMessage message)
+    {
+        var settings = App.Current.Services.GetService<SettingsModel>()!;
+        if (settings.HotkeyGoesHome)
+        {
+            GoHome(false);
+        }
+
+        SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+    }
+
+    private void GoBack(bool withAnimation = true)
     {
         HideDetails();
 
@@ -258,7 +272,14 @@ public sealed partial class ShellPage :
         // However, then we have more fine-grained control on the back stack, managing the VM cache, and not
         // having that all be a black box, though then we wouldn't cache the XAML page itself, but sometimes that is a drawback.
         // However, we do a good job here, see ForwardStack.Clear below, and BackStack.Clear above about managing that.
-        RootFrame.GoBack();
+        if (withAnimation)
+        {
+            RootFrame.GoBack();
+        }
+        else
+        {
+            RootFrame.GoBack(_noAnimation);
+        }
 
         // Don't store pages we're navigating away from in the Frame cache
         // TODO: In the future we probably want a short cache (3-5?) of recent VMs in case the user re-navigates
@@ -268,11 +289,11 @@ public sealed partial class ShellPage :
         SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
     }
 
-    private void GoHome()
+    private void GoHome(bool withAnimation = true)
     {
         while (RootFrame.CanGoBack)
         {
-            GoBack();
+            GoBack(withAnimation);
         }
 
         WeakReferenceMessenger.Default.Send<GoHomeMessage>();
