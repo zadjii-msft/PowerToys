@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Text;
 using Microsoft.CmdPal.Ext.WebSearch.Helpers;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Wox.Plugin;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Microsoft.CmdPal.Ext.WebSearch.Commands;
@@ -20,6 +21,7 @@ internal sealed partial class FallbackExecuteSearchItem : FallbackCommandItem
     {
         _executeItem = (SearchWebCommand)this.Command!;
         Title = string.Empty;
+        _executeItem.Name = string.Empty;
         Subtitle = string.Format(CultureInfo.CurrentCulture, PluginOpen, BrowserInfo.Name ?? BrowserInfo.MSEdgeName);
         Icon = new("\uF6FA"); // WebSearch icon
     }
@@ -27,6 +29,7 @@ internal sealed partial class FallbackExecuteSearchItem : FallbackCommandItem
     public override void UpdateQuery(string query)
     {
         _executeItem.Arguments = query;
-        Title = string.IsNullOrEmpty(query) ? string.Empty : query;
+        _executeItem.Name = string.IsNullOrEmpty(query) ? string.Empty : Properties.Resources.open_in_default_browser;
+        Title = query;
     }
 }
