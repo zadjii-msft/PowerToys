@@ -9,7 +9,7 @@ using Windows.Win32.UI.Shell;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1312:Variable names should begin with lower-case letter", Justification = "It's a Windows constants a ")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1312:Variable names should begin with lower-case letter", Justification = "This file has more than a couple Windows constants in it, which don't make sense to rename")]
 public class Utilities
 {
     /// <summary>
