@@ -157,6 +157,32 @@
                 Style="{StaticResource SubtleButtonStyle}"
                 Visibility="{x:Bind ViewModel.ShouldShowContextMenu, Mode=OneWay}">
                 <Button.Flyout>
+                    <Flyout 
+                        AreOpenCloseAnimationsEnabled="True"
+                        cpcontrols:BindableFlyout.ItemsSource="{x:Bind ViewModel.ContextActions, Mode=OneWay}" 
+                        Placement="TopEdgeAlignedRight">
+                        <cpcontrols:BindableFlyout.ItemTemplate>
+                            <DataTemplate>
+                                <MenuFlyoutItem 
+                                    Margin="-8,-4,-8,-4" 
+                                    Padding="8,4,8,4" 
+                                    Text="{Binding Name, Mode=OneWay}">
+                                    <!--<MenuFlyoutItem.Icon>
+                                        <cpcontrols:IconBox
+                                            Width="16"
+                                            Height="16"
+                                            Margin="8,0,0,0"
+                                            SourceKey="{x:Bind Icon, Mode=OneWay}"
+                                            SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}" />
+
+                                    </MenuFlyoutItem.Icon>-->
+                                </MenuFlyoutItem>
+                            </DataTemplate>
+                        </cpcontrols:BindableFlyout.ItemTemplate>
+                    </Flyout>
+                </Button.Flyout>
+                <!--
+                <Button.Flyout>
                     <Flyout Placement="TopEdgeAlignedRight">
                         <ListView
                             x:Name="ActionsDropdown"
@@ -169,6 +195,7 @@
                         </ListView>
                     </Flyout>
                 </Button.Flyout>
+                -->
             </Button>
         </StackPanel>
     </Grid>

@@ -36,8 +36,25 @@ public sealed partial class ActionBar : UserControl,
 
         // RegisterAll isn't AOT compatible
         WeakReferenceMessenger.Default.Register<OpenContextMenuMessage>(this);
+
+        // ViewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
 
+    // private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    // {
+    //    var prop = e.PropertyName;
+    //    if (prop == nameof(ActionBarViewModel.SelectedItem) &&
+    //        ViewModel.ShouldShowContextMenu)
+    //    {
+    //        if (ViewModel.SelectedItem != null)
+    //        {
+    //            var selected = ViewModel.SelectedItem;
+    //            var allContext = selected.AllCommands;
+
+    // var menuItems = allContext.Select((item) => new MenuFlyoutItem() { Text = item.Title });
+    //        }
+    //    }
+    // }
     public void Receive(OpenContextMenuMessage message)
     {
         if (!ViewModel.ShouldShowContextMenu)
@@ -50,8 +67,9 @@ public sealed partial class ActionBar : UserControl,
             ShowMode = FlyoutShowMode.Standard,
         };
         MoreCommandsButton.Flyout.ShowAt(MoreCommandsButton, options);
-        ActionsDropdown.SelectedIndex = 0;
-        ActionsDropdown.Focus(FocusState.Programmatic);
+
+        // ActionsDropdown.SelectedIndex = 0;
+        // ActionsDropdown.Focus(FocusState.Programmatic);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS has a tendency to delete XAML bound methods over-aggressively")]
