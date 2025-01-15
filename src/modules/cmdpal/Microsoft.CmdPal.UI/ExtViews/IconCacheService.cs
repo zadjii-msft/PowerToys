@@ -13,6 +13,8 @@ namespace Microsoft.CmdPal.UI.ExtViews;
 
 public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
 {
+    private readonly List<IconSource> _cache = new();
+
     public Task<IconSource?> GetIconSource(IconData icon) =>
 
         // todo: actually implement a cache of some sort
@@ -51,6 +53,7 @@ public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
 
         var bitmap = await IconStreamToBitmapImageAsync(iconStreamRef);
         var icon = new ImageIconSource() { ImageSource = bitmap };
+        _cache.Add(icon);
         return icon;
     }
 

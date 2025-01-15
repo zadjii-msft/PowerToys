@@ -166,8 +166,9 @@
 
                     <cpcontrols:IconBox
                         x:Name="HeroImageBorder"
-                        Width="64"
-                        Height="64"
+                        MinWidth="64"
+                        HorizontalAlignment="Center"
+                        MinHeight="64"
                         SourceKey="{x:Bind ViewModel.Details.HeroImage, Mode=OneWay}"
                         SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}"
                         Visibility="{x:Bind HasHeroImage, Mode=OneWay}" />

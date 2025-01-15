@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using CommunityToolkit.WinUI.Deferred;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -90,15 +91,22 @@ public partial class IconBox : ContentControl
             {
                 // TODO GH #239 switch back when using the new MD text block
                 // _ = @this._queue.EnqueueAsync(() =>
-                @this._queue.TryEnqueue(new(() =>
+                @this._queue.TryEnqueue(new(async () =>
                 {
                     var requestedTheme = @this.ActualTheme;
                     var eventArgs = new SourceRequestedEventArgs(e.NewValue, requestedTheme);
+                    var ct = new CancellationTokenSource();
 
                     if (@this.SourceRequested != null)
                     {
+                        // @this.SourceRequested.InvokeAsync(@this, eventArgs);
+                        // await TypedEventHandlerExtensions.InvokeAsync(@this.SourceRequested, @this, eventArgs);
+                        // await @this.SourceRequested.InvokeAsync(@this, eventArgs);
                         @this.SourceRequested.Invoke(@this, eventArgs);
 
+#pragma warning disable CS0618 // Type or member is obsolete
+                        await eventArgs.GetDeferral().WaitForCompletion(ct.Token);
+#pragma warning restore CS0618 // Type or member is obsolete
                         @this.Source = eventArgs.Value;
 
                         // Here's a little lesson in trickery:
