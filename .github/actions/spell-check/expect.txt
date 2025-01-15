@@ -54,10 +54,10 @@ APIIs
 Apm
 APPBARDATA
 APPEXECLINK
-Appium
+APPICONREFERENCE
 APPLICATIONFRAMEHOST
 appmanifest
-appmodel
+APPMODEL
 APPNAME
 APPPUBLISHER
 appref
@@ -120,8 +120,7 @@ bmi
 bms
 BNDBk
 BNumber
-BODGY
-bootstrapper
+bodgy
 BOOTSTRAPPERINSTALLFOLDER
 bostrot
 BOTTOMALIGN
@@ -163,6 +162,7 @@ CCom
 CContext
 CDeclaration
 CDEF
+cdn
 CElems
 CENTERALIGN
 certlm
@@ -211,14 +211,12 @@ colorformat
 colorhistory
 colorhistorylimit
 COLORKEY
-comdef
 comdlg
 comexp
 cominterop
 commandpalette
 compmgmt
 COMPOSITIONFULL
-comutil
 CONFIGW
 CONFLICTINGMODIFIERKEY
 CONFLICTINGMODIFIERSHORTCUT
@@ -253,6 +251,7 @@ CSettings
 cso
 CSRW
 CStyle
+cswin
 CTest
 Ctl
 currentculture
@@ -264,6 +263,7 @@ CUSTOMACTIONTEST
 CVal
 cvd
 CVirtual
+CVS
 cxfksword
 CXSCREEN
 CXSMICON
@@ -279,6 +279,7 @@ datareader
 datatracker
 dataversion
 Dayof
+DBID
 DBLCLKS
 DBLEPSILON
 DBPROP
@@ -340,6 +341,7 @@ DEVMON
 devpal
 DEVSOURCE
 DGR
+dic
 DIIRFLAG
 dimm
 DISABLEASACTIONKEY
@@ -401,8 +403,6 @@ DWORDLONG
 dworigin
 dwrite
 dxgi
-dxgidebug
-dxgiformat
 easeofaccess
 ecount
 EData
@@ -437,7 +437,6 @@ etw
 eurochange
 eventlog
 eventvwr
-evntrace
 evt
 EWXFORCE
 EWXFORCEIFHUNG
@@ -547,7 +546,6 @@ gsl
 GSM
 gtm
 guiddata
-guiddef
 GUITHREADINFO
 GValue
 gwl
@@ -641,9 +639,11 @@ HWNDPREV
 hyjiacan
 IAI
 IBeam
+icf
 ICONERROR
 ICONLOCATION
 IDD
+idk
 idl
 idlist
 IDR
@@ -654,12 +654,13 @@ iextn
 IFACEMETHOD
 IFACEMETHODIMP
 IFile
+IGNOREBASECLASS
 IGNOREUNKNOWN
+IGo
 iid
 Iindex
 Ijwhost
 IKs
-iljxck
 IMAGEHLP
 IMAGERESIZERCONTEXTMENU
 IMAGERESIZEREXT
@@ -667,12 +668,15 @@ imageresizerinput
 imageresizersettings
 imagingdevices
 ime
+imgflip
+inbox
 Indo
 inetcpl
 Infobar
 INFOEXAMPLE
-Infotip
+infotip
 INITGUID
+INLINEPREFIX
 inorder
 INPC
 inproc
@@ -702,7 +706,6 @@ INVALIDINDEX
 invalidoperatioexception
 ipcmanager
 IPREVIEW
-ipreviewhandlervisualssetfont
 irprops
 isbi
 ISearch
@@ -736,6 +739,7 @@ keyboardmanagercommon
 KEYBOARDMANAGEREDITOR
 keyboardmanagerstate
 keyboardmanagerui
+keyboardtester
 KEYEVENTF
 KEYIMAGE
 keynum
@@ -751,7 +755,6 @@ lastcodeanalysissucceeded
 Lastdevice
 LASTEXITCODE
 LAYOUTRTL
-lcb
 LCIDTo
 Lclean
 Ldone
@@ -762,6 +765,7 @@ LEVELID
 LExit
 lhwnd
 LIBID
+libraryincludes
 lindex
 linkid
 LINKOVERLAY
@@ -867,7 +871,6 @@ Metadatas
 metafile
 mfc
 mfplat
-mftransform
 Mgmt
 mic
 Microwaved
@@ -1060,6 +1063,7 @@ oldpath
 oldtheme
 oleaut
 OLECHAR
+openas
 opencode
 OPENFILENAME
 opensource
@@ -1203,7 +1207,7 @@ programdata
 projectname
 PROPBAG
 PROPERTYKEY
-propkey
+Propset
 PROPVARIANT
 prvpane
 psapi
@@ -1228,6 +1232,7 @@ PTOKEN
 PToy
 ptstr
 pui
+Puser
 PWAs
 pwcs
 PWSTR
@@ -1249,6 +1254,7 @@ QXZ
 RAII
 RAlt
 randi
+Rasterization
 Rasterize
 RAWINPUTDEVICE
 RAWINPUTHEADER
@@ -1297,7 +1303,6 @@ renamable
 RENAMEONCOLLISION
 reparented
 reparenting
-reparse
 reportfileaccesses
 requery
 requerying
@@ -1309,7 +1314,6 @@ RESIZETOFIT
 resmimetype
 RESOURCEID
 RESTORETOMAXIMIZED
-restrictederrorinfo
 resultlist
 RETURNONLYFSDIRS
 RGBQUAD
@@ -1387,6 +1391,7 @@ settingsheader
 settingshotkeycontrol
 setvariable
 SETWORKAREA
+SFBS
 sfgao
 SFGAOF
 SHANDLE
@@ -1396,7 +1401,6 @@ SHCNE
 SHCNF
 SHCONTF
 Shcore
-shellapi
 SHELLDETAILS
 SHELLDLL
 shellex
@@ -1554,8 +1558,6 @@ SYSLIB
 SYSMENU
 SYSTEMAPPS
 SYSTEMTIME
-tailwindcss
-tapp
 TApplication
 TApplied
 targ
@@ -1589,6 +1591,7 @@ THotkey
 throughs
 TIcon
 TILEDWINDOW
+TILEINFO
 TILLSON
 timedate
 timediff
@@ -1651,7 +1654,6 @@ uninstalls
 Uniquifies
 unitconverter
 unittests
-Unknwn
 UNLEN
 UNORM
 unremapped
@@ -1666,14 +1668,12 @@ urld
 Usb
 USEDEFAULT
 USEFILEATTRIBUTES
-USERDATA
 USESHOWWINDOW
 USESTDHANDLES
 USRDLL
 UType
 uuidv
 uwp
-Uxtheme
 vabdq
 validmodulename
 valuegenerator
@@ -1758,13 +1758,13 @@ webpage
 websites
 wekyb
 wgpocpl
-WIC
+WHEREID
+Wholegrain
+wic
 wifi
 wil
 winapi
 winappsdk
-wincodec
-Wincodecsdk
 wincolor
 windir
 WINDOWCREATED
@@ -1779,9 +1779,6 @@ windowssettings
 WINDOWSTYLES
 WINDOWSTYLESICON
 WINEVENT
-winevt
-winexe
-winforms
 winget
 wingetcreate
 Winhook
@@ -1792,7 +1789,6 @@ WINNT
 winres
 winrt
 winsdk
-winsdkver
 winsta
 WINTHRESHOLD
 WINVER
