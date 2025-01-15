@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.WindowWalker.Commands;
 using Microsoft.CmdPal.Ext.WindowWalker.Components;
 using Microsoft.CmdPal.Extensions;
@@ -25,27 +26,32 @@ internal sealed partial class WindowWalkerListItem : ListItem
 
     public Window? Window => _window;
 
-    private readonly IRandomAccessStream? _screenshot;
+    private IRandomAccessStream? _screenshot;
 
     public WindowWalkerListItem(Window? window)
         : base(new SwitchToWindowCommand(window))
     {
         _window = window;
-
-        if (window != null)
+        _ = Task.Run(() =>
         {
-            try
+            if (_window != null)
             {
-                _screenshot = CaptureWindowAsRandomAccessStream((HWND)window.Hwnd, window.Title);
-                var reference = RandomAccessStreamReference.CreateFromStream(_screenshot);
-                var iconData = IconData.FromStream(reference);
-                var iconInfo = new IconInfo(iconData, iconData);
-                Details = new Details() { HeroImage = iconInfo, Title = window.Title };
+                try
+                {
+                    // _screenshot = await GraphicsCaptureHelper.CaptureWindowAsRandomAccessStreamAsync(_window.Hwnd)!;
+                    _screenshot = CaptureWindowAsRandomAccessStream((HWND)_window.Hwnd, _window.Title);
+                    var reference = RandomAccessStreamReference.CreateFromStream(_screenshot);
+                    var iconData = IconData.FromStream(reference);
+                    var iconInfo = new IconInfo(iconData, iconData);
+                    Details = new Details() { HeroImage = iconInfo, Title = _window.Title };
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Obviously");
+                    Debug.WriteLine(ex);
+                }
             }
-            catch
-            {
-            }
-        }
+        });
     }
 
     public static IRandomAccessStream CaptureWindowAsRandomAccessStream(HWND hWnd, string title)
