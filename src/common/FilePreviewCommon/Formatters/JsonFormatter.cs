@@ -17,6 +17,8 @@ namespace Microsoft.PowerToys.FilePreviewCommon.Monaco.Formatters
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
 
+        private static readonly FilePreviewJsonSerializerContext _filePreviewJsonSerializerContext = new(_serializerOptions);
+
         /// <inheritdoc/>
         public string Format(string value)
         {
@@ -27,8 +29,7 @@ namespace Microsoft.PowerToys.FilePreviewCommon.Monaco.Formatters
 
             using (var jDocument = JsonDocument.Parse(value, new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip }))
             {
-                FilePreviewJsonSerializerContext context = new(_serializerOptions);
-                return JsonSerializer.Serialize(jDocument, context.JsonDocument);
+                return JsonSerializer.Serialize(jDocument, _filePreviewJsonSerializerContext.JsonDocument);
             }
         }
     }
