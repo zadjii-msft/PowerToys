@@ -14,15 +14,27 @@ namespace Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 /// </summary>
 public partial class BuiltInsCommandProvider : CommandProvider
 {
+    private readonly OpenSettingsCommand openSettings = new();
     private readonly QuitAction quitAction = new();
-    private readonly ReloadExtensionsAction reloadAction = new();
+    private readonly FallbackReloadItem _fallbackReloadItem = new();
     private readonly LogMessagesPage logMessagesPage = new();
 
-    public override ICommandItem[] TopLevelCommands() => [new CommandItem(logMessagesPage) { Title = "View log" }];
+    public override ICommandItem[] TopLevelCommands() =>
+        [
+            new CommandItem(openSettings) { Subtitle = "Open Command Palette settings" },
+            new CommandItem(logMessagesPage) { Title = "View log" },
+        ];
 
     public override IFallbackCommandItem[] FallbackCommands() =>
         [
             new FallbackCommandItem(quitAction) { Subtitle = "Exit Command Palette" },
-            new FallbackCommandItem(reloadAction) { Subtitle = "Reload Command Palette extensions" },
+            _fallbackReloadItem,
         ];
+
+    public BuiltInsCommandProvider()
+    {
+        Id = "Core";
+        DisplayName = "Built-in commands";
+        Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\StoreLogo.scale-200.png"));
+    }
 }

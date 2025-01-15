@@ -18,7 +18,7 @@ public partial class TopLevelCommandWrapper : ICommand
 
     public string Id { get; private set; } = string.Empty;
 
-    public IconDataType Icon { get; private set; } = new(string.Empty);
+    public IconInfo Icon { get; private set; } = new(null);
 
     public ICommand Command => _command.Unsafe!;
 

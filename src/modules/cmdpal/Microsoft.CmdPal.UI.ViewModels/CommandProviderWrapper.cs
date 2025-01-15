@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -29,6 +30,14 @@ public sealed class CommandProviderWrapper
 
     public CommandPaletteHost ExtensionHost { get; private set; }
 
+    public event TypedEventHandler<CommandProviderWrapper, ItemsChangedEventArgs>? CommandsChanged;
+
+    public string Id { get; private set; } = string.Empty;
+
+    public IconInfo Icon { get; private set; } = new(string.Empty);
+
+    public string ProviderId => $"{extensionWrapper?.PackageFamilyName ?? string.Empty}/{Id}";
+
     public CommandProviderWrapper(ICommandProvider provider)
     {
         // This ctor is only used for in-proc builtin commands. So the Unsafe!
@@ -39,7 +48,12 @@ public sealed class CommandProviderWrapper
         ExtensionHost = CommandPaletteHost.Instance;
         _commandProvider.Unsafe!.InitializeWithHost(ExtensionHost);
 
+        _commandProvider.Unsafe!.ItemsChanged += CommandProvider_ItemsChanged;
+
         isValid = true;
+        Id = provider.Id;
+        DisplayName = provider.DisplayName;
+        Icon = provider.Icon;
     }
 
     public CommandProviderWrapper(IExtensionWrapper extension)
@@ -66,6 +80,7 @@ public sealed class CommandProviderWrapper
 
             // Hook the extension back into us
             model.InitializeWithHost(ExtensionHost);
+            model.ItemsChanged += CommandProvider_ItemsChanged;
 
             DisplayName = model.DisplayName;
 
@@ -77,6 +92,8 @@ public sealed class CommandProviderWrapper
             Debug.WriteLine($"Extension was {extensionWrapper!.PackageFamilyName}");
             Debug.WriteLine(e);
         }
+
+        isValid = true;
     }
 
     public async Task LoadTopLevelCommands()
@@ -99,6 +116,10 @@ public sealed class CommandProviderWrapper
 
             // On a BG thread here
             fallbacks = model.FallbackCommands();
+
+            Id = model.Id;
+            DisplayName = model.DisplayName;
+            Icon = model.Icon;
         }
         catch (Exception e)
         {
@@ -136,4 +157,15 @@ public sealed class CommandProviderWrapper
     public override bool Equals(object? obj) => obj is CommandProviderWrapper wrapper && isValid == wrapper.isValid;
 
     public override int GetHashCode() => _commandProvider.GetHashCode();
+
+    private void CommandProvider_ItemsChanged(object sender, ItemsChangedEventArgs args)
+    {
+        // We don't want to handle this ourselves - we want the
+        // TopLevelCommandManager to know about this, so they can remove
+        // our old commands from their own list.
+        //
+        // In handling this, a call will be made to `LoadTopLevelCommands` to
+        // retrieve the new items.
+        this.CommandsChanged?.Invoke(this, args);
+    }
 }

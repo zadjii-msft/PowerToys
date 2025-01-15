@@ -18,15 +18,18 @@ public partial class BookmarksCommandProvider : CommandProvider
 
     public BookmarksCommandProvider()
     {
+        Id = "Bookmarks";
         DisplayName = "Bookmarks";
+        Icon = new("\uE718"); // Pin
 
         _addNewCommand.AddedAction += AddNewCommand_AddedAction;
     }
 
     private void AddNewCommand_AddedAction(object sender, object? args)
     {
-        _addNewCommand.AddedAction += AddNewCommand_AddedAction;
         _commands.Clear();
+        LoadCommands();
+        RaiseItemsChanged(0);
     }
 
     private void LoadCommands()
