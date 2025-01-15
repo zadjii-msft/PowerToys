@@ -51,7 +51,7 @@ public partial class AliasManager : ObservableObject
         this.AddAlias(new CommandAlias(">", "com.microsoft.cmdpal.shell", true));
         this.AddAlias(new CommandAlias("<", "com.microsoft.cmdpal.windowwalker", true));
         this.AddAlias(new CommandAlias("??", "com.microsoft.cmdpal.websearch", true));
-        this.AddAlias(new CommandAlias("file", "com.microsoft.indexer.filesearch", false));
+        this.AddAlias(new CommandAlias("file", "com.microsoft.indexer.fileSearch", false));
     }
 
     public string? KeysFromId(string commandId)

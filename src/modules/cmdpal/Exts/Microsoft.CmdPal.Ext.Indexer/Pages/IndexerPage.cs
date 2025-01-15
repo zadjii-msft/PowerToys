@@ -25,7 +25,7 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
 
     public IndexerPage()
     {
-        Id = "com.microsoft.indexer.filesearch";
+        Id = "com.microsoft.indexer.fileSearch";
         Icon = new("\uEC50");
         Name = Resources.Indexer_Title;
         PlaceholderText = Resources.Indexer_PlaceholderText;
