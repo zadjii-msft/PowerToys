@@ -35,7 +35,7 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
         private GeneralSettings GeneralSettingsConfig { get; set; }
 
         private readonly ISettingsUtils _settingsUtils;
-        private readonly object _delayedActionLock = new object();
+        private readonly System.Threading.Lock _delayedActionLock = new System.Threading.Lock();
 
         private readonly AdvancedPasteSettings _advancedPasteSettings;
         private readonly AdvancedPasteAdditionalActions _additionalActions;
@@ -319,6 +319,20 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
             }
         }
 
+        public bool IsAdvancedAIEnabled
+        {
+            get => _advancedPasteSettings.Properties.IsAdvancedAIEnabled;
+            set
+            {
+                if (value != _advancedPasteSettings.Properties.IsAdvancedAIEnabled)
+                {
+                    _advancedPasteSettings.Properties.IsAdvancedAIEnabled = value;
+                    OnPropertyChanged(nameof(IsAdvancedAIEnabled));
+                    NotifySettingsChanged();
+                }
+            }
+        }
+
         public bool ShowCustomPreview
         {
             get => _advancedPasteSettings.Properties.ShowCustomPreview;
@@ -422,10 +436,11 @@ namespace Microsoft.PowerToys.Settings.UI.ViewModels
         {
             try
             {
-                PasswordVault vault = new PasswordVault();
-                PasswordCredential cred = new PasswordCredential("https://platform.openai.com/api-keys", "PowerToys_AdvancedPaste_OpenAIKey", password);
+                PasswordVault vault = new();
+                PasswordCredential cred = new("https://platform.openai.com/api-keys", "PowerToys_AdvancedPaste_OpenAIKey", password);
                 vault.Add(cred);
                 OnPropertyChanged(nameof(IsOpenAIEnabled));
+                IsAdvancedAIEnabled = true; // new users should get Semantic Kernel benefits immediately
                 NotifySettingsChanged();
             }
             catch (Exception)

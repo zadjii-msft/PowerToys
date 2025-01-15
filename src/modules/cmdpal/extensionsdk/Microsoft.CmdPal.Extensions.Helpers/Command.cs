@@ -7,7 +7,8 @@ namespace Microsoft.CmdPal.Extensions.Helpers;
 public class Command : BaseObservable, ICommand
 {
     private string _name = string.Empty;
-    private IconDataType _icon = new(string.Empty);
+    private string _id = string.Empty;
+    private IconInfo _icon = new(string.Empty);
 
     public string Name
     {
@@ -19,7 +20,9 @@ public class Command : BaseObservable, ICommand
         }
     }
 
-    public IconDataType Icon
+    public string Id { get => _id; protected set => _id = value; }
+
+    public IconInfo Icon
     {
         get => _icon;
         set

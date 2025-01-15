@@ -9,22 +9,21 @@ using Microsoft.CmdPal.Extensions.Helpers;
 
 namespace Microsoft.CmdPal.Ext.Calc;
 
-public partial class CalculatorTopLevelListItem : ListItem, IFallbackHandler
+public partial class CalculatorTopLevelListItem : CommandItem, IFallbackHandler
 {
     public CalculatorTopLevelListItem()
         : base(new CalculatorAction())
     {
         // In the case of the calculator, the ListItem itself is the fallback
         // handler so that it can update its Title and Subtitle accordingly.
-        FallbackHandler = this;
-        Subtitle = "Type an equation";
+        SetDefaultTitle();
     }
 
     public void UpdateQuery(string query)
     {
         if (string.IsNullOrEmpty(query) || query == "=")
         {
-            Title = "=";
+            SetDefaultTitle();
         }
         else if (query.StartsWith('='))
         {
@@ -35,6 +34,12 @@ public partial class CalculatorTopLevelListItem : ListItem, IFallbackHandler
         {
             Title = string.Empty;
         }
+    }
+
+    private void SetDefaultTitle()
+    {
+        Title = "=";
+        Subtitle = "Type an equation";
     }
 
     private string ParseQuery(string query)

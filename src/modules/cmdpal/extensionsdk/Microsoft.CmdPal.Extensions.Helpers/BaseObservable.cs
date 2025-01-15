@@ -7,17 +7,25 @@ using Windows.Foundation;
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
 // TODO! We probably want to have OnPropertyChanged raise the event
-// asynchonously, so as to not block the extension app while it's being
+// asynchronously, so as to not block the extension app while it's being
 // processed in the host app.
+// (also consider this for ItemsChanged in ListPage)
 public class BaseObservable : INotifyPropChanged
 {
     public event TypedEventHandler<object, PropChangedEventArgs>? PropChanged;
 
     protected void OnPropertyChanged(string propertyName)
     {
-        if (PropChanged != null)
+        try
         {
-            PropChanged.Invoke(this, new PropChangedEventArgs(propertyName));
+            // TODO #181 - This is dangerous! If the original host goes away,
+            // this can crash as we try to invoke the handlers from that process.
+            // However, just catching it seems to still raise the event on the
+            // new host?
+            PropChanged?.Invoke(this, new PropChangedEventArgs(propertyName));
+        }
+        catch
+        {
         }
     }
 }

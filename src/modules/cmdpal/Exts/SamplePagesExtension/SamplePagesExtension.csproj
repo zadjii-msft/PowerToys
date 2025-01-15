@@ -2,7 +2,7 @@
   <Import Project="..\..\..\..\Common.Dotnet.CsWinRT.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>SSHKeychainExtension</RootNamespace>
+    <RootNamespace>SamplePagesExtension</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>false</UseWinUI>
@@ -28,6 +28,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\common\Common.UI\Common.UI.csproj" />
     <ProjectReference Include="..\..\extensionsdk\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj" />
   </ItemGroup>
 

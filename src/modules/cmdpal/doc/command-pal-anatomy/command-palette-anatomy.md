@@ -183,15 +183,15 @@ public class SSHKeychainCommandsProvider : CommandProvider
         DisplayName = "SSH Keychain Commands";
     }
 
-    private readonly IListItem[] _commands = [
-       new ListItem(new NoOpCommand())
+    private readonly ICommandItem[] _commands = [
+       new CommandItem(new NoOpCommand())
         {
             Title = "Search SSH Keys",
             Subtitle = "Quickly find and launch into hosts from your SSH config file",
         },
     ];
 
-    public override IListItem[] TopLevelCommands()
+    public override ICommandItem[] TopLevelCommands()
     {
         return _commands;
     }
@@ -308,7 +308,7 @@ Now when you [invoke the default command](#default-command-this-is-probably-not-
 - When the "Search SSH Keys" command is executed, a new page should be displayed in the Command Palette ✅
 - TODO: Implement the logic that will parse the SSH config file to actually display the available SSH hosts on the machine in the Command Palette.
 
-Before we get to implmenting the logic to display the SSH hosts, let's take this example one step farther by providing a few list items that will be displayed in the `SSHHostsListPage`. 
+Before we get to implementing the logic to display the SSH hosts, let's take this example one step farther by providing a few list items that will be displayed in the `SSHHostsListPage`. 
 
 ```csharp
 internal sealed class SSHHostsListPage : ListPage

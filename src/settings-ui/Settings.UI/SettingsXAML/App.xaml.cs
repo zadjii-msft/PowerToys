@@ -66,7 +66,8 @@ namespace Microsoft.PowerToys.Settings.UI
 
         public bool ShowScoobe { get; set; }
 
-        public Type StartupPage { get; set; } = typeof(Views.DashboardPage);
+        // TODO GH #245 Revert this to Views.DashboardPage
+        public Type StartupPage { get; set; } = typeof(Views.GeneralPage);
 
         public static Action<string> IPCMessageReceivedCallback { get; set; }
 
@@ -442,6 +443,7 @@ namespace Microsoft.PowerToys.Settings.UI
                 case "EnvironmentVariables": return typeof(EnvironmentVariablesPage);
                 case "NewPlus": return typeof(NewPlusPage);
                 case "Workspaces": return typeof(WorkspacesPage);
+                case "CmdPal": return typeof(CmdPalPage);
                 default:
                     // Fallback to Dashboard
                     Debug.Assert(false, "Unexpected SettingsWindow argument value");

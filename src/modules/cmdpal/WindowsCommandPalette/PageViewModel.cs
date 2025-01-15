@@ -16,6 +16,21 @@ public class PageViewModel
     // public IPage PageAction { get => pageAction; set => pageAction = value; }
     public ActionViewModel Command { get; }
 
+    public Windows.UI.Color AccentColor
+    {
+        get
+        {
+            var accent = PageAction.AccentColor;
+            if (accent.HasValue)
+            {
+                var c = accent.Color;
+                return Windows.UI.Color.FromArgb(c.A, c.R, c.G, c.B);
+            }
+
+            return default;
+        }
+    }
+
     public event TypedEventHandler<object, ActionViewModel>? RequestDoAction;
 
     public event TypedEventHandler<object, SubmitFormArgs>? RequestSubmitForm;

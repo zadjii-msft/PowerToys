@@ -50,10 +50,21 @@ parameters:
   - name: runTests
     type: boolean
     default: true
-
+  - name: useVSPreview
+    type: boolean
+    default: false
   - name: versionNumber
     type: string
     default: '0.0.1'
+  - name: useLatestWinAppSDK
+    type: boolean
+    default: false
+  - name: winAppSDKVersionNumber
+    type: string
+    default: 1.6
+  - name: useExperimentalVersion
+    type: boolean
+    default: false
   - name: csProjectsToPublish
     type: object
     default:
@@ -85,6 +96,7 @@ jobs:
             ${{ else }}:
               OutputBuildPlatform: ${{ platform }}
   variables:
+    MakeAppxPath: 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x86\MakeAppx.exe'
     # Azure DevOps abhors a vacuum
     # If these are blank, expansion will fail later on... which will result in direct substitution of the variable *names*
     # later on. We'll just... set them to a single space and if we need to, check IsNullOrWhiteSpace.
@@ -100,6 +112,10 @@ jobs:
     ${{ else }}:
       MSBuildMainBuildTargets: Build
     ${{ insert }}: ${{ parameters.variables }}
+    ${{ if eq(parameters.useLatestWinAppSDK, true) }}:
+      RestoreAdditionalProjectSourcesArg: '/p:RestoreAdditionalProjectSources="$(Build.SourcesDirectory)\localpackages\NugetPackages"'
+    ${{ else }}:
+      RestoreAdditionalProjectSourcesArg: ''
   displayName: Build
   timeoutInMinutes: 240
   cancelTimeoutInMinutes: 1
@@ -136,6 +152,11 @@ jobs:
     parameters:
       sdk: true
       version: '8.0'
+
+  - template: steps-ensure-dotnet-version.yml
+    parameters:
+      sdk: true
+      version: '9.0'
 
   - ${{ if eq(parameters.runTests, true) }}:
     - task: VisualStudioTestPlatformInstaller@1
@@ -175,12 +196,22 @@ jobs:
            "packages.config" | "$(Agent.OS)"
            "packages.config"
         path: packages
-
-  - template: .\steps-restore-nuget.yml
+  
+  - ${{ if eq(parameters.useLatestWinAppSDK, true)}}:
+    - template: .\steps-update-winappsdk-and-restore-nuget.yml
+      parameters:
+        versionNumber: ${{ parameters.winAppSDKVersionNumber }}
+        useExperimentalVersion: ${{ parameters.useExperimentalVersion }}
+  
+  - ${{ if eq(parameters.useLatestWinAppSDK, false)}}:
+    - template: .\steps-restore-nuget.yml
 
   - pwsh: |-
       & "$(build.sourcesdirectory)\.pipelines\verifyAndSetLatestVCToolsVersion.ps1"
     displayName: Work around DD-1541167 (VCToolsVersion)
+    ${{ if eq(parameters.useVSPreview, true) }}:
+      env:
+        VCWhereExtraVersionTarget: '-prerelease'
 
   - pwsh: |-
       & "$(build.sourcesdirectory)\.pipelines\installWiX.ps1"
@@ -204,6 +235,7 @@ jobs:
         ${{ parameters.additionalBuildOptions }}
         $(MSBuildCacheParameters)
         /t:$(MSBuildMainBuildTargets)
+        $(RestoreAdditionalProjectSourcesArg)
       platform: $(BuildPlatform)
       configuration: $(BuildConfiguration)
       msbuildArchitecture: x64
@@ -223,79 +255,31 @@ jobs:
           batchSignPolicyFile: '$(build.sourcesdirectory)\.pipelines\ESRPSigning_abstracted_utils_dll.json'
           ciPolicyFile: '$(build.sourcesdirectory)\.pipelines\CIPolicy.xml'
 
-  - task: VSBuild@1
-    displayName: Create Hosts File Editor package
+  - task: CopyFiles@2
+    displayName: Stage SDK/build
     inputs:
-      solution: '**\HostsUILib.csproj'
-      vsVersion: 17.0
-      msbuildArgs: /p:CIBuild=true;NoBuild=true -t:pack /bl:$(LogOutputDirectory)\build-hosts.binlog
-      configuration: $(BuildConfiguration)
-      msbuildArchitecture: x64
-      maximumCpuCount: true
-    ${{ if eq(parameters.enableMsBuildCaching, true) }}:
-      env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-
-  - task: VSBuild@1
-    displayName: Create Environment Variables Editor package
-    inputs:
-      solution: '**\EnvironmentVariablesUILib.csproj'
-      vsVersion: 17.0
-      msbuildArgs: /p:CIBuild=true;NoBuild=true -t:pack /bl:$(LogOutputDirectory)\build-env-var-editor.binlog
-      configuration: $(BuildConfiguration)
-      msbuildArchitecture: x64
-      maximumCpuCount: true
-    ${{ if eq(parameters.enableMsBuildCaching, true) }}:
-      env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-
-  - task: VSBuild@1
-    displayName: Create Registry Preview package
-    inputs:
-      solution: '**\RegistryPreviewUILib.csproj'
-      vsVersion: 17.0
-      msbuildArgs: /p:CIBuild=true;NoBuild=true -t:pack /bl:$(LogOutputDirectory)\build-registry-preview.binlog
-      configuration: $(BuildConfiguration)
-      msbuildArchitecture: x64
-      maximumCpuCount: true
-    ${{ if eq(parameters.enableMsBuildCaching, true) }}:
-      env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      contents: |-
+        "**/cmdpal/extensionsdk/nuget/Microsoft.CmdPal.Extensions.SDK.props"
+        "**/cmdpal/extensionsdk/nuget/Microsoft.CmdPal.Extensions.SDK.targets"
+      flattenFolders: True
+      targetFolder: $(JobOutputDirectory)/sdk/build
 
   - task: CopyFiles@2
-    displayName: Stage NuGet packages
+    displayName: Stage SDK/lib
     inputs:
-      contents: "**/bin/Release/PowerToys*.nupkg"
+      contents: |-
+        "**/Microsoft.CmdPal.Extensions.Helpers/$(BuildPlatform)/release/WinUI3Apps/CmdPal/Microsoft.CmdPal.Extensions.Helpers.dll"
+        "**/Microsoft.CmdPal.Extensions.Helpers/$(BuildPlatform)/release/WinUI3Apps/CmdPal/Microsoft.CmdPal.Extensions.Helpers.deps.json"
       flattenFolders: True
-      targetFolder: $(JobOutputDirectory)/nupkg
+      targetFolder: $(JobOutputDirectory)/sdk/lib/net8.0-windows10.0.19041.0
 
-  - ${{ if eq(parameters.codeSign, true) }}:
-    - template: steps-esrp-signing.yml
-      parameters:
-        displayName: Sign NuGet packages
-        signingIdentity: ${{ parameters.signingIdentity }}
-        inputs:
-          FolderPath: $(JobOutputDirectory)/nupkg
-          Pattern: '*.nupkg'
-          UseMinimatch: true
-          signConfigType: inlineSignParams
-          inlineOperation: >-
-            [
-                {
-                    "KeyCode": "CP-401405",
-                    "OperationCode": "NuGetSign",
-                    "Parameters": {},
-                    "ToolName": "sign",
-                    "ToolVersion": "1.0"
-                },
-                {
-                    "KeyCode": "CP-401405",
-                    "OperationCode": "NuGetVerify",
-                    "Parameters": {},
-                    "ToolName": "sign",
-                    "ToolVersion": "1.0"
-                }
-            ]
+  - task: CopyFiles@2
+    displayName: Stage SDK/winmd
+    inputs:
+      contents: |-
+        "**/Microsoft.CmdPal.Extensions/$(BuildPlatform)/release/Microsoft.CmdPal.Extensions/Microsoft.CmdPal.Extensions.winmd"
+      flattenFolders: True
+      targetFolder: $(JobOutputDirectory)/sdk/winmd
 
   - task: VSBuild@1
     displayName: Build BugReportTool
@@ -309,6 +293,7 @@ jobs:
         /bl:$(LogOutputDirectory)\build-bug-report.binlog
         ${{ parameters.additionalBuildOptions }}
         $(MSBuildCacheParameters)
+        $(RestoreAdditionalProjectSourcesArg)
       platform: $(BuildPlatform)
       configuration: $(BuildConfiguration)
       msbuildArchitecture: x64
@@ -329,6 +314,7 @@ jobs:
         /bl:$(LogOutputDirectory)\build-webcam-report.binlog
         ${{ parameters.additionalBuildOptions }}
         $(MSBuildCacheParameters)
+        $(RestoreAdditionalProjectSourcesArg)
       platform: $(BuildPlatform)
       configuration: $(BuildConfiguration)
       msbuildArchitecture: x64
@@ -349,6 +335,7 @@ jobs:
         /bl:$(LogOutputDirectory)\build-styles-report.binlog
         ${{ parameters.additionalBuildOptions }}
         $(MSBuildCacheParameters)
+        $(RestoreAdditionalProjectSourcesArg)
       platform: $(BuildPlatform)
       configuration: $(BuildConfiguration)
       msbuildArchitecture: x64
@@ -371,6 +358,7 @@ jobs:
           /p:PowerToysRoot=$(Build.SourcesDirectory)
           /p:PublishProfile=InstallationPublishProfile.pubxml
           /bl:$(LogOutputDirectory)\publish-${{ join('_',split(project, '/')) }}.binlog
+          $(RestoreAdditionalProjectSourcesArg)
         platform: $(BuildPlatform)
         configuration: $(BuildConfiguration)
         msbuildArchitecture: x64
@@ -381,7 +369,7 @@ jobs:
     displayName: HACK Copy core WebView2 ARM64 dll to output directory
     condition: eq(variables['BuildPlatform'],'arm64')
     inputs:
-      contents: packages/Microsoft.Web.WebView2.1.0.2739.15/runtimes/win-ARM64/native_uap/Microsoft.Web.WebView2.Core.dll
+      contents: packages/Microsoft.Web.WebView2.1.0.2903.40/runtimes/win-ARM64/native_uap/Microsoft.Web.WebView2.Core.dll
       targetFolder: $(Build.SourcesDirectory)/ARM64/Release/WinUI3Apps/
       flattenFolders: True
       OverWrite: True
@@ -400,9 +388,11 @@ jobs:
       & '.pipelines/verifyPossibleAssetConflicts.ps1' -targetDir '$(build.sourcesdirectory)\$(BuildPlatform)\$(BuildConfiguration)\WinUI3Apps'
     displayName: Audit WinAppSDK applications path asset conflicts
 
-  - pwsh: |-
-      & '.pipelines/verifyNoticeMdAgainstNugetPackages.ps1' -path '$(build.sourcesdirectory)\'
-    displayName: Verify NOTICE.md and NuGet packages match
+  # To streamline the pipeline and prevent errors, skip this step during compatibility tests with the latest WinAppSDK.
+  - ${{ if eq(parameters.useLatestWinAppSDK, false) }}:
+    - pwsh: |-
+        & '.pipelines/verifyNoticeMdAgainstNugetPackages.ps1' -path '$(build.sourcesdirectory)\'
+      displayName: Verify NOTICE.md and NuGet packages match
 
   - ${{ if eq(parameters.runTests, true) }}:
     # Publish test results which ran in MSBuild
@@ -430,6 +420,33 @@ jobs:
           !**\obj\**
 
   - ${{ if eq(parameters.codeSign, true) }}:
+    - pwsh: |-
+        $Package = (Get-ChildItem -Recurse -Filter "Microsoft.CmdPal.UI_*.msix" | Select -First 1)
+        $PackageFilename = $Package.FullName
+        Write-Host "##vso[task.setvariable variable=CmdPalPackagePath]${PackageFilename}"
+      displayName: Locate the MSIX
+
+    - pwsh: |-
+        & "$(MakeAppxPath)" unpack /p "$(CmdPalPackagePath)" /d "$(JobOutputDirectory)/CmdPalPackageContents"
+      displayName: Unpack the MSIX for signing
+
+    - template: steps-esrp-signing.yml
+      parameters:
+        displayName: Sign CmdPal MSIX content
+        signingIdentity: ${{ parameters.signingIdentity }}
+        inputs:
+          FolderPath: '$(JobOutputDirectory)/CmdPalPackageContents'
+          signType: batchSigning
+          batchSignPolicyFile: '$(build.sourcesdirectory)\.pipelines\ESRPSigning_cmdpal_msix_content.json'
+          ciPolicyFile: '$(build.sourcesdirectory)\.pipelines\CIPolicy.xml'
+
+    - pwsh: |-
+        $outDir = New-Item -Type Directory "$(JobOutputDirectory)/_appx" -ErrorAction:Ignore
+        $PackageFilename = Join-Path $outDir.FullName (Split-Path -Leaf "$(CmdPalPackagePath)")
+        & "$(MakeAppxPath)" pack /h SHA256 /o /p $PackageFilename /d "$(JobOutputDirectory)/CmdPalPackageContents"
+        Copy-Item -Force $PackageFilename "$(CmdPalPackagePath)"
+      displayName: Re-pack the new CmdPal package after signing
+
     - template: steps-esrp-signing.yml
       parameters:
         displayName: Sign Core PowerToys

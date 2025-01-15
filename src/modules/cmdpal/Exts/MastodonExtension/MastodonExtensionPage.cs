@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Windows.Media.Protection.PlayReady;
 
 namespace MastodonExtension;
 
@@ -24,36 +23,47 @@ internal sealed partial class MastodonExtensionPage : ListPage
     internal static readonly HttpClient Client = new();
     internal static readonly JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true };
 
+    private readonly List<ListItem> _items = [];
+
     public MastodonExtensionPage()
     {
         Icon = new("https://mastodon.social/packs/media/icons/android-chrome-36x36-4c61fdb42936428af85afdbf8c6a45a8.png");
         Name = "Mastodon";
         ShowDetails = true;
+        HasMoreItems = true;
+        IsLoading = true;
+
+        // #6364ff
+        AccentColor = ColorHelpers.FromRgb(99, 100, 255);
     }
 
-    public override IListItem[] GetItems()
+    private void AddPosts(List<MastodonStatus> posts)
     {
-        var postsAsync = FetchExplorePage();
-        postsAsync.ConfigureAwait(false);
-        var posts = postsAsync.Result;
-        return posts
-            .Select(p => new ListItem(new MastodonPostPage(p))
+        foreach (var p in posts)
+        {
+            var postItem = new ListItem(new MastodonPostPage(p))
             {
                 Title = p.Account.DisplayName, // p.ContentAsPlainText(),
                 Subtitle = $"@{p.Account.Username}",
                 Icon = new(p.Account.Avatar),
+
+                // *
                 Tags = [
                     new Tag()
                     {
                         Icon = new("\ue734"), // FavoriteStar
+                        Background = ColorHelpers.FromRgb(255, 255, 0), // Yellow
+                        Foreground = ColorHelpers.FromRgb(64, 64, 0), // Dark Yellow
                         Text = p.Favorites.ToString(CultureInfo.CurrentCulture),
                     },
                     new Tag()
                     {
                         Icon = new("\ue8ee"), // RepeatAll
+                        Background = ColorHelpers.FromRgb(86, 58, 204), // Mastodon color
+                        Foreground = ColorHelpers.FromRgb(255, 255, 255), // White
                         Text = p.Boosts.ToString(CultureInfo.CurrentCulture),
                     },
-                ],
+                ], // */
                 Details = new Details()
                 {
                     // It was a cool idea to have a single image as the HeroImage, but the scaling is terrible
@@ -63,18 +73,52 @@ internal sealed partial class MastodonExtensionPage : ListPage
                 MoreCommands = [
                     new CommandContextItem(new OpenUrlCommand(p.Url) { Name = "Open on web" }),
                 ],
-            })
+            };
+            this._items.Add(postItem);
+        }
+    }
+
+    public override IListItem[] GetItems()
+    {
+        if (_items.Count == 0)
+        {
+            var postsAsync = FetchExplorePage();
+            postsAsync.ConfigureAwait(false);
+            var posts = postsAsync.Result;
+            this.AddPosts(posts);
+        }
+
+        return _items
             .ToArray();
     }
 
-    public async Task<List<MastodonStatus>> FetchExplorePage()
+    public override void LoadMore()
+    {
+        this.IsLoading = true;
+        ExtensionHost.LogMessage(new LogMessage() { Message = $"Loading 20 posts, starting with {_items.Count}..." });
+        var postsAsync = FetchExplorePage(20, this._items.Count);
+        postsAsync.ContinueWith((res) =>
+        {
+            var posts = postsAsync.Result;
+            this.AddPosts(posts);
+            ExtensionHost.LogMessage(new LogMessage() { Message = $"... got {posts.Count} new posts" });
+
+            this.IsLoading = false;
+            this.RaiseItemsChanged(this._items.Count);
+        }).ConfigureAwait(false);
+    }
+
+    public async Task<List<MastodonStatus>> FetchExplorePage() => await FetchExplorePage(20, 0);
+
+    public async Task<List<MastodonStatus>> FetchExplorePage(int limit, int offset)
     {
         var statuses = new List<MastodonStatus>();
 
         try
         {
             // Make a GET request to the Mastodon trends API endpoint
-            HttpResponseMessage response = await Client.GetAsync("https://mastodon.social/api/v1/trends/statuses");
+            var response = await Client
+                .GetAsync($"https://mastodon.social/api/v1/trends/statuses?limit={limit}&offset={offset}");
             response.EnsureSuccessStatusCode();
 
             // Read and deserialize the response JSON into a list of MastodonStatus objects
@@ -85,6 +129,8 @@ internal sealed partial class MastodonExtensionPage : ListPage
         {
             Console.WriteLine($"An error occurred: {e.Message}");
         }
+
+        IsLoading = false;
 
         return statuses;
     }
@@ -98,18 +144,15 @@ public partial class MastodonExtensionActionsProvider : CommandProvider
         DisplayName = "Mastodon extension for cmdpal Commands";
     }
 
-    private readonly IListItem[] _actions = [
-        new ListItem(new MastodonExtensionPage()) { Subtitle = "Explore top posts on mastodon.social" },
+    private readonly ICommandItem[] _actions = [
+        new CommandItem(new MastodonExtensionPage()) { Subtitle = "Explore top posts on mastodon.social" },
     ];
 
-    public override IListItem[] TopLevelCommands()
-    {
-        return _actions;
-    }
+    public override ICommandItem[] TopLevelCommands() => _actions;
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]
-public partial class MastodonPostForm : IForm
+public partial class MastodonPostForm : Form
 {
     private readonly MastodonStatus post;
 
@@ -118,7 +161,7 @@ public partial class MastodonPostForm : IForm
         this.post = post;
     }
 
-    public string DataJson()
+    public override string DataJson()
     {
         return $$"""
 {
@@ -132,14 +175,9 @@ public partial class MastodonPostForm : IForm
 """;
     }
 
-    public string StateJson() => throw new NotImplementedException();
+    public override ICommandResult SubmitForm(string payload) => CommandResult.Dismiss();
 
-    public ICommandResult SubmitForm(string payload)
-    {
-        return CommandResult.Dismiss();
-    }
-
-    public string TemplateJson()
+    public override string TemplateJson()
     {
         var img_block = string.Empty;
         if (post.MediaAttachments.Count > 0)
@@ -167,7 +205,7 @@ public partial class MastodonPostForm : IForm
                                 {
                                     "type": "Image",
                                     "url": "${author_avatar_url}",
-                                    "size": "Small",
+                                    "size": "Medium",
                                     "style": "Person"
                                 }
                             ]
@@ -243,7 +281,7 @@ public partial class MastodonPostPage : FormPage
         {
             // Make a GET request to the Mastodon context API endpoint
             var url = $"https://mastodon.social/api/v1/statuses/{post.Id}/context";
-            HttpResponseMessage response = await MastodonExtensionPage.Client.GetAsync(url);
+            var response = await MastodonExtensionPage.Client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             // Read and deserialize the response JSON into a MastodonContext object
@@ -287,7 +325,7 @@ public class MastodonStatus
     [JsonPropertyName("account")]
     public MastodonAccount Account { get; set; }
 
-    [JsonPropertyName("favourites_count")]
+    [JsonPropertyName("favorites_count")]
     public int Favorites { get; set; }
 
     [JsonPropertyName("reblogs_count")]
@@ -301,9 +339,9 @@ public class MastodonStatus
 
     public string ContentAsPlainText()
     {
-        HtmlDocument doc = new HtmlDocument();
+        var doc = new HtmlDocument();
         doc.LoadHtml(Content);
-        StringBuilder plainTextBuilder = new StringBuilder();
+        var plainTextBuilder = new StringBuilder();
         foreach (var node in doc.DocumentNode.ChildNodes)
         {
             plainTextBuilder.Append(ParseNodeToPlaintext(node));
@@ -314,9 +352,9 @@ public class MastodonStatus
 
     public string ContentAsMarkdown(bool escapeHashtags, bool addMedia)
     {
-        HtmlDocument doc = new HtmlDocument();
+        var doc = new HtmlDocument();
         doc.LoadHtml(Content.Replace("<br>", "\n\n").Replace("<br />", "\n\n"));
-        StringBuilder markdownBuilder = new StringBuilder();
+        var markdownBuilder = new StringBuilder();
         foreach (var node in doc.DocumentNode.ChildNodes)
         {
             markdownBuilder.Append(ParseNodeToMarkdown(node, escapeHashtags));
@@ -361,10 +399,7 @@ public class MastodonStatus
         }
     }
 
-    private static string ParseNodeToPlaintext(HtmlNode node)
-    {
-        return node.InnerText;
-    }
+    private static string ParseNodeToPlaintext(HtmlNode node) => node.InnerText;
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This is sample code")]

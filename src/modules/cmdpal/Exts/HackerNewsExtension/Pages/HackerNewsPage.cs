@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -21,13 +22,16 @@ internal sealed partial class HackerNewsPage : ListPage
     {
         Icon = new("https://news.ycombinator.com/favicon.ico");
         Name = "Hacker News";
+        AccentColor = ColorHelpers.FromRgb(255, 102, 0);
+        IsLoading = true;
+        ShowDetails = true;
     }
 
     private static async Task<List<NewsPost>> GetHackerNewsTopPosts()
     {
         var posts = new List<NewsPost>();
 
-        using (HttpClient client = new HttpClient())
+        using (var client = new HttpClient())
         {
             var response = await client.GetStringAsync("https://news.ycombinator.com/rss");
             var xdoc = XDocument.Parse(response);
@@ -47,21 +51,41 @@ internal sealed partial class HackerNewsPage : ListPage
 
     public override IListItem[] GetItems()
     {
-        var t = DoGetItems();
-        t.ConfigureAwait(false);
-        return t.Result;
+        try
+        {
+            IsLoading = true;
+            var t = DoGetItems();
+            t.ConfigureAwait(false);
+            return t.Result;
+        }
+        catch (Exception ex)
+        {
+            return [
+                new ListItem(new NoOpCommand()) { Title = "Exception getting posts from HN" },
+                new ListItem(new NoOpCommand())
+                {
+                    Title = $"{ex.HResult}",
+                    Subtitle = ex.HResult == -2147023174 ? "This is probably zadjii-msft/PowerToys#181" : string.Empty,
+                },
+                new ListItem(new NoOpCommand())
+                {
+                    Title = "Stack trace",
+                    Details = new Details() { Body = $"```{ex.Source}\n{ex.StackTrace}```" },
+                },
+            ];
+        }
     }
 
     private async Task<IListItem[]> DoGetItems()
     {
-        List<NewsPost> items = await GetHackerNewsTopPosts();
-        this.Loading = false;
+        var items = await GetHackerNewsTopPosts();
+        IsLoading = false;
         var s = items.Select((post) => new ListItem(new LinkCommand(post))
-            {
-                Title = post.Title,
-                Subtitle = post.Link,
-                MoreCommands = [new CommandContextItem(new CommentCommand(post))],
-            }).ToArray();
+        {
+            Title = post.Title,
+            Subtitle = post.Link,
+            MoreCommands = [new CommandContextItem(new CommentCommand(post))],
+        }).ToArray();
         return s;
     }
 }

@@ -15,9 +15,34 @@ namespace Microsoft.CmdPal.Extensions
     };
 
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
-    runtimeclass IconDataType {
-        IconDataType(String iconString);
+    runtimeclass IconData {
+        IconData(String iconString);
+        static IconData FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
+
         String Icon { get; };
+        Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
+    };
+    
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    runtimeclass IconInfo {
+        IconInfo(String iconString);
+        IconInfo(IconData lightIcon, IconData darkIcon);
+
+        IconData Light { get; };
+        IconData Dark { get; };
+    };
+
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    runtimeclass KeyChord
+    {
+        KeyChord();
+        KeyChord(Windows.System.VirtualKeyModifiers modifiers, Int32 vkey, Int32 scanCode);
+        KeyChord(Boolean ctrl, Boolean alt, Boolean shift, Boolean win, Int32 vkey, Int32 scanCode);
+        UInt64 Hash();
+        Boolean Equals(KeyChord other);
+        Windows.System.VirtualKeyModifiers Modifiers;
+        Int32 Vkey;
+        Int32 ScanCode;
     };
 
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
@@ -32,17 +57,38 @@ namespace Microsoft.CmdPal.Extensions
     };
 
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface INotifyItemsChanged {
+        event Windows.Foundation.TypedEventHandler<Object, ItemsChangedEventArgs> ItemsChanged;
+    };
+
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    runtimeclass ItemsChangedEventArgs {
+        ItemsChangedEventArgs(Int32 totalItems);
+        Int32 TotalItems { get; };
+    };
+
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface ICommand requires INotifyPropChanged{
         String Name{ get; };
-        IconDataType Icon{ get; };
+        String Id{ get; };
+        IconInfo Icon{ get; };
     }
     
     enum CommandResultKind {
         Dismiss,    // Reset the palette to the main page and dismiss
         GoHome,     // Go back to the main page, but keep it open
+        GoBack,     // Go back one level
+        Hide,       // Keep this page open, but hide the palette. 
         KeepOpen,   // Do nothing.
         GoToPage,   // Go to another page. GoToPageArgs will tell you where.
     };
+    
+    enum NavigationMode {
+        Push,   // Push the target page onto the navigation stack
+        GoBack, // Go back one page before navigating to the target page
+        GoHome, // Go back to the home page before navigating to the target page
+    };
+    
     [uuid("f9d6423b-bd5e-44bb-a204-2f5c77a72396")]
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface ICommandResultArgs{};
@@ -54,6 +100,7 @@ namespace Microsoft.CmdPal.Extensions
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IGoToPageArgs requires ICommandResultArgs{
         String PageId { get; };
+        NavigationMode NavigationMode { get; };
     }
     
     // This is a "leaf" of the UI. This is something that can be "done" by the user.
@@ -76,7 +123,7 @@ namespace Microsoft.CmdPal.Extensions
     interface IFilter requires IFilterItem {
         String Id { get; };
         String Name { get; };
-        IconDataType Icon { get; };
+        IconInfo Icon { get; };
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
@@ -85,11 +132,26 @@ namespace Microsoft.CmdPal.Extensions
         IFilterItem[] Filters();
     }
     
+    struct Color
+    {
+        UInt8 R;
+        UInt8 G;
+        UInt8 B;
+        UInt8 A;
+    };
+    
+    struct OptionalColor
+    {
+        Boolean HasValue;
+        Microsoft.CmdPal.Extensions.Color Color;
+    };
+    
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface ITag {
-        IconDataType Icon { get; };
+        IconInfo Icon { get; };
         String Text { get; };
-        Windows.UI.Color Color { get; };
+        OptionalColor Foreground { get; };
+        OptionalColor Background { get; };
         String ToolTip { get; };
         ICommand Command { get; };
     };
@@ -104,7 +166,7 @@ namespace Microsoft.CmdPal.Extensions
     }
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IDetails {
-        IconDataType HeroImage { get; };
+        IconInfo HeroImage { get; };
         String Title { get; };
         String Body { get; };
         IDetailsElement[] Metadata { get; };
@@ -168,12 +230,9 @@ namespace Microsoft.CmdPal.Extensions
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IPage requires ICommand {
         String Title { get; };
-        Boolean Loading { get; };
-    }
-    
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
-    interface IFallbackHandler {
-        void UpdateQuery(String query);
+        Boolean IsLoading { get; };
+        
+        OptionalColor AccentColor { get; };
     }
     
     [uuid("c78b9851-e76b-43ee-8f76-da5ba14e69a4")]
@@ -181,28 +240,30 @@ namespace Microsoft.CmdPal.Extensions
     interface IContextItem {}
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
-    interface ICommandContextItem requires IContextItem {
-        ICommand Command { get; };
-        String Tooltip { get; };
-        Boolean IsCritical { get; }; // todo: better name for "make this red"
+    interface ICommandItem requires INotifyPropChanged {
+        ICommand Command{ get; };
+        IContextItem[] MoreCommands{ get; };
+        IconInfo Icon{ get; };
+        String Title{ get; };
+        String Subtitle{ get; };
+    } 
     
-        // TODO-future: we should allow app developers to specify a default keybinding for each of these actions
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface ICommandContextItem requires ICommandItem, IContextItem {
+        Boolean IsCritical { get; }; // READ: "make this red"
+        KeyChord RequestedShortcut { get; };
     }
+    
     [uuid("924a87fc-32fe-4471-9156-84b3b30275a6")]
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface ISeparatorContextItem requires IContextItem {}
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
-    interface IListItem requires INotifyPropChanged {
-        IconDataType Icon{ get; };
-        String Title{ get; };
-        String Subtitle{ get; };
-        ICommand Command{ get; };
-        IContextItem[] MoreCommands{ get; };
+    interface IListItem requires ICommandItem {
         ITag[] Tags{ get; };
         IDetails Details{ get; };
-        IFallbackHandler FallbackHandler{ get; };
         String Section { get; };
+        String TextToSuggest { get; };
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
@@ -211,19 +272,24 @@ namespace Microsoft.CmdPal.Extensions
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
-    interface IListPage requires IPage {
+    interface IListPage requires IPage, INotifyItemsChanged {
+        // DevPal will be responsible for filtering the list of items, unless the 
+        // class implements IDynamicListPage
         String SearchText { get; };
         String PlaceholderText { get; };
         Boolean ShowDetails{ get; };
         IFilters Filters { get; };
         IGridProperties GridProperties { get; };
+        Boolean HasMoreItems { get; };
+        ICommandItem EmptyContent { get; };
     
-        IListItem[] GetItems(); // DevPal will be responsible for filtering the list of items
+        IListItem[] GetItems();     
+        void LoadMore();
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IDynamicListPage requires IListPage {
-        IListItem[] GetItems(String query); // DevPal will do no filtering of these items
+        String SearchText { set; };
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
@@ -247,14 +313,33 @@ namespace Microsoft.CmdPal.Extensions
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
-    interface ICommandProvider requires Windows.Foundation.IClosable
-    {
-        String DisplayName { get; };
-        IconDataType Icon { get; };
-        // TODO! Boolean CanBeCached { get; };
-        // TODO! IFormPage SettingsPage { get; };
+    interface ICommandSettings {
+        IFormPage SettingsPage { get; };
+    };
     
-        IListItem[] TopLevelCommands();
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface IFallbackHandler {
+        void UpdateQuery(String query);
+    };
+    
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface IFallbackCommandItem requires ICommandItem {
+        IFallbackHandler FallbackHandler{ get; };
+    };
+    
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface ICommandProvider requires Windows.Foundation.IClosable, INotifyItemsChanged
+    {
+        String Id { get; };
+        String DisplayName { get; };
+        IconInfo Icon { get; };
+        ICommandSettings Settings { get; };
+        Boolean Frozen { get; };
+    
+        ICommandItem[] TopLevelCommands();
+        IFallbackCommandItem[] FallbackCommands();
+    
+        ICommand GetCommand(String id);
     
         void InitializeWithHost(IExtensionHost host);
     };

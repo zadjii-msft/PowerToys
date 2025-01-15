@@ -18,11 +18,11 @@ public partial class ClipboardHistoryCommandsProvider : CommandProvider
         _clipboardHistoryListItem = new ListItem(new ClipboardHistoryListPage())
         {
             Title = "Search Clipboard History",
-            Icon = new IconDataType("ClipboardHistory"),
+            Icon = new("ClipboardHistory"),
         };
 
         DisplayName = $"Settings";
-        Icon = new IconDataType("ClipboardHistory");
+        Icon = new("ClipboardHistory");
     }
 
     public override IListItem[] TopLevelCommands()

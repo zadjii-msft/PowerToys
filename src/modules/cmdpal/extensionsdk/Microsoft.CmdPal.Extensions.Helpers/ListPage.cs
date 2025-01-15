@@ -1,6 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
+
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
@@ -9,8 +11,12 @@ public class ListPage : Page, IListPage
     private string _placeholderText = string.Empty;
     private string _searchText = string.Empty;
     private bool _showDetails;
+    private bool _hasMore;
     private IFilters? _filters;
     private IGridProperties? _gridProperties;
+    private ICommandItem? _emptyContent;
+
+    public event TypedEventHandler<object, ItemsChangedEventArgs>? ItemsChanged;
 
     public string PlaceholderText
     {
@@ -22,7 +28,7 @@ public class ListPage : Page, IListPage
         }
     }
 
-    public string SearchText
+    public virtual string SearchText
     {
         get => _searchText;
         set
@@ -39,6 +45,16 @@ public class ListPage : Page, IListPage
         {
             _showDetails = value;
             OnPropertyChanged(nameof(ShowDetails));
+        }
+    }
+
+    public bool HasMoreItems
+    {
+        get => _hasMore;
+        set
+        {
+            _hasMore = value;
+            OnPropertyChanged(nameof(HasMoreItems));
         }
     }
 
@@ -62,5 +78,31 @@ public class ListPage : Page, IListPage
         }
     }
 
-    public virtual IListItem[] GetItems() => throw new NotImplementedException();
+    public ICommandItem? EmptyContent
+    {
+        get => _emptyContent;
+        set
+        {
+            _emptyContent = value;
+            OnPropertyChanged(nameof(EmptyContent));
+        }
+    }
+
+    public virtual IListItem[] GetItems() => [];
+
+    public virtual void LoadMore()
+    {
+    }
+
+    protected void RaiseItemsChanged(int totalItems)
+    {
+        try
+        {
+            // TODO #181 - This is the same thing that BaseObservable has to deal with.
+            ItemsChanged?.Invoke(this, new ItemsChangedEventArgs(totalItems));
+        }
+        catch
+        {
+        }
+    }
 }
