@@ -5,6 +5,7 @@
 using System;
 using System.Globalization;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Commands;
+using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.Streams;
@@ -30,12 +31,7 @@ public class ClipboardItem
         }
 
         // Check if there is valid text content
-        if (!string.IsNullOrEmpty(Content))
-        {
-            return "Text";
-        }
-
-        return "Unknown";
+        return !string.IsNullOrEmpty(Content) ? "Text" : "Unknown";
     }
 
     private bool IsImage()
@@ -54,6 +50,8 @@ public class ClipboardItem
 
         if (IsImage())
         {
+            var iconData = IconData.FromStream(ImageData);
+            var heroImage = new IconInfo(iconData, iconData);
             listItem = new(new CopyCommand(this, ClipboardFormat.Image))
             {
                 // Placeholder subtitle as there’s no BitmapImage dimensions to retrieve
@@ -63,41 +61,45 @@ public class ClipboardItem
                     Text = GetDataType(),
                 }
                 ],
-                Details = new Details { HeroImage = new("\uF0E3"), Title = GetDataType(), Body = Timestamp.ToString(CultureInfo.InvariantCulture) },
+
+                Details = new Details()
+                {
+                    HeroImage = heroImage, // new("\uF0E3"),
+                    Title = GetDataType(),
+                    Body = Timestamp.ToString(CultureInfo.InvariantCulture),
+                },
                 MoreCommands = [
                     new CommandContextItem(new PasteCommand(this, ClipboardFormat.Image))
                 ],
             };
         }
-        else if (IsText())
-        {
-            listItem = new(new CopyCommand(this, ClipboardFormat.Text))
-            {
-                Title = Content.Length > 20 ? string.Concat(Content.AsSpan(0, 20), "...") : Content,
-                Tags = [new Tag()
-                {
-                    Text = GetDataType(),
-                }
-                ],
-                Details = new Details { Title = GetDataType(), Body = $"```text\n{Content}\n```" },
-                MoreCommands = [
-                    new CommandContextItem(new PasteCommand(this, ClipboardFormat.Text)),
-                ],
-            };
-        }
         else
         {
-            listItem = new(new NoOpCommand())
-            {
-                Title = "Unknown",
-                Subtitle = GetDataType(),
-                Tags = [new Tag()
+            listItem = IsText()
+                ? new(new CopyCommand(this, ClipboardFormat.Text))
+                {
+                    Title = Content.Length > 20 ? string.Concat(Content.AsSpan(0, 20), "...") : Content,
+                    Tags = [new Tag()
                 {
                     Text = GetDataType(),
                 }
-                ],
-                Details = new Details { Title = GetDataType(), Body = Content },
-            };
+                            ],
+                    Details = new Details { Title = GetDataType(), Body = $"```text\n{Content}\n```" },
+                    MoreCommands = [
+                                new CommandContextItem(new PasteCommand(this, ClipboardFormat.Text)),
+                            ],
+                }
+                : new(new NoOpCommand())
+                {
+                    Title = "Unknown",
+                    Subtitle = GetDataType(),
+                    Tags = [new Tag()
+                {
+                    Text = GetDataType(),
+                }
+                            ],
+                    Details = new Details { Title = GetDataType(), Body = Content },
+                };
         }
 
         return listItem;
