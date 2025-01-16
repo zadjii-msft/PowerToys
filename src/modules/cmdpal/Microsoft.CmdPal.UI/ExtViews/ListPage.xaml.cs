@@ -4,7 +4,6 @@
 
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
-using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.UI.Xaml;
@@ -118,7 +117,9 @@ public sealed partial class ListPage : Page,
         // prevent the crash.
         if (ItemsList.SelectedItem != null)
         {
-            ItemsList.SmoothScrollIntoViewWithItemAsync(ItemsList.SelectedItem);
+            ItemsList.ScrollIntoView(ItemsList.SelectedItem);
+
+            // ItemsList.SmoothScrollIntoViewWithItemAsync(ItemsList.SelectedItem);
         }
     }
 

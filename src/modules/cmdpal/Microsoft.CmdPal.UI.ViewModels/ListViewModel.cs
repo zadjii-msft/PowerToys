@@ -204,8 +204,10 @@ public partial class ListViewModel : PageViewModel
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item)
     {
+        // VVV defs not this
         // WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
 
+        // not tested VVVVVVVVVVVV
         // if (ShowDetails && item.HasDetails)
         // {
         //    WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
