@@ -68,6 +68,7 @@
                             </Grid.ColumnDefinitions>
                             <local:IconBox
                                 Width="12"
+                                x:Name="PART_Icon"
                                 Height="12"
                                 Margin="0,0,4,0"
                                 SourceKey="{TemplateBinding Icon}"

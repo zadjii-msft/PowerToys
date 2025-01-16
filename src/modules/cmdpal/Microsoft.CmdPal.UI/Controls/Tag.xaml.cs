@@ -10,8 +10,12 @@ using Microsoft.UI.Xaml.Media;
 
 namespace Microsoft.CmdPal.UI.Controls;
 
+[TemplatePart(Name = TagIconBox, Type = typeof(IconBox))]
+
 public partial class Tag : Control
 {
+    internal const string TagIconBox = "PART_Icon";
+
     public OptionalColor? BackgroundColor
     {
         get => (OptionalColor?)GetValue(BackgroundColorProperty);
