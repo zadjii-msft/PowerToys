@@ -39,7 +39,6 @@
                 HasIcon="{x:Bind HasIcon, Mode=OneWay}"
                 Icon="{x:Bind Icon, Mode=OneWay}"
                 Text="{x:Bind Text, Mode=OneWay}"
-                MinWidth="12"
                 ToolTipService.ToolTip="{x:Bind ToolTip, Mode=OneWay}" />
         </DataTemplate>
 
@@ -87,6 +86,7 @@
                             TextWrapping="NoWrap"
                             Visibility="{x:Bind Subtitle, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}" />
                     </StackPanel>
+
                     <ItemsRepeater
                         Grid.Column="2"
                         ItemTemplate="{StaticResource TagTemplate}"
