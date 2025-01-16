@@ -83,6 +83,8 @@ public sealed partial class ListPage : Page,
         else if (e.ClickedItem is ListItemViewModel item2)
         {
             ViewModel?.UpdateSelectedItemCommand.Execute(item2);
+
+            // ViewModel?.UpdateSelectedItem(item2);
         }
     }
 
@@ -92,10 +94,12 @@ public sealed partial class ListPage : Page,
         // Debug.WriteLine("ItemsList_SelectionChanged");
         // Debug.WriteLine($"  +{e.AddedItems.Count} / -{e.RemovedItems.Count}");
         // Debug.WriteLine($"  selected='{ItemsList.SelectedItem}'");
-        // if (ItemsList.SelectedItem is ListItemViewModel item)
-        // {
-        //    ViewModel?.UpdateSelectedItemCommand.Execute(item);
-        // }
+        if (ItemsList.SelectedItem is ListItemViewModel item)
+        {
+            ViewModel?.UpdateSelectedItemCommand.Execute(item);
+
+            // ViewModel?.UpdateSelectedItem(item);
+        }
 
         // There's mysterious behavior here, where the selection seemingly
         // changes to _nothing_ when we're backspacing to a single character.

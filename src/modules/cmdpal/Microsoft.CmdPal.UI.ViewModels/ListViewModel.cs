@@ -204,16 +204,16 @@ public partial class ListViewModel : PageViewModel
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item)
     {
-        WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
+        // WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
 
-        if (ShowDetails && item.HasDetails)
-        {
-            WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
-        }
-        else
-        {
-            WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
-        }
+        // if (ShowDetails && item.HasDetails)
+        // {
+        //    WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
+        // }
+        // else
+        // {
+        //    WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
+        // }
     }
 
     public override void InitializeProperties()
