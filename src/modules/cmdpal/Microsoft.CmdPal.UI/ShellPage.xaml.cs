@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels;
@@ -22,17 +23,23 @@ public sealed partial class ShellPage :
     Page,
     IRecipient<NavigateBackMessage>,
     IRecipient<PerformCommandMessage>,
+    IRecipient<OpenSettingsMessage>,
     IRecipient<ShowDetailsMessage>,
     IRecipient<HideDetailsMessage>,
     IRecipient<ClearSearchMessage>,
     IRecipient<HandleCommandResultMessage>,
-    IRecipient<LaunchUriMessage>
+    IRecipient<LaunchUriMessage>,
+    INotifyPropertyChanged
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
+
+    private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
     private readonly SlideNavigationTransitionInfo _slideRightTransition = new() { Effect = SlideNavigationTransitionEffect.FromRight };
 
     public ShellViewModel ViewModel { get; private set; } = App.Current.Services.GetService<ShellViewModel>()!;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public ShellPage()
     {
@@ -42,6 +49,7 @@ public sealed partial class ShellPage :
         WeakReferenceMessenger.Default.Register<NavigateBackMessage>(this);
         WeakReferenceMessenger.Default.Register<PerformCommandMessage>(this);
         WeakReferenceMessenger.Default.Register<HandleCommandResultMessage>(this);
+        WeakReferenceMessenger.Default.Register<OpenSettingsMessage>(this);
 
         WeakReferenceMessenger.Default.Register<ShowDetailsMessage>(this);
         WeakReferenceMessenger.Default.Register<HideDetailsMessage>(this);
@@ -95,12 +103,12 @@ public sealed partial class ShellPage :
                     // Construct our ViewModel of the appropriate type and pass it the UI Thread context.
                     PageViewModel pageViewModel = page switch
                     {
-                        IListPage listPage => new ListViewModel(listPage, TaskScheduler.FromCurrentSynchronizationContext())
+                        IListPage listPage => new ListViewModel(listPage, _mainTaskScheduler)
                         {
                             IsNested = !isMainPage,
                         },
-                        IFormPage formsPage => new FormsPageViewModel(formsPage, TaskScheduler.FromCurrentSynchronizationContext()),
-                        IMarkdownPage markdownPage => new MarkdownPageViewModel(markdownPage, TaskScheduler.FromCurrentSynchronizationContext()),
+                        IFormPage formsPage => new FormsPageViewModel(formsPage, _mainTaskScheduler),
+                        IMarkdownPage markdownPage => new MarkdownPageViewModel(markdownPage, _mainTaskScheduler),
                         _ => throw new NotSupportedException(),
                     };
 
@@ -203,10 +211,31 @@ public sealed partial class ShellPage :
         }
     }
 
+    public void Receive(OpenSettingsMessage message)
+    {
+        _ = DispatcherQueue.TryEnqueue(() =>
+        {
+            // Also hide our details pane about here, if we had one
+            HideDetails();
+
+            var settings = App.Current.Services.GetService<SettingsModel>()!;
+            var settingsViewModel = new SettingsViewModel(settings, App.Current.Services, _mainTaskScheduler);
+            RootFrame.Navigate(typeof(SettingsPage), settingsViewModel, _slideRightTransition);
+
+            ViewModel.CurrentPage = settingsViewModel;
+
+            WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(null));
+        });
+    }
+
     public void Receive(ShowDetailsMessage message)
     {
         ViewModel.Details = message.Details;
         ViewModel.IsDetailsVisible = true;
+
+        // Trigger a re-evaluation of whether we have a hero image based on
+        // the current theme
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
     }
 
     public void Receive(HideDetailsMessage message) => HideDetails();
@@ -261,6 +290,31 @@ public sealed partial class ShellPage :
             // Note, this shortcuts and fights a bit with our LoadPageViewModel above, but we want to better fast display and incrementally load anyway
             // We just need to reconcile our loading systems a bit more in the future.
             ViewModel.CurrentPage = page;
+        }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether determines if the current Details have a HeroImage, given the theme
+    /// we're currently in. This needs to be evaluated in the view, because the
+    /// viewModel doesn't actually know what the current theme is.
+    /// </summary>
+    public bool HasHeroImage
+    {
+        get
+        {
+            var requestedTheme = ActualTheme;
+            var iconInfo = ViewModel.Details?.HeroImage;
+            var data = requestedTheme == Microsoft.UI.Xaml.ElementTheme.Dark ?
+                iconInfo?.Dark :
+                iconInfo?.Light;
+
+            // We have an icon, AND EITHER:
+            //      We have a string icon, OR
+            //      we have a data blob
+            var hasIcon = (data != null) &&
+                    (!string.IsNullOrEmpty(data.Icon) ||
+                    data.Data != null);
+            return hasIcon;
         }
     }
 }

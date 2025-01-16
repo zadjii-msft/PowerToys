@@ -24,7 +24,7 @@ public partial class ShellViewModel(IServiceProvider _serviceProvider, TaskSched
     public partial bool IsDetailsVisible { get; set; }
 
     [ObservableProperty]
-    public partial PageViewModel? CurrentPage { get; set; }
+    public partial PageViewModel CurrentPage { get; set; } = new LoadingPageViewModel(null, _scheduler);
 
     [RelayCommand]
     public async Task<bool> LoadAsync()
@@ -37,10 +37,11 @@ public partial class ShellViewModel(IServiceProvider _serviceProvider, TaskSched
         var page = new MainListPage(_serviceProvider);
         WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(new(page!)));
 
-        // After loading built-ins, and starting navigation, kick off a thread to load extensions.
-        tlcManager.LoadExtensionsCommand.Execute(null);
         _ = Task.Run(async () =>
         {
+            // After loading built-ins, and starting navigation, kick off a thread to load extensions.
+            tlcManager.LoadExtensionsCommand.Execute(null);
+
             await tlcManager.LoadExtensionsCommand.ExecutionTask!;
             if (tlcManager.LoadExtensionsCommand.ExecutionTask.Status != TaskStatus.RanToCompletion)
             {
@@ -98,7 +99,7 @@ public partial class ShellViewModel(IServiceProvider _serviceProvider, TaskSched
                         {
                             var result = (bool)viewModel.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
 
-                            CurrentPage = result ? viewModel : null;
+                            CurrentPage = viewModel; // result ? viewModel : null;
                             ////LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;
                         },
                         CancellationToken.None,
