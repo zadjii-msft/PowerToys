@@ -47,7 +47,7 @@
         <DataTemplate x:Key="ListItemViewModelTemplate" x:DataType="viewmodels:ListItemViewModel">
 
             <!--  TODO: collapse item if it's empty  -->
-            <ListViewItem>
+            <ListViewItem MinHeight="40"> 
                 <Grid Padding="0,12,0,12" ColumnSpacing="12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="28" />
@@ -55,14 +55,14 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <cpcontrols:IconBox
+                    <!--<cpcontrols:IconBox
                         x:Name="IconBorder"
                         Grid.Column="0"
                         Width="20"
                         Height="20"
                         Margin="4,0,4,0"
                         SourceKey="{x:Bind Icon, Mode=OneWay}"
-                        SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}" />
+                        SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}" />-->
 
                     <StackPanel
                         Grid.Column="1"
@@ -89,6 +89,7 @@
                     </StackPanel>
                     <ItemsRepeater
                         Grid.Column="2"
+                        Height="32"
                         ItemTemplate="{StaticResource TagTemplate}"
                         ItemsSource="{x:Bind Tags, Mode=OneWay}"
                         Layout="{StaticResource HorizontalStackLayout}"

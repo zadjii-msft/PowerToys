@@ -86,13 +86,20 @@ public sealed partial class SearchBar : UserControl,
         var ctrlPressed = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
         if (e.Key == VirtualKey.Down)
         {
-            WeakReferenceMessenger.Default.Send<NavigateNextCommand>();
+            _ = Task.Run(() =>
+            {
+                WeakReferenceMessenger.Default.Send<NavigateNextCommand>();
+            });
 
             e.Handled = true;
         }
         else if (e.Key == VirtualKey.Up)
         {
-            WeakReferenceMessenger.Default.Send<NavigatePreviousCommand>();
+            // WeakReferenceMessenger.Default.Send<NavigatePreviousCommand>();
+            _ = Task.Run(() =>
+            {
+                WeakReferenceMessenger.Default.Send<NavigatePreviousCommand>();
+            });
 
             e.Handled = true;
         }
