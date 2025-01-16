@@ -69,6 +69,11 @@ public partial class Tag : Control
     protected override void OnApplyTemplate()
     {
         base.OnApplyTemplate();
+
+        if (GetTemplateChild(TagIconBox) is IconBox iconBox)
+        {
+            iconBox.SourceRequested += IconCacheProvider.SourceRequested;
+        }
     }
 
     private static void OnForegroundColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

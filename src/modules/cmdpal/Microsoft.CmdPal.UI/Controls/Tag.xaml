@@ -69,11 +69,13 @@
                             <local:IconBox
                                 Width="12"
                                 x:Name="PART_Icon"
+                                Grid.Column="0"
                                 Height="12"
                                 Margin="0,0,4,0"
                                 SourceKey="{TemplateBinding Icon}"
                                 Visibility="{TemplateBinding HasIcon}" />
                             <TextBlock
+                                Grid.Column="1"
                                 CharacterSpacing="{TemplateBinding CharacterSpacing}"
                                 FontFamily="{TemplateBinding FontFamily}"
                                 FontSize="{TemplateBinding FontSize}"
