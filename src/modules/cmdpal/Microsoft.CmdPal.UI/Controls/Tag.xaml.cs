@@ -70,10 +70,10 @@ public partial class Tag : Control
     {
         base.OnApplyTemplate();
 
-        // if (GetTemplateChild(TagIconBox) is IconBox iconBox)
-        // {
-        //    iconBox.SourceRequested += IconCacheProvider.SourceRequested;
-        // }
+        if (GetTemplateChild(TagIconBox) is IconBox iconBox)
+        {
+            iconBox.SourceRequested += IconCacheProvider.SourceRequested;
+        }
     }
 
     private static void OnForegroundColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

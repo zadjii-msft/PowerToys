@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.UI.Xaml;
@@ -91,12 +92,10 @@ public sealed partial class ListPage : Page,
         // Debug.WriteLine("ItemsList_SelectionChanged");
         // Debug.WriteLine($"  +{e.AddedItems.Count} / -{e.RemovedItems.Count}");
         // Debug.WriteLine($"  selected='{ItemsList.SelectedItem}'");
-
-        // IS THIS! VVVVVVVVVVVVVVVVVVVV WHAT WAS KILLING USSSSSS???????????????
-        // if (ItemsList.SelectedItem is ListItemViewModel item)
-        // {
-        //    ViewModel?.UpdateSelectedItemCommand.Execute(item);
-        // }
+        if (ItemsList.SelectedItem is ListItemViewModel item)
+        {
+            ViewModel?.UpdateSelectedItemCommand.Execute(item);
+        }
 
         // There's mysterious behavior here, where the selection seemingly
         // changes to _nothing_ when we're backspacing to a single character.
@@ -113,41 +112,30 @@ public sealed partial class ListPage : Page,
         // intermittently _crash_ if an item has tags. The WCT extension
         // though, to smooth scroll instead, slows things down just enough to
         // prevent the crash.
-        // DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, async () =>
-        // {
-        //    if (ItemsList.SelectedItem != null)
-        //    {
-        //        await ItemsList.SmoothScrollIntoViewWithItemAsync(ItemsList.SelectedItem);
-        //    }
-        // });
+        if (ItemsList.SelectedItem != null)
+        {
+            ItemsList.SmoothScrollIntoViewWithItemAsync(ItemsList.SelectedItem);
+        }
     }
 
     public void Receive(NavigateNextCommand message)
     {
-        DispatcherQueue.TryEnqueue(() =>
+        // Note: We may want to just have the notion of a 'SelectedCommand' in our VM
+        // And then have these commands manipulate that state being bound to the UI instead
+        // We may want to see how other non-list UIs need to behave to make this decision
+        // At least it's decoupled from the SearchBox now :)
+        if (ItemsList.SelectedIndex < ItemsList.Items.Count - 1)
         {
-            // Note: We may want to just have the notion of a 'SelectedCommand' in our VM
-            // And then have these commands manipulate that state being bound to the UI instead
-            // We may want to see how other non-list UIs need to behave to make this decision
-            // At least it's decoupled from the SearchBox now :)
-            if (ItemsList.SelectedIndex < ItemsList.Items.Count - 1)
-            {
-                ItemsList.SelectedIndex++;
-                ItemsList.ScrollIntoView(ItemsList.SelectedItem);
-            }
-        });
+            ItemsList.SelectedIndex++;
+        }
     }
 
     public void Receive(NavigatePreviousCommand message)
     {
-        DispatcherQueue.TryEnqueue(() =>
+        if (ItemsList.SelectedIndex > 0)
         {
-            if (ItemsList.SelectedIndex > 0)
-            {
-                ItemsList.SelectedIndex--;
-                ItemsList.ScrollIntoView(ItemsList.SelectedItem);
-            }
-        });
+            ItemsList.SelectedIndex--;
+        }
     }
 
     public void Receive(ActivateSelectedListItemMessage message)
