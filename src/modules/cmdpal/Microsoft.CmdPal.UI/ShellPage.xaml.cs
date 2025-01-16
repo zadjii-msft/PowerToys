@@ -4,14 +4,15 @@
 
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
-using Windows.System;
 using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
 namespace Microsoft.CmdPal.UI;
@@ -32,6 +33,8 @@ public sealed partial class ShellPage :
     INotifyPropertyChanged
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
+
+    private readonly DispatcherQueueTimer _debounceTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
 
     private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
@@ -230,17 +233,27 @@ public sealed partial class ShellPage :
 
     public void Receive(ShowDetailsMessage message)
     {
-        ViewModel.Details = message.Details;
-        ViewModel.IsDetailsVisible = true;
+        _debounceTimer.Debounce(
+            () =>
+        {
+            ViewModel.Details = message.Details;
 
-        // Trigger a re-evaluation of whether we have a hero image based on
-        // the current theme
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
+            // Trigger a re-evaluation of whether we have a hero image based on
+            // the current theme
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
+        },
+            //// Couldn't find a good recommendation/resource for value here. PT uses 50ms as default, so that is a reasonable default
+            //// This seems like a useful testing site for typing times: https://keyboardtester.info/keyboard-latency-test/
+            //// i.e. if another keyboard press comes in within 50ms of the last, we'll wait before we fire off the request
+            interval: TimeSpan.FromMilliseconds(100),
+            //// If we're not already waiting, and this is blanking out or the first character type, we'll start filtering immediately instead to appear more responsive and either clear the filter to get back home faster or at least chop to the first starting letter.
+            immediate: ViewModel.IsDetailsVisible == false);
+        ViewModel.IsDetailsVisible = true;
     }
 
     public void Receive(HideDetailsMessage message) => HideDetails();
 
-    public void Receive(LaunchUriMessage message) => _ = Launcher.LaunchUriAsync(message.Uri);
+    public void Receive(LaunchUriMessage message) => _ = global::Windows.System.Launcher.LaunchUriAsync(message.Uri);
 
     public void Receive(HandleCommandResultMessage message) => HandleCommandResult(message.Result.Unsafe);
 

@@ -210,10 +210,15 @@ public partial class ListViewModel : PageViewModel
            {
                WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
 
-               // if (ShowDetails && item.HasDetails)
-               // {
-               //    WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
-               // }
+               if (ShowDetails && item.HasDetails)
+               {
+                   // _ = Task.Run(() =>
+                   // {
+                   WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
+
+                   // });
+               }
+
                // else
                // {
                //    WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
