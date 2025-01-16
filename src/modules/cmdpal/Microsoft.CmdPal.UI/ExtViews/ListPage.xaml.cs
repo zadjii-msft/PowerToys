@@ -95,7 +95,13 @@ public sealed partial class ListPage : Page,
         // Debug.WriteLine($"  selected='{ItemsList.SelectedItem}'");
         if (ItemsList.SelectedItem is ListItemViewModel item)
         {
-            ViewModel?.UpdateSelectedItemCommand.Execute(item);
+            var vm = ViewModel;
+            _ = Task.Run(() =>
+            {
+                vm?.UpdateSelectedItemCommand.Execute(item);
+
+                // vm?.UpdateSelectedItem(item);
+            });
 
             // ViewModel?.UpdateSelectedItem(item);
         }

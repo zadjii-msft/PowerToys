@@ -202,20 +202,26 @@ public partial class ListViewModel : PageViewModel
     }
 
     [RelayCommand]
-    private void UpdateSelectedItem(ListItemViewModel item)
+    public void UpdateSelectedItem(ListItemViewModel item)
     {
-        // VVV defs not this
-        // WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
+        // VVV BOTH bad
+        Task.Factory.StartNew(
+           () =>
+           {
+               WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
 
-        // not tested VVVVVVVVVVVV
-        // if (ShowDetails && item.HasDetails)
-        // {
-        //    WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
-        // }
-        // else
-        // {
-        //    WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
-        // }
+               // if (ShowDetails && item.HasDetails)
+               // {
+               //    WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
+               // }
+               // else
+               // {
+               //    WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
+               // }
+           },
+           CancellationToken.None,
+           TaskCreationOptions.None,
+           PageContext.Scheduler);
     }
 
     public override void InitializeProperties()
