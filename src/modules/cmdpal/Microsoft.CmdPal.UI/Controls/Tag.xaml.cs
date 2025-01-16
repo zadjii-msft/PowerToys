@@ -2,20 +2,11 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Documents;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
-using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.Controls;
 
@@ -39,9 +30,9 @@ public partial class Tag : Control
         set => SetValue(HasIconProperty, value);
     }
 
-    public IconDataType? Icon
+    public IconInfo? Icon
     {
-        get => (IconDataType?)GetValue(IconProperty);
+        get => (IconInfo?)GetValue(IconProperty);
         set => SetValue(IconProperty, value);
     }
 
@@ -61,7 +52,7 @@ public partial class Tag : Control
     DependencyProperty.Register(nameof(HasIcon), typeof(bool), typeof(Tag), new PropertyMetadata(null));
 
     public static readonly DependencyProperty IconProperty =
-        DependencyProperty.Register(nameof(Icon), typeof(IconDataType), typeof(Tag), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(Icon), typeof(IconInfo), typeof(Tag), new PropertyMetadata(null));
 
     public static readonly DependencyProperty TextProperty =
     DependencyProperty.Register(nameof(Text), typeof(string), typeof(Tag), new PropertyMetadata(null));
