@@ -43,8 +43,8 @@ public partial class ListViewModel : PageViewModel
 
     private bool _isDynamic;
 
-    public ListViewModel(IListPage model, TaskScheduler scheduler)
-        : base(model, scheduler)
+    public ListViewModel(IListPage model, TaskScheduler scheduler, CommandPaletteHost host)
+        : base(model, scheduler, host)
     {
         _model = new(model);
     }
@@ -208,16 +208,27 @@ public partial class ListViewModel : PageViewModel
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item)
     {
-        WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
+        // GH #322:
+        // For inexplicable reasons, if you try updating the command bar and
+        // the details on the same UI thread tick as updating the list, we'll
+        // explode
+        Task.Factory.StartNew(
+           () =>
+           {
+               WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
 
-        if (ShowDetails && item.HasDetails)
-        {
-            WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
-        }
-        else
-        {
-            WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
-        }
+               if (ShowDetails && item.HasDetails)
+               {
+                   WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
+               }
+               else
+               {
+                   WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
+               }
+           },
+           CancellationToken.None,
+           TaskCreationOptions.None,
+           PageContext.Scheduler);
     }
 
     public override void InitializeProperties()
