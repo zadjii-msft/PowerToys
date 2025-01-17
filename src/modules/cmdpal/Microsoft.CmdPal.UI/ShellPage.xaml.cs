@@ -4,14 +4,16 @@
 
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
-using Windows.System;
 using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
 namespace Microsoft.CmdPal.UI;
@@ -31,6 +33,8 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
     INotifyPropertyChanged
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
+
+    private readonly DispatcherQueueTimer _debounceTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
 
     private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
@@ -244,17 +248,27 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
     public void Receive(ShowDetailsMessage message)
     {
-        ViewModel.Details = message.Details;
-        ViewModel.IsDetailsVisible = true;
+        // GH #322:
+        // For inexplicable reasons, if you try to change the details too fast,
+        // we'll explode. This seemingly only happens if you change the details
+        // while we're also scrolling a new list view item into view.
+        _debounceTimer.Debounce(
+            () =>
+        {
+            ViewModel.Details = message.Details;
 
-        // Trigger a re-evaluation of whether we have a hero image based on
-        // the current theme
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
+            // Trigger a re-evaluation of whether we have a hero image based on
+            // the current theme
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
+        },
+            interval: TimeSpan.FromMilliseconds(50),
+            immediate: ViewModel.IsDetailsVisible == false);
+        ViewModel.IsDetailsVisible = true;
     }
 
     public void Receive(HideDetailsMessage message) => HideDetails();
 
-    public void Receive(LaunchUriMessage message) => _ = Launcher.LaunchUriAsync(message.Uri);
+    public void Receive(LaunchUriMessage message) => _ = global::Windows.System.Launcher.LaunchUriAsync(message.Uri);
 
     public void Receive(HandleCommandResultMessage message) => HandleCommandResult(message.Result.Unsafe);
 
@@ -317,18 +331,8 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         get
         {
             var requestedTheme = ActualTheme;
-            var iconInfo = ViewModel.Details?.HeroImage;
-            var data = requestedTheme == Microsoft.UI.Xaml.ElementTheme.Dark ?
-                iconInfo?.Dark :
-                iconInfo?.Light;
-
-            // We have an icon, AND EITHER:
-            //      We have a string icon, OR
-            //      we have a data blob
-            var hasIcon = (data != null) &&
-                    (!string.IsNullOrEmpty(data.Icon) ||
-                    data.Data != null);
-            return hasIcon;
+            var iconInfoVM = ViewModel.Details?.HeroImage;
+            return iconInfoVM?.HasIcon(requestedTheme == Microsoft.UI.Xaml.ElementTheme.Light) ?? false;
         }
     }
 }
