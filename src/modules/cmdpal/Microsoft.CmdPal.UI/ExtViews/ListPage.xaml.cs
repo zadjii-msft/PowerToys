@@ -82,8 +82,6 @@ public sealed partial class ListPage : Page,
         else if (e.ClickedItem is ListItemViewModel item2)
         {
             ViewModel?.UpdateSelectedItemCommand.Execute(item2);
-
-            // ViewModel?.UpdateSelectedItem(item2);
         }
     }
 
@@ -99,11 +97,7 @@ public sealed partial class ListPage : Page,
             _ = Task.Run(() =>
             {
                 vm?.UpdateSelectedItemCommand.Execute(item);
-
-                // vm?.UpdateSelectedItem(item);
             });
-
-            // ViewModel?.UpdateSelectedItem(item);
         }
 
         // There's mysterious behavior here, where the selection seemingly
@@ -124,8 +118,6 @@ public sealed partial class ListPage : Page,
         if (ItemsList.SelectedItem != null)
         {
             ItemsList.ScrollIntoView(ItemsList.SelectedItem);
-
-            // ItemsList.SmoothScrollIntoViewWithItemAsync(ItemsList.SelectedItem);
         }
     }
 
