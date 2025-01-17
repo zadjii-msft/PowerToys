@@ -233,6 +233,10 @@ public sealed partial class ShellPage :
 
     public void Receive(ShowDetailsMessage message)
     {
+        // GH #322:
+        // For inexplicable reasons, if you try to change the details too fast,
+        // we'll explode. This seemingly only happens if you change the details
+        // while we're also scrolling a new list view item into view.
         _debounceTimer.Debounce(
             () =>
         {
@@ -242,11 +246,7 @@ public sealed partial class ShellPage :
             // the current theme
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
         },
-            //// Couldn't find a good recommendation/resource for value here. PT uses 50ms as default, so that is a reasonable default
-            //// This seems like a useful testing site for typing times: https://keyboardtester.info/keyboard-latency-test/
-            //// i.e. if another keyboard press comes in within 50ms of the last, we'll wait before we fire off the request
-            interval: TimeSpan.FromMilliseconds(100),
-            //// If we're not already waiting, and this is blanking out or the first character type, we'll start filtering immediately instead to appear more responsive and either clear the filter to get back home faster or at least chop to the first starting letter.
+            interval: TimeSpan.FromMilliseconds(50),
             immediate: ViewModel.IsDetailsVisible == false);
         ViewModel.IsDetailsVisible = true;
     }

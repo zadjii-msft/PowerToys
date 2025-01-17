@@ -202,9 +202,12 @@ public partial class ListViewModel : PageViewModel
     }
 
     [RelayCommand]
-    public void UpdateSelectedItem(ListItemViewModel item)
+    private void UpdateSelectedItem(ListItemViewModel item)
     {
-        // VVV BOTH bad
+        // GH #322:
+        // For inexplicable reasons, if you try updating the command bar and
+        // the details on the same UI thread tick as updating the list, we'll
+        // explode
         Task.Factory.StartNew(
            () =>
            {
@@ -212,17 +215,12 @@ public partial class ListViewModel : PageViewModel
 
                if (ShowDetails && item.HasDetails)
                {
-                   // _ = Task.Run(() =>
-                   // {
                    WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
-
-                   // });
                }
-
-               // else
-               // {
-               //    WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
-               // }
+               else
+               {
+                   WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
+               }
            },
            CancellationToken.None,
            TaskCreationOptions.None,
