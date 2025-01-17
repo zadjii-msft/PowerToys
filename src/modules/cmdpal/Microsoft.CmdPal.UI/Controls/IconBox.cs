@@ -2,7 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -111,12 +111,12 @@ public partial class IconBox : ContentControl
                         // Segoe icons, then let's give the icon some extra space
                         @this.Padding = new Thickness(0);
 
-                        IconData? iconData = null;
-                        if (eventArgs.Key is IconData)
+                        IconDataViewModel? iconData = null;
+                        if (eventArgs.Key is IconDataViewModel)
                         {
-                            iconData = eventArgs.Key as IconData;
+                            iconData = eventArgs.Key as IconDataViewModel;
                         }
-                        else if (eventArgs.Key is IconInfo info)
+                        else if (eventArgs.Key is IconInfoViewModel info)
                         {
                             iconData = requestedTheme == ElementTheme.Light ? info.Light : info.Dark;
                         }
