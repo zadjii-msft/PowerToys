@@ -46,12 +46,13 @@ public partial class SettingsViewModel : PageViewModel
     public ObservableCollection<ProviderSettingsViewModel> CommandProviders { get; } = [];
 
     public SettingsViewModel(SettingsModel settings, IServiceProvider serviceProvider, TaskScheduler scheduler)
-        : base(null, scheduler)
+        : base(null, scheduler, CommandPaletteHost.Instance)
     {
         _settings = settings;
         _serviceProvider = serviceProvider;
 
-        Icon = new("\uE713");
+        Icon = new(new("\uE713"));
+        Icon.InitializeProperties();
         IsInitialized = true;
         ModelIsLoading = false;
         Title = "Settings";
