@@ -21,10 +21,7 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
 
     public OptionalColor Background { get; private set; }
 
-    public IconInfo Icon { get; private set; } = new(string.Empty);
-
-    // TODO Terrible. When we redo the icons in tags, make this something the view exposes
-    public bool HasIcon => !string.IsNullOrEmpty(Icon.Light.Icon);
+    public IconInfoViewModel Icon { get; private set; } = new(null);
 
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
@@ -41,7 +38,8 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
         Foreground = model.Foreground;
         Background = model.Background;
         ToolTip = model.ToolTip;
-        Icon = model.Icon;
+        Icon = new(model.Icon);
+        Icon.InitializeProperties();
 
         UpdateProperty(nameof(Text));
         UpdateProperty(nameof(Foreground));

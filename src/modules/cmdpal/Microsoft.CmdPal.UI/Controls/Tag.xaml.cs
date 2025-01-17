@@ -4,6 +4,7 @@
 
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.Helpers;
+using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -28,15 +29,14 @@ public partial class Tag : Control
         set => SetValue(ForegroundColorProperty, value);
     }
 
-    public bool? HasIcon
+    public bool HasIcon
     {
-        get => (bool?)GetValue(HasIconProperty);
-        set => SetValue(HasIconProperty, value);
+        get => Icon?.HasIcon(this.ActualTheme == ElementTheme.Light) ?? false;
     }
 
-    public IconInfo? Icon
+    public IconInfoViewModel? Icon
     {
-        get => (IconInfo?)GetValue(IconProperty);
+        get => (IconInfoViewModel?)GetValue(IconProperty);
         set => SetValue(IconProperty, value);
     }
 
@@ -52,11 +52,8 @@ public partial class Tag : Control
     public static readonly DependencyProperty BackgroundColorProperty =
         DependencyProperty.Register(nameof(BackgroundColor), typeof(OptionalColor), typeof(Tag), new PropertyMetadata(null, OnBackgroundColorPropertyChanged));
 
-    public static readonly DependencyProperty HasIconProperty =
-    DependencyProperty.Register(nameof(HasIcon), typeof(bool), typeof(Tag), new PropertyMetadata(null));
-
     public static readonly DependencyProperty IconProperty =
-        DependencyProperty.Register(nameof(Icon), typeof(IconInfo), typeof(Tag), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(Icon), typeof(IconInfoViewModel), typeof(Tag), new PropertyMetadata(null));
 
     public static readonly DependencyProperty TextProperty =
     DependencyProperty.Register(nameof(Text), typeof(string), typeof(Tag), new PropertyMetadata(null));
@@ -73,6 +70,7 @@ public partial class Tag : Control
         if (GetTemplateChild(TagIconBox) is IconBox iconBox)
         {
             iconBox.SourceRequested += IconCacheProvider.SourceRequested;
+            iconBox.Visibility = HasIcon ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 

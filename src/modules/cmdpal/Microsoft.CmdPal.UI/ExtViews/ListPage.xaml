@@ -36,7 +36,6 @@
             <cpcontrols:Tag
                 BackgroundColor="{x:Bind Background, Mode=OneWay}"
                 ForegroundColor="{x:Bind Foreground, Mode=OneWay}"
-                HasIcon="{x:Bind HasIcon, Mode=OneWay}"
                 Icon="{x:Bind Icon, Mode=OneWay}"
                 Text="{x:Bind Text, Mode=OneWay}"
                 ToolTipService.ToolTip="{x:Bind ToolTip, Mode=OneWay}" />
@@ -86,6 +85,7 @@
                             TextWrapping="NoWrap"
                             Visibility="{x:Bind Subtitle, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}" />
                     </StackPanel>
+
                     <ItemsRepeater
                         Grid.Column="2"
                         ItemTemplate="{StaticResource TagTemplate}"

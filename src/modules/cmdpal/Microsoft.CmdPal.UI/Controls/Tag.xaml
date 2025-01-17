@@ -71,11 +71,9 @@
                                 Grid.Column="0"
                                 Height="12"
                                 Margin="0,0,4,0"
-                                SourceKey="{TemplateBinding Icon}"
-                                Visibility="{TemplateBinding HasIcon}" />
+                                SourceKey="{TemplateBinding Icon}" />
                             <TextBlock
                                 Grid.Column="1"
-                                MinWidth="6"
                                 CharacterSpacing="{TemplateBinding CharacterSpacing}"
                                 FontFamily="{TemplateBinding FontFamily}"
                                 FontSize="{TemplateBinding FontSize}"

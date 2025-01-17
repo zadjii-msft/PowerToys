@@ -23,6 +23,16 @@ public partial class SettingsViewModel : PageViewModel
         }
     }
 
+    public bool ShowAppDetails
+    {
+        get => _settings.ShowAppDetails;
+        set
+        {
+            _settings.ShowAppDetails = value;
+            Save();
+        }
+    }
+
     public ObservableCollection<ProviderSettingsViewModel> CommandProviders { get; } = [];
 
     public SettingsViewModel(SettingsModel settings, IServiceProvider serviceProvider, TaskScheduler scheduler)
@@ -31,7 +41,8 @@ public partial class SettingsViewModel : PageViewModel
         _settings = settings;
         _serviceProvider = serviceProvider;
 
-        Icon = new("\uE713");
+        Icon = new(new("\uE713"));
+        Icon.InitializeProperties();
         IsInitialized = true;
         ModelIsLoading = false;
         Title = "Settings";
