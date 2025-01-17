@@ -23,9 +23,6 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
 
     public IconInfoViewModel Icon { get; private set; } = new(null);
 
-    // TODO Terrible. When we redo the icons in tags, make this something the view exposes
-    public bool HasIcon => Icon.HasIcon(true);
-
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
     public override void InitializeProperties()

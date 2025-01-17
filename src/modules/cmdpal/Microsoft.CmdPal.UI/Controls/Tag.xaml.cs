@@ -29,10 +29,9 @@ public partial class Tag : Control
         set => SetValue(ForegroundColorProperty, value);
     }
 
-    public bool? HasIcon
+    public bool HasIcon
     {
-        get => (bool?)GetValue(HasIconProperty);
-        set => SetValue(HasIconProperty, value);
+        get => Icon?.HasIcon(this.ActualTheme == ElementTheme.Light) ?? false;
     }
 
     public IconInfoViewModel? Icon
@@ -53,9 +52,6 @@ public partial class Tag : Control
     public static readonly DependencyProperty BackgroundColorProperty =
         DependencyProperty.Register(nameof(BackgroundColor), typeof(OptionalColor), typeof(Tag), new PropertyMetadata(null, OnBackgroundColorPropertyChanged));
 
-    public static readonly DependencyProperty HasIconProperty =
-    DependencyProperty.Register(nameof(HasIcon), typeof(bool), typeof(Tag), new PropertyMetadata(null));
-
     public static readonly DependencyProperty IconProperty =
         DependencyProperty.Register(nameof(Icon), typeof(IconInfoViewModel), typeof(Tag), new PropertyMetadata(null));
 
@@ -74,6 +70,7 @@ public partial class Tag : Control
         if (GetTemplateChild(TagIconBox) is IconBox iconBox)
         {
             iconBox.SourceRequested += IconCacheProvider.SourceRequested;
+            iconBox.Visibility = HasIcon ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
