@@ -83,9 +83,6 @@
                         Margin="-8"
                         ItemsSource="{x:Bind CurrentPageViewModel.StatusMessages, Mode=OneWay}"
                         Layout="{StaticResource VerticalStackLayout}">
-                        <!--<ItemsRepeater.ItemContainerTransitions>
-            <TransitionCollection />
-        </ItemsRepeater.ItemContainerTransitions>-->
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:StatusMessageViewModel">
                                 <StackPanel

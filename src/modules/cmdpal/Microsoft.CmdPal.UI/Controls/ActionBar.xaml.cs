@@ -106,7 +106,11 @@ public sealed partial class ActionBar : UserControl,
 
     private void PageIcon_Tapped(object sender, TappedRoutedEventArgs e)
     {
-        // FlyoutBase.ShowAttachedFlyout((FrameworkElement)sender);
-        StatusMessagesFlyout.ShowAt(placementTarget: IconRoot, showOptions: new FlyoutShowOptions() { ShowMode = FlyoutShowMode.Standard });
+        if (CurrentPageViewModel?.StatusMessages.Count > 0)
+        {
+            StatusMessagesFlyout.ShowAt(
+                placementTarget: IconRoot,
+                showOptions: new FlyoutShowOptions() { ShowMode = FlyoutShowMode.Standard });
+        }
     }
 }
