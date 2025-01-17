@@ -48,5 +48,6 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
         UpdateProperty(nameof(Background));
         UpdateProperty(nameof(ToolTip));
         UpdateProperty(nameof(Icon));
+        UpdateProperty(nameof(HasIcon));
     }
 }

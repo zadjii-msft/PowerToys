@@ -64,14 +64,12 @@
                             CornerRadius="{TemplateBinding CornerRadius}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <local:IconBox
                                 x:Name="PART_Icon"
                                 Grid.Column="0"
-                                MinWidth="6"
                                 Height="12"
-                                Width="12"
                                 Margin="0,0,4,0"
                                 SourceKey="{TemplateBinding Icon}"
                                 Visibility="{TemplateBinding HasIcon}" />
