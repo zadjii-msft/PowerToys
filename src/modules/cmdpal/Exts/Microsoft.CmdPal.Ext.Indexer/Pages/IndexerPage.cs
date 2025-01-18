@@ -96,7 +96,7 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
                         FullPath = result.LaunchUri,
                     })
                     {
-                        Icon = new(result.IsFolder ? "\uE838" : "\uE8E5"),
+                        Icon = new(result.LaunchUri),
                     });
                 }
 
