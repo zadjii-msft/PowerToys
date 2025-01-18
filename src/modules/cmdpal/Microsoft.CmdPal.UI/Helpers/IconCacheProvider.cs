@@ -28,7 +28,7 @@ public static partial class IconCacheProvider
         {
             var deferral = args.GetDeferral();
 
-            args.Value = await IconService.GetIconSource(iconData);
+            args.Value = await IconService.GetIconSource(iconData, false);
 
             deferral.Complete();
         }
@@ -37,7 +37,7 @@ public static partial class IconCacheProvider
             var deferral = args.GetDeferral();
 
             var data = args.Theme == Microsoft.UI.Xaml.ElementTheme.Dark ? iconInfo.Dark : iconInfo.Light;
-            args.Value = await IconService.GetIconSource(data);
+            args.Value = await IconService.GetIconSource(data, true);
 
             deferral.Complete();
         }
