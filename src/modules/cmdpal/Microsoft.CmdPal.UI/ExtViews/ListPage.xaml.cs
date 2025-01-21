@@ -129,8 +129,8 @@ public sealed partial class ListPage : Page,
 
     private void ListViewItem_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
     {
-        if (sender is ListViewItem lvi &&
-            this.ItemsList.ItemFromContainer(lvi) is ListItemViewModel vm)
+        if (sender is ListViewItem viewItem &&
+            this.ItemsList.ItemFromContainer(viewItem) is ListItemViewModel vm)
         {
             var settings = App.Current.Services.GetService<SettingsModel>()!;
             if (!settings.SingleClickActivates)
