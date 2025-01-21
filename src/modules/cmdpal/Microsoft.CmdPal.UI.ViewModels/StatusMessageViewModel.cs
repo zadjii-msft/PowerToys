@@ -17,6 +17,12 @@ public partial class StatusMessageViewModel : ExtensionObjectViewModel
 
     public string ExtensionPfn { get; set; } = string.Empty;
 
+    public ProgressViewModel? Progress { get; private set; }
+
+    public bool HasProgress => Progress != null;
+
+    // public bool IsIndeterminate => Progress != null && Progress.IsIndeterminate;
+    // public double ProgressValue => (Progress?.ProgressPercent ?? 0) / 100.0;
     public StatusMessageViewModel(IStatusMessage message, IPageContext context)
         : base(context)
     {
@@ -33,6 +39,13 @@ public partial class StatusMessageViewModel : ExtensionObjectViewModel
 
         Message = model.Message;
         State = model.State;
+        var modelProgress = model.Progress;
+        if (modelProgress != null)
+        {
+            Progress = new(modelProgress, this.PageContext);
+            Progress.InitializeProperties();
+            UpdateProperty(nameof(HasProgress));
+        }
 
         model.PropChanged += Model_PropChanged;
     }
@@ -64,6 +77,20 @@ public partial class StatusMessageViewModel : ExtensionObjectViewModel
                 break;
             case nameof(State):
                 this.State = model.State;
+                break;
+            case nameof(Progress):
+                var modelProgress = model.Progress;
+                if (modelProgress != null)
+                {
+                    Progress = new(modelProgress, this.PageContext);
+                    Progress.InitializeProperties();
+                }
+                else
+                {
+                    Progress = null;
+                }
+
+                UpdateProperty(nameof(HasProgress));
                 break;
         }
 

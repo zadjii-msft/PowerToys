@@ -109,6 +109,22 @@ public sealed partial class CommandPaletteHost : IExtensionHost
 
     public void ProcessStatusMessage(IStatusMessage message)
     {
+        // If this message is already in the list of messages, just bring it to the top
+        var oldVm = StatusMessages.Where(messageVM => messageVM.Model.Unsafe == message).FirstOrDefault();
+        if (oldVm != null)
+        {
+            Task.Factory.StartNew(
+                () =>
+                {
+                    StatusMessages.Remove(oldVm);
+                    StatusMessages.Add(oldVm);
+                },
+                CancellationToken.None,
+                TaskCreationOptions.None,
+                _globalLogPageContext.Scheduler);
+            return;
+        }
+
         var vm = new StatusMessageViewModel(message, _globalLogPageContext);
         vm.SafeInitializePropertiesSynchronous();
 
