@@ -30,7 +30,8 @@ internal sealed partial class SampleListPage : ListPage
                         }
                 ],
             },
-            new ListItem(new SendMessageCommand()) { Title = "I send messages" },
+            new ListItem(new SendMessageCommand()) { Title = "I send lots of messages" },
+            new SendSingleMessageItem(),
         ];
     }
 }

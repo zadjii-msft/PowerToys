@@ -9,7 +9,7 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class StatusMessageViewModel : ExtensionObjectViewModel
 {
-    private readonly ExtensionObject<IStatusMessage> _model;
+    public ExtensionObject<IStatusMessage> Model { get; }
 
     public string Message { get; private set; } = string.Empty;
 
@@ -20,12 +20,12 @@ public partial class StatusMessageViewModel : ExtensionObjectViewModel
     public StatusMessageViewModel(IStatusMessage message, IPageContext context)
         : base(context)
     {
-        _model = new(message);
+        Model = new(message);
     }
 
     public override void InitializeProperties()
     {
-        var model = _model.Unsafe;
+        var model = Model.Unsafe;
         if (model == null)
         {
             return; // throw?
@@ -51,7 +51,7 @@ public partial class StatusMessageViewModel : ExtensionObjectViewModel
 
     protected virtual void FetchProperty(string propertyName)
     {
-        var model = this._model.Unsafe;
+        var model = this.Model.Unsafe;
         if (model == null)
         {
             return; // throw?
