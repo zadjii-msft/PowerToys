@@ -12,7 +12,6 @@ using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
@@ -282,12 +281,16 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
     public void Receive(HotkeySummonMessage message)
     {
         var settings = App.Current.Services.GetService<SettingsModel>()!;
-        if (settings.HotkeyGoesHome)
-        {
-            GoHome(false);
-        }
 
-        SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+        _ = DispatcherQueue.TryEnqueue(() =>
+        {
+            if (settings.HotkeyGoesHome)
+            {
+                GoHome(false);
+            }
+
+            SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+        });
     }
 
     private void GoBack(bool withAnimation = true)
