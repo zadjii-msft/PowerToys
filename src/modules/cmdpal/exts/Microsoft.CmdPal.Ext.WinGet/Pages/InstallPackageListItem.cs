@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.Management.Deployment;
 using Windows.Foundation.Metadata;
@@ -35,15 +37,72 @@ public partial class InstallPackageListItem : ListItem
         if (metadata != null)
         {
             var detailsBody = $"""
-# {metadata.PackageName}
 ## {metadata.Publisher}
 
 {metadata.Description}
 """;
-            Details = new Details() { Body = detailsBody };
+            IconInfo heroIcon = new(string.Empty);
+            var icons = metadata.Icons;
+            if (icons.Count > 0)
+            {
+                // There's also a .Theme property we could probably use to
+                // switch between default or individual icons.
+                heroIcon = new IconInfo(icons[0].Url);
+            }
+
+            Details = new Details()
+            {
+                Body = detailsBody,
+                Title = metadata.PackageName,
+                HeroImage = heroIcon,
+                Metadata = GetDetailsMetadata(metadata).ToArray(),
+            };
         }
 
         _ = Task.Run(UpdatedInstalledStatus);
+    }
+
+    private List<IDetailsElement> GetDetailsMetadata(CatalogPackageMetadata metadata)
+    {
+        List<IDetailsElement> detailsElements = new();
+
+        // key -> {text, url}
+        Dictionary<string, (string, string)> simpleData = new()
+        {
+            { "Author", (metadata.Author, string.Empty) },
+            { "Copyright", (metadata.Copyright, metadata.CopyrightUrl) },
+            { "License", (metadata.License, metadata.LicenseUrl) },
+            { "Publisher", (metadata.Publisher, metadata.PublisherUrl) },
+            { "Publisher Support", (string.Empty, metadata.PublisherSupportUrl) },
+        };
+        var docs = metadata.Documentations.ToArray();
+        foreach (var item in docs)
+        {
+            simpleData.Add(item.DocumentLabel, (string.Empty, item.DocumentUrl));
+        }
+
+        foreach (var kv in simpleData)
+        {
+            var text = string.IsNullOrEmpty(kv.Value.Item1) ? kv.Value.Item2 : kv.Value.Item1;
+            var target = kv.Value.Item2;
+            if (!string.IsNullOrEmpty(text))
+            {
+                try
+                {
+                    var pair = new DetailsElement()
+                    {
+                        Key = kv.Key,
+                        Data = new DetailsLink() { Link = new(target), Text = text },
+                    };
+                    detailsElements.Add(pair);
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        return detailsElements;
     }
 
     private async void UpdatedInstalledStatus()
