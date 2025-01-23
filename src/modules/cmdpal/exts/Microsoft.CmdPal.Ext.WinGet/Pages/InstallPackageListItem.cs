@@ -92,7 +92,7 @@ public partial class InstallPackageListItem : ListItem
                 {
                     uri = new Uri(target);
                 }
-                catch
+                catch (System.UriFormatException)
                 {
                 }
 
