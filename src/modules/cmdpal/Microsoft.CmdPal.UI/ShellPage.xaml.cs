@@ -67,14 +67,23 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
     public void Receive(NavigateBackMessage message)
     {
+        var settings = App.Current.Services.GetService<SettingsModel>()!;
+
         if (RootFrame.CanGoBack)
         {
-            GoBack();
+            if (!message.FromBackspace ||
+                settings.BackspaceGoesBack)
+            {
+                GoBack();
+            }
         }
         else
         {
-            // If we can't go back then we must be at the top and thus escape again should quit.
-            WeakReferenceMessenger.Default.Send<DismissMessage>();
+            if (!message.FromBackspace)
+            {
+                // If we can't go back then we must be at the top and thus escape again should quit.
+                WeakReferenceMessenger.Default.Send<DismissMessage>();
+            }
         }
     }
 
@@ -288,8 +297,12 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
             {
                 GoHome(false);
             }
+            else if (settings.HighlightSearchOnActivate)
+            {
+                SearchBox.SelectSearch();
+            }
 
-            SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+            WeakReferenceMessenger.Default.Send<FocusSearchBoxMessage>();
         });
     }
 
@@ -330,7 +343,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         WeakReferenceMessenger.Default.Send<GoHomeMessage>();
     }
 
-    private void BackButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e) => WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
+    private void BackButton_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e) => WeakReferenceMessenger.Default.Send<NavigateBackMessage>(new());
 
     private void RootFrame_Navigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
     {
