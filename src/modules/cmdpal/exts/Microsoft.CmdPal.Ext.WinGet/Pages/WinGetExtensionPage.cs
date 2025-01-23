@@ -202,11 +202,18 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
 
             ct.ThrowIfCancellationRequested();
 
-            // Find the packages with the filters
-            var request = catalog.FindPackagesAsync(opts);
-            Debug.WriteLine($"    immediately after FindPackagesAsync ({query})");
-            var cancellable = AsTaskWithCancellation(request, ct, searchDebugText);
-            var searchResults = await cancellable;
+            //// Find the packages with the filters
+            // var request = catalog.FindPackagesAsync(opts);
+            // Debug.WriteLine($"    immediately after FindPackagesAsync ({query})");
+            // var cancellable = AsTaskWithCancellation(request, ct, searchDebugText);
+            // var searchResults = await cancellable;
+
+            // BODGY, re: microsoft/winget-cli#5151
+            // FindPackagesAsync isn't actually async.
+            var internalSearchTask = Task.Run(() => catalog.FindPackages(opts), ct);
+            Debug.WriteLine($"    immediately after internalSearchTask ({query})");
+            var searchResults = await internalSearchTask;
+
             Debug.WriteLine($"    got results for ({query})");
             foreach (var match in searchResults.Matches.ToArray())
             {
