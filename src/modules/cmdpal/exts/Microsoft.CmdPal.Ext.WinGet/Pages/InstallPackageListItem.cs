@@ -108,11 +108,6 @@ public partial class InstallPackageListItem : ListItem
     {
         var status = await _package.CheckInstalledStatusAsync();
         var isInstalled = _package.InstalledVersion != null;
-        if (isInstalled)
-        {
-            _package.
-        }
-
         _installCommand = new InstallPackageCommand(_package, isInstalled);
         this.Command = _installCommand;
         Icon = _installCommand.Icon;
