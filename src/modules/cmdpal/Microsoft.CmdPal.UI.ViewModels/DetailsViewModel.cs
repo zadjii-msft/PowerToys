@@ -15,11 +15,13 @@ public partial class DetailsViewModel(IDetails _details, IPageContext context) :
     // cannot be marked [ObservableProperty]
     public IconInfoViewModel HeroImage { get; private set; } = new(null);
 
-    // TODO: Metadata is an array of IDetailsElement,
-    // where IDetailsElement = {IDetailsTags, IDetailsLink, IDetailsSeparator}
     public string Title { get; private set; } = string.Empty;
 
     public string Body { get; private set; } = string.Empty;
+
+    // Metadata is an array of IDetailsElement,
+    //   where IDetailsElement = {IDetailsTags, IDetailsLink, IDetailsSeparator}
+    public List<DetailsElementViewModel> Metadata { get; private set; } = [];
 
     public override void InitializeProperties()
     {
