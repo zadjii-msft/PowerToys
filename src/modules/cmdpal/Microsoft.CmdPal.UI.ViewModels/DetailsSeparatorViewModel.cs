@@ -7,11 +7,15 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class DetailsSeparatorViewModel(IDetailsSeparator _detailsData, IPageContext context) : DetailsDataViewModel(context)
+public partial class DetailsSeparatorViewModel(
+    IDetailsElement _detailsElement,
+    IPageContext context) : DetailsElementViewModel(_detailsElement, context)
 {
-    private readonly ExtensionObject<IDetailsSeparator> _model = new(_detailsData);
+    private readonly ExtensionObject<IDetailsSeparator> _dataModel =
+        new(_detailsElement.Data as IDetailsSeparator);
 
     public override void InitializeProperties()
     {
+        base.InitializeProperties();
     }
 }

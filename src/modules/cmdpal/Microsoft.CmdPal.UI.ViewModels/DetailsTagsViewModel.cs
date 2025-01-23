@@ -7,13 +7,17 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class DetailsTagsViewModel(IDetailsTags _detailsData, IPageContext context) : DetailsDataViewModel(context)
+public partial class DetailsTagsViewModel(
+    IDetailsElement _detailsElement,
+    IPageContext context) : DetailsElementViewModel(_detailsElement, context)
 {
-    private readonly ExtensionObject<IDetailsTags> _model = new(_detailsData);
+    private readonly ExtensionObject<IDetailsTags> _dataModel =
+        new(_detailsElement.Data as IDetailsTags);
 
     public override void InitializeProperties()
     {
-        var model = _model.Unsafe;
+        base.InitializeProperties();
+        var model = _dataModel.Unsafe;
         if (model == null)
         {
             return;

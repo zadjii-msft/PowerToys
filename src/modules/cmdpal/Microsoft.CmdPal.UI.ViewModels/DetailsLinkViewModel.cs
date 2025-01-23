@@ -7,16 +7,25 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class DetailsLinkViewModel(IDetailsLink _detailsData, IPageContext context) : DetailsDataViewModel(context)
+public partial class DetailsLinkViewModel(
+    IDetailsElement _detailsElement,
+    IPageContext context) : DetailsElementViewModel(_detailsElement, context)
 {
-    private readonly ExtensionObject<IDetailsLink> _model = new(_detailsData);
+    private readonly ExtensionObject<IDetailsLink> _dataModel =
+        new(_detailsElement.Data as IDetailsLink);
 
     public string Text { get; private set; } = string.Empty;
-    public Uri? Link { get; private set; };
+
+    public Uri? Link { get; private set; }
+
+    public bool IsLink => Link != null;
+
+    public bool IsText => !IsLink;
 
     public override void InitializeProperties()
     {
-        var model = _model.Unsafe;
+        base.InitializeProperties();
+        var model = _dataModel.Unsafe;
         if (model == null)
         {
             return;
@@ -26,5 +35,7 @@ public partial class DetailsLinkViewModel(IDetailsLink _detailsData, IPageContex
         Link = model.Link;
         UpdateProperty(nameof(Text));
         UpdateProperty(nameof(Link));
+        UpdateProperty(nameof(IsLink));
+        UpdateProperty(nameof(IsText));
     }
 }

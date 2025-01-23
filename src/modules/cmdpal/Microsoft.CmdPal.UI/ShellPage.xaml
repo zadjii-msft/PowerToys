@@ -29,9 +29,9 @@
 
             <cmdpalUI:DetailsDataTemplateSelector 
                 x:Key="DetailsDataTemplateSelector"
-                LinkTemplate="{StaticResource DetailsLinkViewModel}"
-                SeparatorTemplate="{StaticResource DetailsSeparatorViewModel}"
-                TagTemplate="{StaticResource DetailsTagsViewModel}"
+                LinkTemplate="{StaticResource DetailsLinkTemplate}"
+                SeparatorTemplate="{StaticResource DetailsSeparatorTemplate}"
+                TagTemplate="{StaticResource DetailsTagsTemplate}"
                 />
 
             <converters:BoolToVisibilityConverter
@@ -40,13 +40,24 @@
                 TrueValue="Collapsed" />
 
 
-            <DataTemplate x:Key="DetailsLinkViewModel" x:DataType="viewModels:DetailsElementViewModel">
+            <DataTemplate x:Key="DetailsLinkTemplate" x:DataType="viewModels:DetailsLinkViewModel">
+                <StackPanel Orientation="Vertical" Margin="0, 8, 0, 0">
+                    <TextBlock IsTextSelectionEnabled="True" FontWeight="Bold" Text="{x:Bind Key, Mode=OneWay}"/>
+                    <TextBlock 
+                        Visibility="{x:Bind IsText, Mode=OneWay}"
+                        IsTextSelectionEnabled="True" 
+                        Text="{x:Bind Text, Mode=OneWay}"/>
+                    <HyperlinkButton 
+                        Visibility="{x:Bind IsLink, Mode=OneWay}"
+                        Content="{x:Bind Text, Mode=OneWay}"
+                        NavigateUri="{x:Bind Link, Mode=OneWay}"
+                        />
+                </StackPanel>
+            </DataTemplate>
+            <DataTemplate x:Key="DetailsSeparatorTemplate" x:DataType="viewModels:DetailsSeparatorViewModel">
                 <TextBlock Text="{x:Bind Key, Mode=OneWay}"></TextBlock>
             </DataTemplate>
-            <DataTemplate x:Key="DetailsSeparatorViewModel" x:DataType="viewModels:DetailsElementViewModel">
-                <TextBlock Text="{x:Bind Key, Mode=OneWay}"></TextBlock>
-            </DataTemplate>
-            <DataTemplate x:Key="DetailsTagsViewModel" x:DataType="viewModels:DetailsElementViewModel">
+            <DataTemplate x:Key="DetailsTagsTemplate" x:DataType="viewModels:DetailsTagsViewModel">
                 <TextBlock Text="{x:Bind Key, Mode=OneWay}"></TextBlock>
             </DataTemplate>
             

@@ -39,5 +39,25 @@ public partial class DetailsViewModel(IDetails _details, IPageContext context) :
         UpdateProperty(nameof(Title));
         UpdateProperty(nameof(Body));
         UpdateProperty(nameof(HeroImage));
+
+        var meta = model.Metadata;
+        if (meta != null)
+        {
+            foreach (var element in meta)
+            {
+                DetailsElementViewModel? vm = element.Data switch
+                {
+                    IDetailsSeparator => new DetailsSeparatorViewModel(element, this.PageContext),
+                    IDetailsLink => new DetailsLinkViewModel(element, this.PageContext),
+                    IDetailsTags => new DetailsTagsViewModel(element, this.PageContext),
+                    _ => null,
+                };
+                if (vm != null)
+                {
+                    vm.InitializeProperties();
+                    Metadata.Add(vm);
+                }
+            }
+        }
     }
 }
