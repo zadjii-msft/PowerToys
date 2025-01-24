@@ -31,4 +31,9 @@ public partial class WinGetExtensionCommandsProvider : CommandProvider
     ];
 
     public override ICommandItem[] TopLevelCommands() => _commands;
+
+    public override void InitializeWithHost(IExtensionHost host)
+    {
+        WinGetExtensionHost.Instance.Initialize(host);
+    }
 }

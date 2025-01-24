@@ -62,7 +62,7 @@ public partial class InstallPackageCommand : InvokableCommand
             // Uninstall
             _installBanner.State = MessageState.Info;
             _installBanner.Message = $"Uninstalling {_package.Name}...";
-            ExtensionHost.ShowStatus(_installBanner);
+            WinGetExtensionHost.Instance.ShowStatus(_installBanner);
 
             var installOptions = WinGetStatics.WinGetFactory.CreateUninstallOptions();
             installOptions.PackageUninstallScope = PackageUninstallScope.Any;
@@ -78,7 +78,7 @@ public partial class InstallPackageCommand : InvokableCommand
             // Install
             _installBanner.State = MessageState.Info;
             _installBanner.Message = $"Installing {_package.Name}...";
-            ExtensionHost.ShowStatus(_installBanner);
+            WinGetExtensionHost.Instance.ShowStatus(_installBanner);
 
             var installOptions = WinGetStatics.WinGetFactory.CreateInstallOptions();
             installOptions.PackageInstallScope = PackageInstallScope.Any;
@@ -109,7 +109,7 @@ public partial class InstallPackageCommand : InvokableCommand
                 Thread.Sleep(2500);
                 if (_installTask == null)
                 {
-                    ExtensionHost.HideStatus(_installBanner);
+                    WinGetExtensionHost.Instance.HideStatus(_installBanner);
                 }
             });
             InstallStateChanged?.Invoke(this, this);

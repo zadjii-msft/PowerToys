@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.Management.Deployment;
 using WindowsPackageManager.Interop;
 
@@ -26,6 +28,8 @@ internal static class WinGetStatics
     public static Lazy<Task<PackageCatalog>> CompositeAllCatalog { get; } = new(() => GetCompositeCatalog(true));
 
     public static Lazy<Task<PackageCatalog>> CompositeWingetCatalog { get; } = new(() => GetCompositeCatalog(false));
+
+    private static readonly StatusMessage _errorMessage = new() { State = MessageState.Error };
 
     static WinGetStatics()
     {
@@ -88,6 +92,12 @@ internal static class WinGetStatics
 
         stopwatch.Stop();
         Debug.WriteLine($"GetCompositeCatalog({all}) fetch took {stopwatch.ElapsedMilliseconds}ms");
+
+        if (connectResult.Status == ConnectResultStatus.CatalogError)
+        {
+            _errorMessage.Message = $"Error {connectResult.ExtendedErrorCode.HResult}. Are you connected to the internet?";
+            WinGetExtensionHost.Instance.ShowStatus(_errorMessage);
+        }
 
         return compositeCatalog;
     }
