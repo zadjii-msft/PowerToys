@@ -36,16 +36,20 @@ public sealed partial class MainWindow : Window,
     private readonly WNDPROC? _originalWndProc;
     private readonly List<HotkeySettings> _hotkeys = new();
 
-    private const uint MYNOTIFYID = 1000;
-
+    // Stylistically, window messages are WM_*
 #pragma warning disable SA1310 // Field names should not contain underscore
+    private const uint MY_NOTIFY_ID = 1000;
+
     private const uint WM_TRAYICON = global::Windows.Win32.PInvoke.WM_USER + 1;
 #pragma warning disable SA1306 // Field names should begin with lower-case letter
     private readonly uint WM_TASKBAR_RESTART;
 #pragma warning restore SA1306 // Field names should begin with lower-case letter
 #pragma warning restore SA1310 // Field names should not contain underscore
+
+    // Tray icon data
     private NOTIFYICONDATAW? _trayIconData;
     private bool _createdIcon;
+    private DestroyIconSafeHandle? _largeIcon;
 
     private DesktopAcrylicController? _acrylicController;
     private SystemBackdropConfiguration? _configurationSource;
@@ -359,6 +363,17 @@ public sealed partial class MainWindow : Window,
                 {
                     AddNotificationIcon();
                 }
+                else if (uMsg == WM_TRAYICON)
+                {
+                    switch ((uint)lParam.Value)
+                    {
+                        case PInvoke.WM_RBUTTONUP:
+                        case PInvoke.WM_LBUTTONUP:
+                        case PInvoke.WM_LBUTTONDBLCLK:
+                            Summon();
+                            break;
+                    }
+                }
 
                 break;
         }
@@ -378,18 +393,18 @@ public sealed partial class MainWindow : Window,
                 var ch = (char*)ptr;
                 var f = (PCWSTR)ch;
 
-                var large = GetAppIconHandle();
+                _largeIcon = GetAppIconHandle();
                 _trayIconData = new NOTIFYICONDATAW()
                 {
                     cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW)),
                     hWnd = _hwnd,
-                    uID = MYNOTIFYID,
+                    uID = MY_NOTIFY_ID,
                     uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP,
                     uCallbackMessage = WM_TRAYICON,
 
                     // hIcon = PInvoke.LoadIcon((HINSTANCE)nint.Zero, f),
                     // hIcon = PInvoke.LoadIcon(hInst, null),
-                    hIcon = (HICON)large.DangerousGetHandle(),
+                    hIcon = (HICON)_largeIcon.DangerousGetHandle(),
                     szTip = "Windows Command Palette",
                 };
             }
@@ -419,8 +434,6 @@ public sealed partial class MainWindow : Window,
     private DestroyIconSafeHandle GetAppIconHandle()
     {
         var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-
-        // IntPtr[] largeIcon = new IntPtr[1];
         DestroyIconSafeHandle largeIcon;
         DestroyIconSafeHandle smallIcon;
         PInvoke.ExtractIconEx(exePath, 0, out largeIcon, out smallIcon, 1);
