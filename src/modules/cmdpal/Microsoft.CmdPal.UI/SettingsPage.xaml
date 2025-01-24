@@ -206,7 +206,10 @@
                         </controls:SettingsCard>
                     </controls:SettingsExpander.Items>
                 </controls:SettingsExpander>
-                <HyperlinkButton Margin="0,8,0,0" Content="Send feedback" NavigateUri="https://github.com/zadjii-msft/PowerToys/issues/new" />
+                <HyperlinkButton
+                    Margin="0,8,0,0"
+                    Content="Send feedback"
+                    NavigateUri="https://github.com/zadjii-msft/PowerToys/issues/new" />
             </StackPanel>
         </Grid>
     </ScrollViewer>
