@@ -25,16 +25,7 @@ public sealed partial class GeneralPage : Page
 {
     private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-    public SettingsViewModel? ViewModel
-    {
-        get => (SettingsViewModel?)GetValue(ViewModelProperty);
-        set => SetValue(ViewModelProperty, value);
-    }
-
-    // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
-    public static readonly DependencyProperty ViewModelProperty =
-        DependencyProperty.Register(nameof(ViewModel), typeof(SettingsViewModel), typeof(GeneralPage), new PropertyMetadata(null, null));
-
+    public SettingsViewModel?;
     public GeneralPage()
     {
         this.InitializeComponent();
