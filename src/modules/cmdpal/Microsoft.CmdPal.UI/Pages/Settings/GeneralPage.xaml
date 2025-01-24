@@ -43,17 +43,17 @@
                         Header="Activation key"
                         HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}"
                         IsExpanded="True">
-                        <ptControls:ShortcutControl HotkeySettings="{x:Bind ViewModel.Hotkey, Mode=TwoWay}" />
+                        <ptControls:ShortcutControl HotkeySettings="{x:Bind viewModel.Hotkey, Mode=TwoWay}" />
 
                         <controls:SettingsExpander.Items>
                             <controls:SettingsCard
                                 Description="If enabled, the Command Palette will return to the home page when activated"
                                 Header="Go home when activated"
                                 HeaderIcon="{ui:FontIcon Glyph=&#xE80F;}">
-                                <ToggleSwitch IsOn="{x:Bind ViewModel.HotkeyGoesHome, Mode=TwoWay}" />
+                                <ToggleSwitch IsOn="{x:Bind viewModel.HotkeyGoesHome, Mode=TwoWay}" />
                             </controls:SettingsCard>
                             <controls:SettingsCard Description="When enabled, the previous search text will be selected when the app is opened" Header="Highlight search on activate">
-                                <ToggleSwitch IsOn="{x:Bind ViewModel.HighlightSearchOnActivate, Mode=TwoWay}" />
+                                <ToggleSwitch IsOn="{x:Bind viewModel.HighlightSearchOnActivate, Mode=TwoWay}" />
                             </controls:SettingsCard>
                         </controls:SettingsExpander.Items>
                     </controls:SettingsExpander>
@@ -62,21 +62,21 @@
                         Description="Controls if app details are automatically expanded or not"
                         Header="Show app details"
                         HeaderIcon="{ui:FontIcon Glyph=&#xE8A0;}">
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.ShowAppDetails, Mode=TwoWay}" />
+                        <ToggleSwitch IsOn="{x:Bind viewModel.ShowAppDetails, Mode=TwoWay}" />
                     </controls:SettingsCard>
 
                     <controls:SettingsCard
                         Description="When enabled, pressing backspace when the search text is empty will take you back"
                         Header="Backspace goes back"
                         HeaderIcon="{ui:FontIcon Glyph=&#xE750;}">
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.BackspaceGoesBack, Mode=TwoWay}" />
+                        <ToggleSwitch IsOn="{x:Bind viewModel.BackspaceGoesBack, Mode=TwoWay}" />
                     </controls:SettingsCard>
 
                     <controls:SettingsCard
                         Description="When enabled, single click activates list items. When disabled, single click selects and double click activates."
                         Header="Single-click activates"
                         HeaderIcon="{ui:FontIcon Glyph=&#xE962;}">
-                        <ToggleSwitch IsOn="{x:Bind ViewModel.SingleClickActivates, Mode=TwoWay}" />
+                        <ToggleSwitch IsOn="{x:Bind viewModel.SingleClickActivates, Mode=TwoWay}" />
                     </controls:SettingsCard>
 
                     <!--  Example 'About' section  -->

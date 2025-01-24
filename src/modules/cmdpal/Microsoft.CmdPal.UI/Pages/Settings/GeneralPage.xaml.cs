@@ -25,12 +25,13 @@ public sealed partial class GeneralPage : Page
 {
     private readonly TaskScheduler _mainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-    public SettingsViewModel?;
+    private SettingsViewModel? viewModel;
+
     public GeneralPage()
     {
         this.InitializeComponent();
 
         var settings = App.Current.Services.GetService<SettingsModel>()!;
-        ViewModel = new SettingsViewModel(settings, App.Current.Services, _mainTaskScheduler);
+        viewModel = new SettingsViewModel(settings, App.Current.Services, _mainTaskScheduler);
     }
 }

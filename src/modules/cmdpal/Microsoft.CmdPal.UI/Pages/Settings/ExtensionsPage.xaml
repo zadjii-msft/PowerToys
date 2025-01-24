@@ -30,7 +30,7 @@
                     HorizontalAlignment="Stretch"
                     Spacing="{StaticResource SettingsCardSpacing}">
 
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.CommandProviders, Mode=OneWay}" Layout="{StaticResource VerticalStackLayout}">
+                    <ItemsRepeater ItemsSource="{x:Bind viewModel.CommandProviders, Mode=OneWay}" Layout="{StaticResource VerticalStackLayout}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:ProviderSettingsViewModel">
                                 <controls:SettingsCard ContentAlignment="Left" IsClickEnabled="True">
