@@ -86,18 +86,21 @@ public partial class InstallPackageListItem : ListItem
             var target = kv.Value.Item2;
             if (!string.IsNullOrEmpty(text))
             {
+                Uri? uri = null;
                 try
                 {
-                    var pair = new DetailsElement()
-                    {
-                        Key = kv.Key,
-                        Data = new DetailsLink() { Link = new(target), Text = text },
-                    };
-                    detailsElements.Add(pair);
+                    uri = new Uri(target);
                 }
-                catch
+                catch (System.UriFormatException)
                 {
                 }
+
+                var pair = new DetailsElement()
+                {
+                    Key = kv.Key,
+                    Data = new DetailsLink() { Link = uri, Text = text },
+                };
+                detailsElements.Add(pair);
             }
         }
 

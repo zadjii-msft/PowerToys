@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
+    xmlns:viewModels="using:Microsoft.CmdPal.UI.ViewModels"
     xmlns:cmdpalUI="using:Microsoft.CmdPal.UI"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:cpcontrols="using:Microsoft.CmdPal.UI.Controls"
@@ -26,11 +27,40 @@
 
             <cmdpalUI:MessageStateToSeverityConverter x:Key="MessageStateToSeverityConverter" />
 
+            <cmdpalUI:DetailsDataTemplateSelector 
+                x:Key="DetailsDataTemplateSelector"
+                LinkTemplate="{StaticResource DetailsLinkTemplate}"
+                SeparatorTemplate="{StaticResource DetailsSeparatorTemplate}"
+                TagTemplate="{StaticResource DetailsTagsTemplate}"
+                />
+
             <converters:BoolToVisibilityConverter
                 x:Key="BoolToInvertedVisibilityConverter"
                 FalseValue="Visible"
                 TrueValue="Collapsed" />
 
+
+            <DataTemplate x:Key="DetailsLinkTemplate" x:DataType="viewModels:DetailsLinkViewModel">
+                <StackPanel Orientation="Vertical" Margin="0, 8, 0, 0">
+                    <TextBlock IsTextSelectionEnabled="True" FontWeight="Bold" Text="{x:Bind Key, Mode=OneWay}"/>
+                    <TextBlock 
+                        Visibility="{x:Bind IsText, Mode=OneWay}"
+                        IsTextSelectionEnabled="True" 
+                        Text="{x:Bind Text, Mode=OneWay}"/>
+                    <HyperlinkButton 
+                        Visibility="{x:Bind IsLink, Mode=OneWay}"
+                        Content="{x:Bind Text, Mode=OneWay}"
+                        NavigateUri="{x:Bind Link, Mode=OneWay}"
+                        />
+                </StackPanel>
+            </DataTemplate>
+            <DataTemplate x:Key="DetailsSeparatorTemplate" x:DataType="viewModels:DetailsSeparatorViewModel">
+                <TextBlock Text="{x:Bind Key, Mode=OneWay}"></TextBlock>
+            </DataTemplate>
+            <DataTemplate x:Key="DetailsTagsTemplate" x:DataType="viewModels:DetailsTagsViewModel">
+                <TextBlock Text="{x:Bind Key, Mode=OneWay}"></TextBlock>
+            </DataTemplate>
+            
         </ResourceDictionary>
     </Page.Resources>
 
@@ -170,6 +200,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <cpcontrols:IconBox
@@ -199,6 +230,13 @@
                             Header3Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             IsTextSelectionEnabled="True"
                             Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}" />
+
+                        <ItemsRepeater 
+                            Grid.Row="3"
+                            ItemTemplate="{StaticResource DetailsDataTemplateSelector}"
+                            ItemsSource="{x:Bind ViewModel.Details.Metadata, Mode=OneWay}">
+                            
+                        </ItemsRepeater>
                     </Grid>
                 </ScrollViewer>
                 <!--  /DetailsContent  -->
