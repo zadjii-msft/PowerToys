@@ -38,15 +38,14 @@ public sealed partial class MainWindow : Window,
 
     // Stylistically, window messages are WM_*
 #pragma warning disable SA1310 // Field names should not contain underscore
-    private const uint MY_NOTIFY_ID = 1000;
-
-    private const uint WM_TRAYICON = global::Windows.Win32.PInvoke.WM_USER + 1;
 #pragma warning disable SA1306 // Field names should begin with lower-case letter
+    private const uint MY_NOTIFY_ID = 1000;
+    private const uint WM_TRAYICON = global::Windows.Win32.PInvoke.WM_USER + 1;
     private readonly uint WM_TASKBAR_RESTART;
 #pragma warning restore SA1306 // Field names should begin with lower-case letter
 #pragma warning restore SA1310 // Field names should not contain underscore
 
-    // Tray icon data
+    // Notification Area ("Tray") icon data
     private NOTIFYICONDATAW? _trayIconData;
     private bool _createdIcon;
     private DestroyIconSafeHandle? _largeIcon;
@@ -60,6 +59,10 @@ public sealed partial class MainWindow : Window,
 
         _hwnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
         CommandPaletteHost.Instance.SetHostHwnd((ulong)_hwnd.Value);
+
+        // TaskbarCreated is the message that's broadcast when explorer.exe
+        // restarts. We need to know when that happens to be able to bring our
+        // notification area icon back
         WM_TASKBAR_RESTART = PInvoke.RegisterWindowMessage("TaskbarCreated");
 
         PositionCentered();
@@ -347,6 +350,9 @@ public sealed partial class MainWindow : Window,
                     return (LRESULT)IntPtr.Zero;
                 }
 
+            // Shell_NotifyIcon can fail when we invoke it during the time explorer.exe isn't present/ready to handle it.
+            // We'll also never receive WM_TASKBAR_RESTART message if the first call to Shell_NotifyIcon failed, so we use
+            // WM_WINDOWPOSCHANGING which is always received on explorer startup sequence.
             case PInvoke.WM_WINDOWPOSCHANGING:
                 {
                     if (!_createdIcon)
@@ -361,6 +367,8 @@ public sealed partial class MainWindow : Window,
                 // use it in a case label
                 if (uMsg == WM_TASKBAR_RESTART)
                 {
+                    // Handle the case where explorer.exe restarts.
+                    // Even if we created it before, do it again
                     AddNotificationIcon();
                 }
                 else if (uMsg == WM_TRAYICON)
@@ -383,31 +391,24 @@ public sealed partial class MainWindow : Window,
 
     private void AddNotificationIcon()
     {
+        // We only need to build the tray data once.
         if (_trayIconData == null)
         {
-            const int IDI_APPLICATION = 0x7F00;
-            var hInst = PInvoke.GetModuleHandle((PCWSTR)null);
-            unsafe
+            // We need to stash this handle, so it doesn't clean itself up. If
+            // explorer restarts, we'll come back through here, and we don't
+            // really need to re-load the icon in that case. We can just use
+            // the handle from the first time.
+            _largeIcon = GetAppIconHandle();
+            _trayIconData = new NOTIFYICONDATAW()
             {
-                var ptr = (IntPtr)IDI_APPLICATION;
-                var ch = (char*)ptr;
-                var f = (PCWSTR)ch;
-
-                _largeIcon = GetAppIconHandle();
-                _trayIconData = new NOTIFYICONDATAW()
-                {
-                    cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW)),
-                    hWnd = _hwnd,
-                    uID = MY_NOTIFY_ID,
-                    uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP,
-                    uCallbackMessage = WM_TRAYICON,
-
-                    // hIcon = PInvoke.LoadIcon((HINSTANCE)nint.Zero, f),
-                    // hIcon = PInvoke.LoadIcon(hInst, null),
-                    hIcon = (HICON)_largeIcon.DangerousGetHandle(),
-                    szTip = "Windows Command Palette",
-                };
-            }
+                cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW)),
+                hWnd = _hwnd,
+                uID = MY_NOTIFY_ID,
+                uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP,
+                uCallbackMessage = WM_TRAYICON,
+                hIcon = (HICON)_largeIcon.DangerousGetHandle(),
+                szTip = "Windows Command Palette",
+            };
         }
 
         var d = (NOTIFYICONDATAW)_trayIconData;
