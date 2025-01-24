@@ -40,7 +40,7 @@ public sealed partial class MainWindow : Window,
 #pragma warning disable SA1310 // Field names should not contain underscore
 #pragma warning disable SA1306 // Field names should begin with lower-case letter
     private const uint MY_NOTIFY_ID = 1000;
-    private const uint WM_TRAYICON = global::Windows.Win32.PInvoke.WM_USER + 1;
+    private const uint WM_TRAY_ICON = PInvoke.WM_USER + 1;
     private readonly uint WM_TASKBAR_RESTART;
 #pragma warning restore SA1306 // Field names should begin with lower-case letter
 #pragma warning restore SA1310 // Field names should not contain underscore
@@ -371,7 +371,7 @@ public sealed partial class MainWindow : Window,
                     // Even if we created it before, do it again
                     AddNotificationIcon();
                 }
-                else if (uMsg == WM_TRAYICON)
+                else if (uMsg == WM_TRAY_ICON)
                 {
                     switch ((uint)lParam.Value)
                     {
@@ -405,7 +405,7 @@ public sealed partial class MainWindow : Window,
                 hWnd = _hwnd,
                 uID = MY_NOTIFY_ID,
                 uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP,
-                uCallbackMessage = WM_TRAYICON,
+                uCallbackMessage = WM_TRAY_ICON,
                 hIcon = (HICON)_largeIcon.DangerousGetHandle(),
                 szTip = "Windows Command Palette",
             };
