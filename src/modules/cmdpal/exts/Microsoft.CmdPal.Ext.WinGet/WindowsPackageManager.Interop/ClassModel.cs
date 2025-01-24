@@ -22,7 +22,7 @@ internal sealed class ClassModel
     public Type ProjectedClassType { get; init; }
 
     /// <summary>
-    /// Gets the clsids for each context (e.g. OutOfProcProd, OutOfProcDev)
+    /// Gets the Clsids for each context (e.g. OutOfProcProd, OutOfProcDev)
     /// </summary>
     public IReadOnlyDictionary<ClsidContext, Guid> Clsids { get; init; }
 

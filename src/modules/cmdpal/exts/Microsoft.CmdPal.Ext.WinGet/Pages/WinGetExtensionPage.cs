@@ -14,7 +14,6 @@ using Microsoft.CmdPal.Ext.WinGet.Pages;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.Management.Deployment;
-using Windows.Foundation;
 
 namespace Microsoft.CmdPal.Ext.WinGet;
 
@@ -202,11 +201,11 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
 
             ct.ThrowIfCancellationRequested();
 
-            // Find the packages with the filters
-            var request = catalog.FindPackagesAsync(opts);
-            Debug.WriteLine($"    immediately after FindPackagesAsync ({query})");
-            var cancellable = AsTaskWithCancellation(request, ct, searchDebugText);
-            var searchResults = await cancellable;
+            // BODGY, re: microsoft/winget-cli#5151
+            // FindPackagesAsync isn't actually async.
+            var internalSearchTask = Task.Run(() => catalog.FindPackages(opts), ct);
+            var searchResults = await internalSearchTask;
+
             Debug.WriteLine($"    got results for ({query})");
             foreach (var match in searchResults.Matches.ToArray())
             {
@@ -229,52 +228,6 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
     }
 
     public void Dispose() => throw new NotImplementedException();
-
-    private static async Task<T> AsTaskWithCancellation<T>(
-        IAsyncOperation<T> operation,
-        CancellationToken cancellationToken,
-        string label = "")
-    {
-        // Create a TaskCompletionSource to wrap the IAsyncOperation
-        var tcs = new TaskCompletionSource<T>();
-
-        // Attach completion and error handlers
-        operation.Completed = (op, status) =>
-        {
-            switch (status)
-            {
-                case AsyncStatus.Completed:
-                    tcs.TrySetResult(op.GetResults());
-                    break;
-                case AsyncStatus.Error:
-                    tcs.TrySetException(op.ErrorCode);
-                    break;
-                case AsyncStatus.Canceled:
-                    tcs.TrySetCanceled();
-                    break;
-            }
-        };
-
-        // Handle cancellation from the CancellationToken
-        using (cancellationToken.Register(() =>
-        {
-            try
-            {
-                Debug.WriteLine($"    Cancelling {label} via token...");
-                operation.Cancel();
-            }
-            catch
-            {
-                // Ignore if cancel fails
-            }
-        }))
-        {
-            Debug.WriteLine($"    starting await in AsTaskWithCancellation({label})...");
-
-            // Await the TaskCompletionSource's task
-            return await tcs.Task;
-        }
-    }
 }
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "I just like it")]

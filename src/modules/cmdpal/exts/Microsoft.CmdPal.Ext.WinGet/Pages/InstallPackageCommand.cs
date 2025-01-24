@@ -93,8 +93,8 @@ public partial class InstallPackageCommand : InvokableCommand
         return CommandResult.KeepOpen();
     }
 
-    private async void TryDoInstallOperation<TOperation, TProgress>(
-        IAsyncOperationWithProgress<TOperation, TProgress> action)
+    private async void TryDoInstallOperation<T_Operation, T_Progress>(
+        IAsyncOperationWithProgress<T_Operation, T_Progress> action)
     {
         try
         {

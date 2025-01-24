@@ -24,7 +24,6 @@ public partial class InstallPackageListItem : ListItem
     {
         _package = package;
 
-        // _installCommand = (InstallPackageCommand)Command!;
         var version = _package.DefaultInstallVersion;
         var versionText = version.Version;
         var versionTagText = versionText == "Unknown" && version.PackageCatalog.Info.Id == "StoreEdgeFD" ? "msstore" : versionText;
