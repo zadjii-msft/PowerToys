@@ -21,6 +21,7 @@ using Windows.UI.WindowManagement;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
+using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.WindowsAndMessaging;
 using WinRT;
 
@@ -35,6 +36,17 @@ public sealed partial class MainWindow : Window,
     private readonly WNDPROC? _originalWndProc;
     private readonly List<HotkeySettings> _hotkeys = new();
 
+    private const uint MYNOTIFYID = 1000;
+
+#pragma warning disable SA1310 // Field names should not contain underscore
+    private const uint WM_TRAYICON = global::Windows.Win32.PInvoke.WM_USER + 1;
+#pragma warning disable SA1306 // Field names should begin with lower-case letter
+    private readonly uint WM_TASKBAR_RESTART;
+#pragma warning restore SA1306 // Field names should begin with lower-case letter
+#pragma warning restore SA1310 // Field names should not contain underscore
+    private NOTIFYICONDATAW? _trayIconData;
+    private bool _createdIcon;
+
     private DesktopAcrylicController? _acrylicController;
     private SystemBackdropConfiguration? _configurationSource;
 
@@ -44,6 +56,7 @@ public sealed partial class MainWindow : Window,
 
         _hwnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
         CommandPaletteHost.Instance.SetHostHwnd((ulong)_hwnd.Value);
+        WM_TASKBAR_RESTART = PInvoke.RegisterWindowMessage("TaskbarCreated");
 
         PositionCentered();
         SetAcrylic();
@@ -67,6 +80,7 @@ public sealed partial class MainWindow : Window,
         _hotkeyWndProc = HotKeyPrc;
         var hotKeyPrcPointer = Marshal.GetFunctionPointerForDelegate(_hotkeyWndProc);
         _originalWndProc = Marshal.GetDelegateForFunctionPointer<WNDPROC>(PInvoke.SetWindowLongPtr(_hwnd, WINDOW_LONG_PTR_INDEX.GWL_WNDPROC, hotKeyPrcPointer));
+        AddNotificationIcon();
 
         // Load our settings, and then also wire up a settings changed handler
         HotReloadSettings();
@@ -166,6 +180,8 @@ public sealed partial class MainWindow : Window,
         var serviceProvider = App.Current.Services;
         var extensionService = serviceProvider.GetService<IExtensionService>()!;
         extensionService.SignalStopExtensionsAsync();
+
+        RemoveNotificationIcon();
 
         // WinUI bug is causing a crash on shutdown when FailFastOnErrors is set to true (#51773592).
         // Workaround by turning it off before shutdown.
@@ -308,23 +324,106 @@ public sealed partial class MainWindow : Window,
         WPARAM wParam,
         LPARAM lParam)
     {
-        if (uMsg == WM_HOTKEY)
+        switch (uMsg)
         {
-            // Note to future us: the wParam will have the index of the hotkey we registered.
-            // We can use that in the future to differentiate the hotkeys we've pressed
-            // so that we can bind hotkeys to individual commands
-            if (!this.Visible)
-            {
-                Summon();
-            }
-            else
-            {
-                PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_HIDE);
-            }
+            case WM_HOTKEY:
+                {
+                    // Note to future us: the wParam will have the index of the hotkey we registered.
+                    // We can use that in the future to differentiate the hotkeys we've pressed
+                    // so that we can bind hotkeys to individual commands
+                    if (!this.Visible)
+                    {
+                        Summon();
+                    }
+                    else
+                    {
+                        PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_HIDE);
+                    }
 
-            return (LRESULT)IntPtr.Zero;
+                    return (LRESULT)IntPtr.Zero;
+                }
+
+            case PInvoke.WM_WINDOWPOSCHANGING:
+                {
+                    if (!_createdIcon)
+                    {
+                        AddNotificationIcon();
+                    }
+                }
+
+                break;
+            default:
+                // WM_TASKBAR_RESTART isn't a compile-time constant, so we can't
+                // use it in a case label
+                if (uMsg == WM_TASKBAR_RESTART)
+                {
+                    AddNotificationIcon();
+                }
+
+                break;
         }
 
         return PInvoke.CallWindowProc(_originalWndProc, hwnd, uMsg, wParam, lParam);
+    }
+
+    private void AddNotificationIcon()
+    {
+        if (_trayIconData == null)
+        {
+            const int IDI_APPLICATION = 0x7F00;
+            var hInst = PInvoke.GetModuleHandle((PCWSTR)null);
+            unsafe
+            {
+                var ptr = (IntPtr)IDI_APPLICATION;
+                var ch = (char*)ptr;
+                var f = (PCWSTR)ch;
+
+                var large = GetAppIconHandle();
+                _trayIconData = new NOTIFYICONDATAW()
+                {
+                    cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW)),
+                    hWnd = _hwnd,
+                    uID = MYNOTIFYID,
+                    uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP,
+                    uCallbackMessage = WM_TRAYICON,
+
+                    // hIcon = PInvoke.LoadIcon((HINSTANCE)nint.Zero, f),
+                    // hIcon = PInvoke.LoadIcon(hInst, null),
+                    hIcon = (HICON)large.DangerousGetHandle(),
+                    szTip = "Windows Command Palette",
+                };
+            }
+        }
+
+        var d = (NOTIFYICONDATAW)_trayIconData;
+
+        // Add the notification icon
+        if (PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_ADD, in d))
+        {
+            _createdIcon = true;
+        }
+    }
+
+    private void RemoveNotificationIcon()
+    {
+        if (_trayIconData != null && _createdIcon)
+        {
+            var d = (NOTIFYICONDATAW)_trayIconData;
+            if (PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_DELETE, in d))
+            {
+                _createdIcon = false;
+            }
+        }
+    }
+
+    private DestroyIconSafeHandle GetAppIconHandle()
+    {
+        var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+
+        // IntPtr[] largeIcon = new IntPtr[1];
+        DestroyIconSafeHandle largeIcon;
+        DestroyIconSafeHandle smallIcon;
+        PInvoke.ExtractIconEx(exePath, 0, out largeIcon, out smallIcon, 1);
+        return largeIcon;
     }
 }
