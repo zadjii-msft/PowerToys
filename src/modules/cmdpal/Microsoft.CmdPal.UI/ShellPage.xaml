@@ -65,7 +65,18 @@
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="DetailsSeparatorTemplate" x:DataType="viewModels:DetailsSeparatorViewModel">
-                <TextBlock Text="{x:Bind Key, Mode=OneWay}" />
+                <StackPanel Margin="0,8,8,0" Orientation="Vertical">
+                    <Border
+                        Margin="8,0,0,0"
+                        BorderBrush="{ThemeResource TextFillColorSecondaryBrush}"
+                        BorderThickness="0,0,0,2">
+                        <TextBlock
+                            Margin="-8,0,0,8"
+                            FontWeight="Bold"
+                            IsTextSelectionEnabled="True"
+                            Text="{x:Bind Key, Mode=OneWay}" />
+                    </Border>
+                </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="DetailsTagsTemplate" x:DataType="viewModels:DetailsTagsViewModel">
                 <StackPanel Margin="0,8,0,0" Orientation="Vertical">
