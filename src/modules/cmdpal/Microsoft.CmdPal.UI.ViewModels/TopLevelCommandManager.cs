@@ -207,9 +207,32 @@ public partial class TopLevelCommandManager : ObservableObject,
             }
         }
 
+        extensionService.OnExtensionAdded += ExtensionService_OnExtensionAddedAsync;
+
         IsLoading = false;
 
         return true;
+    }
+
+    private void ExtensionService_OnExtensionAddedAsync(IExtensionService sender, IEnumerable<IExtensionWrapper> extensions)
+    {
+        _ = Task.Run(async () =>
+        {
+            foreach (var extension in extensions)
+            {
+                try
+                {
+                    await extension.StartExtensionAsync();
+                    CommandProviderWrapper wrapper = new(extension);
+                    _extensionCommandProviders.Add(wrapper);
+                    await LoadTopLevelCommandsFromProvider(wrapper);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                }
+            }
+        });
     }
 
     public TopLevelCommandItemWrapper? LookupCommand(string id)

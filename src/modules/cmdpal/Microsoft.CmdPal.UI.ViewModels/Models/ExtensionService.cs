@@ -6,6 +6,7 @@ using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Extensions;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
+using Windows.Foundation;
 using Windows.Foundation.Collections;
 
 namespace Microsoft.CmdPal.UI.ViewModels.Models;
@@ -13,6 +14,8 @@ namespace Microsoft.CmdPal.UI.ViewModels.Models;
 public class ExtensionService : IExtensionService, IDisposable
 {
     public event EventHandler OnExtensionsChanged = (_, _) => { };
+
+    public event TypedEventHandler<IExtensionService, IEnumerable<IExtensionWrapper>>? OnExtensionAdded;
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly Lock _lock = new();
@@ -47,15 +50,38 @@ public class ExtensionService : IExtensionService, IDisposable
         {
             lock (_lock)
             {
-                var isCmdPalExtension = Task.Run(() =>
+                var isCmdPalExtensionResult = Task.Run(() =>
                 {
                     return IsValidCmdPalExtension(args.Package);
                 }).Result;
-
-                if (isCmdPalExtension)
+                var isExtension = isCmdPalExtensionResult.IsExtension;
+                var extension = isCmdPalExtensionResult.Extension;
+                if (isExtension && extension != null)
                 {
+                    Task.Run(async () =>
+                    {
+                        await _getInstalledExtensionsLock.WaitAsync();
+                        try
+                        {
+                            var wrappers = await CreateWrappersForExtension(extension);
+
+                            UpdateExtensionsListsFromWrappers(wrappers);
+
+                            OnExtensionAdded?.Invoke(this, wrappers);
+                        }
+                        finally
+                        {
+                            _getInstalledExtensionsLock.Release();
+                        }
+                    });
+
                     OnPackageChange(args.Package);
                 }
+
+                // if (isCmdPalExtension)
+                // {
+                //    OnPackageChange(args.Package);
+                // }
             }
         }
     }
@@ -84,12 +110,13 @@ public class ExtensionService : IExtensionService, IDisposable
         {
             lock (_lock)
             {
-                var isCmdPalExtension = Task.Run(() =>
+                var isCmdPalExtensionResult = Task.Run(() =>
                 {
                     return IsValidCmdPalExtension(args.TargetPackage);
                 }).Result;
 
-                if (isCmdPalExtension)
+                var isExtension = isCmdPalExtensionResult.IsExtension;
+                if (isExtension)
                 {
                     OnPackageChange(args.TargetPackage);
                 }
@@ -104,7 +131,7 @@ public class ExtensionService : IExtensionService, IDisposable
         OnExtensionsChanged.Invoke(this, EventArgs.Empty);
     }
 
-    private static async Task<bool> IsValidCmdPalExtension(Package package)
+    private static async Task<IsExtensionResult> IsValidCmdPalExtension(Package package)
     {
         var extensions = await AppExtensionCatalog.Open("com.microsoft.windows.commandpalette").FindAllAsync();
         foreach (var extension in extensions)
@@ -113,11 +140,11 @@ public class ExtensionService : IExtensionService, IDisposable
             {
                 var (cmdPalProvider, classId) = await GetCmdPalExtensionPropertiesAsync(extension);
 
-                return cmdPalProvider != null && classId.Count != 0;
+                return new(cmdPalProvider != null && classId.Count != 0, extension);
             }
         }
 
-        return false;
+        return new(false, null);
     }
 
     private static async Task<(IPropertySet? CmdPalProvider, List<string> ClassIds)> GetCmdPalExtensionPropertiesAsync(AppExtension extension)
@@ -160,50 +187,8 @@ public class ExtensionService : IExtensionService, IDisposable
                 var extensions = await GetInstalledAppExtensionsAsync();
                 foreach (var extension in extensions)
                 {
-                    var (cmdPalProvider, classIds) = await GetCmdPalExtensionPropertiesAsync(extension);
-
-                    if (cmdPalProvider == null || classIds.Count == 0)
-                    {
-                        continue;
-                    }
-
-                    foreach (var classId in classIds)
-                    {
-                        var extensionWrapper = new ExtensionWrapper(extension, classId);
-
-                        var supportedInterfaces = GetSubPropertySet(cmdPalProvider, "SupportedInterfaces");
-                        if (supportedInterfaces is not null)
-                        {
-                            foreach (var supportedInterface in supportedInterfaces)
-                            {
-                                ProviderType pt;
-                                if (Enum.TryParse(supportedInterface.Key, out pt))
-                                {
-                                    extensionWrapper.AddProviderType(pt);
-                                }
-                                else
-                                {
-                                    // TODO: throw warning or fire notification that extension declared unsupported extension interface
-                                    // https://github.com/microsoft/DevHome/issues/617
-                                }
-                            }
-                        }
-
-                        // var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                        var extensionUniqueId = extension.AppInfo.AppUserModelId + "!" + extension.Id;
-                        var isExtensionDisabled = false; // await localSettingsService.ReadSettingAsync<bool>(extensionUniqueId + "-ExtensionDisabled");
-
-                        _installedExtensions.Add(extensionWrapper);
-                        if (!isExtensionDisabled)
-                        {
-                            _enabledExtensions.Add(extensionWrapper);
-                        }
-
-                        // TelemetryFactory.Get<ITelemetry>().Log(
-                        //    "Extension_ReportInstalled",
-                        //    LogLevel.Critical,
-                        //    new ReportInstalledExtensionEvent(extensionUniqueId, isEnabled: !isExtensionDisabled));
-                    }
+                    var wrappers = await CreateWrappersForExtension(extension);
+                    UpdateExtensionsListsFromWrappers(wrappers);
                 }
             }
 
@@ -213,6 +198,71 @@ public class ExtensionService : IExtensionService, IDisposable
         {
             _getInstalledExtensionsLock.Release();
         }
+    }
+
+    private static void UpdateExtensionsListsFromWrappers(List<ExtensionWrapper> wrappers)
+    {
+        foreach (var extensionWrapper in wrappers)
+        {
+            // var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+            var extensionUniqueId = extensionWrapper.ExtensionUniqueId;
+            var isExtensionDisabled = false; // await localSettingsService.ReadSettingAsync<bool>(extensionUniqueId + "-ExtensionDisabled");
+
+            _installedExtensions.Add(extensionWrapper);
+            if (!isExtensionDisabled)
+            {
+                _enabledExtensions.Add(extensionWrapper);
+            }
+
+            // TelemetryFactory.Get<ITelemetry>().Log(
+            //    "Extension_ReportInstalled",
+            //    LogLevel.Critical,
+            //    new ReportInstalledExtensionEvent(extensionUniqueId, isEnabled: !isExtensionDisabled));
+        }
+    }
+
+    private static async Task<List<ExtensionWrapper>> CreateWrappersForExtension(AppExtension extension)
+    {
+        var (cmdPalProvider, classIds) = await GetCmdPalExtensionPropertiesAsync(extension);
+
+        if (cmdPalProvider == null || classIds.Count == 0)
+        {
+            return [];
+        }
+
+        List<ExtensionWrapper> wrappers = [];
+        foreach (var classId in classIds)
+        {
+            var extensionWrapper = CreateExtensionWrapper(extension, cmdPalProvider, classId);
+            wrappers.Add(extensionWrapper);
+        }
+
+        return wrappers;
+    }
+
+    private static ExtensionWrapper CreateExtensionWrapper(AppExtension extension, IPropertySet cmdPalProvider, string classId)
+    {
+        var extensionWrapper = new ExtensionWrapper(extension, classId);
+
+        var supportedInterfaces = GetSubPropertySet(cmdPalProvider, "SupportedInterfaces");
+        if (supportedInterfaces is not null)
+        {
+            foreach (var supportedInterface in supportedInterfaces)
+            {
+                ProviderType pt;
+                if (Enum.TryParse(supportedInterface.Key, out pt))
+                {
+                    extensionWrapper.AddProviderType(pt);
+                }
+                else
+                {
+                    // TODO: throw warning or fire notification that extension declared unsupported extension interface
+                    // https://github.com/microsoft/DevHome/issues/617
+                }
+            }
+        }
+
+        return extensionWrapper;
     }
 
     public IExtensionWrapper? GetInstalledExtension(string extensionUniqueId)
@@ -347,4 +397,8 @@ public class ExtensionService : IExtensionService, IDisposable
     //    await _localSettingsService.SaveSettingAsync(extension.ExtensionUniqueId + "-ExtensionDisabled", true);
     //    return true;
     //} */
+}
+
+internal record struct IsExtensionResult(bool IsExtension, AppExtension? Extension)
+{
 }

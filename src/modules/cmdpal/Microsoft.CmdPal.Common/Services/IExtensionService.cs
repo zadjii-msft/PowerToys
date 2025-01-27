@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.Common.Services;
 
@@ -20,6 +21,8 @@ public interface IExtensionService
     Task SignalStopExtensionsAsync();
 
     public event EventHandler OnExtensionsChanged;
+
+    public event TypedEventHandler<IExtensionService, IEnumerable<IExtensionWrapper>>? OnExtensionAdded;
 
     public void EnableExtension(string extensionUniqueId);
 
