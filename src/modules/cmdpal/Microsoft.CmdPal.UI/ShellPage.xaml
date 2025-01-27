@@ -52,11 +52,13 @@
                     <TextBlock
                         FontWeight="Bold"
                         IsTextSelectionEnabled="True"
-                        Text="{x:Bind Key, Mode=OneWay}" />
+                        Text="{x:Bind Key, Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
                     <TextBlock
                         Margin="8,8,0,0"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Text, Mode=OneWay}"
+                        TextWrapping="WrapWholeWords"
                         Visibility="{x:Bind IsText, Mode=OneWay}" />
                     <HyperlinkButton
                         Content="{x:Bind Text, Mode=OneWay}"
@@ -74,7 +76,8 @@
                             Margin="-8,0,0,8"
                             FontWeight="Bold"
                             IsTextSelectionEnabled="True"
-                            Text="{x:Bind Key, Mode=OneWay}" />
+                            Text="{x:Bind Key, Mode=OneWay}"
+                            TextWrapping="WrapWholeWords" />
                     </Border>
                 </StackPanel>
             </DataTemplate>
@@ -83,7 +86,8 @@
                     <TextBlock
                         FontWeight="Bold"
                         IsTextSelectionEnabled="True"
-                        Text="{x:Bind Key, Mode=OneWay}" />
+                        Text="{x:Bind Key, Mode=OneWay}"
+                        TextWrapping="WrapWholeWords" />
                     <ItemsRepeater
                         Grid.Column="2"
                         Margin="8,8,0,0"
