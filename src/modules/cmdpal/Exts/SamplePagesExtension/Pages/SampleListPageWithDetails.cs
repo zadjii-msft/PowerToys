@@ -116,7 +116,7 @@ internal sealed partial class SampleListPageWithDetails : ListPage
                                     new Tag("Colored backgrounds") { Background = ColorHelpers.FromRgb(0, 0, 255) },
                                     new Tag("Colored everything") { Foreground = ColorHelpers.FromRgb(255, 255, 0), Background = ColorHelpers.FromRgb(0, 0, 255) },
                                     new Tag("Icons too") { Icon = new("\uE735"), Foreground = ColorHelpers.FromRgb(255, 255, 0) },
-                                    new Tag() { Icon = new("https://i.kym-cdn.com/entries/icons/original/000/026/561/car.jpg") },
+                                    new Tag() { Icon = new("https://i.imgur.com/t9qgDTM.png") },
                                     new Tag("this") { Foreground = RandomColor(), Background = RandomColor() },
                                     new Tag("baby") { Foreground = RandomColor(), Background = RandomColor() },
                                     new Tag("can") { Foreground = RandomColor(), Background = RandomColor() },
