@@ -28,7 +28,7 @@ public partial class WinGetExtensionCommandsProvider : CommandProvider
          {
             Title = "Install Command Palette extensions",
             Subtitle = "Search for extensions on WinGet",
-            Icon = new("\uE74C"),
+            Icon = new("\uEA86"), // Puzzle
          },
 
         new ListItem(
@@ -37,8 +37,6 @@ public partial class WinGetExtensionCommandsProvider : CommandProvider
             Title = "Search for extensions on the Store",
             Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\ms-store.png")),
          },
-
-        // new ListItem(new InstalledPackagesPage())
     ];
 
     public override ICommandItem[] TopLevelCommands() => _commands;
