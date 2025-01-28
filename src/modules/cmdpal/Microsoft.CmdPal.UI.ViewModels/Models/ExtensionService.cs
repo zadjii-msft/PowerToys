@@ -13,8 +13,6 @@ namespace Microsoft.CmdPal.UI.ViewModels.Models;
 
 public class ExtensionService : IExtensionService, IDisposable
 {
-    public event EventHandler OnExtensionsChanged = (_, _) => { };
-
     public event TypedEventHandler<IExtensionService, IEnumerable<IExtensionWrapper>>? OnExtensionAdded;
 
     public event TypedEventHandler<IExtensionService, IEnumerable<IExtensionWrapper>>? OnExtensionRemoved;
@@ -52,38 +50,7 @@ public class ExtensionService : IExtensionService, IDisposable
         {
             lock (_lock)
             {
-                var isCmdPalExtensionResult = Task.Run(() =>
-                {
-                    return IsValidCmdPalExtension(args.Package);
-                }).Result;
-                var isExtension = isCmdPalExtensionResult.IsExtension;
-                var extension = isCmdPalExtensionResult.Extension;
-                if (isExtension && extension != null)
-                {
-                    Task.Run(async () =>
-                    {
-                        await _getInstalledExtensionsLock.WaitAsync();
-                        try
-                        {
-                            var wrappers = await CreateWrappersForExtension(extension);
-
-                            UpdateExtensionsListsFromWrappers(wrappers);
-
-                            OnExtensionAdded?.Invoke(this, wrappers);
-                        }
-                        finally
-                        {
-                            _getInstalledExtensionsLock.Release();
-                        }
-                    });
-
-                    // OnPackageChange(args.Package);
-                }
-
-                // if (isCmdPalExtension)
-                // {
-                //    OnPackageChange(args.Package);
-                // }
+                InstallPackageUnderLock(args.Package);
             }
         }
     }
@@ -94,22 +61,7 @@ public class ExtensionService : IExtensionService, IDisposable
         {
             lock (_lock)
             {
-                List<IExtensionWrapper> removedExtensions = [];
-                foreach (var extension in _installedExtensions)
-                {
-                    if (extension.PackageFullName == args.Package.Id.FullName)
-                    {
-                        // OnPackageChange(args.Package);
-                        removedExtensions.Add(extension);
-
-                        // _installedExtensions.Remove(extension);
-
-                        // break;
-                    }
-                }
-
-                OnExtensionRemoved?.Invoke(this, removedExtensions);
-                _installedExtensions.RemoveAll(i => removedExtensions.Contains(i));
+                UninstallPackageUnderLock(args.Package);
             }
         }
     }
@@ -120,26 +72,71 @@ public class ExtensionService : IExtensionService, IDisposable
         {
             lock (_lock)
             {
-                var isCmdPalExtensionResult = Task.Run(() =>
-                {
-                    return IsValidCmdPalExtension(args.TargetPackage);
-                }).Result;
+                // Get any extension providers that we previously had from this app
+                UninstallPackageUnderLock(args.TargetPackage);
 
-                var isExtension = isCmdPalExtensionResult.IsExtension;
-                if (isExtension)
-                {
-                    // OnPackageChange(args.TargetPackage);
-                }
+                // then add the new ones.
+                InstallPackageUnderLock(args.TargetPackage);
             }
         }
     }
 
-    // private void OnPackageChange(Package package)
-    // {
-    //    _installedExtensions.Clear();
-    //    _enabledExtensions.Clear();
-    //    OnExtensionsChanged.Invoke(this, EventArgs.Empty);
-    // }
+    private void InstallPackageUnderLock(Package package)
+    {
+        var isCmdPalExtensionResult = Task.Run(() =>
+        {
+            return IsValidCmdPalExtension(package);
+        }).Result;
+        var isExtension = isCmdPalExtensionResult.IsExtension;
+        var extension = isCmdPalExtensionResult.Extension;
+        if (isExtension && extension != null)
+        {
+            Task.Run(async () =>
+            {
+                await _getInstalledExtensionsLock.WaitAsync();
+                try
+                {
+                    var wrappers = await CreateWrappersForExtension(extension);
+
+                    UpdateExtensionsListsFromWrappers(wrappers);
+
+                    OnExtensionAdded?.Invoke(this, wrappers);
+                }
+                finally
+                {
+                    _getInstalledExtensionsLock.Release();
+                }
+            });
+        }
+    }
+
+    private void UninstallPackageUnderLock(Package package)
+    {
+        List<IExtensionWrapper> removedExtensions = [];
+        foreach (var extension in _installedExtensions)
+        {
+            if (extension.PackageFullName == package.Id.FullName)
+            {
+                removedExtensions.Add(extension);
+            }
+        }
+
+        Task.Run(async () =>
+        {
+            await _getInstalledExtensionsLock.WaitAsync();
+            try
+            {
+                _installedExtensions.RemoveAll(i => removedExtensions.Contains(i));
+
+                OnExtensionRemoved?.Invoke(this, removedExtensions);
+            }
+            finally
+            {
+                _getInstalledExtensionsLock.Release();
+            }
+        });
+    }
+
     private static async Task<IsExtensionResult> IsValidCmdPalExtension(Package package)
     {
         var extensions = await AppExtensionCatalog.Open("com.microsoft.windows.commandpalette").FindAllAsync();
