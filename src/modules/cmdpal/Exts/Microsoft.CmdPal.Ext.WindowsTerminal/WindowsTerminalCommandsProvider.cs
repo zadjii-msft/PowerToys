@@ -18,8 +18,8 @@ public partial class WindowsTerminalCommandsProvider : CommandProvider
     private readonly SettingsManager _settingsManager = new();
 
     public static IconInfo TerminalIcon { get; } = new(
-        new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WindowsTerminal.light.png")),
-        new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WindowsTerminal.dark.png")));
+        new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\WindowsTerminal.light.png")),
+        new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\WindowsTerminal.dark.png")));
 
     public WindowsTerminalCommandsProvider()
     {
