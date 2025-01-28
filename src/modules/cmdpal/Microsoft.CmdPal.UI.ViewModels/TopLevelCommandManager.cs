@@ -199,6 +199,7 @@ public partial class TopLevelCommandManager : ObservableObject,
         var extensionService = _serviceProvider.GetService<IExtensionService>()!;
 
         extensionService.OnExtensionAdded -= ExtensionService_OnExtensionAddedAsync;
+        extensionService.OnExtensionRemoved -= ExtensionService_OnExtensionRemoved;
 
         var extensions = await extensionService.GetInstalledExtensionsAsync();
         _extensionCommandProviders.Clear();
@@ -218,10 +219,52 @@ public partial class TopLevelCommandManager : ObservableObject,
         }
 
         extensionService.OnExtensionAdded += ExtensionService_OnExtensionAddedAsync;
+        extensionService.OnExtensionRemoved += ExtensionService_OnExtensionRemoved;
 
         IsLoading = false;
 
         return true;
+    }
+
+    private void ExtensionService_OnExtensionRemoved(IExtensionService sender, IEnumerable<IExtensionWrapper> extensions)
+    {
+        _ = Task.Run(
+            async () =>
+            {
+                List<TopLevelCommandItemWrapper> commandsToRemove = [];
+                lock (TopLevelCommands)
+                {
+                    foreach (var extension in extensions)
+                    {
+                        foreach (var command in TopLevelCommands)
+                        {
+                            var host = command.ExtensionHost;
+                            if (host?.Extension == extension)
+                            {
+                                commandsToRemove.Add(command);
+                            }
+                        }
+                    }
+                }
+
+                await Task.Factory.StartNew(
+                () =>
+                {
+                    lock (TopLevelCommands)
+                    {
+                        if (commandsToRemove.Count != 0)
+                        {
+                            foreach (var deleted in commandsToRemove)
+                            {
+                                TopLevelCommands.Remove(deleted);
+                            }
+                        }
+                    }
+                },
+                CancellationToken.None,
+                TaskCreationOptions.None,
+                _taskScheduler);
+            });
     }
 
     private void ExtensionService_OnExtensionAddedAsync(IExtensionService sender, IEnumerable<IExtensionWrapper> extensions)

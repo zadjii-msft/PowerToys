@@ -24,6 +24,8 @@ public interface IExtensionService
 
     public event TypedEventHandler<IExtensionService, IEnumerable<IExtensionWrapper>>? OnExtensionAdded;
 
+    public event TypedEventHandler<IExtensionService, IEnumerable<IExtensionWrapper>>? OnExtensionRemoved;
+
     public void EnableExtension(string extensionUniqueId);
 
     public void DisableExtension(string extensionUniqueId);
