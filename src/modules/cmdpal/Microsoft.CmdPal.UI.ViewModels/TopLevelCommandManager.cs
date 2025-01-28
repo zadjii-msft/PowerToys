@@ -66,7 +66,10 @@ public partial class TopLevelCommandManager : ObservableObject,
             {
                 ExtensionHost = commandProvider.ExtensionHost,
             };
-            TopLevelCommands.Add(wrapper);
+            lock (TopLevelCommands)
+            {
+                TopLevelCommands.Add(wrapper);
+            }
         };
 
         await Task.Factory.StartNew(
@@ -174,7 +177,11 @@ public partial class TopLevelCommandManager : ObservableObject,
         IsLoading = true;
         var extensionService = _serviceProvider.GetService<IExtensionService>()!;
         await extensionService.SignalStopExtensionsAsync();
-        TopLevelCommands.Clear();
+        lock (TopLevelCommands)
+        {
+            TopLevelCommands.Clear();
+        }
+
         await LoadBuiltinsAsync();
         _ = Task.Run(LoadExtensionsAsync);
     }
@@ -190,6 +197,9 @@ public partial class TopLevelCommandManager : ObservableObject,
     public async Task<bool> LoadExtensionsAsync()
     {
         var extensionService = _serviceProvider.GetService<IExtensionService>()!;
+
+        extensionService.OnExtensionAdded -= ExtensionService_OnExtensionAddedAsync;
+
         var extensions = await extensionService.GetInstalledExtensionsAsync();
         _extensionCommandProviders.Clear();
         foreach (var extension in extensions)
@@ -237,11 +247,14 @@ public partial class TopLevelCommandManager : ObservableObject,
 
     public TopLevelCommandItemWrapper? LookupCommand(string id)
     {
-        foreach (var command in TopLevelCommands)
+        lock (TopLevelCommands)
         {
-            if (command.Id == id)
+            foreach (var command in TopLevelCommands)
             {
-                return command;
+                if (command.Id == id)
+                {
+                    return command;
+                }
             }
         }
 

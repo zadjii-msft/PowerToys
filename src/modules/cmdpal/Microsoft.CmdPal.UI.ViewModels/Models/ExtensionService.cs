@@ -17,6 +17,8 @@ public class ExtensionService : IExtensionService, IDisposable
 
     public event TypedEventHandler<IExtensionService, IEnumerable<IExtensionWrapper>>? OnExtensionAdded;
 
+    public event TypedEventHandler<IExtensionService, IEnumerable<IExtensionWrapper>>? OnExtensionRemoved;
+
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly Lock _lock = new();
     private readonly SemaphoreSlim _getInstalledExtensionsLock = new(1, 1);
@@ -75,7 +77,7 @@ public class ExtensionService : IExtensionService, IDisposable
                         }
                     });
 
-                    OnPackageChange(args.Package);
+                    // OnPackageChange(args.Package);
                 }
 
                 // if (isCmdPalExtension)
@@ -92,14 +94,22 @@ public class ExtensionService : IExtensionService, IDisposable
         {
             lock (_lock)
             {
+                List<IExtensionWrapper> removedExtensions = [];
                 foreach (var extension in _installedExtensions)
                 {
                     if (extension.PackageFullName == args.Package.Id.FullName)
                     {
-                        OnPackageChange(args.Package);
-                        break;
+                        // OnPackageChange(args.Package);
+                        removedExtensions.Add(extension);
+
+                        // _installedExtensions.Remove(extension);
+
+                        // break;
                     }
                 }
+
+                OnExtensionRemoved?.Invoke(this, removedExtensions);
+                _installedExtensions.RemoveAll(i => removedExtensions.Contains(i));
             }
         }
     }
@@ -118,19 +128,18 @@ public class ExtensionService : IExtensionService, IDisposable
                 var isExtension = isCmdPalExtensionResult.IsExtension;
                 if (isExtension)
                 {
-                    OnPackageChange(args.TargetPackage);
+                    // OnPackageChange(args.TargetPackage);
                 }
             }
         }
     }
 
-    private void OnPackageChange(Package package)
-    {
-        _installedExtensions.Clear();
-        _enabledExtensions.Clear();
-        OnExtensionsChanged.Invoke(this, EventArgs.Empty);
-    }
-
+    // private void OnPackageChange(Package package)
+    // {
+    //    _installedExtensions.Clear();
+    //    _enabledExtensions.Clear();
+    //    OnExtensionsChanged.Invoke(this, EventArgs.Empty);
+    // }
     private static async Task<IsExtensionResult> IsValidCmdPalExtension(Package package)
     {
         var extensions = await AppExtensionCatalog.Open("com.microsoft.windows.commandpalette").FindAllAsync();
