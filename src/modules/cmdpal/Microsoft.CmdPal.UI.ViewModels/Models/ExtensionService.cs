@@ -91,6 +91,8 @@ public class ExtensionService : IExtensionService, IDisposable
         var extension = isCmdPalExtensionResult.Extension;
         if (isExtension && extension != null)
         {
+            CommandPaletteHost.Instance.DebugLog($"Installed new extension app {extension.DisplayName}");
+
             Task.Run(async () =>
             {
                 await _getInstalledExtensionsLock.WaitAsync();
@@ -117,6 +119,8 @@ public class ExtensionService : IExtensionService, IDisposable
         {
             if (extension.PackageFullName == package.Id.FullName)
             {
+                CommandPaletteHost.Instance.DebugLog($"Uninstalled extension app {extension.PackageDisplayName}");
+
                 removedExtensions.Add(extension);
             }
         }
@@ -262,8 +266,8 @@ public class ExtensionService : IExtensionService, IDisposable
                 }
                 else
                 {
-                    // TODO: throw warning or fire notification that extension declared unsupported extension interface
-                    // https://github.com/microsoft/DevHome/issues/617
+                    // log warning  that extension declared unsupported extension interface
+                    CommandPaletteHost.Instance.DebugLog($"Extension {extension.DisplayName} declared an unsupported interface: {supportedInterface.Key}");
                 }
             }
         }
