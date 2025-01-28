@@ -22,7 +22,6 @@ public partial class MainListPage : DynamicListPage,
 {
     private readonly IServiceProvider _serviceProvider;
 
-    // private readonly ObservableCollection<TopLevelCommandItemWrapper> _commands;
     private readonly TopLevelCommandManager _tlcManager;
     private IEnumerable<IListItem>? _filteredItems;
 
@@ -37,9 +36,6 @@ public partial class MainListPage : DynamicListPage,
 
         _tlcManager = _serviceProvider.GetService<TopLevelCommandManager>()!;
         _tlcManager.PropertyChanged += TlcManager_PropertyChanged;
-
-        // reference the TLC collection directly... maybe? TODO is this a good idea ot a terrible one?
-        // _commands = tlcManager.TopLevelCommands;
         _tlcManager.TopLevelCommands.CollectionChanged += Commands_CollectionChanged;
 
         WeakReferenceMessenger.Default.Register<ClearSearchMessage>(this);
@@ -128,7 +124,6 @@ public partial class MainListPage : DynamicListPage,
             // with a list of all our commands & apps.
             if (_filteredItems == null)
             {
-                // IEnumerable<IListItem> commands = _commands;
                 IEnumerable<IListItem> apps = AllAppsCommandProvider.Page.GetItems();
                 _filteredItems = commands.Concat(apps);
             }
