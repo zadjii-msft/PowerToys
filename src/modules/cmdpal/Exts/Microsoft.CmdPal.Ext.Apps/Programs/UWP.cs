@@ -7,8 +7,11 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Xml.Linq;
+using Microsoft.CmdPal.Ext.Apps.Utils;
 using Windows.Win32;
+using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
+using static Microsoft.CmdPal.Ext.Apps.Utils.Native;
 
 namespace Microsoft.CmdPal.Ext.Apps.Programs;
 
@@ -53,7 +56,7 @@ public partial class UWP
     public void InitializeAppInfo(string installedLocation)
     {
         Location = installedLocation;
-        LocationLocalized = installedLocation; // Main.ShellLocalizationHelper.GetLocalizedPath(installedLocation);
+        LocationLocalized = ShellLocalization.Instance.GetLocalizedPath(installedLocation);
         var path = Path.Combine(installedLocation, "AppxManifest.xml");
 
         var namespaces = XmlNamespaces(path);
@@ -61,8 +64,7 @@ public partial class UWP
 
         const uint noAttribute = 0x80;
 
-        // const STGM exclusiveRead = STGM.READ;
-        uint access = 0; // STGM.READ
+        var access = (uint)STGM.READ;
         var hResult = PInvoke.SHCreateStreamOnFileEx(path, access, noAttribute, false, null, out IStream stream);
 
         // S_OK
@@ -142,7 +144,9 @@ public partial class UWP
                 return u.Apps;
             });
 
-            var updatedListWithoutDisabledApps = applications.Select(x => x);
+            var updatedListWithoutDisabledApps = applications
+            .Where(t1 => AllAppsSettings.Instance.DisabledProgramSources.All(x => x.UniqueIdentifier != t1.UniqueIdentifier))
+            .Select(x => x);
 
             return updatedListWithoutDisabledApps.ToArray();
         }

@@ -4,12 +4,13 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.CmdPal.Ext.Apps.Programs;
 
-namespace Microsoft.CmdPal.Ext.Apps.Programs;
+namespace Microsoft.CmdPal.Ext.Apps;
 
 public sealed class AppCache
 {
-    private readonly IList<Win32Program> _win32s = Win32Program.All();
+    private readonly IList<Win32Program> _win32s = Win32Program.All(AllAppsSettings.Instance);
     private readonly IList<UWPApplication> _uwps = UWP.All();
 
     public IList<Win32Program> Win32s => _win32s;

@@ -4,9 +4,10 @@
 
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
-namespace Microsoft.CmdPal.Ext.Apps.Programs;
+namespace Microsoft.CmdPal.Ext.Apps;
 
 internal sealed partial class AppCommand : InvokableCommand
 {
@@ -49,7 +50,7 @@ internal sealed partial class AppCommand : InvokableCommand
 
     internal async Task Launch()
     {
-        if (string.IsNullOrEmpty(_app.ExePath))
+        if (_app.IsPackaged)
         {
             await StartApp(_app.UserModelId);
         }

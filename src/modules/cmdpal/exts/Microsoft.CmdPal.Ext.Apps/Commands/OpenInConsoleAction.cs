@@ -1,0 +1,52 @@
+// Copyright (c) Microsoft Corporation
+// The Microsoft Corporation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Microsoft.CommandPalette.Extensions.Toolkit;
+
+namespace Microsoft.CmdPal.Ext.Apps.Commands;
+
+// NOTE this is pretty close to what we'd put in the SDK
+internal sealed partial class OpenInConsoleCommand : InvokableCommand
+{
+    private readonly string _target;
+
+    public OpenInConsoleCommand(string target)
+    {
+        Name = "Open path in console";
+        Icon = new IconInfo("\ue838");
+
+        _target = target;
+    }
+
+    internal static async Task LaunchTarget(string t)
+    {
+        await Task.Run(() =>
+        {
+            try
+            {
+                var processStartInfo = new ProcessStartInfo
+                {
+                    WorkingDirectory = t,
+                    FileName = "cmd.exe",
+                };
+
+                Process.Start(processStartInfo);
+            }
+            catch (Exception)
+            {
+                // Log.Exception($"Failed to open {Name} in console, {e.Message}", e, GetType());
+            }
+        });
+    }
+
+    public override CommandResult Invoke()
+    {
+        _ = LaunchTarget(_target).ConfigureAwait(false);
+
+        return CommandResult.Dismiss();
+    }
+}
