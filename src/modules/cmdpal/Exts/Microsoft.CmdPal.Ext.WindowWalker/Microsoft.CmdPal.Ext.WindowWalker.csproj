@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\Common.Dotnet.CsWinRT.props" />
-  <Import Project="..\..\Microsoft.CmdPal.UI\CmdPal.pre.props" />
   <PropertyGroup>
-	  <Nullable>enable</Nullable>
+	<Nullable>enable</Nullable>
     <RootNamespace>Microsoft.CmdPal.Ext.WindowWalker</RootNamespace>
-    <!-- <OutputPath> set by CmdPal.pre.props -->
+    <OutputPath>$(SolutionDir)$(Platform)\$(Configuration)\WinUI3Apps\CmdPal</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
