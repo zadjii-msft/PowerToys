@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\Common.Dotnet.CsWinRT.props" />
+  <!-- <Import Project="..\..\..\..\Common.Dotnet.AotCompatibility.props" /> -->
 
   <PropertyGroup>
     <OutputPath>$(SolutionDir)$(Platform)\$(Configuration)\Microsoft.CmdPal.Extensions.Helpers</OutputPath>
@@ -42,4 +43,8 @@
   <ItemGroup>
     <Content Include="$(SolutionDir)$(Platform)\$(Configuration)\Microsoft.CmdPal.Extensions\Microsoft.CmdPal.Extensions.winmd" Link="Microsoft.CmdPal.Extensions.winmd" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+
+  <!-- <PropertyGroup>
+    <PublishTrimmed>True</PublishTrimmed>
+  </PropertyGroup> -->
 </Project>

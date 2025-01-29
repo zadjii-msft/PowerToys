@@ -4,14 +4,12 @@
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public class CommandResult : ICommandResult
+public partial class CommandResult : ICommandResult
 {
-    // TODO: is Args needed?
-    private ICommandResultArgs? _args;
     private CommandResultKind _kind = CommandResultKind.Dismiss;
 
     // TODO: is Args needed?
-    public ICommandResultArgs? Args => _args;
+    public ICommandResultArgs? Args { get; private set; }
 
     public CommandResultKind Kind => _kind;
 
@@ -28,7 +26,7 @@ public class CommandResult : ICommandResult
         return new CommandResult()
         {
             _kind = CommandResultKind.GoHome,
-            _args = null,
+            Args = null,
         };
     }
 
@@ -37,7 +35,7 @@ public class CommandResult : ICommandResult
         return new CommandResult()
         {
             _kind = CommandResultKind.GoBack,
-            _args = null,
+            Args = null,
         };
     }
 
@@ -46,7 +44,7 @@ public class CommandResult : ICommandResult
         return new CommandResult()
         {
             _kind = CommandResultKind.Hide,
-            _args = null,
+            Args = null,
         };
     }
 
@@ -55,7 +53,7 @@ public class CommandResult : ICommandResult
         return new CommandResult()
         {
             _kind = CommandResultKind.KeepOpen,
-            _args = null,
+            Args = null,
         };
     }
 }

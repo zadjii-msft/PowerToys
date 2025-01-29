@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.CmdPal.Extensions;
 
-public sealed class ExtensionServer : IDisposable
+public sealed partial class ExtensionServer : IDisposable
 {
-    private readonly HashSet<int> registrationCookies = new();
+    private readonly HashSet<int> registrationCookies = [];
 
     public void RegisterExtension<T>(Func<T> createExtension, bool restrictToMicrosoftExtensionHosts = false)
         where T : IExtension
@@ -45,14 +45,12 @@ public sealed class ExtensionServer : IDisposable
     }
 
 #pragma warning disable CA1822 // Mark members as static
-    public void Run()
-#pragma warning restore CA1822 // Mark members as static
-    {
+    public void Run() =>
+
         // TODO : We need to handle lifetime management of the server.
         // For details around ref counting and locking of out-of-proc COM servers, see
         // https://docs.microsoft.com/windows/win32/com/out-of-process-server-implementation-helpers
         Console.ReadLine();
-    }
 
     public void Dispose()
     {

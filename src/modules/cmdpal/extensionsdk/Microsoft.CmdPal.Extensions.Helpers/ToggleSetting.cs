@@ -4,6 +4,7 @@
 
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
@@ -32,7 +33,7 @@ public sealed class ToggleSetting : Setting<bool>
             { "title", Label },
             { "id", Key },
             { "label", Description },
-            { "value", JsonSerializer.Serialize(Value) },
+            { "value", JsonSerializer.Serialize(Value, ToggleDataContext.Default.Boolean) },
             { "isRequired", IsRequired },
             { "errorMessage", ErrorMessage },
         };
@@ -60,4 +61,11 @@ public sealed class ToggleSetting : Setting<bool>
         var adaptiveCardsUsesStringsForBools = Value ? "true" : "false";
         return $"\"{Key}\": \"{adaptiveCardsUsesStringsForBools}\"";
     }
+}
+
+[JsonSerializable(typeof(bool))]
+[JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "Just used here")]
+public partial class ToggleDataContext : JsonSerializerContext
+{
 }

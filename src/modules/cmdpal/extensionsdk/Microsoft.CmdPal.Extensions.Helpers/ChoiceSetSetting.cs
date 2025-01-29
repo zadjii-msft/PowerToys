@@ -5,17 +5,18 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using static Microsoft.CmdPal.Extensions.Helpers.ChoiceSetSetting;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
 public sealed class ChoiceSetSetting : Setting<string>
 {
-    public sealed class Choice
+    public partial class Choice
     {
-        [JsonPropertyName("value")]
+        // [JsonPropertyName("value")]
         public string Value { get; set; }
 
-        [JsonPropertyName("title")]
+        // [JsonPropertyName("title")]
         public string Title { get; set; }
 
         public Choice(string title, string value)
@@ -25,12 +26,17 @@ public sealed class ChoiceSetSetting : Setting<string>
         }
     }
 
+    // [JsonSourceGenerationOptions(WriteIndented = true)]
+    // [JsonSerializable(typeof(Choice))]
+    // internal sealed partial class SourceGenerationContext : JsonSerializerContext
+    // {
+    // }
     public List<Choice> Choices { get; set; }
 
     private ChoiceSetSetting()
         : base()
     {
-        Choices = new();
+        Choices = [];
     }
 
     public ChoiceSetSetting(string key, List<Choice> choices)
@@ -60,10 +66,7 @@ public sealed class ChoiceSetSetting : Setting<string>
         };
     }
 
-    public static ChoiceSetSetting LoadFromJson(JsonObject jsonObject)
-    {
-        return new ChoiceSetSetting() { Value = jsonObject["value"]?.GetValue<string>() ?? string.Empty };
-    }
+    public static ChoiceSetSetting LoadFromJson(JsonObject jsonObject) => new() { Value = jsonObject["value"]?.GetValue<string>() ?? string.Empty };
 
     public override void Update(JsonObject payload)
     {
@@ -74,8 +77,14 @@ public sealed class ChoiceSetSetting : Setting<string>
         }
     }
 
-    public override string ToState()
-    {
-        return $"\"{Key}\": {JsonSerializer.Serialize(Value)}";
-    }
+    public override string ToState() => $"\"{Key}\": {JsonSerializer.Serialize(Value, ChoiceDataContext.Default.Choice)}";
+}
+
+// [JsonSerializable(typeof(string))]
+// [JsonSerializable(typeof(Setting<string>), TypeInfoPropertyName = "SettingString")]
+[JsonSerializable(typeof(Choice))]
+[JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "Just used here")]
+public partial class ChoiceDataContext : JsonSerializerContext
+{
 }
