@@ -34,7 +34,7 @@ public partial class WinGetExtensionCommandsProvider : CommandProvider
             new OpenUrlCommand("ms-windows-store://assoc/?Tags=AppExtension-com.microsoft.windows.commandpalette"))
          {
             Title = "Search for extensions on the Store",
-            Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\ms-store.png")),
+            Icon = IconHelpers.FromRelativePath("Assets\\ms-store.png"),
          },
     ];
 

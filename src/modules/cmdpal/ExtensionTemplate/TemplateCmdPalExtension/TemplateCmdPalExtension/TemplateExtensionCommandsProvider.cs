@@ -5,18 +5,18 @@
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
-namespace TemplateExtension;
+namespace TemplateCmdPalExtension;
 
-public partial class TemplateExtensionActionsProvider : CommandProvider
+public partial class TemplateCmdPalExtensionActionsProvider : CommandProvider
 {
-    public TemplateExtensionActionsProvider()
+    public TemplateCmdPalExtensionActionsProvider()
     {
         DisplayName = "TemplateDisplayName Commands";
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
     }
 
     private readonly ICommandItem[] _commands = [
-        new CommandItem(new TemplateExtensionPage()),
+        new CommandItem(new TemplateCmdPalExtensionPage()),
     ];
 
     public override ICommandItem[] TopLevelCommands() => _commands;
