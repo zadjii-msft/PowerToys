@@ -126,10 +126,25 @@ public partial class InstallPackageListItem : ListItem
     {
         var status = await _package.CheckInstalledStatusAsync();
         var isInstalled = _package.InstalledVersion != null;
+
+        if (WinGetStatics.AppSearchCallback != null)
+        {
+            var callback = WinGetStatics.AppSearchCallback;
+            var installedApp = callback(_package.DefaultInstallVersion.DisplayName);
+            if (installedApp != null)
+            {
+                this.Command = installedApp.Command;
+                this.MoreCommands = installedApp.MoreCommands;
+                this.Icon = InstallPackageCommand.CompletedIcon;
+                return;
+            }
+        }
+
+        // didn't find the app
         _installCommand = new InstallPackageCommand(_package, isInstalled);
         this.Command = _installCommand;
-        Icon = _installCommand.Icon;
 
+        Icon = _installCommand.Icon;
         _installCommand.InstallStateChanged += InstallStateChangedHandler;
     }
 

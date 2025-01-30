@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Linq;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 
@@ -23,4 +24,11 @@ public partial class AllAppsCommandProvider : CommandProvider
     }
 
     public override ICommandItem[] TopLevelCommands() => [_listItem];
+
+    public ICommandItem? LookupApp(string displayName)
+    {
+        var items = Page.GetItems();
+        var match = items.Where(i => i.Title == displayName).FirstOrDefault();
+        return match;
+    }
 }
