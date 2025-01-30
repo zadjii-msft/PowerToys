@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using WinRT;
 
 namespace Microsoft.CmdPal.Extensions;
 
@@ -65,12 +66,13 @@ internal sealed partial class ExtensionInstanceManager : IClassFactory
             var managed = _createExtension();
 
             // ppvObject = MarshalInspectable<object>.FromManaged(_createExtension());
-            var cw = new StrategyBasedComWrappers();
+            // var cw = new StrategyBasedComWrappers();
+            var ins = MarshalInspectable<object>.FromManaged(managed);
 
             // .CallerDefinedIUnknown throws an E_INVALIDARG
             // .None and .TrackerSupport seemingly work okay on this side, though are E_NOINTERFACE on the other
-            var token = cw.GetOrCreateComInterfaceForObject(managed, CreateComInterfaceFlags.TrackerSupport);
-            ppvObject = token;
+            // var token = cw.GetOrCreateComInterfaceForObject(ins, CreateComInterfaceFlags.None);
+            ppvObject = ins;
         }
         else
         {
