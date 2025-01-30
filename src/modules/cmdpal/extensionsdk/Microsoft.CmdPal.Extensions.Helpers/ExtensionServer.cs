@@ -4,12 +4,15 @@
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Microsoft.CmdPal.Extensions;
 
 public sealed partial class ExtensionServer : IDisposable
 {
     private readonly HashSet<int> registrationCookies = [];
+    private ExtensionInstanceManager? _extensionInstanceManager;
+    private ComWrappers? _comWrappers;
 
     public void RegisterExtension<T>(Func<T> createExtension, bool restrictToMicrosoftExtensionHosts = false)
         where T : IExtension
@@ -21,9 +24,17 @@ public sealed partial class ExtensionServer : IDisposable
 
         int cookie;
         var clsid = typeof(T).GUID;
+        var wrappedCallback = () => (IExtension)createExtension();
+        _extensionInstanceManager ??= new ExtensionInstanceManager(wrappedCallback, restrictToMicrosoftExtensionHosts, typeof(T).GUID);
+        _comWrappers ??= new StrategyBasedComWrappers();
+
+        // var f = cw.GetOrCreateComInterfaceForObject(instanceManager, CreateComInterfaceFlags.TrackerSupport);
+        var f = _comWrappers.GetOrCreateComInterfaceForObject(_extensionInstanceManager, CreateComInterfaceFlags.None);
+
+        // cw.GetOrRegisterObjectForComInstance(f, CreateObjectFlags.UniqueInstance);
         var hr = Ole32.CoRegisterClassObject(
             ref clsid,
-            new ExtensionInstanceManager<T>(createExtension, restrictToMicrosoftExtensionHosts),
+            f,
             Ole32.CLSCTX_LOCAL_SERVER,
             Ole32.REGCLS_MULTIPLEUSE | Ole32.REGCLS_SUSPENDED,
             out cookie);
@@ -79,7 +90,7 @@ public sealed partial class ExtensionServer : IDisposable
 
         // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-coregisterclassobject
         [DllImport(nameof(Ole32))]
-        public static extern int CoRegisterClassObject(ref Guid guid, [MarshalAs(UnmanagedType.IUnknown)] object obj, int context, int flags, out int register);
+        public static extern int CoRegisterClassObject(ref Guid guid, IntPtr obj, int context, int flags, out int register);
 
         // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-coresumeclassobjects
         [DllImport(nameof(Ole32))]
