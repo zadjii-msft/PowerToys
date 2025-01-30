@@ -2,21 +2,21 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CommandPalette.Extensions;
-using Microsoft.CommandPalette.Extensions.Toolkit;
+using Microsoft.CmdPal.Extensions;
+using Microsoft.CmdPal.Extensions.Helpers;
 
-namespace TemplateExtension;
+namespace TemplateCmdPalExtension;
 
-public partial class TemplateExtensionCommandsProvider : CommandProvider
+public partial class TemplateCmdPalExtensionActionsProvider : CommandProvider
 {
-    public TemplateExtensionCommandsProvider()
+    public TemplateCmdPalExtensionActionsProvider()
     {
         DisplayName = "TemplateDisplayName Commands";
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
     }
 
     private readonly ICommandItem[] _commands = [
-        new CommandItem(new TemplateExtensionPage()),
+        new CommandItem(new TemplateCmdPalExtensionPage()),
     ];
 
     public override ICommandItem[] TopLevelCommands() => _commands;
