@@ -58,7 +58,7 @@ foreach ($item in $json.children) {
 Write-Output @"
 namespace Microsoft.CmdPal.Extensions
 {
-    [contractversion(2)]
+    [contractversion(1)]
     apicontract ExtensionsContract {}
 
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]

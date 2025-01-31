@@ -4,9 +4,9 @@
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public abstract class InvokableCommand : Command, IInvokableCommand2
+public abstract class InvokableCommand : Command, IInvokableCommand
 {
     public abstract ICommandResult Invoke();
 
-    public virtual ICommandResult Invoke(object sender) => Invoke();
+    public virtual ICommandResult Invoke(object? sender) => Invoke();
 }

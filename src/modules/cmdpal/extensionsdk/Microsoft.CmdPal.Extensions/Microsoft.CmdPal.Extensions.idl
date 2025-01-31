@@ -1,6 +1,6 @@
 namespace Microsoft.CmdPal.Extensions
 {
-    [contractversion(2)]
+    [contractversion(1)]
     apicontract ExtensionsContract {}
 
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
@@ -109,12 +109,9 @@ namespace Microsoft.CmdPal.Extensions
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IInvokableCommand requires ICommand {
         ICommandResult Invoke();
-    }
-    
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 2)]
-    interface IInvokableCommand2 requires IInvokableCommand {
         ICommandResult Invoke(Object sender);
     }
+    
     
     [uuid("ef5db50c-d26b-4aee-9343-9f98739ab411")]
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
@@ -350,7 +347,7 @@ namespace Microsoft.CmdPal.Extensions
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface ICommandSettings {
-        IFormPage SettingsPage { get; };
+        IContentPage SettingsPage { get; };
     };
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]

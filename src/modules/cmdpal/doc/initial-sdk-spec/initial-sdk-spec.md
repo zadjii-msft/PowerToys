@@ -81,6 +81,8 @@ functionality.
     - [URI activation](#uri-activation)
     - [Custom "empty list" messages](#custom-empty-list-messages)
   - [Footnotes](#footnotes)
+    - [Generating the `.idl`](#generating-the-idl)
+    - [Adding APIs](#adding-apis)
 
 
 ## Background
@@ -568,12 +570,9 @@ interface IGoToPageArgs requires ICommandResultArgs{
 // * the MoreCommands flyout of for a ListItem or a MarkdownPage
 interface IInvokableCommand requires ICommand {
     ICommandResult Invoke();
-}
-
-[contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 2)]
-interface IInvokableCommand2 requires IInvokableCommand {
     ICommandResult Invoke(Object sender);
 }
+
 ```
 
 If a developer wants to add a simple action to DevPal, they can create a
@@ -1415,7 +1414,7 @@ This is the interface that an extension must implement to provide commands to De
 
 ```csharp
 interface ICommandSettings {
-    IFormPage SettingsPage { get; };
+    IContentPage SettingsPage { get; };
 };
 
 interface IFallbackHandler {
@@ -2138,6 +2137,8 @@ Is that just a `Details` object? A markdown body?
 
 ## Footnotes
 
+### Generating the `.idl`
+
 The `.idl` for this SDK can be generated directly from this file. To do so, run the following command:
 
 ```ps1
@@ -2151,6 +2152,13 @@ Or, to generate straight to the place I'm consuming it from:
 ```ps1
 .\doc\initial-sdk-spec\generate-interface.ps1 > .\extensionsdk\Microsoft.CmdPal.Extensions\Microsoft.Windows.Run.Extensions.idl
 ```
+
+### Adding APIs
+
+Almost all of the SDK defined here is in terms of interfaces. Unfortunately,
+this prevents us from being able to use `[contract]` attributes to add to the
+interfaces. We'll instead need to rely on the tried-and-true method of adding a
+`IFoo2` when we want to add methods to `IFoo`.
 
 [^1]: In this example, as in other places, I've referenced a
     `Microsoft.DevPal.Extensions.InvokableCommand` class, as the base for that action.
