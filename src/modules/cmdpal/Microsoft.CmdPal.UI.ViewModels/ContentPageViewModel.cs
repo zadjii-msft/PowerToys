@@ -13,11 +13,12 @@ using Microsoft.CmdPal.UI.ViewModels.Models;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class MarkdownPageViewModel : PageViewModel
+public partial class ContentPageViewModel : PageViewModel
 {
-    private readonly ExtensionObject<IMarkdownPage> _model;
+    private readonly ExtensionObject<IContentPage> _model;
 
-    public ObservableCollection<string> Bodies { get; set; } = [];
+    [ObservableProperty]
+    public partial ObservableCollection<ContentViewModel> Content { get; set; } = [];
 
     public List<CommandContextItemViewModel> Commands { get; private set; } = [];
 
@@ -30,23 +31,38 @@ public partial class MarkdownPageViewModel : PageViewModel
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
-    public MarkdownPageViewModel(IMarkdownPage model, TaskScheduler scheduler, CommandPaletteHost host)
+    public ContentPageViewModel(IContentPage model, TaskScheduler scheduler, CommandPaletteHost host)
         : base(model, scheduler, host)
     {
         _model = new(model);
     }
 
+    // TODO: Does this need to hop to a _different_ thread, so that we don't block the extension while we're fetching?
+    private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchContent();
+
     //// Run on background thread, from InitializeAsync or Model_ItemsChanged
     private void FetchContent()
     {
-        List<string> newBodies = [];
+        List<ContentViewModel> newContent = [];
         try
         {
-            var newItems = _model.Unsafe!.Bodies();
+            var newItems = _model.Unsafe!.GetContent();
 
             foreach (var item in newItems)
             {
-                newBodies.Add(item);
+                ContentViewModel? viewModel = item switch
+                {
+                    IFormContent => new ContentFormViewModel((IFormContent)item, this.PageContext),
+                    IMarkdownContent => new ContentMarkdownViewModel((IMarkdownContent)item, this.PageContext),
+
+                    // ITreeContent => new DetailsTagsViewModel(item, this.PageContext),
+                    _ => null,
+                };
+                if (viewModel != null)
+                {
+                    viewModel.InitializeProperties();
+                    newContent.Add(viewModel);
+                }
             }
         }
         catch (Exception ex)
@@ -59,7 +75,7 @@ public partial class MarkdownPageViewModel : PageViewModel
         Task.Factory.StartNew(
         () =>
         {
-            ListHelpers.InPlaceUpdateList(Bodies, newBodies);
+            ListHelpers.InPlaceUpdateList(Content, newContent);
         },
         CancellationToken.None,
         TaskCreationOptions.None,
@@ -82,7 +98,7 @@ public partial class MarkdownPageViewModel : PageViewModel
             .Select(contextItem => new CommandContextItemViewModel(contextItem, PageContext))
             .ToList();
 
-        var extensionDetails = model.Details();
+        var extensionDetails = model.Details;
         if (extensionDetails != null)
         {
             Details = new(extensionDetails, PageContext);
@@ -92,6 +108,7 @@ public partial class MarkdownPageViewModel : PageViewModel
         UpdateDetails();
 
         FetchContent();
+        model.ItemsChanged += Model_ItemsChanged;
     }
 
     protected override void FetchProperty(string propertyName)
@@ -107,10 +124,11 @@ public partial class MarkdownPageViewModel : PageViewModel
         switch (propertyName)
         {
             // case nameof(Commands):
+            //     TODO GH #360 - make MoreCommands observable
             //     this.ShowDetails = model.ShowDetails;
             //     break;
             case nameof(Details):
-                var extensionDetails = model.Details();
+                var extensionDetails = model.Details;
                 Details = extensionDetails != null ? new(extensionDetails, PageContext) : null;
                 UpdateDetails();
                 break;

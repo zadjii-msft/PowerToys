@@ -49,6 +49,7 @@ public partial class ListViewModel : PageViewModel
         _model = new(model);
     }
 
+    // TODO: Does this need to hop to a _different_ thread, so that we don't block the extension while we're fetching?
     private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchItems();
 
     protected override void OnFilterUpdated(string filter)

@@ -31,6 +31,12 @@ public partial class SamplesListPage : ListPage
            Subtitle = "Changes the list of items in response to the typed query",
        },
 
+       new ListItem(new SampleContentPage())
+       {
+           Title = "Sample content page",
+           Subtitle = "Display mixed forms, markdown, and other types of content",
+       },
+
        new ListItem(new SampleMarkdownPage())
        {
            Title = "Markdown Page Sample Command",

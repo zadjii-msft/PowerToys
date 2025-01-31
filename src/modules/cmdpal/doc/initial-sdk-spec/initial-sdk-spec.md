@@ -1231,13 +1231,13 @@ interface IFormContent requires IContent {
     ICommandResult SubmitForm(String payload);
 }
 
-interface IMarkdownContent requires IPage {
+interface IMarkdownContent requires IContent {
     String Body { get; };
 }
 
-interface ITreeContent requires IPage, INotifyItemsChanged {
+interface ITreeContent requires IContent, INotifyItemsChanged {
     IContent RootContent { get; };
-    IContent[] GetContent();
+    IContent[] GetChildren();
 }
 
 interface IContentPage requires IPage, INotifyItemsChanged {

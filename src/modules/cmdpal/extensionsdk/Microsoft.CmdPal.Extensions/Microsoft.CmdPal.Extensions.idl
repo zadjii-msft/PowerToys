@@ -328,14 +328,14 @@ namespace Microsoft.CmdPal.Extensions
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
-    interface IMarkdownContent requires IPage {
+    interface IMarkdownContent requires IContent {
         String Body { get; };
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
-    interface ITreeContent requires IPage, INotifyItemsChanged {
+    interface ITreeContent requires IContent, INotifyItemsChanged {
         IContent RootContent { get; };
-        IContent[] GetContent();
+        IContent[] GetChildren();
     }
     
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
