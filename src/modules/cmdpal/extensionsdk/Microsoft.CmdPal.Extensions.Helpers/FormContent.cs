@@ -2,11 +2,9 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Windows.Foundation;
-
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public abstract partial class FormContent : BaseObservable, IFormContent
+public partial class FormContent : BaseObservable, IFormContent
 {
     public virtual string DataJson
     {
@@ -44,5 +42,5 @@ public abstract partial class FormContent : BaseObservable, IFormContent
 
 = string.Empty;
 
-    public abstract ICommandResult SubmitForm(string payload);
+    public virtual ICommandResult SubmitForm(string payload) => CommandResult.KeepOpen();
 }

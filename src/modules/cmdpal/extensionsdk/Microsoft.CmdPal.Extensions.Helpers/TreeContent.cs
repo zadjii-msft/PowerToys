@@ -6,8 +6,10 @@ using Windows.Foundation;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public abstract partial class TreeContent : BaseObservable, ITreeContent
+public partial class TreeContent : BaseObservable, ITreeContent
 {
+    public IContent[] Children { get; set; } = [];
+
     public virtual IContent? RootContent
     {
         get;
@@ -20,7 +22,7 @@ public abstract partial class TreeContent : BaseObservable, ITreeContent
 
     public event TypedEventHandler<object, ItemsChangedEventArgs>? ItemsChanged;
 
-    public abstract IContent[] GetChildren();
+    public virtual IContent[] GetChildren() => Children;
 
     protected void RaiseItemsChanged(int totalItems)
     {

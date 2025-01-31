@@ -21,12 +21,5 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid
-        x:Name="ContentGrid"
-        Margin="0,4,4,4"
-        Padding="12,8,8,8"
-        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-        BorderThickness="1,1,1,2"
-        CornerRadius="{StaticResource OverlayCornerRadius}" />
+    <Grid x:Name="ContentGrid" />
 </UserControl>

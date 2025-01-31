@@ -2,14 +2,11 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Text.Json;
+using System.Collections.ObjectModel;
 using AdaptiveCards.ObjectModel.WinUI3;
-using AdaptiveCards.Templating;
-using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.UI.ViewModels.Messages;
+using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
-using Windows.Data.Json;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 

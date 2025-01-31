@@ -297,3 +297,42 @@ internal sealed partial class SampleContentForm : FormContent
         return CommandResult.GoHome();
     }
 }
+
+[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "Sample code")]
+internal sealed partial class SampleTreeContentPage : ContentPage
+{
+    private readonly TreeContent myContentTree;
+
+    public override IContent[] GetContent() => [myContentTree];
+
+    public SampleTreeContentPage()
+    {
+        Name = "Sample Content";
+        Icon = new(string.Empty);
+
+        myContentTree = new()
+        {
+            RootContent = new MarkdownContent() { Body = "# This page has nested content" },
+            Children = [
+                new TreeContent()
+                {
+                    RootContent = new MarkdownContent() { Body = "Yo dawg" },
+                    Children = [
+                        new TreeContent()
+                        {
+                            RootContent = new MarkdownContent() { Body = "I heard you like content" },
+                            Children = [
+                                new MarkdownContent() { Body = "So we put content in your content" },
+                                new FormContent() { TemplateJson = "{\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\",\"type\":\"AdaptiveCard\",\"version\":\"1.6\",\"body\":[{\"type\":\"TextBlock\",\"size\":\"medium\",\"weight\":\"bolder\",\"text\":\"Mix and match why don't you\",\"horizontalAlignment\":\"center\",\"wrap\":true,\"style\":\"heading\"},{\"type\":\"TextBlock\",\"text\":\"You can have forms here too\",\"horizontalAlignment\":\"Right\",\"wrap\":true}],\"actions\":[{\"type\":\"Action.Submit\",\"title\":\"It's a form, you get it\",\"data\":{\"id\":\"LoginVal\"}}]}" },
+                                new MarkdownContent() { Body = "Another markdown down here" },
+                            ],
+                        },
+                        new MarkdownContent() { Body = "**slaps roof**" },
+                        new MarkdownContent() { Body = "This baby can fit so much content" },
+
+                    ],
+                },
+            ],
+        };
+    }
+}

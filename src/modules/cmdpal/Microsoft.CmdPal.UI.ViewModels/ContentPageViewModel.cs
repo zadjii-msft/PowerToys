@@ -50,14 +50,7 @@ public partial class ContentPageViewModel : PageViewModel
 
             foreach (var item in newItems)
             {
-                ContentViewModel? viewModel = item switch
-                {
-                    IFormContent => new ContentFormViewModel((IFormContent)item, this.PageContext),
-                    IMarkdownContent => new ContentMarkdownViewModel((IMarkdownContent)item, this.PageContext),
-
-                    // ITreeContent => new DetailsTagsViewModel(item, this.PageContext),
-                    _ => null,
-                };
+                var viewModel = ViewModelFromContent(item, PageContext);
                 if (viewModel != null)
                 {
                     viewModel.InitializeProperties();
@@ -80,6 +73,18 @@ public partial class ContentPageViewModel : PageViewModel
         CancellationToken.None,
         TaskCreationOptions.None,
         PageContext.Scheduler);
+    }
+
+    public static ContentViewModel? ViewModelFromContent(IContent content, IPageContext context)
+    {
+        ContentViewModel? viewModel = content switch
+        {
+            IFormContent form => new ContentFormViewModel(form, context),
+            IMarkdownContent markdown => new ContentMarkdownViewModel(markdown, context),
+            ITreeContent tree => new ContentTreeViewModel(tree, context),
+            _ => null,
+        };
+        return viewModel;
     }
 
     public override void InitializeProperties()

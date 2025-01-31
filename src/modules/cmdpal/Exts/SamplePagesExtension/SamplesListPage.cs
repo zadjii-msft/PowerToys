@@ -36,6 +36,11 @@ public partial class SamplesListPage : ListPage
            Title = "Sample content page",
            Subtitle = "Display mixed forms, markdown, and other types of content",
        },
+       new ListItem(new SampleTreeContentPage())
+       {
+           Title = "Sample nested content",
+           Subtitle = "Example of nesting a tree of content",
+       },
 
        new ListItem(new SampleMarkdownPage())
        {
