@@ -2,7 +2,9 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -332,7 +334,128 @@ internal sealed partial class SampleTreeContentPage : ContentPage
 
                     ],
                 },
+                new PostContent("Test post pls ignore")
+                {
+                    Replies = [
+                        new PostContent("First"),
+                        new PostContent("First\nEDIT: shoot"),
+                    ],
+                }
             ],
         };
+    }
+}
+
+[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "Sample code")]
+internal sealed partial class PostContent : TreeContent
+{
+    public List<IContent> Replies { get; init; } = [];
+
+    public PostContent(string body)
+    {
+        RootContent = new PostForm(body, this);
+    }
+
+    public override IContent[] GetChildren() => Replies.ToArray();
+
+    public void Post() => RaiseItemsChanged(Replies.Count);
+}
+
+[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "Sample code")]
+internal sealed partial class PostForm : FormContent
+{
+    private readonly PostContent _parent;
+
+    public PostForm(string postBody, PostContent parent)
+    {
+        _parent = parent;
+        TemplateJson = """
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.6",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "${postBody}",
+            "wrap": true
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.ShowCard",
+            "title": "${replyCard.title}",
+            "card": {
+                "type": "AdaptiveCard",
+                "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                "version": "1.6",
+                "body": [
+                    {
+                        "type": "Container",
+                        "id": "${replyCard.idPrefix}Properties",
+                        "items": [
+                            {
+                                "$data": "${replyCard.fields}",
+                                "type": "Input.Text",
+                                "label": "${label}",
+                                "id": "${id}",
+                                "isRequired": "${required}",
+                                "isMultiline": true,
+                                "errorMessage": "'${label}' is required"
+                            }
+                        ]
+                    }
+                ],
+                "actions": [
+                    {
+                        "type": "Action.Submit",
+                        "title": "Post"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Favorite"
+        },
+        {
+            "type": "Action.Submit",
+            "title": "View on web"
+        }
+    ]
+}
+""";
+        DataJson = $$"""
+{
+    "postBody": {{JsonSerializer.Serialize(postBody)}},
+    "replyCard": {
+        "title": "Reply",
+        "idPrefix": "reply",
+        "fields": [
+            {
+                "label": "Reply",
+                "id": "ReplyBody",
+                "required": true,
+                "placeholder": "Write a reply here"
+            }
+        ]
+    }
+}
+""";
+    }
+
+    public override ICommandResult SubmitForm(string payload)
+    {
+        var data = JsonNode.Parse(payload);
+        _ = data;
+        var reply = data["ReplyBody"];
+        var s = reply?.AsValue()?.ToString();
+        if (!string.IsNullOrEmpty(s))
+        {
+            _parent.Replies.Add(new PostContent(s));
+            _parent.Post();
+        }
+
+        return CommandResult.KeepOpen();
     }
 }
