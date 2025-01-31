@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\Common.Dotnet.CsWinRT.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -7,6 +7,9 @@
     <PublishProfile>win-$(Platform).pubxml</PublishProfile>
     <UseWinUI>false</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
+    <OutputPath>$(SolutionDir)$(Platform)\$(Configuration)\WinUI3Apps\CmdPalExtensions\$(RootNamespace)</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\extensionsdk\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj" />
+    <ProjectReference Include="..\..\..\..\common\Common.UI\Common.UI.csproj" />
   </ItemGroup>
 
   <!--
@@ -35,11 +39,6 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Forms\" />
-    <Folder Include="Commands\" />
   </ItemGroup>
 
   <!--

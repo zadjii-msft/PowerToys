@@ -9,25 +9,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
+using Windows.Foundation;
 
 namespace MicrosoftLearnExtension;
 
-public partial class MicrosoftLearnExtensionActionsProvider : ICommandProvider
+public partial class MicrosoftLearnExtensionActionsProvider : CommandProvider
 {
-    public string DisplayName => $"Microsoft Learn Doc Search Extension for cmdpal Commands";
+    public MicrosoftLearnExtensionActionsProvider()
+    {
+        DisplayName = $"Microsoft Learn Doc Search Extension for cmdpal Commands";
+    }
 
-    public IconDataType Icon => new(string.Empty);
-
-    private readonly IListItem[] _commands = [
-        new ListItem(new MicrosoftLearnExtensionPage()),
+    private readonly ICommandItem[] _actions = [
+        new CommandItem(new MicrosoftLearnExtensionPage()),
     ];
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
-    public void Dispose() => throw new NotImplementedException();
-#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
-
-    public IListItem[] TopLevelCommands()
-    {
-        return _commands;
-    }
+    public override ICommandItem[] TopLevelCommands() => _actions;
 }

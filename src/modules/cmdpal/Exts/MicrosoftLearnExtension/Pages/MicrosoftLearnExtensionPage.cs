@@ -32,13 +32,18 @@ internal sealed partial class MicrosoftLearnExtensionPage : DynamicListPage
     {
         Icon = new("https://learn.microsoft.com/favicon.ico");
         Name = "Microsoft Learn Doc Search";
+        PlaceholderText = "Search Windows App SDK docs";
+        IsLoading = true;
+
+        // #091f2c
+        AccentColor = ColorHelpers.FromRgb(9, 31, 44);
     }
 
     private static async Task<List<SearchResult>> SearchMicrosoftLearn(string query)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
-            return new(); // TODO: Should have a hint of 'type query' item...
+            return new();
         }
 
         //// TODO: Sanitize input?
@@ -49,26 +54,27 @@ internal sealed partial class MicrosoftLearnExtensionPage : DynamicListPage
         return JsonSerializer.Deserialize<SearchResultList>(response, JsonOptions).Results.ToList();
     }
 
-    public override ISection[] GetItems(string query)
+    public override IListItem[] GetItems()
     {
-        var t = DoGetItems(query);
+        var t = DoGetItems(SearchText);
         t.ConfigureAwait(false);
         return t.Result;
     }
 
-    private async Task<ISection[]> DoGetItems(string query)
+    public override void UpdateSearchText(string oldSearch, string newSearch)
+    {
+        IsLoading = true;
+        GetItems();
+    }
+
+    private async Task<IListItem[]> DoGetItems(string query)
     {
         List<SearchResult> items = await SearchMicrosoftLearn(query);
-        this.Loading = false;
-        var s = new ListSection()
+        this.IsLoading = false;
+        return items.Select((post) => new ListItem(new LinkAction(post))
         {
-            Title = "Posts",
-            Items = items.Select((post) => new ListItem(new LinkAction(post))
-            {
-                Title = post.Title,
-                Subtitle = post.Description,
-            }).ToArray(),
-        };
-        return [s];
+            Title = post.Title,
+            Subtitle = post.Description,
+        }).ToArray();
     }
 }

@@ -12,9 +12,11 @@ namespace MicrosoftLearnExtension;
 [ComVisible(true)]
 [Guid("11771f22-a54a-400c-8c3d-5c9c31b4429c")]
 [ComDefaultInterface(typeof(IExtension))]
-public sealed partial class SampleExtension : IExtension
+public sealed partial class SampleExtension : IExtension, IDisposable
 {
     private readonly ManualResetEvent _extensionDisposedEvent;
+
+    private readonly MicrosoftLearnExtensionActionsProvider _provider = new();
 
     public SampleExtension(ManualResetEvent extensionDisposedEvent)
     {
@@ -26,7 +28,7 @@ public sealed partial class SampleExtension : IExtension
         switch (providerType)
         {
             case ProviderType.Commands:
-                return new MicrosoftLearnExtensionActionsProvider();
+                return _provider;
             default:
                 return null;
         }

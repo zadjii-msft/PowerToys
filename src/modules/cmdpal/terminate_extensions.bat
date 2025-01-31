@@ -14,6 +14,7 @@ taskkill /f /im MediaControlsExtension.exe
 taskkill /f /im EverythingExtension.exe
 taskkill /f /im MastodonExtension.exe
 taskkill /f /im MenusExtension.exe
+taskkill /f /im MicrosoftLearnExtension.exe
 taskkill /f /im PokedexExtension.exe
 taskkill /f /im SamplePagesExtension.exe
 taskkill /f /im SSHKeychainExtension.exe
