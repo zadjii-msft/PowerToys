@@ -28,7 +28,30 @@ public partial class AllAppsCommandProvider : CommandProvider
     public ICommandItem? LookupApp(string displayName)
     {
         var items = Page.GetItems();
-        var match = items.Where(i => i.Title == displayName).FirstOrDefault();
-        return match;
+
+        // We're going to do this search in two directions:
+        // First, is this name a substring of any app...
+        var nameMatches = items.Where(i => i.Title.Contains(displayName));
+
+        // ... Then, does any app have this name as a substring ...
+        // Only get one of these - "Terminal Preview" contains both "Terminal" and "Terminal Preview", so just take the best one
+        var appMatches = items.Where(i => displayName.Contains(i.Title)).OrderByDescending(i => i.Title.Length).Take(1);
+
+        // ... Now, combine those two
+        var both = nameMatches.Concat(appMatches);
+
+        if (both.Count() == 1)
+        {
+            return both.First();
+        }
+        else if (nameMatches.Count() == 1 && appMatches.Count() == 1)
+        {
+            if (nameMatches.First() == appMatches.First())
+            {
+                return nameMatches.First();
+            }
+        }
+
+        return null;
     }
 }

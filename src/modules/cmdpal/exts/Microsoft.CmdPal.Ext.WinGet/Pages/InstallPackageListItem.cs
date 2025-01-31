@@ -85,6 +85,7 @@ public partial class InstallPackageListItem : ListItem
             simpleData.Add(item.DocumentLabel, (string.Empty, item.DocumentUrl));
         }
 
+        var options = default(UriCreationOptions);
         foreach (var kv in simpleData)
         {
             var text = string.IsNullOrEmpty(kv.Value.Item1) ? kv.Value.Item2 : kv.Value.Item1;
@@ -92,13 +93,7 @@ public partial class InstallPackageListItem : ListItem
             if (!string.IsNullOrEmpty(text))
             {
                 Uri? uri = null;
-                try
-                {
-                    uri = new Uri(target);
-                }
-                catch (System.UriFormatException)
-                {
-                }
+                Uri.TryCreate(target, options, out uri);
 
                 var pair = new DetailsElement()
                 {
@@ -127,17 +122,29 @@ public partial class InstallPackageListItem : ListItem
         var status = await _package.CheckInstalledStatusAsync();
         var isInstalled = _package.InstalledVersion != null;
 
-        if (WinGetStatics.AppSearchCallback != null)
+        // might be an uninstall command
+        var installCommand = new InstallPackageCommand(_package, isInstalled);
+
+        if (isInstalled)
         {
-            var callback = WinGetStatics.AppSearchCallback;
-            var installedApp = callback(_package.DefaultInstallVersion.DisplayName);
-            if (installedApp != null)
+            this.Icon = InstallPackageCommand.CompletedIcon;
+            this.Command = new NoOpCommand();
+            List<IContextItem> contextMenu = [];
+            var uninstallContextItem = new CommandContextItem(installCommand) { IsCritical = true };
+            if (WinGetStatics.AppSearchCallback != null)
             {
-                this.Command = installedApp.Command;
-                this.MoreCommands = installedApp.MoreCommands;
-                this.Icon = InstallPackageCommand.CompletedIcon;
-                return;
+                var callback = WinGetStatics.AppSearchCallback;
+                var installedApp = callback(_package.DefaultInstallVersion.DisplayName);
+                if (installedApp != null)
+                {
+                    this.Command = installedApp.Command;
+                    contextMenu = [.. installedApp.MoreCommands];
+                }
             }
+
+            contextMenu.Add(uninstallContextItem);
+            this.MoreCommands = contextMenu.ToArray();
+            return;
         }
 
         // didn't find the app
