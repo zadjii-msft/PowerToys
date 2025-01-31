@@ -130,7 +130,12 @@ public partial class InstallPackageListItem : ListItem
             this.Icon = InstallPackageCommand.CompletedIcon;
             this.Command = new NoOpCommand();
             List<IContextItem> contextMenu = [];
-            var uninstallContextItem = new CommandContextItem(installCommand) { IsCritical = true };
+            var uninstallContextItem = new CommandContextItem(installCommand)
+            {
+                IsCritical = true,
+                Icon = InstallPackageCommand.DeleteIcon,
+            };
+
             if (WinGetStatics.AppSearchCallback != null)
             {
                 var callback = WinGetStatics.AppSearchCallback;

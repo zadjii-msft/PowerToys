@@ -37,10 +37,6 @@ public sealed partial class AllAppsPage : ListPage
         return allAppsSection;
     }
 
-    // public ICommandItem? LookupApp(string displayName)
-    // {
-
-    // }
     internal static List<AppItem> GetPrograms()
     {
         // NOTE TO SELF:
