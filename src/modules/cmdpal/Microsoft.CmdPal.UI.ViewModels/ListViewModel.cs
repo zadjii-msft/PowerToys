@@ -37,7 +37,7 @@ public partial class ListViewModel : PageViewModel
 
     public string ModelPlaceholderText { get => string.IsNullOrEmpty(field) ? "Type here to search..." : field; private set; } = string.Empty;
 
-    public override string PlaceholderText { get => ModelPlaceholderText; }
+    public override string PlaceholderText => ModelPlaceholderText;
 
     public string SearchText { get; private set; } = string.Empty;
 
@@ -194,14 +194,14 @@ public partial class ListViewModel : PageViewModel
     // InvokeItemCommand is what this will be in Xaml due to source generator
     [RelayCommand]
     private void InvokeItem(ListItemViewModel item) =>
-        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
+        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command, item.Model));
 
     [RelayCommand]
     private void InvokeSecondaryCommand(ListItemViewModel item)
     {
         if (item.SecondaryCommand != null)
         {
-            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command));
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command, item.Model));
         }
     }
 

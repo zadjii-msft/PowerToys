@@ -110,7 +110,7 @@ namespace Microsoft.CmdPal.Extensions
     interface IInvokableCommand requires ICommand {
         ICommandResult Invoke();
     }
-
+    
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 2)]
     interface IInvokableCommand2 requires IInvokableCommand {
         ICommandResult Invoke(Object sender);
@@ -317,8 +317,8 @@ namespace Microsoft.CmdPal.Extensions
         IForm[] Forms();
     }
     
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     [uuid("b64def0f-8911-4afa-8f8f-042bd778d088")]
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     interface IContent requires INotifyPropChanged {
     }
     

@@ -13,6 +13,10 @@ foreach ($item in $json.children) {
             # Each line that starts with `runtimeclass` or `interface` should be prefixed with the contract attribute
             $code = $code -replace "(?m)^(runtimeclass|interface) ", "[contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]`n`$1 "
 
+            # if there are two [contract] attributes, remove the second one
+            $code = $code -replace "(?m)^\[contract\(Microsoft.CmdPal.Extensions.ExtensionsContract, ([0-9]+)\)\]\n\[contract\(Microsoft.CmdPal.Extensions.ExtensionsContract, 1\)\]", "[contract(Microsoft.CmdPal.Extensions.ExtensionsContract, `$1)]"
+
+
             # all the lines that start with `(whitespace)async (T)` should be translated to `IAsyncOperation<T>`
             $code = $code -replace "(?m)^(\s*)async\s+(void)\s+([A-Za-z0-9_]+)\s*\(", "`$1Windows.Foundation.IAsyncAction `$3("
             $code = $code -replace "(?m)^(\s*)async\s+([A-Za-z0-9_<>]+)\s+([A-Za-z0-9_]+)\s*\(", "`$1Windows.Foundation.IAsyncOperation<`$2> `$3("
@@ -33,6 +37,10 @@ foreach ($item in $json.children) {
             # Each line that starts with `runtimeclass` or `interface` should be prefixed with the contract attribute
             $code = $code -replace "(?m)^(runtimeclass|interface) ", "[contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]`n`$1 "
 
+            # if there are two [contract] attributes, remove the second one
+            $code = $code -replace "(?m)^\[contract\(Microsoft.CmdPal.Extensions.ExtensionsContract, ([0-9]+)\)\]\n\[contract\(Microsoft.CmdPal.Extensions.ExtensionsContract, 1\)\]", "[contract(Microsoft.CmdPal.Extensions.ExtensionsContract, `$1)]"
+
+
             # all the lines that start with `(whitespace)async (T)` should be translated to `IAsyncOperation<T>`
             $code = $code -replace "(?m)^(\s*)async\s+(void)\s+([A-Za-z0-9_]+)\s*\(", "`$1Windows.Foundation.IAsyncAction `$3("
             $code = $code -replace "(?m)^(\s*)async\s+([A-Za-z0-9_<>]+)\s+([A-Za-z0-9_]+)\s*\(", "`$1Windows.Foundation.IAsyncOperation<`$2> `$3("
@@ -50,7 +58,7 @@ foreach ($item in $json.children) {
 Write-Output @"
 namespace Microsoft.CmdPal.Extensions
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract ExtensionsContract {}
 
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
@@ -72,7 +80,7 @@ namespace Microsoft.CmdPal.Extensions
         String Icon { get; };
         Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
     };
-    
+
     [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
     runtimeclass IconInfo {
         IconInfo(String iconString);

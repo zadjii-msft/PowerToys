@@ -117,7 +117,7 @@
       <Private>True</Private>
       <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
     </ProjectReference>
-    <!-- <ProjectReference Include="..\..\..\common\Common.UI\Common.UI.csproj" /> -->
+    <ProjectReference Include="..\..\..\common\ManagedCommon\ManagedCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>

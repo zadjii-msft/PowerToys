@@ -163,9 +163,13 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                     // See RootFrame_Navigated event handler.
                 });
             }
+            else if (command is IInvokableCommand2 invokable2)
+            {
+                var result = invokable2.Invoke(message.Context);
+                HandleCommandResult(result);
+            }
             else if (command is IInvokableCommand invokable)
             {
-                // TODO Handle results
                 var result = invokable.Invoke();
                 HandleCommandResult(result);
             }
