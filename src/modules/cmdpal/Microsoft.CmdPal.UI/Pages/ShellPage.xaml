@@ -48,19 +48,20 @@
             </DataTemplate>
 
             <DataTemplate x:Key="DetailsLinkTemplate" x:DataType="viewModels:DetailsLinkViewModel">
-                <StackPanel Margin="0,8,0,0" Orientation="Vertical">
+                <StackPanel Orientation="Vertical">
                     <TextBlock
-                        FontWeight="Bold"
+                        FontWeight="SemiBold"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Key, Mode=OneWay}"
                         TextWrapping="WrapWholeWords" />
                     <TextBlock
-                        Margin="8,8,0,0"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Text, Mode=OneWay}"
                         TextWrapping="WrapWholeWords"
                         Visibility="{x:Bind IsText, Mode=OneWay}" />
                     <HyperlinkButton
+                        Padding="0"
                         Content="{x:Bind Text, Mode=OneWay}"
                         NavigateUri="{x:Bind Link, Mode=OneWay}"
                         Visibility="{x:Bind IsLink, Mode=OneWay}" />
@@ -74,7 +75,7 @@
                         BorderThickness="0,0,0,2">
                         <TextBlock
                             Margin="-8,0,0,8"
-                            FontWeight="Bold"
+                            FontWeight="SemiBold"
                             IsTextSelectionEnabled="True"
                             Text="{x:Bind Key, Mode=OneWay}"
                             TextWrapping="WrapWholeWords" />
@@ -82,15 +83,14 @@
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="DetailsTagsTemplate" x:DataType="viewModels:DetailsTagsViewModel">
-                <StackPanel Margin="0,8,0,0" Orientation="Vertical">
+                <StackPanel Orientation="Vertical" Spacing="4">
                     <TextBlock
-                        FontWeight="Bold"
+                        FontWeight="SemiBold"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Key, Mode=OneWay}"
                         TextWrapping="WrapWholeWords" />
                     <ItemsRepeater
                         Grid.Column="2"
-                        Margin="8,8,0,0"
                         ItemTemplate="{StaticResource TagTemplate}"
                         ItemsSource="{x:Bind Tags, Mode=OneWay}"
                         Visibility="{x:Bind HasTags, Mode=OneWay}">
@@ -98,11 +98,8 @@
                             <toolkit:WrapLayout HorizontalSpacing="8" VerticalSpacing="8" />
                         </ItemsRepeater.Layout>
                     </ItemsRepeater>
-
                 </StackPanel>
-
             </DataTemplate>
-
         </ResourceDictionary>
     </Page.Resources>
 
@@ -197,7 +194,7 @@
                             Duration="0:0:0.350" />
                     </animations:Implicit.HideAnimations>
                 </Button>
-
+                <cpcontrols:IconBox Grid.Column="1" Source="{x:Bind ViewModel.CurrentPage.Icon, Mode=OneWay}" />
                 <!--  Search box  -->
                 <cpcontrols:SearchBar
                     x:Name="SearchBox"
@@ -230,14 +227,13 @@
                 <ScrollViewer
                     x:Name="DetailsContent"
                     Grid.Column="1"
-                    Padding="8"
+                    Padding="12"
                     HorizontalAlignment="Stretch"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1,0,0,0"
                     Visibility="Collapsed">
                     <Grid>
-
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -258,7 +254,6 @@
                         <TextBlock
                             Grid.Row="1"
                             HorizontalAlignment="Center"
-                            FontSize="20"
                             Style="{StaticResource SubtitleTextBlockStyle}"
                             Text="{x:Bind ViewModel.Details.Title, Mode=OneWay}"
                             TextWrapping="WrapWholeWords"
@@ -266,6 +261,7 @@
 
                         <toolkit:MarkdownTextBlock
                             Grid.Row="2"
+                            Margin="0,12,0,24"
                             Background="Transparent"
                             Header3FontSize="12"
                             Header3FontWeight="Normal"
@@ -276,7 +272,11 @@
                         <ItemsRepeater
                             Grid.Row="3"
                             ItemTemplate="{StaticResource DetailsDataTemplateSelector}"
-                            ItemsSource="{x:Bind ViewModel.Details.Metadata, Mode=OneWay}" />
+                            ItemsSource="{x:Bind ViewModel.Details.Metadata, Mode=OneWay}">
+                            <ItemsRepeater.Layout>
+                                <StackLayout Spacing="8" />
+                            </ItemsRepeater.Layout>
+                        </ItemsRepeater>
                     </Grid>
                 </ScrollViewer>
                 <!--  /DetailsContent  -->
