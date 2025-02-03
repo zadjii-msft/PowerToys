@@ -625,7 +625,14 @@ different types depending on where the command is being used:
 
 The helpers library also exposes a `Invoke()` method on `InvokableCommand` which
 takes no parameters, as a convenience for developers who don't need the `sender`
-object. Feel free to imple
+object.
+
+Using the `sender` parameter can be useful for big lists of items where the
+actionable information for each item is practically the same. Consider a big
+list of links. An extension developer can implement this as a single
+`IInvokableCommand` that opens a URL based on the `sender` object passed in.
+Then each list item would store the URL to open and the title of the link. This
+creates less overhead for the extension and host to communicate.
 
 #### Results
 

@@ -316,7 +316,7 @@ internal sealed partial class SampleTreeContentPage : ContentPage
             Children = [
                 new TreeContent()
                 {
-                    RootContent = new MarkdownContent() { Body = "Yo dawg" },
+                    RootContent = new MarkdownContent() { Body = "Yo dog" },
                     Children = [
                         new TreeContent()
                         {
