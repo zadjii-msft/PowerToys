@@ -55,17 +55,4 @@
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!-- <TrimmerSingleWarn>false</TrimmerSingleWarn> -->
-    <PublishTrimmed>True</PublishTrimmed>
-    <PublishAot>True</PublishAot>
-
-    <SelfContained>true</SelfContained>
-    <PublishSingleFile>False</PublishSingleFile>
-    <!-- <PublishReadyToRun>True</PublishReadyToRun> -->
-
-    <!-- Suppress DynamicallyAccessedMemberTypes.PublicParameterlessConstructor in fallback code path of Windows SDK projection -->
-    <WarningsNotAsErrors>IL2081</WarningsNotAsErrors>
-  </PropertyGroup>
-
 </Project>
