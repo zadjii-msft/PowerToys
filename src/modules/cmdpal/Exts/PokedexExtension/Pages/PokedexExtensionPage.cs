@@ -37,12 +37,6 @@ internal sealed partial class OpenPokemonCommand : InvokableCommand
         Name = "Open";
     }
 
-    public override ICommandResult Invoke()
-    {
-        ExtensionHost.ShowStatus(new StatusMessage() { Message = "This shouldn't be called", State = MessageState.Error });
-        return CommandResult.KeepOpen();
-    }
-
     public override ICommandResult Invoke(object sender)
     {
         if (sender is PokemonListItem item)

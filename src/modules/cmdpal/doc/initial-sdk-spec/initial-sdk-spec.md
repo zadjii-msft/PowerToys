@@ -1,7 +1,7 @@
 ---
 author: Mike Griese
 created on: 2024-07-19
-last updated: 2025-01-08
+last updated: 2025-02-03
 issue id: n/a
 ---
 
@@ -58,6 +58,8 @@ functionality.
       - [Markdown Pages](#markdown-pages)
       - [Form Pages](#form-pages)
       - [Content Pages](#content-pages)
+        - [Markdown Content](#markdown-content)
+        - [Form Content](#form-content)
     - [Other types](#other-types)
       - [`ContextItem`s](#contextitems)
       - [Icons - `IconInfo` and `IconData`](#icons---iconinfo-and-icondata)
@@ -493,7 +495,7 @@ anything that a 1p built-in can do.
 The SDK for DevPal is split into two namespaces:
 * `Microsoft.Windows.Run` - This namespace contains the interfaces that
   developers will implement to create extensions for DevPal.
-* `Microsoft.Windows.Run.Extensions` - This namespace contains helper classes
+* `Microsoft.CmdPal.Extensions.Helpers` - This namespace contains helper classes
   that developers can use to make creating extensions easier.
 
 The first is highly abstract, and gives developers total control over the
@@ -569,7 +571,6 @@ interface IGoToPageArgs requires ICommandResultArgs{
 // * A ListPage
 // * the MoreCommands flyout of for a ListItem or a MarkdownPage
 interface IInvokableCommand requires ICommand {
-    ICommandResult Invoke();
     ICommandResult Invoke(Object sender);
 }
 
@@ -582,7 +583,7 @@ method will be called when the user selects the action in DevPal.
 As a simple example[^1]:
 
 ```cs
-class HackerNewsAction : Microsoft.Windows.Run.Extensions.InvokableCommand {
+class HackerNewsAction : Microsoft.CmdPal.Extensions.Helpers.InvokableCommand {
     public class HackerNewsAction()
     {
         Name = "Hacker News";
@@ -607,6 +608,24 @@ ahead to [Pages](#Pages) for more information on the different types of pages.
 The `Id` property is optional. This can be set but the extension author to
 support more efficient command lookup in
 [`ICommandProvider.GetCommand()`, below](#getcommand).
+
+When `Invoke` is called, the host app will pass in a `sender` object that
+represents the context of where that command was invoked from. This can be
+different types depending on where the command is being used:
+
+* `TopLevelCommands` (and fallbacks)
+  * Sender is the `ICommandItem` for the top-level command that was invoked
+* `IListPage.GetItems`
+  * Sender is the `IListItem` for the list item selected for that command
+* `ICommandItem.MoreCommands` (context menus)
+  * Sender is the `IListItem` which the command was attached to for a list page, or
+  * the `ICommandItem` of the top-level command (if this is a context item on a top level command)
+* `IContentPage.Commands`
+  * Sender is the `IContentPage` itself
+
+The helpers library also exposes a `Invoke()` method on `InvokableCommand` which
+takes no parameters, as a convenience for developers who don't need the `sender`
+object. Feel free to imple
 
 #### Results
 
@@ -668,9 +687,8 @@ When a user selects an action that implements `IPage`, DevPal will navigate
 to that page, pushing it onto the UI stack.
 
 Pages can be one of several types, each detailed below:
-* [List](#List)
-* [Markdown](#Markdown)
-* [Form](#Form)
+* [List](#List-Pages)
+* [Content](#Content-Pages)
 
 If a page returns a null or empty `Title`, DevPal will display the `Name` of the
 `ICommand` instead.
@@ -922,21 +940,21 @@ class NewsPost {
     string Poster;
     int Points;
 }
-class LinkAction(NewsPost post) : Microsoft.Windows.Run.Extensions.InvokableCommand {
+class LinkAction(NewsPost post) : Microsoft.CmdPal.Extensions.Helpers.InvokableCommand {
     public string Name => "Open link";
-    public ActionResult Invoke() {
+    public CommandResult Invoke() {
         Process.Start(new ProcessStartInfo(post.Url) { UseShellExecute = true });
-        return ActionResult.KeepOpen;
+        return CommandResult.KeepOpen;
     }
 }
-class CommentAction(NewsPost post) : Microsoft.Windows.Run.Extensions.InvokableCommand {
+class CommentAction(NewsPost post) : Microsoft.CmdPal.Extensions.Helpers.InvokableCommand {
     public string Name => "Open comments";
-    public ActionResult Invoke() {
+    public CommandResult Invoke() {
         Process.Start(new ProcessStartInfo(post.CommentsUrl) { UseShellExecute = true });
-        return ActionResult.KeepOpen;
+        return CommandResult.KeepOpen;
     }
 }
-class NewsListItem(NewsPost post) : Microsoft.Windows.Run.Extensions.ListItem {
+class NewsListItem(NewsPost post) : Microsoft.CmdPal.Extensions.Helpers.ListItem {
     public string Title => post.Title;
     public string Subtitle => post.Poster;
     public IContextItem[] Commands => [
@@ -945,7 +963,7 @@ class NewsListItem(NewsPost post) : Microsoft.Windows.Run.Extensions.ListItem {
     ];
     public ITag[] Tags => [ new Tag(){ Text=post.Points } ];
 }
-class HackerNewsPage: Microsoft.Windows.Run.Extensions.ListPage {
+class HackerNewsPage: Microsoft.CmdPal.Extensions.Helpers.ListPage {
     public bool Loading => true;
     IListItem[] GetItems() {
         List<NewsItem> items = /* do some RSS feed stuff */;
@@ -1105,12 +1123,6 @@ on nested pages will all work exactly as expected. -->
 
 #### Markdown Pages
 
-This is a page that displays a block of markdown text. This is useful for
-showing a lot of information in a small space. Markdown provides a rich set of
-simple formatting options.
-
-![](./markdown-mock.png)
-
 ```csharp
 interface IMarkdownPage requires IPage {
     String[] Bodies(); // TODO! should this be an IBody, so we can make it observable?
@@ -1119,75 +1131,8 @@ interface IMarkdownPage requires IPage {
 }
 ```
 
-A markdown page may also have a `Details` property, which will be displayed in
-the same way as the details for a list item. This is useful for showing
-additional information about the page, like a description, a preview of a file,
-or a link to more information.
-
-Similar to the `List` page, the `Commands` property is a list of commands that the
-user can take on the page. These are the commands that will be shown in the "More
-actions" flyout. Unlike the `List` page, the `Commands` property is not
-associated with any specific item on the page, rather, these commands are global
-to the page itself.
-
-An example markdown page for an issue on GitHub:
-
-```cs
-class GitHubIssue {
-    string Title;
-    string Url;
-    string Body;
-    string Author;
-    string[] Tags;
-    string[] AssignedTo;
-}
-class OpenLinkAction(GitHubIssue issue) : Microsoft.Windows.Run.Extensions.InvokableCommand {
-    public string Name => "Open";
-    public ActionResult Invoke() {
-        Process.Start(new ProcessStartInfo(issue.Url) { UseShellExecute = true });
-        return ActionResult.KeepOpen;
-    }
-}
-class GithubIssuePage(GithubIssue issue): Microsoft.Windows.Run.Extensions.MarkdownPage {
-    public bool Loading => true;
-    public string Body() {
-        issue.Body = /* fetch the body from the API */;
-        this.IsLoading = false;
-        return issue.Body;
-    }
-    public IContextItem[] Commands => [ new CommandContextItem(new OpenLinkAction(issue)) ];
-    public IDetails Details() {
-        return new Details(){
-            Title = "",
-            Body = "",
-            Metadata = [
-                new Microsoft.Windows.Run.Extensions.DetailsTags(){
-                    Key = "Author",
-                    Tags = new(){ new Tag(){ Text = issue.Author } }
-                },
-                new Microsoft.Windows.Run.Extensions.DetailsTags(){
-                    Key = "Assigned To",
-                    Tags = issue.AssignedTo.Select((user) => new Tag(){ Text = user }).ToArray()
-                },
-                new Microsoft.Windows.Run.Extensions.DetailsTags(){
-                    Key = "Tags",
-                    Tags = issue.Tags.Select((tag) => new Tag(){ Text = tag }).ToArray()
-                }
-            ]
-        };
-    }
-}
-```
-
 #### Form Pages
 
-A form page allows the user to input data to the extension. This is useful for
-actions that might require additional information from the user. For example:
-imagine a "Send Teams message" action. This action might require the user to
-input the message they want to send, and give the user a dropdown to pick the
-chat to send the message to.
-
-![](./form-page-prototype.png)
 
 ```csharp
 
@@ -1202,22 +1147,13 @@ interface IFormPage requires IPage {
 }
 ```
 
-Form pages are powered by [Adaptive Cards](https://adaptivecards.io/). This
-allows extension developers a rich set of controls to use in their forms. Each
-page can have as many forms as it needs. These forms will be displayed to the
-user as separate "cards", in the order they are returned by the extension.
-
-The `TemplateJson`, `DataJson`, and `StateJson` properties should be a JSON
-string that represents the Adaptive Card to be displayed to the user.
-
-When the user submits the form, the `SubmitForm` method will be called with the
-JSON payload of the form. The extension is responsible for parsing this payload
-and acting on it.
-
-[TODO!discussion]: Do we want to stick the `Actions` on this page type too? Or does that not make sense?
-
 
 #### Content Pages
+
+Content pages are used for extensions that want to display richer content than
+just a list of commands to the user. These pages are useful for displaying
+things like documents and forms. You can mix and match different types of
+content on a single page, and even nest content within other content.
 
 ```csharp
 [uuid("b64def0f-8911-4afa-8f8f-042bd778d088")]
@@ -1246,6 +1182,96 @@ interface IContentPage requires IPage, INotifyItemsChanged {
     IContextItem[] Commands { get; };
 }
 ```
+
+Content pages may also have a `Details` property, which will be displayed in
+the same way as the details for a list item. This is useful for showing
+additional information about the page, like a description, a preview of a file,
+or a link to more information.
+
+Similar to the `List` page, the `Commands` property is a list of commands that the
+user can take on the page. These are the commands that will be shown in the "More
+actions" flyout. Unlike the `List` page, the `Commands` property is not
+associated with any specific item on the page, rather, these commands are global
+to the page itself.
+
+##### Markdown Content
+
+This is a block of content that displays text formatted with Markdown. This is
+useful for showing a lot of information in a small space. Markdown provides a
+rich set of simple formatting options.
+
+![](./markdown-mock.png)
+
+
+An example markdown page for an issue on GitHub:
+
+```cs
+class GitHubIssue {
+    string Title;
+    string Url;
+    string Body;
+    string Author;
+    string[] Tags;
+    string[] AssignedTo;
+}
+class GithubIssuePage: Microsoft.CmdPal.Extensions.Helpers.ContentPage {
+    private readonly MarkdownContent issueBody;
+    public GithubIssuePage(GithubIssue issue)
+    {
+        Commands = [ new CommandContextItem(new Microsoft.CmdPal.Extensions.Helpers.OpenUrlCommand(issue.Url)) ];
+        Details = new Details(){
+            Title = "",
+            Body = "",
+            Metadata = [
+                new Microsoft.CmdPal.Extensions.Helpers.DetailsTags(){
+                    Key = "Author",
+                    Tags = [new Tag(issue.Author)]
+                },
+                new Microsoft.CmdPal.Extensions.Helpers.DetailsTags(){
+                    Key = "Assigned To",
+                    Tags = issue.AssignedTo.Select((user) => new Tag(user)).ToArray()
+                },
+                new Microsoft.CmdPal.Extensions.Helpers.DetailsTags(){
+                    Key = "Tags",
+                    Tags = issue.Tags.Select((tag) => new Tag(tag)).ToArray()
+                }
+            ]
+        };
+
+        issueBody = new MarkdownContent(issue.Body);
+    }
+
+    public override IContent[] GetContent() => [issueBody];
+}
+```
+
+> [!NOTE]
+> A real GitHub extension would likely load the issue body asynchronously. In
+> that case, the page could start a background thread to fetch the content, then
+> raise the ItemsChanged to signal the host to retrieve the new `IContent`.
+
+##### Form Content
+
+Forms allow the user to input data to the extension. This is useful for
+actions that might require additional information from the user. For example:
+imagine a "Send Teams message" action. This action might require the user to
+input the message they want to send, and give the user a dropdown to pick the
+chat to send the message to.
+
+![](./form-page-prototype.png)
+
+Form content is powered by [Adaptive Cards](https://adaptivecards.io/). This
+allows extension developers a rich set of controls to use in their forms. Each
+page can have as many forms as it needs. These forms will be displayed to the
+user as separate "cards", in the order they are returned by the extension.
+
+The `TemplateJson`, `DataJson`, and `StateJson` properties should be a JSON
+string that represents the Adaptive Card to be displayed to the user.
+
+When the user submits the form, the `SubmitForm` method will be called with the
+JSON payload of the form. The extension is responsible for parsing this payload
+and acting on it.
+
 
 ### Other types
 
@@ -1353,7 +1379,6 @@ interface ITag {
     OptionalColor Foreground { get; };
     OptionalColor Background { get; };
     String ToolTip { get; };
-    ICommand Command { get; };
 };
 
 [uuid("6a6dd345-37a3-4a1e-914d-4f658a4d583d")]
@@ -1374,6 +1399,9 @@ interface IDetailsTags requires IDetailsData {
 interface IDetailsLink requires IDetailsData {
     Windows.Foundation.Uri Link { get; };
     String Text { get; };
+}
+interface IDetailsCommand requires IDetailsData {
+    ICommand Command { get; };
 }
 [uuid("58070392-02bb-4e89-9beb-47ceb8c3d741")]
 interface IDetailsSeparator requires IDetailsData {}
@@ -1498,7 +1526,7 @@ As an example, here's how a developer might implement a fallback action that
 changes its name to be mOcKiNgCaSe.
 
 ```cs
-public class SpongebotPage : Microsoft.Windows.Run.Extensions.MarkdownPage, IFallbackHandler
+public class SpongebotPage : Microsoft.CmdPal.Extensions.Helpers.MarkdownPage, IFallbackHandler
 {
     // Name, Icon, IPropertyChanged: all those are defined in the MarkdownPage base class
     public SpongebotPage()
@@ -1542,7 +1570,7 @@ internal sealed class SpongebotCommandsProvider : CommandProvider
 }
 ```
 
-`Microsoft.Windows.Run.Extensions.FallbackCommandItem` in the SDK helpers will automatically set
+`Microsoft.CmdPal.Extensions.Helpers.FallbackCommandItem` in the SDK helpers will automatically set
 the `FallbackHandler` property on the `IFallbackCommandItem` to the `Command` it's
 initialized with, if that command implements `IFallbackHandler`. This allows the
 action to directly update itself in response to the query. You may also specify
@@ -1621,7 +1649,7 @@ We'll provide default implementations for the following interfaces:
 This will allow developers to quickly create extensions without having to worry
 about implementing every part of the interface. You can see that reference
 implementation in
-`extensionsdk\Microsoft.Windows.Run.Extensions.Lib\DefaultClasses.cs`.
+`extensionsdk\Microsoft.CmdPal.Extensions.Helpers.Lib\DefaultClasses.cs`.
 
 In addition to the default implementations we provide for the interfaces above,
 we should provide a set of helper classes that make it easier for developers to
@@ -1630,7 +1658,7 @@ write extensions.
 For example, we should have something like:
 
 ```cs
-class OpenUrlAction(string targetUrl, ActionResult result) : Microsoft.Windows.Run.Extensions.InvokableCommand {
+class OpenUrlAction(string targetUrl, CommandResult result) : Microsoft.CmdPal.Extensions.Helpers.InvokableCommand {
     public OpenUrlAction()
     {
         Name = "Open";
@@ -1648,7 +1676,7 @@ that no longer do we need to add additional classes for the actions. We just use
 the helper:
 
 ```cs
-class NewsListItem : Microsoft.Windows.Run.Extensions.ListItem {
+class NewsListItem : Microsoft.CmdPal.Extensions.Helpers.ListItem {
     private NewsPost _post;
     public NewsListItem(NewsPost post)
     {
@@ -1665,7 +1693,7 @@ class NewsListItem : Microsoft.Windows.Run.Extensions.ListItem {
     ];
     public ITag[] Tags => [ new Tag(){ Text=post.Poster, new Tag(){ Text=post.Points } } ];
 }
-class HackerNewsPage: Microsoft.Windows.Run.Extensions.ListPage {
+class HackerNewsPage: Microsoft.CmdPal.Extensions.Helpers.ListPage {
     public HackerNewsPage()
     {
         Loading = true;
@@ -1735,7 +1763,7 @@ class MyAppSettings {
     }
 }
 
-class MySettingsPage : Microsoft.Windows.Run.Extensions.FormPage
+class MySettingsPage : Microsoft.CmdPal.Extensions.Helpers.FormPage
 {
     private readonly MyAppSettings mySettings;
     public MySettingsPage(MyAppSettings s) {
@@ -1911,7 +1939,7 @@ classDiagram
 
     IInvokableCommand --|> ICommand
     class IInvokableCommand  {
-        ICommandResult Invoke()
+        ICommandResult Invoke(object context)
     }
 
     class IForm {
@@ -2064,7 +2092,7 @@ I had originally started to spec this out as:
 ```cs
 interface IInvokableCommandWithParameters requires ICommand {
     ActionParameters Parameters { get; };
-    ActionResult InvokeWithArgs(ActionArguments args);
+    CommandResult InvokeWithArgs(ActionArguments args);
 }
 ```
 
@@ -2078,7 +2106,7 @@ follow - these are not part of the current SDK spec.
 
 > [!NOTE]
 >
-> A thought: what if a action returns a `ActionResult.Entity`, then that takes
+> A thought: what if a action returns a `CommandResult.Entity`, then that takes
 > devpal back home, but leaves the entity in the query box. This would allow for
 > a Quicksilver-like "thing, do" flow. That command would prepopulate the
 > parameters. So we would then filter top-level commands based on things that can
@@ -2086,7 +2114,7 @@ follow - these are not part of the current SDK spec.
 >
 > For example: The user uses the "Search for file" list page. They find the file
 > they're looking for. That file's ListItem has a context item "With
-> {filename}..." that then returns a `ActionResult.Entity` with the file entity.
+> {filename}..." that then returns a `CommandResult.Entity` with the file entity.
 > The user is taken back to the main page, and a file picker badge (with that
 > filename) is at the top of the search box. In that state, the only commands
 > now shown are ones that can accept a File entity. This could be things like
@@ -2150,7 +2178,7 @@ The `.idl` for this SDK can be generated directly from this file. To do so, run 
 Or, to generate straight to the place I'm consuming it from:
 
 ```ps1
-.\doc\initial-sdk-spec\generate-interface.ps1 > .\extensionsdk\Microsoft.CmdPal.Extensions\Microsoft.Windows.Run.Extensions.idl
+.\doc\initial-sdk-spec\generate-interface.ps1 > .\extensionsdk\Microsoft.CmdPal.Extensions\Microsoft.CmdPal.Extensions.Helpers.idl
 ```
 
 ### Adding APIs
