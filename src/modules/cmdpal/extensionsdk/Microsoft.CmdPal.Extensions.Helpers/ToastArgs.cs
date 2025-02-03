@@ -4,9 +4,9 @@
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public abstract partial class InvokableCommand : Command, IInvokableCommand
+public partial class ToastArgs : IToastArgs
 {
-    public virtual ICommandResult Invoke() => CommandResult.KeepOpen();
+    public string? Message { get; set; }
 
-    public virtual ICommandResult Invoke(object? sender) => Invoke();
+    public ICommandResult? Result { get; set; } = CommandResult.Dismiss();
 }

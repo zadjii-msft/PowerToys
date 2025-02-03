@@ -6,18 +6,15 @@ namespace Microsoft.CmdPal.Extensions.Helpers;
 
 public partial class CommandResult : ICommandResult
 {
-    private CommandResultKind _kind = CommandResultKind.Dismiss;
-
-    // TODO: is Args needed?
     public ICommandResultArgs? Args { get; private set; }
 
-    public CommandResultKind Kind => _kind;
+    public CommandResultKind Kind { get; private set; } = CommandResultKind.Dismiss;
 
     public static CommandResult Dismiss()
     {
         return new CommandResult()
         {
-            _kind = CommandResultKind.Dismiss,
+            Kind = CommandResultKind.Dismiss,
         };
     }
 
@@ -25,7 +22,7 @@ public partial class CommandResult : ICommandResult
     {
         return new CommandResult()
         {
-            _kind = CommandResultKind.GoHome,
+            Kind = CommandResultKind.GoHome,
             Args = null,
         };
     }
@@ -34,7 +31,7 @@ public partial class CommandResult : ICommandResult
     {
         return new CommandResult()
         {
-            _kind = CommandResultKind.GoBack,
+            Kind = CommandResultKind.GoBack,
             Args = null,
         };
     }
@@ -43,7 +40,7 @@ public partial class CommandResult : ICommandResult
     {
         return new CommandResult()
         {
-            _kind = CommandResultKind.Hide,
+            Kind = CommandResultKind.Hide,
             Args = null,
         };
     }
@@ -52,8 +49,44 @@ public partial class CommandResult : ICommandResult
     {
         return new CommandResult()
         {
-            _kind = CommandResultKind.KeepOpen,
+            Kind = CommandResultKind.KeepOpen,
             Args = null,
+        };
+    }
+
+    public static CommandResult GoToPage(GoToPageArgs args)
+    {
+        return new CommandResult()
+        {
+            Kind = CommandResultKind.GoToPage,
+            Args = args,
+        };
+    }
+
+    public static CommandResult ShowToast(ToastArgs args)
+    {
+        return new CommandResult()
+        {
+            Kind = CommandResultKind.ShowToast,
+            Args = args,
+        };
+    }
+
+    public static CommandResult ShowToast(string message)
+    {
+        return new CommandResult()
+        {
+            Kind = CommandResultKind.ShowToast,
+            Args = new ToastArgs() { Message = message },
+        };
+    }
+
+    public static CommandResult Confirm(ConfirmationArgs args)
+    {
+        return new CommandResult()
+        {
+            Kind = CommandResultKind.Confirm,
+            Args = args,
         };
     }
 }
