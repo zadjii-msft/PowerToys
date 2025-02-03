@@ -4,8 +4,6 @@
 
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
-using static Microsoft.CmdPal.Extensions.Helpers.ChoiceSetSetting;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
@@ -58,19 +56,5 @@ public partial class TextSetting : Setting<string>
         }
     }
 
-    public override string ToState() => $"\"{Key}\": {JsonSerializer.Serialize(Value, StringDataContext.Default.String)}";
-}
-
-[JsonSerializable(typeof(string))]
-[JsonSerializable(typeof(Choice))]
-[JsonSerializable(typeof(List<Choice>))]
-[JsonSerializable(typeof(List<ChoiceSetSetting>))]
-[JsonSerializable(typeof(bool))]
-[JsonSerializable(typeof(int))]
-[JsonSerializable(typeof(float))]
-[JsonSerializable(typeof(Dictionary<string, object>), TypeInfoPropertyName = "Dictionary")]
-[JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
-[System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "Just used here")]
-public partial class StringDataContext : JsonSerializerContext
-{
+    public override string ToState() => $"\"{Key}\": {JsonSerializer.Serialize(Value, JsonSerializationContext.Default.String)}";
 }

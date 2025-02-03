@@ -45,7 +45,7 @@ public sealed class Settings
             .Select(s => s!);
 
         var bodies = string.Join(",", settings
-            .Select(s => JsonSerializer.Serialize(s.ToDictionary(), StringDataContext.Default.Dictionary)));
+            .Select(s => JsonSerializer.Serialize(s.ToDictionary(), JsonSerializationContext.Default.Dictionary)));
 
         var datas = string.Join(",", settings.Select(s => s.ToDataIdentifier()));
 

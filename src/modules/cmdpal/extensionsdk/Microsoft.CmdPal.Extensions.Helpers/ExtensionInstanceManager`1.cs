@@ -64,14 +64,7 @@ internal sealed partial class ExtensionInstanceManager : IClassFactory
         {
             // Create the instance of the .NET object
             var managed = _createExtension();
-
-            // ppvObject = MarshalInspectable<object>.FromManaged(_createExtension());
-            // var cw = new StrategyBasedComWrappers();
             var ins = MarshalInspectable<object>.FromManaged(managed);
-
-            // .CallerDefinedIUnknown throws an E_INVALIDARG
-            // .None and .TrackerSupport seemingly work okay on this side, though are E_NOINTERFACE on the other
-            // var token = cw.GetOrCreateComInterfaceForObject(ins, CreateComInterfaceFlags.None);
             ppvObject = ins;
         }
         else
@@ -123,9 +116,6 @@ internal sealed partial class ExtensionInstanceManager : IClassFactory
 }
 
 // https://docs.microsoft.com/windows/win32/api/unknwn/nn-unknwn-iclassfactory
-// [ComImport]
-// [ComVisible(false)]
-// [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 [GeneratedComInterface]
 [Guid("00000001-0000-0000-C000-000000000046")]
 internal partial interface IClassFactory

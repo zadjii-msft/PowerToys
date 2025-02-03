@@ -32,7 +32,7 @@ public sealed class ToggleSetting : Setting<bool>
             { "title", Label },
             { "id", Key },
             { "label", Description },
-            { "value", JsonSerializer.Serialize(Value, StringDataContext.Default.Boolean) },
+            { "value", JsonSerializer.Serialize(Value, JsonSerializationContext.Default.Boolean) },
             { "isRequired", IsRequired },
             { "errorMessage", ErrorMessage },
         };

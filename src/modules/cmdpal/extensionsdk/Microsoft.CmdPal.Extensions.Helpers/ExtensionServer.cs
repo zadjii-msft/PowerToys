@@ -28,10 +28,8 @@ public sealed partial class ExtensionServer : IDisposable
         _extensionInstanceManager ??= new ExtensionInstanceManager(wrappedCallback, restrictToMicrosoftExtensionHosts, typeof(T).GUID);
         _comWrappers ??= new StrategyBasedComWrappers();
 
-        // var f = cw.GetOrCreateComInterfaceForObject(instanceManager, CreateComInterfaceFlags.TrackerSupport);
         var f = _comWrappers.GetOrCreateComInterfaceForObject(_extensionInstanceManager, CreateComInterfaceFlags.None);
 
-        // cw.GetOrRegisterObjectForComInstance(f, CreateObjectFlags.UniqueInstance);
         var hr = Ole32.CoRegisterClassObject(
             ref clsid,
             f,

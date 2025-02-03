@@ -71,5 +71,5 @@ public sealed class ChoiceSetSetting : Setting<string>
         }
     }
 
-    public override string ToState() => $"\"{Key}\": {JsonSerializer.Serialize(Value, StringDataContext.Default.String)}";
+    public override string ToState() => $"\"{Key}\": {JsonSerializer.Serialize(Value, JsonSerializationContext.Default.String)}";
 }

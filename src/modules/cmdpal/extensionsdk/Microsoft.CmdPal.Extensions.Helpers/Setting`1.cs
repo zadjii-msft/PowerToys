@@ -49,7 +49,7 @@ public abstract class Setting<T> : ISettingsForm
 
     public string ToForm()
     {
-        var bodyJson = JsonSerializer.Serialize(ToDictionary(), StringDataContext.Default.Dictionary);
+        var bodyJson = JsonSerializer.Serialize(ToDictionary(), JsonSerializationContext.Default.Dictionary);
         var dataJson = $"\"{Key}\": \"{Key}\"";
 
         var json = $$"""
