@@ -7,13 +7,13 @@ using static Microsoft.CmdPal.Extensions.Helpers.ChoiceSetSetting;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
+[JsonSerializable(typeof(float))]
+[JsonSerializable(typeof(int))]
 [JsonSerializable(typeof(string))]
+[JsonSerializable(typeof(bool))]
 [JsonSerializable(typeof(Choice))]
 [JsonSerializable(typeof(List<Choice>))]
 [JsonSerializable(typeof(List<ChoiceSetSetting>))]
-[JsonSerializable(typeof(bool))]
-[JsonSerializable(typeof(int))]
-[JsonSerializable(typeof(float))]
 [JsonSerializable(typeof(Dictionary<string, object>), TypeInfoPropertyName = "Dictionary")]
 [JsonSourceGenerationOptions(UseStringEnumConverter = true, WriteIndented = true)]
 [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "Just used here")]
