@@ -81,6 +81,8 @@ namespace Microsoft.CmdPal.Extensions
         Hide,       // Keep this page open, but hide the palette.
         KeepOpen,   // Do nothing.
         GoToPage,   // Go to another page. GoToPageArgs will tell you where.
+        ShowToast,  // Display a transient message to the user
+        Confirm,    // Display a confirmation dialog
     };
     
     enum NavigationMode {
@@ -101,6 +103,18 @@ namespace Microsoft.CmdPal.Extensions
     interface IGoToPageArgs requires ICommandResultArgs{
         String PageId { get; };
         NavigationMode NavigationMode { get; };
+    }
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface IToastArgs requires ICommandResultArgs{
+        String Message { get; };
+        ICommandResult Result { get; };
+    }
+    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    interface IConfirmationArgs requires ICommandResultArgs{
+        String Title { get; };
+        String Description { get; };
+        ICommand PrimaryCommand { get; };
+        Boolean IsPrimaryCommandCritical { get; };
     }
     
     // This is a "leaf" of the UI. This is something that can be "done" by the user.

@@ -65,7 +65,7 @@ internal sealed partial class PostContent : TreeContent
 {
     public List<IContent> Replies { get; init; } = [];
 
-    private readonly ToastMessage _toast = new(new StatusMessage() { Message = "Reply posted", State = MessageState.Success });
+    private readonly ToastStatusMessage _toast = new(new StatusMessage() { Message = "Reply posted", State = MessageState.Success });
 
     public PostContent(string body)
     {

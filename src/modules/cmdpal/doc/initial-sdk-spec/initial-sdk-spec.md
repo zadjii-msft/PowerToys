@@ -548,6 +548,8 @@ enum CommandResultKind {
     Hide,       // Keep this page open, but hide the palette.
     KeepOpen,   // Do nothing.
     GoToPage,   // Go to another page. GoToPageArgs will tell you where.
+    ShowToast,  // Display a transient message to the user
+    Confirm,    // Display a confirmation dialog
 };
 
 enum NavigationMode {
@@ -565,6 +567,16 @@ interface ICommandResult {
 interface IGoToPageArgs requires ICommandResultArgs{
     String PageId { get; };
     NavigationMode NavigationMode { get; };
+}
+interface IToastArgs requires ICommandResultArgs{
+    String Message { get; };
+    ICommandResult Result { get; };
+}
+interface IConfirmationArgs requires ICommandResultArgs{
+    String Title { get; };
+    String Description { get; };
+    ICommand PrimaryCommand { get; };
+    Boolean IsPrimaryCommandCritical { get; };
 }
 
 // This is a "leaf" of the UI. This is something that can be "done" by the user.
@@ -669,9 +681,29 @@ Use cases for each `CommandResultKind`:
     stay in its current state.
 * `GoToPage` - Navigate to a different page in DevPal. The `GoToPageArgs`
   will specify which page to navigate to.
-  * [TODO!]: Do we actually need this, now that all the commands can be pages?
-    * Does this satisfy "I want to pop the stack, but then push something else
-      onto the stack"? Versus the default which is just "add this to the stack"?
+  * `Push`: The new page gets added to the current navigation stack. Going back
+    from the requested page will take you to the current page.
+  * `GoBack`: Go back one level, then navigate to the page. Going back from the
+    requested page will take you to the page before the current page.
+  * `GoHome`: Clear the back stack, then navigate to the page. Going back from
+    the requested page will take you to the home page (the L0).
+* `ShowToast` - Display a transient desktop-level message to the user. This is
+  especially useful for displaying confirmation that an action took place, when
+  the palette will be closed. Consider the `CopyTextCommand` in the helpers -
+  this command will show a toast with the text "Copied to clipboard", then
+  dismiss the palette.
+  * Once the message is displayed, the palette will then react to the `Result`.
+    In the helpers library, the `ToastArgs`'s default `Result` value is
+    `Dismiss`.
+  * Only one toast can be displayed at a time. If a new toast is requested
+    before the previous one is dismissed, the new toast will replace the old
+    one. This includes if the `Result` of one `IToastArgs` is another
+    `IToastArgs`.
+* `Confirm`: Display a confirmation dialog to the user. This is useful for
+  actions that are destructive or irreversible. The `ConfirmationArgs` will
+  specify the title, and description for the dialog. The primary button of the
+  dialog will activate the `Command`. If `IsPrimaryCommandCritical` is `true`,
+  the primary button will be red, indicating that it is a destructive action.
 
 ### Pages
 

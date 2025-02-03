@@ -4,7 +4,7 @@
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public partial class ToastMessage
+public partial class ToastStatusMessage
 {
     private readonly Lock _showLock = new();
     private bool _shown;
@@ -13,12 +13,12 @@ public partial class ToastMessage
 
     public int Duration { get; init; } = 2500;
 
-    public ToastMessage(StatusMessage message)
+    public ToastStatusMessage(StatusMessage message)
     {
         Message = message;
     }
 
-    public ToastMessage(string text)
+    public ToastStatusMessage(string text)
     {
         Message = new StatusMessage() { Message = text };
     }
