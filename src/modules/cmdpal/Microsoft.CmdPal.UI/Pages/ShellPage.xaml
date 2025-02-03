@@ -194,7 +194,34 @@
                             Duration="0:0:0.350" />
                     </animations:Implicit.HideAnimations>
                 </Button>
-                <cpcontrols:IconBox Grid.Column="1" Source="{x:Bind ViewModel.CurrentPage.Icon, Mode=OneWay}" />
+                <cpcontrols:IconBox
+                    Grid.Column="1"
+                    Width="16"
+                    VerticalAlignment="Center"
+                    SourceKey="{x:Bind ViewModel.CurrentPage.Icon, Mode=OneWay}"
+                    SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}"
+                    Visibility="{x:Bind ViewModel.CurrentPage.IsNested, Mode=OneWay}">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:OpacityAnimation
+                            From="0"
+                            To="1.0"
+                            Duration="0:0:0.340" />
+                        <animations:ScaleAnimation
+                            From="0.5"
+                            To="1"
+                            Duration="0:0:0.350" />
+                    </animations:Implicit.ShowAnimations>
+                    <animations:Implicit.HideAnimations>
+                        <animations:OpacityAnimation
+                            From="1.0"
+                            To="0"
+                            Duration="0:0:0.340" />
+                        <animations:ScaleAnimation
+                            From="1"
+                            To="0.5"
+                            Duration="0:0:0.350" />
+                    </animations:Implicit.HideAnimations>
+                </cpcontrols:IconBox>
                 <!--  Search box  -->
                 <cpcontrols:SearchBar
                     x:Name="SearchBox"
