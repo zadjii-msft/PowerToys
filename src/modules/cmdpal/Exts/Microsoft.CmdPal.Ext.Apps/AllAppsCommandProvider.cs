@@ -18,7 +18,7 @@ public partial class AllAppsCommandProvider : CommandProvider
     {
         Id = "AllApps";
         DisplayName = "Installed apps";
-        Icon = new("\ue71d");
+        Icon = new IconInfo("\ue71d");
 
         _listItem = new(Page) { Subtitle = "Search installed apps" };
     }

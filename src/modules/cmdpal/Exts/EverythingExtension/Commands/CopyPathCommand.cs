@@ -14,7 +14,7 @@ internal sealed partial class CopyPathCommand : InvokableCommand
     {
         _fullname = fullname;
         Name = "Copy path";
-        Icon = new("\ue8c8");
+        Icon = new IconInfo("\ue8c8");
     }
 
     public override CommandResult Invoke()

@@ -20,7 +20,7 @@ internal sealed partial class ShowFileInFolderCommand : InvokableCommand
     {
         this._item = item;
         this.Name = Resources.Indexer_Command_ShowInFolder;
-        this.Icon = new("\uE838");
+        this.Icon = new IconInfo("\uE838");
     }
 
     public override CommandResult Invoke()

@@ -27,7 +27,7 @@ internal sealed partial class CopySettingCommand : InvokableCommand
     internal CopySettingCommand(WindowsSetting entry)
     {
         Name = Resources.CopyCommand;
-        Icon = new("\xE8C8"); // Copy icon
+        Icon = new IconInfo("\xE8C8"); // Copy icon
         _entry = entry;
     }
 

@@ -14,7 +14,7 @@ public sealed partial class TogglePlayMediaCommand : InvokableCommand
     public TogglePlayMediaCommand()
     {
         Name = "No media playing";
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
     }
 
     public override CommandResult Invoke()

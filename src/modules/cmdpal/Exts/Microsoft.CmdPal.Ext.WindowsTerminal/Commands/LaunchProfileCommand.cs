@@ -32,7 +32,7 @@ internal sealed partial class LaunchProfileCommand : InvokableCommand
         this._openQuake = openQuake;
 
         this.Name = Resources.launch_profile;
-        this.Icon = new(iconPath);
+        this.Icon = new IconInfo(iconPath);
     }
 
     private void Launch(string id, string profile)

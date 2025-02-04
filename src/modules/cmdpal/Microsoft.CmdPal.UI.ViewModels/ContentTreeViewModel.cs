@@ -47,9 +47,9 @@ public partial class ContentTreeViewModel(ITreeContent _tree, IPageContext conte
     }
 
     // TODO: Does this need to hop to a _different_ thread, so that we don't block the extension while we're fetching?
-    private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchContent();
+    private void Model_ItemsChanged(object sender, IItemsChangedEventArgs args) => FetchContent();
 
-    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    private void Model_PropChanged(object sender, IPropChangedEventArgs args)
     {
         try
         {

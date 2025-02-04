@@ -24,7 +24,7 @@ internal sealed partial class YouTubeChannelVideosPage : DynamicListPage
 
     public YouTubeChannelVideosPage(string channelId = null, string channelName = null)
     {
-        Icon = new("https://www.youtube.com/favicon.ico");
+        Icon = new IconInfo("https://www.youtube.com/favicon.ico");
         Name = $"Search for Videos by {channelName ?? "Channel"}";
         this.ShowDetails = true;
 

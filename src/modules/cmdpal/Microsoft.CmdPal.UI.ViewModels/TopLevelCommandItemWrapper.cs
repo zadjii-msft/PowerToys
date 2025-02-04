@@ -86,7 +86,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
         }
     }
 
-    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    private void Model_PropChanged(object sender, IPropChangedEventArgs args)
     {
         try
         {

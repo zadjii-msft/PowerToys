@@ -20,7 +20,7 @@ internal sealed partial class YouTubeChannelsPage : DynamicListPage
 {
     public YouTubeChannelsPage()
     {
-        Icon = new("https://www.youtube.com/favicon.ico");
+        Icon = new IconInfo("https://www.youtube.com/favicon.ico");
         Name = "YouTube (Channel Search)";
         this.ShowDetails = true;
     }

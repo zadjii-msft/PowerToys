@@ -11,7 +11,7 @@ internal sealed partial class EvilSampleListPage : ListPage
 {
     public EvilSampleListPage()
     {
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = "Open";
         Title = "Evil Sample Page";
     }

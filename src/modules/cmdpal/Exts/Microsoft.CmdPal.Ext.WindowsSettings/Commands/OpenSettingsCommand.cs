@@ -27,7 +27,7 @@ internal sealed partial class OpenSettingsCommand : InvokableCommand
     internal OpenSettingsCommand(WindowsSetting entry)
     {
         Name = Resources.OpenSettings;
-        Icon = new("\xE8C8");
+        Icon = new IconInfo("\xE8C8");
         _entry = entry;
     }
 

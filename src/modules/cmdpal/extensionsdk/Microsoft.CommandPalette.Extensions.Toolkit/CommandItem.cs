@@ -6,42 +6,42 @@ namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public partial class CommandItem : BaseObservable, ICommandItem
 {
-    private IconInfo? _icon;
-    private string _title = string.Empty;
-    private string _subtitle = string.Empty;
     private ICommand? _command;
-    private IContextItem[] _moreCommands = [];
 
-    public IconInfo? Icon
+    public IIconInfo? Icon
     {
-        get => _icon ?? _command?.Icon;
+        get => field;
         set
         {
-            _icon = value;
+            field = value;
             OnPropertyChanged(nameof(Icon));
         }
     }
 
     public string Title
     {
-        get => !string.IsNullOrEmpty(this._title) ? _title : _command?.Name ?? string.Empty;
+        get => !string.IsNullOrEmpty(field) ? field : _command?.Name ?? string.Empty;
 
         set
         {
-            _title = value;
+            field = value;
             OnPropertyChanged(nameof(Title));
         }
     }
 
+= string.Empty;
+
     public string Subtitle
     {
-        get => _subtitle;
+        get;
         set
         {
-            _subtitle = value;
+            field = value;
             OnPropertyChanged(nameof(Subtitle));
         }
     }
+
+= string.Empty;
 
     public virtual ICommand? Command
     {
@@ -55,13 +55,15 @@ public partial class CommandItem : BaseObservable, ICommandItem
 
     public IContextItem[] MoreCommands
     {
-        get => _moreCommands;
+        get;
         set
         {
-            _moreCommands = value;
+            field = value;
             OnPropertyChanged(nameof(MoreCommands));
         }
     }
+
+= [];
 
     public CommandItem(ICommand command)
     {
@@ -74,7 +76,7 @@ public partial class CommandItem : BaseObservable, ICommandItem
         Command = other.Command;
         Title = other.Title;
         Subtitle = other.Subtitle;
-        Icon = other.Icon;
+        Icon = (IconInfo?)other.Icon;
         MoreCommands = other.MoreCommands;
     }
 }

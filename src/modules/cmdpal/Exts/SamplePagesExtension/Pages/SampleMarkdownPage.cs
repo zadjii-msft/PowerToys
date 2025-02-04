@@ -163,7 +163,7 @@ Result:
 
     public SampleMarkdownPage()
     {
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = "Sample Markdown Page";
     }
 

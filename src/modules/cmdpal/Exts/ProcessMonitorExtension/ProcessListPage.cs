@@ -15,7 +15,7 @@ internal sealed partial class ProcessListPage : ListPage
 {
     public ProcessListPage()
     {
-        this.Icon = new("\ue9d9");
+        this.Icon = new IconInfo("\ue9d9");
         this.Name = "Process Monitor";
     }
 

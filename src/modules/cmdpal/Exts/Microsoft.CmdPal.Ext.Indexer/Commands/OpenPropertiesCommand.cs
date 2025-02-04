@@ -52,7 +52,7 @@ internal sealed partial class OpenPropertiesCommand : InvokableCommand
     {
         this._item = item;
         this.Name = Resources.Indexer_Command_OpenProperties;
-        this.Icon = new("\uE90F");
+        this.Icon = new IconInfo("\uE90F");
     }
 
     public override CommandResult Invoke()

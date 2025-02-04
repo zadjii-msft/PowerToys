@@ -22,7 +22,7 @@ internal sealed partial class FallbackExecuteSearchItem : FallbackCommandItem
         Title = string.Empty;
         _executeItem.Name = string.Empty;
         Subtitle = string.Format(CultureInfo.CurrentCulture, PluginOpen, BrowserInfo.Name ?? BrowserInfo.MSEdgeName);
-        Icon = new("\uF6FA"); // WebSearch icon
+        Icon = new IconInfo("\uF6FA"); // WebSearch icon
     }
 
     public override void UpdateQuery(string query)

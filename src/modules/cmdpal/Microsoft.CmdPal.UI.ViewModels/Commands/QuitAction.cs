@@ -13,7 +13,7 @@ public partial class QuitCommand : InvokableCommand, IFallbackHandler
 {
     public QuitCommand()
     {
-        Icon = new("\uE711");
+        Icon = new IconInfo("\uE711");
     }
 
     public override ICommandResult Invoke()

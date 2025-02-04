@@ -28,7 +28,7 @@ internal sealed partial class SSHHostsListPage : ListPage
 
     public SSHHostsListPage()
     {
-        Icon = new("https://cdn-icons-png.flaticon.com/512/5558/5558264.png");
+        Icon = new IconInfo("https://cdn-icons-png.flaticon.com/512/5558/5558264.png");
         Name = "SSH Keychain";
     }
 

@@ -13,7 +13,7 @@ internal sealed partial class OpenExplorerCommand : InvokableCommand
     {
         _fullname = fullname;
         Name = "Open path";
-        Icon = new("\uec50");
+        Icon = new IconInfo("\uec50");
     }
 
     public override CommandResult Invoke()

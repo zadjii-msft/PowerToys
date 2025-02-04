@@ -20,7 +20,7 @@ public partial class BookmarksCommandProvider : CommandProvider
     {
         Id = "Bookmarks";
         DisplayName = "Bookmarks";
-        Icon = new("\uE718"); // Pin
+        Icon = new IconInfo("\uE718"); // Pin
 
         _addNewCommand.AddedCommand += AddNewCommand_AddedCommand;
     }

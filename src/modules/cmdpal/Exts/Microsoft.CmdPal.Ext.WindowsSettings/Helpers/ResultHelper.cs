@@ -32,7 +32,7 @@ internal static class ResultHelper
         {
             var result = new ListItem(new OpenSettingsCommand(entry))
             {
-                Icon = new(iconPath),
+                Icon = new IconInfo(iconPath),
                 Subtitle = entry.JoinedFullSettingsPath,
                 Title = entry.Name,
                 MoreCommands = ContextMenuHelper.GetContextMenu(entry).ToArray(),

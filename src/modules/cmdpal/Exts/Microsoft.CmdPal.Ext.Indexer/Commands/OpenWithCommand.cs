@@ -50,7 +50,7 @@ internal sealed partial class OpenWithCommand : InvokableCommand
     {
         this._item = item;
         this.Name = Resources.Indexer_Command_OpenWith;
-        this.Icon = new("\uE7AC");
+        this.Icon = new IconInfo("\uE7AC");
     }
 
     public override CommandResult Invoke()

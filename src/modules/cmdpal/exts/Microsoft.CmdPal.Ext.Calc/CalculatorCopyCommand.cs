@@ -15,7 +15,7 @@ public partial class CalculatorCopyCommand : InvokableCommand
 
     public CalculatorCopyCommand()
     {
-        Icon = new("\ue8ef");
+        Icon = new IconInfo("\ue8ef");
     }
 
     public override ICommandResult Invoke()

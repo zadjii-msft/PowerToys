@@ -18,7 +18,7 @@ internal sealed partial class SwitchToProcess : InvokableCommand
     public SwitchToProcess(ProcessItem process)
     {
         this.process = process;
-        this.Icon = new(process.ExePath == string.Empty ? "\uE7B8" : process.ExePath);
+        this.Icon = new IconInfo(process.ExePath == string.Empty ? "\uE7B8" : process.ExePath);
         this.Name = "Switch to";
     }
 

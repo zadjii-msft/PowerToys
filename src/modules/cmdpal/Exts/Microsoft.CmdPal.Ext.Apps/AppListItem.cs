@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Apps.Programs;
@@ -11,7 +10,7 @@ internal sealed partial class AppListItem : ListItem
 {
     private readonly AppItem _app;
     private static readonly Tag _appTag = new("App");
-    private static readonly IconInfo _openPathIcon = new("\ue838");
+    private static readonly IconInfo _openPathIcon = new IconInfo("\ue838");
 
     public AppListItem(AppItem app)
         : base(new AppCommand(app))
@@ -24,7 +23,7 @@ internal sealed partial class AppListItem : ListItem
         Details = new Details()
         {
             Title = this.Title,
-            HeroImage = Command?.Icon ?? new(string.Empty),
+            HeroImage = ((AppCommand)Command!).Icon ?? new IconInfo(string.Empty),
             Body = "### App",
         };
 

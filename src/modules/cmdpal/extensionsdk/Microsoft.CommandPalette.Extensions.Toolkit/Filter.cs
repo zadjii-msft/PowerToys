@@ -6,7 +6,7 @@ namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public partial class Filter : IFilter
 {
-    public IconInfo Icon => throw new NotImplementedException();
+    public IIconInfo Icon => throw new NotImplementedException();
 
     public string Id => throw new NotImplementedException();
 

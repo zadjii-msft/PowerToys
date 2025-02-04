@@ -10,7 +10,7 @@ internal sealed partial class SampleMarkdownManyBodies : MarkdownPage
 {
     public SampleMarkdownManyBodies()
     {
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = "Markdown with many bodies";
     }
 

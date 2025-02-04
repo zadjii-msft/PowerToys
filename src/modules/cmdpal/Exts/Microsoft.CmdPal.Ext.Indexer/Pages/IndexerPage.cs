@@ -26,7 +26,7 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
     public IndexerPage()
     {
         Id = "com.microsoft.indexer.fileSearch";
-        Icon = new("\uEC50");
+        Icon = new IconInfo("\uEC50");
         Name = Resources.Indexer_Title;
         PlaceholderText = Resources.Indexer_PlaceholderText;
 
@@ -96,7 +96,7 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
                         FullPath = result.LaunchUri,
                     })
                     {
-                        Icon = new(result.IsFolder ? "\uE838" : "\uE8E5"),
+                        Icon = new IconInfo(result.IsFolder ? "\uE838" : "\uE8E5"),
                     });
                 }
 

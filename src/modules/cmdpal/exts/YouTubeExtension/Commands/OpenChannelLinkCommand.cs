@@ -15,7 +15,7 @@ internal sealed partial class OpenChannelLinkCommand : InvokableCommand
     {
         this._channelurl = url;
         this.Name = "Open channel";
-        this.Icon = new("\uF131");
+        this.Icon = new IconInfo("\uF131");
     }
 
     public override CommandResult Invoke()

@@ -21,7 +21,7 @@ public partial class UrlCommand : InvokableCommand
     public UrlCommand(string name, string url, string type)
     {
         _url = url;
-        Icon = new(IconFromUrl(_url, type));
+        Icon = new IconInfo(IconFromUrl(_url, type));
         Name = name;
         Type = type;
         Url = url;

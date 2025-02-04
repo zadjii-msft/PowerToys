@@ -13,7 +13,7 @@ public partial class ReloadExtensionsCommand : InvokableCommand
 {
     public ReloadExtensionsCommand()
     {
-        Icon = new("\uE72C"); // Refresh icon
+        Icon = new IconInfo("\uE72C"); // Refresh icon
     }
 
     public override ICommandResult Invoke()

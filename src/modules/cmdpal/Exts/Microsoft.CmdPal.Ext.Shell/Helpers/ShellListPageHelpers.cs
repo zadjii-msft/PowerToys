@@ -30,7 +30,7 @@ public class ShellListPageHelpers
         {
             Title = cmd,
             Subtitle = Properties.Resources.cmd_plugin_name + ": " + Properties.Resources.cmd_execute_through_shell,
-            Icon = new(string.Empty),
+            Icon = new IconInfo(string.Empty),
         };
 
         return result;
@@ -55,7 +55,7 @@ public class ShellListPageHelpers
 
                     // Using CurrentCulture since this is user facing
                     Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, CmdHasBeenExecutedTimes, m.Value),
-                    Icon = new("\uE81C"),
+                    Icon = new IconInfo("\uE81C"),
                 };
                 return ret;
             }).Where(o => o != null).Take(4);
@@ -108,7 +108,7 @@ public class ShellListPageHelpers
 
                 // Using CurrentCulture since this is user facing
                 Subtitle = Properties.Resources.cmd_plugin_name + ": " + string.Format(CultureInfo.CurrentCulture, CmdHasBeenExecutedTimes, m.Value),
-                Icon = new("\uE81C"),
+                Icon = new IconInfo("\uE81C"),
             }).Take(5);
 
         return history.ToList();

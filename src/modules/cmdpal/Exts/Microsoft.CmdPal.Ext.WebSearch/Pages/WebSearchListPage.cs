@@ -30,10 +30,10 @@ internal sealed partial class WebSearchListPage : DynamicListPage
         Name = Resources.command_item_title;
         Title = Resources.command_item_title;
         PlaceholderText = Resources.plugin_description;
-        Icon = new("\uF6FA"); // WebSearch icon
+        Icon = new IconInfo("\uF6FA"); // WebSearch icon
         allItems = [new(new NoOpCommand())
         {
-            Icon = new("\uF6FA"),
+            Icon = new IconInfo("\uF6FA"),
             Title = Properties.Resources.plugin_description,
             Subtitle = string.Format(CultureInfo.CurrentCulture, PluginOpen, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),
         }
@@ -66,7 +66,7 @@ internal sealed partial class WebSearchListPage : DynamicListPage
             {
                 Title = Properties.Resources.plugin_description,
                 Subtitle = string.Format(CultureInfo.CurrentCulture, PluginInBrowserName, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),
-                Icon = new(_iconPath),
+                Icon = new IconInfo(_iconPath),
             });
         }
         else
@@ -76,7 +76,7 @@ internal sealed partial class WebSearchListPage : DynamicListPage
             {
                 Title = searchTerm,
                 Subtitle = string.Format(CultureInfo.CurrentCulture, PluginOpen, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),
-                Icon = new(_iconPath),
+                Icon = new IconInfo(_iconPath),
             };
             results.Add(result);
         }

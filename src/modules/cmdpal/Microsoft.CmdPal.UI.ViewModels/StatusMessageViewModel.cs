@@ -50,7 +50,7 @@ public partial class StatusMessageViewModel : ExtensionObjectViewModel
         model.PropChanged += Model_PropChanged;
     }
 
-    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    private void Model_PropChanged(object sender, IPropChangedEventArgs args)
     {
         try
         {

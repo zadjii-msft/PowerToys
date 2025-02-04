@@ -14,7 +14,7 @@ public partial class OpenSettingsCommand : InvokableCommand
     public OpenSettingsCommand()
     {
         Name = "Open Settings";
-        Icon = new("\uE713");
+        Icon = new IconInfo("\uE713");
     }
 
     public override ICommandResult Invoke()

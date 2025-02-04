@@ -13,7 +13,7 @@ internal sealed partial class SampleDynamicListPage : DynamicListPage
 {
     public SampleDynamicListPage()
     {
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = "Dynamic List";
         IsLoading = true;
     }

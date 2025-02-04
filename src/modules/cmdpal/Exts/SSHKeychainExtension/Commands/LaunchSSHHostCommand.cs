@@ -22,7 +22,7 @@ internal sealed partial class LaunchSSHHostCommand : InvokableCommand
     {
         this._host = host;
         this.Name = "Connect";
-        this.Icon = new("\uE8A7");
+        this.Icon = new IconInfo("\uE8A7");
     }
 
     public override CommandResult Invoke()

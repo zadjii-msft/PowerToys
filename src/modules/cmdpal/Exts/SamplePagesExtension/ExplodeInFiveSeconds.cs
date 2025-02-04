@@ -26,7 +26,7 @@ internal sealed partial class ExplodeInFiveSeconds : ListPage
     public ExplodeInFiveSeconds(bool repeat)
     {
         _repeat = repeat;
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = "Open";
     }
 

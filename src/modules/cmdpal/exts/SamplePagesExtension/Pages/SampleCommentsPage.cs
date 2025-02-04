@@ -20,7 +20,7 @@ internal sealed partial class SampleCommentsPage : ContentPage
     public SampleCommentsPage()
     {
         Name = "View Posts";
-        Icon = new("\uE90A"); // Comment
+        Icon = new IconInfo("\uE90A"); // Comment
 
         myContentTree = new()
         {

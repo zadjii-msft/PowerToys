@@ -22,7 +22,7 @@ internal sealed partial class SettingsPage : FormPage
     public SettingsPage(SettingsManager settingsManager)
     {
         Name = Properties.Resources.settings_page_name;
-        Icon = new("\uE713"); // Settings icon
+        Icon = new IconInfo("\uE713"); // Settings icon
         _settings = settingsManager.Settings;
         _settingsManager = settingsManager;
 

@@ -20,7 +20,7 @@ public partial class TreeContent : BaseObservable, ITreeContent
         }
     }
 
-    public event TypedEventHandler<object, ItemsChangedEventArgs>? ItemsChanged;
+    public event TypedEventHandler<object, IItemsChangedEventArgs>? ItemsChanged;
 
     public virtual IContent[] GetChildren() => Children;
 

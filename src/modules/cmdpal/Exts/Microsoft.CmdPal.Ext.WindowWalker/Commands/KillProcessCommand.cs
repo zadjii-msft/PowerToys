@@ -21,7 +21,7 @@ internal sealed partial class KillProcessCommand : InvokableCommand
 
     public KillProcessCommand(Window window)
     {
-        Icon = new("\xE74D"); // Delete symbol
+        Icon = new IconInfo("\xE74D"); // Delete symbol
         Name = $"{Resources.windowwalker_Kill}";
         _window = window;
     }

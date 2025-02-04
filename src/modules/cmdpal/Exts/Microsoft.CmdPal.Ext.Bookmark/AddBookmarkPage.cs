@@ -22,7 +22,7 @@ internal sealed partial class AddBookmarkPage : FormPage
 
     public AddBookmarkPage()
     {
-        this.Icon = new("\ued0e");
+        this.Icon = new IconInfo("\ued0e");
         this.Name = "Add a Bookmark";
     }
 }

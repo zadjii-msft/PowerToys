@@ -11,7 +11,7 @@ internal sealed partial class SampleListPage : ListPage
 {
     public SampleListPage()
     {
-        Icon = new("\uEA37");
+        Icon = new IconInfo("\uEA37");
         Name = "Sample List Page";
     }
 

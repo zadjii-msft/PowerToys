@@ -18,7 +18,7 @@ internal sealed partial class WindowsSettingsListPage : DynamicListPage
 
     public WindowsSettingsListPage(Classes.WindowsSettings windowsSettings)
     {
-        Icon = new("\uE713"); // Settings
+        Icon = new IconInfo("\uE713"); // Settings
         Name = "Windows Settings";
         Id = "com.microsoft.cmdpal.windowsSettings";
         _defaultIconPath = "Images/WindowsSettings.light.png";

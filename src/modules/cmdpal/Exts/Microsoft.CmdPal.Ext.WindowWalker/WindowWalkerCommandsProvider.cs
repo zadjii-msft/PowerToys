@@ -20,7 +20,7 @@ public partial class WindowWalkerCommandsProvider : CommandProvider
     {
         Id = "WindowWalker";
         DisplayName = Resources.windowwalker_name;
-        Icon = new("\ue8f9"); // SwitchApps
+        Icon = new IconInfo("\ue8f9"); // SwitchApps
 
         _windowWalkerPageItem = new CommandItem(new WindowWalkerListPage())
         {

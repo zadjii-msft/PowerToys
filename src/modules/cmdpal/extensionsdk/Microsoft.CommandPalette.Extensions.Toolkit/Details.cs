@@ -6,48 +6,53 @@ namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public partial class Details : BaseObservable, IDetails
 {
-    private IconInfo _heroImage = new(string.Empty);
-    private string _title = string.Empty;
-    private string _body = string.Empty;
-    private IDetailsElement[] _metadata = [];
-
     public IconInfo HeroImage
     {
-        get => _heroImage;
+        get => field;
         set
         {
-            _heroImage = value;
+            field = value;
             OnPropertyChanged(nameof(HeroImage));
         }
     }
 
+= new();
+
     public string Title
     {
-        get => _title;
+        get;
         set
         {
-            _title = value;
+            field = value;
             OnPropertyChanged(nameof(Title));
         }
     }
 
+= string.Empty;
+
     public string Body
     {
-        get => _body;
+        get;
         set
         {
-            _body = value;
+            field = value;
             OnPropertyChanged(nameof(Body));
         }
     }
 
+= string.Empty;
+
     public IDetailsElement[] Metadata
     {
-        get => _metadata;
+        get;
         set
         {
-            _metadata = value;
+            field = value;
             OnPropertyChanged(nameof(Metadata));
         }
     }
+
+= [];
+
+    IIconInfo IDetails.HeroImage => HeroImage;
 }

@@ -35,6 +35,6 @@ public partial class BuiltInsCommandProvider : CommandProvider
     {
         Id = "Core";
         DisplayName = "Built-in commands";
-        Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\StoreLogo.scale-200.png"));
+        Icon = new IconInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\StoreLogo.scale-200.png"));
     }
 }

@@ -20,7 +20,7 @@ internal sealed partial class OpenInConsoleCommand : InvokableCommand
     {
         this._item = item;
         this.Name = Resources.Indexer_Command_OpenPathInConsole;
-        this.Icon = new("\uE756");
+        this.Icon = new IconInfo("\uE756");
     }
 
     public override CommandResult Invoke()

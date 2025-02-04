@@ -20,7 +20,7 @@ internal sealed partial class YouTubeVideoInfoMarkdownPage : MarkdownPage
 
     public YouTubeVideoInfoMarkdownPage(YouTubeVideo video)
     {
-        Icon = new("\uE946");
+        Icon = new IconInfo("\uE946");
         Name = "See more information about this video";
         _video = video;
     }

@@ -20,7 +20,7 @@ internal sealed partial class HackerNewsPage : ListPage
 {
     public HackerNewsPage()
     {
-        Icon = new("https://news.ycombinator.com/favicon.ico");
+        Icon = new IconInfo("https://news.ycombinator.com/favicon.ico");
         Name = "Hacker News";
         AccentColor = ColorHelpers.FromRgb(255, 102, 0);
         IsLoading = true;

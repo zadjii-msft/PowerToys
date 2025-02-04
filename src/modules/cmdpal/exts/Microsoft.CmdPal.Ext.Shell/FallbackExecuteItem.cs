@@ -19,7 +19,7 @@ internal sealed partial class FallbackExecuteItem : FallbackCommandItem
         Title = string.Empty;
         _executeItem.Name = string.Empty;
         Subtitle = Properties.Resources.generic_run_command;
-        Icon = new("\uE756");
+        Icon = new IconInfo("\uE756");
     }
 
     public override void UpdateQuery(string query)

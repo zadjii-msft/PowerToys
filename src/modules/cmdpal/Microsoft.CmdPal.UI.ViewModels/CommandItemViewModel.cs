@@ -135,14 +135,14 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
             Title = "Error";
             Subtitle = "Item failed to load";
             MoreCommands = [];
-            Icon = new(new("❌")); // new("❌");
+            Icon = new(new IconInfo("❌")); // new("❌");
             Icon.InitializeProperties();
         }
 
         return false;
     }
 
-    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    private void Model_PropChanged(object sender, IPropChangedEventArgs args)
     {
         try
         {

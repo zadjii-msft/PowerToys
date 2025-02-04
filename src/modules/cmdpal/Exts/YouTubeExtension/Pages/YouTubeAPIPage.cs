@@ -21,6 +21,6 @@ internal sealed partial class YouTubeAPIPage : FormPage
     public YouTubeAPIPage()
     {
         Name = "Edit YouTube API Key";
-        Icon = new("https://www.youtube.com/favicon.ico");
+        Icon = new IconInfo("https://www.youtube.com/favicon.ico");
     }
 }

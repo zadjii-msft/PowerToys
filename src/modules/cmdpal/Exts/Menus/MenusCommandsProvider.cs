@@ -174,7 +174,7 @@ internal sealed partial class WindowMenusPage : ListPage
     public WindowMenusPage(WindowData window)
     {
         _window = window;
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = window.Title;
         ShowDetails = false;
     }
@@ -192,7 +192,7 @@ internal sealed partial class AllWindowsPage : ListPage
 
     public AllWindowsPage()
     {
-        Icon = new("\uf0b5"); // ChecklistMirrored
+        Icon = new IconInfo("\uf0b5"); // ChecklistMirrored
         Name = "Open Windows";
         ShowDetails = false;
     }

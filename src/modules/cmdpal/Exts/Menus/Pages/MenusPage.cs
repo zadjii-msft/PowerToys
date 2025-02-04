@@ -12,7 +12,7 @@ internal sealed partial class MenusPage : ListPage
 {
     public MenusPage()
     {
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = "Menus from the open windows";
     }
 

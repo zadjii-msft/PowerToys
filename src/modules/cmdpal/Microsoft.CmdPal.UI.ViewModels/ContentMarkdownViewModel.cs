@@ -35,7 +35,7 @@ public partial class ContentMarkdownViewModel(IMarkdownContent _markdown, IPageC
         model.PropChanged += Model_PropChanged;
     }
 
-    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    private void Model_PropChanged(object sender, IPropChangedEventArgs args)
     {
         try
         {

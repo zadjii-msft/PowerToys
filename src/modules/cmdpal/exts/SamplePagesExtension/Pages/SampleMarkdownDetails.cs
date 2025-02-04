@@ -10,7 +10,7 @@ internal sealed partial class SampleMarkdownDetails : MarkdownPage
 {
     public SampleMarkdownDetails()
     {
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = "Markdown with Details";
         Details = new Details()
         {

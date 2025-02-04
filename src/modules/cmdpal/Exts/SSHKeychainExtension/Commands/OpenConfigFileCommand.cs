@@ -24,7 +24,7 @@ internal sealed partial class OpenConfigFileCommand : InvokableCommand
         this.Name = "Open Config File";
 
         // TODO: Add Icon for OpenConfigFileCommand
-        this.Icon = new("\uE8A7");
+        this.Icon = new IconInfo("\uE8A7");
     }
 
     public override CommandResult Invoke()

@@ -12,7 +12,7 @@ namespace Microsoft.CommandPalette.Extensions.Toolkit;
 // (also consider this for ItemsChanged in ListPage)
 public partial class BaseObservable : INotifyPropChanged
 {
-    public event TypedEventHandler<object, PropChangedEventArgs>? PropChanged;
+    public event TypedEventHandler<object, IPropChangedEventArgs>? PropChanged;
 
     protected void OnPropertyChanged(string propertyName)
     {

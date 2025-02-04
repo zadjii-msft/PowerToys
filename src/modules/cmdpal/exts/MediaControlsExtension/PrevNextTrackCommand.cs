@@ -21,12 +21,12 @@ internal sealed partial class PrevNextTrackCommand : InvokableCommand
         if (previous)
         {
             Name = "Previous track";
-            Icon = new("\ue892");
+            Icon = new IconInfo("\ue892");
         }
         else
         {
             Name = "Next track";
-            Icon = new("\ue893");
+            Icon = new IconInfo("\ue893");
         }
     }
 

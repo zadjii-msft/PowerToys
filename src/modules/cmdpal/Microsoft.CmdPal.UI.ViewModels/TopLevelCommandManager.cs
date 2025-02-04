@@ -92,7 +92,7 @@ public partial class TopLevelCommandManager : ObservableObject,
         commandProvider.CommandsChanged += CommandProvider_CommandsChanged;
     }
 
-    private void CommandProvider_CommandsChanged(CommandProviderWrapper sender, ItemsChangedEventArgs args)
+    private void CommandProvider_CommandsChanged(CommandProviderWrapper sender, IItemsChangedEventArgs args)
     {
         // By all accounts, we're already on a background thread (the COM call
         // to handle the event shouldn't be on the main thread.). But just to
@@ -108,7 +108,7 @@ public partial class TopLevelCommandManager : ObservableObject,
     /// <param name="sender">The provider who's commands changed</param>
     /// <param name="args">the ItemsChangedEvent the provider raised</param>
     /// <returns>an awaitable task</returns>
-    private async Task UpdateCommandsForProvider(CommandProviderWrapper sender, ItemsChangedEventArgs args)
+    private async Task UpdateCommandsForProvider(CommandProviderWrapper sender, IItemsChangedEventArgs args)
     {
         // Work on a clone of the list, so that we can just do one atomic
         // update to the actual observable list at the end

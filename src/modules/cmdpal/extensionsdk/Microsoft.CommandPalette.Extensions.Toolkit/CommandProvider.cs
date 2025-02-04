@@ -8,42 +8,27 @@ namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public abstract partial class CommandProvider : ICommandProvider
 {
-    private string _id = string.Empty;
+    public string Id { get; protected set; } = string.Empty;
 
-    private string _displayName = string.Empty;
+    public string DisplayName { get; protected set; } = string.Empty;
 
-    private IconInfo _icon = new(string.Empty);
+    public IconInfo Icon { get; protected set; } = new IconInfo();
 
-    private ICommandSettings? _settings;
-
-    public string Id { get => _id; protected set => _id = value; }
-
-    public string DisplayName { get => _displayName; protected set => _displayName = value; }
-
-    public IconInfo Icon { get => _icon; protected set => _icon = value; }
-
-    public event TypedEventHandler<object, ItemsChangedEventArgs>? ItemsChanged;
+    public event TypedEventHandler<object, IItemsChangedEventArgs>? ItemsChanged;
 
     public abstract ICommandItem[] TopLevelCommands();
 
-    public virtual IFallbackCommandItem[]? FallbackCommands()
-    {
-        return null;
-    }
+    public virtual IFallbackCommandItem[]? FallbackCommands() => null;
 
-    public virtual ICommand? GetCommand(string id)
-    {
-        return null;
-    }
+    public virtual ICommand? GetCommand(string id) => null;
 
-    public ICommandSettings? Settings { get => _settings; protected set => _settings = value; }
+    public ICommandSettings? Settings { get; protected set; }
 
     public bool Frozen { get; protected set; } = true;
 
-    public virtual void InitializeWithHost(IExtensionHost host)
-    {
-        ExtensionHost.Initialize(host);
-    }
+    IIconInfo ICommandProvider.Icon => Icon;
+
+    public virtual void InitializeWithHost(IExtensionHost host) => ExtensionHost.Initialize(host);
 
 #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
     public void Dispose()

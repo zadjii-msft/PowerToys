@@ -26,7 +26,7 @@ internal sealed partial class OpenKeyInEditorCommand : InvokableCommand
     internal OpenKeyInEditorCommand(RegistryEntry entry)
     {
         Name = Resources.OpenKeyInRegistryEditor;
-        Icon = new("\xE8A7"); // OpenInNewWindow icon
+        Icon = new IconInfo("\xE8A7"); // OpenInNewWindow icon
         _entry = entry;
     }
 

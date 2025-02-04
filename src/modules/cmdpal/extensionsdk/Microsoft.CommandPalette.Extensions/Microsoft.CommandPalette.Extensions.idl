@@ -15,31 +15,31 @@ namespace Microsoft.CommandPalette.Extensions
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass IconData {
-        IconData(String iconString);
-        static IconData FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
+    interface IIconData {
+        // IIconData(String iconString);
+        // static IIconData FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
 
         String Icon { get; };
         Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass IconInfo {
-        IconInfo(String iconString);
-        IconInfo(IconData lightIcon, IconData darkIcon);
+    interface IIconInfo {
+        // IIconInfo(String iconString);
+        // IIconInfo(IconData lightIcon, IIconData darkIcon);
 
-        IconData Light { get; };
-        IconData Dark { get; };
+        IIconData Light { get; };
+        IIconData Dark { get; };
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass KeyChord
+    struct KeyChord
     {
-        KeyChord();
-        KeyChord(Windows.System.VirtualKeyModifiers modifiers, Int32 vkey, Int32 scanCode);
-        KeyChord(Boolean ctrl, Boolean alt, Boolean shift, Boolean win, Int32 vkey, Int32 scanCode);
-        UInt64 Hash();
-        Boolean Equals(KeyChord other);
+        // KeyChord();
+        // KeyChord(Windows.System.VirtualKeyModifiers modifiers, Int32 vkey, Int32 scanCode);
+        // KeyChord(Boolean ctrl, Boolean alt, Boolean shift, Boolean win, Int32 vkey, Int32 scanCode);
+        // UInt64 Hash();
+        // Boolean Equals(KeyChord other);
         Windows.System.VirtualKeyModifiers Modifiers;
         Int32 Vkey;
         Int32 ScanCode;
@@ -47,23 +47,23 @@ namespace Microsoft.CommandPalette.Extensions
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     interface INotifyPropChanged {
-        event Windows.Foundation.TypedEventHandler<Object, PropChangedEventArgs> PropChanged;
+        event Windows.Foundation.TypedEventHandler<Object, IPropChangedEventArgs> PropChanged;
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass PropChangedEventArgs {
-        PropChangedEventArgs(String propertyName);
+    interface IPropChangedEventArgs {
+        // PropChangedEventArgs(String propertyName);
         String PropertyName { get; };
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     interface INotifyItemsChanged {
-        event Windows.Foundation.TypedEventHandler<Object, ItemsChangedEventArgs> ItemsChanged;
+        event Windows.Foundation.TypedEventHandler<Object, IItemsChangedEventArgs> ItemsChanged;
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass ItemsChangedEventArgs {
-        ItemsChangedEventArgs(Int32 totalItems);
+    interface IItemsChangedEventArgs {
+        // ItemsChangedEventArgs(Int32 totalItems);
         Int32 TotalItems { get; };
     };
 
@@ -71,7 +71,7 @@ namespace Microsoft.CommandPalette.Extensions
     interface ICommand requires INotifyPropChanged{
         String Name{ get; };
         String Id{ get; };
-        IconInfo Icon{ get; };
+        IIconInfo Icon{ get; };
     }
 
     enum CommandResultKind {
@@ -138,7 +138,7 @@ namespace Microsoft.CommandPalette.Extensions
     interface IFilter requires IFilterItem {
         String Id { get; };
         String Name { get; };
-        IconInfo Icon { get; };
+        IIconInfo Icon { get; };
     }
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
@@ -163,7 +163,7 @@ namespace Microsoft.CommandPalette.Extensions
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     interface ITag {
-        IconInfo Icon { get; };
+        IIconInfo Icon { get; };
         String Text { get; };
         OptionalColor Foreground { get; };
         OptionalColor Background { get; };
@@ -180,7 +180,7 @@ namespace Microsoft.CommandPalette.Extensions
     }
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     interface IDetails {
-        IconInfo HeroImage { get; };
+        IIconInfo HeroImage { get; };
         String Title { get; };
         String Body { get; };
         IDetailsElement[] Metadata { get; };
@@ -261,7 +261,7 @@ namespace Microsoft.CommandPalette.Extensions
     interface ICommandItem requires INotifyPropChanged {
         ICommand Command{ get; };
         IContextItem[] MoreCommands{ get; };
-        IconInfo Icon{ get; };
+        IIconInfo Icon{ get; };
         String Title{ get; };
         String Subtitle{ get; };
     }
@@ -381,7 +381,7 @@ namespace Microsoft.CommandPalette.Extensions
     {
         String Id { get; };
         String DisplayName { get; };
-        IconInfo Icon { get; };
+        IIconInfo Icon { get; };
         ICommandSettings Settings { get; };
         Boolean Frozen { get; };
 

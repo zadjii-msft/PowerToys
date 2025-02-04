@@ -17,7 +17,7 @@ internal sealed partial class AppAction : InvokableCommand
         _app = app;
 
         Name = "Run";
-        Icon = new(_app.IcoPath);
+        Icon = new IconInfo(_app.IcoPath);
     }
 
     internal static async Task StartApp(string aumid)

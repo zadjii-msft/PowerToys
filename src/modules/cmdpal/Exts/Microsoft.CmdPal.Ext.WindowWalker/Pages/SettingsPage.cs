@@ -23,7 +23,7 @@ internal sealed partial class SettingsPage : FormPage
     public SettingsPage()
     {
         Name = Resources.windowwalker_settings_name;
-        Icon = new("\uE713"); // Settings icon
+        Icon = new IconInfo("\uE713"); // Settings icon
         _settingsManager = SettingsManager.Instance;
         _settings = _settingsManager.Settings;
 

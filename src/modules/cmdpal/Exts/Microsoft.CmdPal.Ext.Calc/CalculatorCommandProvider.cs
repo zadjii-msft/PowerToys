@@ -20,7 +20,7 @@ public partial class CalculatorCommandProvider : CommandProvider
     {
         Id = "Calculator";
         DisplayName = "Calculator";
-        Icon = new("\ue8ef"); // Calculator
+        Icon = new IconInfo("\ue8ef"); // Calculator
     }
 
     public override ICommandItem[] TopLevelCommands() => [_listItem];
@@ -41,7 +41,7 @@ public sealed partial class CalculatorListPage : DynamicListPage
 
     public CalculatorListPage()
     {
-        Icon = new("\ue8ef"); // Calculator
+        Icon = new IconInfo("\ue8ef"); // Calculator
         Name = "Calculator";
         PlaceholderText = "Type an equation...";
         Id = "com.microsoft.cmdpal.calculator";

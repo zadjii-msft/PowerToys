@@ -75,10 +75,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         UpdateHasStatusMessage();
     }
 
-    private void StatusMessages_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        UpdateHasStatusMessage();
-    }
+    private void StatusMessages_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => UpdateHasStatusMessage();
 
     private void UpdateHasStatusMessage()
     {
@@ -149,7 +146,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         page.PropChanged += Model_PropChanged;
     }
 
-    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    private void Model_PropChanged(object sender, IPropChangedEventArgs args)
     {
         try
         {

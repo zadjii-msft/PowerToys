@@ -17,7 +17,7 @@ public sealed partial class AllAppsPage : ListPage
     {
         StringMatcher.Instance = new StringMatcher();
         this.Name = "All Apps";
-        this.Icon = new("\ue71d");
+        this.Icon = new IconInfo("\ue71d");
         this.ShowDetails = true;
         this.IsLoading = true;
         this.PlaceholderText = "Search installed apps...";

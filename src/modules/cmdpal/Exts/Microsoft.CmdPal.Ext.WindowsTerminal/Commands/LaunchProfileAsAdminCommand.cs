@@ -32,7 +32,7 @@ internal sealed partial class LaunchProfileAsAdminCommand : InvokableCommand
         this._openQuake = openQuake;
 
         this.Name = Resources.launch_profile_as_admin;
-        this.Icon = new("\xE7EF"); // Admin icon
+        this.Icon = new IconInfo("\xE7EF"); // Admin icon
     }
 
     private void LaunchElevated(string id, string profile)

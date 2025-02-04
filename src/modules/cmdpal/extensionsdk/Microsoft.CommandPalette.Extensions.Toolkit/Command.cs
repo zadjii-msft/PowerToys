@@ -6,28 +6,31 @@ namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public partial class Command : BaseObservable, ICommand
 {
-    private string _name = string.Empty;
-    private IconInfo _icon = new(string.Empty);
-
     public string Name
     {
-        get => _name;
+        get;
         set
         {
-            _name = value;
+            field = value;
             OnPropertyChanged(nameof(Name));
         }
     }
 
+= string.Empty;
+
     public string Id { get; protected set; } = string.Empty;
 
-    public IconInfo Icon
+    public virtual IconInfo Icon
     {
-        get => _icon;
+        get;
         set
         {
-            _icon = value;
+            field = value;
             OnPropertyChanged(nameof(Icon));
         }
     }
+
+= new();
+
+    IIconInfo ICommand.Icon => Icon;
 }

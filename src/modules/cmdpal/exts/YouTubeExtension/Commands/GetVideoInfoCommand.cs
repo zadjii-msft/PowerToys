@@ -15,7 +15,7 @@ internal sealed partial class GetVideoInfoCommand : InvokableCommand
     {
         this._video = video;
         this.Name = "See more information";
-        this.Icon = new("\uE946");
+        this.Icon = new IconInfo("\uE946");
     }
 
     public override CommandResult Invoke() => CommandResult.KeepOpen();

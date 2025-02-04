@@ -12,7 +12,7 @@ internal sealed partial class TemplateExtensionPage : ListPage
 {
     public TemplateExtensionPage()
     {
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = "TemplateDisplayName";
     }
 

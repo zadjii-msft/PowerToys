@@ -16,7 +16,7 @@ public partial class ListPage : Page, IListPage
     private IGridProperties? _gridProperties;
     private ICommandItem? _emptyContent;
 
-    public event TypedEventHandler<object, ItemsChangedEventArgs>? ItemsChanged;
+    public event TypedEventHandler<object, IItemsChangedEventArgs>? ItemsChanged;
 
     public string PlaceholderText
     {

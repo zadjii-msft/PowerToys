@@ -16,6 +16,6 @@ internal sealed partial class SpongebotSettingsPage : FormPage
     public SpongebotSettingsPage()
     {
         Name = "Settings";
-        Icon = new("https://imgflip.com/s/meme/Mocking-Spongebob.jpg");
+        Icon = new IconInfo("https://imgflip.com/s/meme/Mocking-Spongebob.jpg");
     }
 }

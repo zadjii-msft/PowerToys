@@ -16,6 +16,6 @@ internal sealed partial class SampleFormPage : FormPage
     public SampleFormPage()
     {
         Name = "Sample Form";
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
     }
 }

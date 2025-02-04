@@ -15,7 +15,7 @@ internal sealed partial class OpenVideoLinkCommand : InvokableCommand
     {
         this._videourl = url;
         this.Name = "Open video";
-        this.Icon = new("\uE714");
+        this.Icon = new IconInfo("\uE714");
     }
 
     public override CommandResult Invoke()

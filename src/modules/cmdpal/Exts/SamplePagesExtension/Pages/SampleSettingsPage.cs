@@ -31,7 +31,7 @@ internal sealed partial class SampleSettingsPage : FormPage
     public SampleSettingsPage()
     {
         Name = "Sample Settings";
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         _settings.Add(new ToggleSetting("onOff", true)
             {
                 Label = "This is a toggle",

@@ -8,7 +8,7 @@ namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public abstract partial class ContentPage : Page, IContentPage
 {
-    public event TypedEventHandler<object, ItemsChangedEventArgs>? ItemsChanged;
+    public event TypedEventHandler<object, IItemsChangedEventArgs>? ItemsChanged;
 
     public IDetails? Details
     {

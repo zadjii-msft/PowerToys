@@ -119,7 +119,7 @@ internal static class ResultHelper
         return new WindowWalkerListItem(null)
         {
             Title = Resources.windowwalker_ExplorerInfoTitle,
-            Icon = new("\uE946"), // Info
+            Icon = new IconInfo("\uE946"), // Info
             Subtitle = Resources.windowwalker_ExplorerInfoSubTitle,
             Command = new ExplorerInfoResultCommand(),
         };

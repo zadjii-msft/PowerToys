@@ -64,6 +64,8 @@ public partial class Tag : BaseObservable, ITag
 
 = string.Empty;
 
+    IIconInfo ITag.Icon => Icon;
+
     public Tag()
     {
     }

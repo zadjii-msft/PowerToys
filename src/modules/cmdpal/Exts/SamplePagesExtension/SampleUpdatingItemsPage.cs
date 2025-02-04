@@ -19,7 +19,7 @@ public partial class SampleUpdatingItemsPage : ListPage
     public SampleUpdatingItemsPage()
     {
         Name = "Open";
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
     }
 
     public override IListItem[] GetItems()

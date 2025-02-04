@@ -16,7 +16,7 @@ internal sealed partial class TerminateProcess : InvokableCommand
     {
         _process = process;
         _owner = owner;
-        Icon = new("\ue74d");
+        Icon = new IconInfo("\ue74d");
         Name = "End task";
     }
 
