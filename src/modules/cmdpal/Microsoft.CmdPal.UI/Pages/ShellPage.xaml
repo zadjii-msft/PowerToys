@@ -229,7 +229,7 @@
                                 From="1.0"
                                 To="0"
                                 Duration="0:0:0.340" />
-                           <animations:ScaleAnimation
+                            <animations:ScaleAnimation
                                 From="1"
                                 To="0.8"
                                 Duration="0:0:0.350" />
