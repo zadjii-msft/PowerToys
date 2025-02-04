@@ -27,7 +27,7 @@ public partial class ActionBarViewModel : ObservableObject,
     [NotifyPropertyChangedFor(nameof(HasPrimaryCommand))]
     public partial CommandItemViewModel? PrimaryAction { get; set; }
 
-    public bool HasPrimaryCommand => PrimaryAction != null;
+    public bool HasPrimaryCommand => PrimaryAction != null && PrimaryAction.ShouldBeVisible;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSecondaryCommand))]
@@ -78,5 +78,6 @@ public partial class ActionBarViewModel : ObservableObject,
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
     [RelayCommand]
-    private void InvokeItem(CommandContextItemViewModel item) => WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
+    private void InvokeItem(CommandContextItemViewModel item) =>
+        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command, item.Model));
 }

@@ -4,7 +4,7 @@
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public class GoToPageArgs : IGoToPageArgs
+public partial class GoToPageArgs : IGoToPageArgs
 {
     public required string PageId { get; set; }
 

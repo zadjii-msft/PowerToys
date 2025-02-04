@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\Common.Dotnet.CsWinRT.props" />
+  <Import Project="..\..\..\..\Common.Dotnet.AotCompatibility.props" />
 
   <PropertyGroup>
     <OutputPath>$(SolutionDir)$(Platform)\$(Configuration)\Microsoft.CmdPal.Extensions.Helpers</OutputPath>
@@ -7,6 +8,7 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
     <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
     <ProjectPriFileName>Microsoft.CmdPal.Extensions.Helpers.pri</ProjectPriFileName>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -42,4 +44,12 @@
   <ItemGroup>
     <Content Include="$(SolutionDir)$(Platform)\$(Configuration)\Microsoft.CmdPal.Extensions\Microsoft.CmdPal.Extensions.winmd" Link="Microsoft.CmdPal.Extensions.winmd" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <PublishTrimmed>True</PublishTrimmed>
+    <PublishAot>True</PublishAot>
+
+    <!-- Suppress DynamicallyAccessedMemberTypes.PublicParameterlessConstructor in fallback code path of Windows SDK projection -->
+    <WarningsNotAsErrors>IL2081</WarningsNotAsErrors>
+  </PropertyGroup>
 </Project>
