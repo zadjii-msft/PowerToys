@@ -538,7 +538,7 @@ Use `cs` for samples.
 interface ICommand requires INotifyPropChanged{
     String Name{ get; };
     String Id{ get; };
-    IconInfo Icon{ get; };
+    IIconInfo Icon{ get; };
 }
 
 enum CommandResultKind {
@@ -778,7 +778,7 @@ interface IContextItem {}
 interface ICommandItem requires INotifyPropChanged {
     ICommand Command{ get; };
     IContextItem[] MoreCommands{ get; };
-    IconInfo Icon{ get; };
+    IIconInfo Icon{ get; };
     String Title{ get; };
     String Subtitle{ get; };
 }
@@ -1107,7 +1107,7 @@ interface ISeparatorFilterItem requires IFilterItem {}
 interface IFilter requires IFilterItem {
     String Id { get; };
     String Name { get; };
-    IconInfo Icon { get; };
+    IIconInfo Icon { get; };
 }
 
 interface IFilters {
@@ -1348,9 +1348,9 @@ struct IconData {
     String Icon { get; };
     Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
 }
-struct IconInfo {
-    IconInfo(String iconString);
-    IconInfo(IconData lightIcon, IconData darkIcon);
+struct IIconInfo {
+    IIconInfo(String iconString);
+    IIconInfo(IconData lightIcon, IconData darkIcon);
 
     IconData Light { get; };
     IconData Dark { get; };
@@ -1413,7 +1413,7 @@ block, and the generator will pull this into the file first.   -->
 
 ```c#
 interface ITag {
-    IconInfo Icon { get; };
+    IIconInfo Icon { get; };
     String Text { get; };
     OptionalColor Foreground { get; };
     OptionalColor Background { get; };
@@ -1427,7 +1427,7 @@ interface IDetailsElement {
     IDetailsData Data { get; };
 }
 interface IDetails {
-    IconInfo HeroImage { get; };
+    IIconInfo HeroImage { get; };
     String Title { get; };
     String Body { get; };
     IDetailsElement[] Metadata { get; };
@@ -1496,7 +1496,7 @@ interface ICommandProvider requires Windows.Foundation.IClosable, INotifyItemsCh
 {
     String Id { get; };
     String DisplayName { get; };
-    IconInfo Icon { get; };
+    IIconInfo Icon { get; };
     ICommandSettings Settings { get; };
     Boolean Frozen { get; };
 
@@ -1968,7 +1968,7 @@ classDiagram
     class ICommand {
         String Name
         String Id
-        IconInfo Icon
+        IIconInfo Icon
     }
     IPage --|> ICommand
     class IPage  {
@@ -2013,7 +2013,7 @@ classDiagram
     class IFilter  {
         String Id
         String Name
-        IconInfo Icon
+        IIconInfo Icon
     }
 
     class IFilters {
@@ -2029,7 +2029,7 @@ classDiagram
 
     %% IListItem --|> INotifyPropChanged
     class IListItem  {
-        IconInfo Icon
+        IIconInfo Icon
         String Title
         String Subtitle
         ICommand Command
@@ -2072,14 +2072,14 @@ classDiagram
     }
 
     class IDetails {
-        IconInfo HeroImage
+        IIconInfo HeroImage
         String Title
         String Body
         IDetailsElement[] Metadata
     }
 
     class ITag {
-        IconInfo Icon
+        IIconInfo Icon
         String Text
         Color Color
         String ToolTip
@@ -2104,7 +2104,7 @@ classDiagram
 
     class ICommandProvider {
         String DisplayName
-        IconInfo Icon
+        IIconInfo Icon
         Boolean Frozen
 
         ICommandItem[] TopLevelCommands()

@@ -73,31 +73,20 @@ namespace Microsoft.CommandPalette.Extensions
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass IconData {
-        IconData(String iconString);
-        static IconData FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
-
+    interface IIconData {
         String Icon { get; };
         Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass IconInfo {
-        IconInfo(String iconString);
-        IconInfo(IconData lightIcon, IconData darkIcon);
-
-        IconData Light { get; };
-        IconData Dark { get; };
+    interface IIconInfo {
+        IIconData Light { get; };
+        IIconData Dark { get; };
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass KeyChord
+    struct KeyChord
     {
-        KeyChord();
-        KeyChord(Windows.System.VirtualKeyModifiers modifiers, Int32 vkey, Int32 scanCode);
-        KeyChord(Boolean ctrl, Boolean alt, Boolean shift, Boolean win, Int32 vkey, Int32 scanCode);
-        UInt64 Hash();
-        Boolean Equals(KeyChord other);
         Windows.System.VirtualKeyModifiers Modifiers;
         Int32 Vkey;
         Int32 ScanCode;
@@ -105,23 +94,21 @@ namespace Microsoft.CommandPalette.Extensions
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     interface INotifyPropChanged {
-        event Windows.Foundation.TypedEventHandler<Object, PropChangedEventArgs> PropChanged;
+        event Windows.Foundation.TypedEventHandler<Object, IPropChangedEventArgs> PropChanged;
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass PropChangedEventArgs {
-        PropChangedEventArgs(String propertyName);
+    interface IPropChangedEventArgs {
         String PropertyName { get; };
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     interface INotifyItemsChanged {
-        event Windows.Foundation.TypedEventHandler<Object, ItemsChangedEventArgs> ItemsChanged;
+        event Windows.Foundation.TypedEventHandler<Object, IItemsChangedEventArgs> ItemsChanged;
     };
 
     [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
-    runtimeclass ItemsChangedEventArgs {
-        ItemsChangedEventArgs(Int32 totalItems);
+    interface IItemsChangedEventArgs {
         Int32 TotalItems { get; };
     };
 
