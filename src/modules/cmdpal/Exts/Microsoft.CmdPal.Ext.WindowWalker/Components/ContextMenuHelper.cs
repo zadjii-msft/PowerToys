@@ -5,11 +5,11 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using ABI.Microsoft.CmdPal.Extensions;
+using ABI.Microsoft.CommandPalette.Extensions;
 using Microsoft.CmdPal.Ext.WindowWalker.Commands;
 using Microsoft.CmdPal.Ext.WindowWalker.Helpers;
 using Microsoft.CmdPal.Ext.WindowWalker.Properties;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.System;
 
 namespace Microsoft.CmdPal.Ext.WindowWalker.Components;

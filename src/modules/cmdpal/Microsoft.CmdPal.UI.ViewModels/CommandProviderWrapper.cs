@@ -4,8 +4,8 @@
 
 using System.Diagnostics;
 using Microsoft.CmdPal.Common.Services;
-using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Microsoft.CommandPalette.Extensions;
 using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;

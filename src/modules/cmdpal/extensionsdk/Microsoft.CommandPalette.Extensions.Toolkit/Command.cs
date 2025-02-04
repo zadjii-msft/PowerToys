@@ -1,0 +1,33 @@
+﻿// Copyright (c) Microsoft Corporation
+// The Microsoft Corporation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+namespace Microsoft.CommandPalette.Extensions.Toolkit;
+
+public partial class Command : BaseObservable, ICommand
+{
+    private string _name = string.Empty;
+    private IconInfo _icon = new(string.Empty);
+
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            _name = value;
+            OnPropertyChanged(nameof(Name));
+        }
+    }
+
+    public string Id { get; protected set; } = string.Empty;
+
+    public IconInfo Icon
+    {
+        get => _icon;
+        set
+        {
+            _icon = value;
+            OnPropertyChanged(nameof(Icon));
+        }
+    }
+}

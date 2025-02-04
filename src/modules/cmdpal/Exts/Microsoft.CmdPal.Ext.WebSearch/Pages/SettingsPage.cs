@@ -4,14 +4,14 @@
 
 using Microsoft.CmdPal.Ext.WebSearch.Helpers;
 using Microsoft.CmdPal.Ext.WebSearch.Properties;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.WebSearch.Pages;
 
 internal sealed partial class SettingsPage : FormPage
 {
-    private readonly Microsoft.CmdPal.Extensions.Helpers.Settings _settings;
+    private readonly Microsoft.CommandPalette.Extensions.Toolkit.Settings _settings;
     private readonly SettingsManager _settingsManager;
 
     public override IForm[] Forms()
@@ -30,5 +30,5 @@ internal sealed partial class SettingsPage : FormPage
         _settings.SettingsChanged += SettingsChanged;
     }
 
-    private void SettingsChanged(object sender, Microsoft.CmdPal.Extensions.Helpers.Settings args) => _settingsManager.SaveSettings();
+    private void SettingsChanged(object sender, Microsoft.CommandPalette.Extensions.Toolkit.Settings args) => _settingsManager.SaveSettings();
 }

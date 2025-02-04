@@ -5,7 +5,7 @@
 using System.Globalization;
 using System.Text;
 using Microsoft.CmdPal.Ext.WebSearch.Helpers;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using BrowserInfo = Microsoft.CmdPal.Ext.WebSearch.Helpers.DefaultBrowserInfo;
 
 namespace Microsoft.CmdPal.Ext.WebSearch.Commands;

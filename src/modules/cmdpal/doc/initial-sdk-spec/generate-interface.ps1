@@ -11,10 +11,10 @@ foreach ($item in $json.children) {
         if ($item.language -eq 'c#') {
             $code = $item.children.content
             # Each line that starts with `runtimeclass` or `interface` should be prefixed with the contract attribute
-            $code = $code -replace "(?m)^(runtimeclass|interface) ", "[contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]`n`$1 "
+            $code = $code -replace "(?m)^(runtimeclass|interface) ", "[contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]`n`$1 "
 
             # if there are two [contract] attributes, remove the second one
-            $code = $code -replace "(?m)^\[contract\(Microsoft.CmdPal.Extensions.ExtensionsContract, ([0-9]+)\)\]\n\[contract\(Microsoft.CmdPal.Extensions.ExtensionsContract, 1\)\]", "[contract(Microsoft.CmdPal.Extensions.ExtensionsContract, `$1)]"
+            $code = $code -replace "(?m)^\[contract\(Microsoft.CommandPalette.Extensions.ExtensionsContract, ([0-9]+)\)\]\n\[contract\(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1\)\]", "[contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, `$1)]"
 
 
             # all the lines that start with `(whitespace)async (T)` should be translated to `IAsyncOperation<T>`
@@ -35,10 +35,10 @@ foreach ($item in $json.children) {
         if ($item.language -eq 'csharp') {
             $code = $item.children.content
             # Each line that starts with `runtimeclass` or `interface` should be prefixed with the contract attribute
-            $code = $code -replace "(?m)^(runtimeclass|interface) ", "[contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]`n`$1 "
+            $code = $code -replace "(?m)^(runtimeclass|interface) ", "[contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]`n`$1 "
 
             # if there are two [contract] attributes, remove the second one
-            $code = $code -replace "(?m)^\[contract\(Microsoft.CmdPal.Extensions.ExtensionsContract, ([0-9]+)\)\]\n\[contract\(Microsoft.CmdPal.Extensions.ExtensionsContract, 1\)\]", "[contract(Microsoft.CmdPal.Extensions.ExtensionsContract, `$1)]"
+            $code = $code -replace "(?m)^\[contract\(Microsoft.CommandPalette.Extensions.ExtensionsContract, ([0-9]+)\)\]\n\[contract\(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1\)\]", "[contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, `$1)]"
 
 
             # all the lines that start with `(whitespace)async (T)` should be translated to `IAsyncOperation<T>`
@@ -56,23 +56,23 @@ foreach ($item in $json.children) {
 
 # now, write the fully formatted interface with headers and all:
 Write-Output @"
-namespace Microsoft.CmdPal.Extensions
+namespace Microsoft.CommandPalette.Extensions
 {
     [contractversion(1)]
     apicontract ExtensionsContract {}
 
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     interface IExtension {
         IInspectable GetProvider(ProviderType providerType);
         void Dispose();
     };
 
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     enum ProviderType {
         Commands = 0,
     };
 
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     runtimeclass IconData {
         IconData(String iconString);
         static IconData FromStream(Windows.Storage.Streams.IRandomAccessStreamReference stream);
@@ -81,7 +81,7 @@ namespace Microsoft.CmdPal.Extensions
         Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
     };
 
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     runtimeclass IconInfo {
         IconInfo(String iconString);
         IconInfo(IconData lightIcon, IconData darkIcon);
@@ -90,7 +90,7 @@ namespace Microsoft.CmdPal.Extensions
         IconData Dark { get; };
     };
 
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     runtimeclass KeyChord
     {
         KeyChord();
@@ -103,23 +103,23 @@ namespace Microsoft.CmdPal.Extensions
         Int32 ScanCode;
     };
 
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     interface INotifyPropChanged {
         event Windows.Foundation.TypedEventHandler<Object, PropChangedEventArgs> PropChanged;
     };
 
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     runtimeclass PropChangedEventArgs {
         PropChangedEventArgs(String propertyName);
         String PropertyName { get; };
     };
 
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     interface INotifyItemsChanged {
         event Windows.Foundation.TypedEventHandler<Object, ItemsChangedEventArgs> ItemsChanged;
     };
 
-    [contract(Microsoft.CmdPal.Extensions.ExtensionsContract, 1)]
+    [contract(Microsoft.CommandPalette.Extensions.ExtensionsContract, 1)]
     runtimeclass ItemsChangedEventArgs {
         ItemsChangedEventArgs(Int32 totalItems);
         Int32 TotalItems { get; };

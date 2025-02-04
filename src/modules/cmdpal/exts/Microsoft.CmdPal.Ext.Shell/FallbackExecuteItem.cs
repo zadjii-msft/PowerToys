@@ -4,7 +4,7 @@
 
 using Microsoft.CmdPal.Ext.Shell.Commands;
 using Microsoft.CmdPal.Ext.Shell.Helpers;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Shell;
 
