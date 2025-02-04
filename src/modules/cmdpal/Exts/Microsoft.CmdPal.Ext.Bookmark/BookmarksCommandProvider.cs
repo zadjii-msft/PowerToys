@@ -65,7 +65,9 @@ public partial class BookmarksCommandProvider : CommandProvider
                             var url = urlToken.ToString();
                             var type = typeToken.ToString();
 
-                            collected.Add((url.Contains('{') && url.Contains('}')) ? new BookmarkPlaceholderPage(name, url, type) : new UrlCommand(name, url, type));
+                            collected.Add((url.Contains('{') && url.Contains('}')) ?
+                                new BookmarkPlaceholderPage(name, url, type) :
+                                new UrlCommand(name, url, type));
                         }
                     }
                 }
