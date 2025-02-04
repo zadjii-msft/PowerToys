@@ -141,7 +141,7 @@ In the simplest case, extensions for Dev Pal can register themselves using their
         </com:ComServer>
     </com:Extension>
     <uap3:Extension Category="windows.appExtension">
-        <uap3:AppExtension Name="com.microsoft.windows.commandpalette"
+        <uap3:AppExtension Name="com.microsoft.commandpalette"
                            Id="YourApplicationUniqueId"
                            PublicFolder="Public"
                            DisplayName="Sample Extension"
@@ -167,7 +167,7 @@ Notable elements:
   we can instantiate.
   * Make sure that this CLSID is unique, and matches the one in your application
 * The application must specify a `Extensions.uap3Extension.AppExtension` with
-  the Name set to `com.microsoft.windows.commandpalette`. This is the unique identifier which
+  the Name set to `com.microsoft.commandpalette`. This is the unique identifier which
   DevPal can use to find it's extensions.
 * In the `Properties` of your `AppExtension`, you must specify a
   `CmdPalProvider` element. This is where you specify the CLSID of the COM class
@@ -185,7 +185,7 @@ This is all exactly the same as the Dev Home Extension model, with a different
 Fortunately for DevPal, it is quite trivial to enumerate installed packages that
 have registered themselves as a `AppExtension` extensions. This is done by
 querying the `AppExtensionCatalog` for all extensions with the `Name` set to
-`com.microsoft.windows.commandpalette`.
+`com.microsoft.commandpalette`.
 
 #### Unpackaged extensions
 
@@ -448,7 +448,7 @@ apps who's manifest specifies that they are an extension. We could launch
 something like:
 
 ```
-ms-windows-store://assoc/?Tags=AppExtension-com.microsoft.windows.commandpalette
+ms-windows-store://assoc/?Tags=AppExtension-com.microsoft.commandpalette
 ```
 
 to open the store to a list of extensions. However, we can't list those
@@ -493,7 +493,7 @@ anything that a 1p built-in can do.
 ## SDK overview
 
 The SDK for DevPal is split into two namespaces:
-* `Microsoft.Windows.Run` - This namespace contains the interfaces that
+* `Microsoft.CommandPalette.Extensions` - This namespace contains the interfaces that
   developers will implement to create extensions for DevPal.
 * `Microsoft.CommandPalette.Extensions.Toolkit` - This namespace contains helper classes
   that developers can use to make creating extensions easier.
@@ -506,14 +506,14 @@ extensions simpler.
 ## Commands SDK details
 
 Below details the SDK that developers can use to create extensions for the
-DevPal. These interfaces are exposed through the `Microsoft.Windows.Run`
+DevPal. These interfaces are exposed through the `Microsoft.CommandPalette.Extensions`
 namespace. We'll expose an SDK with helper classes and default implementations
 in the `Microsoft.CommandPalette.Extensions` namespace.
 
 > [NOTE!]
 >
 > In the following SDK details, `csharp` & `c#` code fences to show snippets of
-> what the `Microsoft.Windows.Run` interface will look like. This is roughly
+> what the `Microsoft.CommandPalette.Extensions` interface will look like. This is roughly
 > `midl` v3 in this spec, with one modification. I'm using the made up `async`
 > keyword to indicate that a method is async. In the real `.idl`, these methods
 > will be replaced with `IAsyncAction` for `async void` and `IAsyncOperation<T>`

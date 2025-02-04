@@ -58,12 +58,12 @@
 
 		<uap3:Extension Category="windows.appExtensionHost">
 		  <uap3:AppExtensionHost>
-			<uap3:Name>com.microsoft.windows.commandpalette</uap3:Name>
+			<uap3:Name>com.microsoft.commandpalette</uap3:Name>
 		  </uap3:AppExtensionHost>
 		</uap3:Extension>
 
 	  </Extensions>
-		
+
     </Application>
   </Applications>
 
