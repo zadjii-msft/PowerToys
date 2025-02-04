@@ -6,7 +6,7 @@ namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public partial class Details : BaseObservable, IDetails
 {
-    public IconInfo HeroImage
+    public IIconInfo HeroImage
     {
         get => field;
         set
@@ -16,7 +16,7 @@ public partial class Details : BaseObservable, IDetails
         }
     }
 
-= new();
+= new IconInfo();
 
     public string Title
     {
@@ -53,6 +53,4 @@ public partial class Details : BaseObservable, IDetails
     }
 
 = [];
-
-    IIconInfo IDetails.HeroImage => HeroImage;
 }

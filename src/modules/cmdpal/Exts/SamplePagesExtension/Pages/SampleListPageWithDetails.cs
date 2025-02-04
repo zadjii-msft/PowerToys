@@ -62,7 +62,7 @@ internal sealed partial class SampleListPageWithDetails : ListPage
                 Details = new Details()
                 {
                     Title = "Hero Image Example",
-                    HeroImage = new("https://m.media-amazon.com/images/M/MV5BNDBkMzVmNGQtYTM2OC00OWRjLTk5OWMtNzNkMDI4NjFjNTZmXkEyXkFqcGdeQXZ3ZXNsZXk@._V1_QL75_UX500_CR0,0,500,281_.jpg"),
+                    HeroImage = new IconInfo("https://m.media-amazon.com/images/M/MV5BNDBkMzVmNGQtYTM2OC00OWRjLTk5OWMtNzNkMDI4NjFjNTZmXkEyXkFqcGdeQXZ3ZXNsZXk@._V1_QL75_UX500_CR0,0,500,281_.jpg"),
                     Body = "It is literally an image of a hero",
                 },
             },

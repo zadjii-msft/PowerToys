@@ -30,7 +30,7 @@ public partial class Tag : BaseObservable, ITag
         }
     }
 
-    public IconInfo Icon
+    public IIconInfo Icon
     {
         get;
         set
@@ -40,7 +40,7 @@ public partial class Tag : BaseObservable, ITag
         }
     }
 
-= new(string.Empty);
+= new IconInfo();
 
     public string Text
     {
@@ -63,8 +63,6 @@ public partial class Tag : BaseObservable, ITag
     }
 
 = string.Empty;
-
-    IIconInfo ITag.Icon => Icon;
 
     public Tag()
     {

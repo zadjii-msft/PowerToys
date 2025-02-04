@@ -25,15 +25,9 @@ internal sealed partial class YouTubeChannelsPage : DynamicListPage
         this.ShowDetails = true;
     }
 
-    public override void UpdateSearchText(string oldSearch, string newSearch)
-    {
-        RaiseItemsChanged(0); // 0 is bodgy
-    }
+    public override void UpdateSearchText(string oldSearch, string newSearch) => RaiseItemsChanged(0); // 0 is bodgy
 
-    public override IListItem[] GetItems()
-    {
-        return DoGetItems(SearchText).GetAwaiter().GetResult(); // Fetch and await the task synchronously
-    }
+    public override IListItem[] GetItems() => DoGetItems(SearchText).GetAwaiter().GetResult(); // Fetch and await the task synchronously
 
     private async Task<IListItem[]> DoGetItems(string query)
     {
@@ -48,7 +42,7 @@ internal sealed partial class YouTubeChannelsPage : DynamicListPage
             Details = new Details()
             {
                 Title = channel.Name,
-                HeroImage = new(channel.ProfilePicUrl),
+                HeroImage = new IconInfo(channel.ProfilePicUrl),
                 Body = $"Subscribers: {channel.SubscriberCount}\nChannel Description: {channel.Description}",
             },
             MoreCommands = [

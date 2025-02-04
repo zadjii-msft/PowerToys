@@ -43,7 +43,7 @@ internal sealed partial class YouTubeVideosPage : DynamicListPage
             Details = new Details()
             {
                 Title = video.Title,
-                HeroImage = new(video.ThumbnailUrl),
+                HeroImage = new IconInfo(video.ThumbnailUrl),
                 Body = $"{video.Channel}",
             },
             Tags = [new Tag()
