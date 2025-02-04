@@ -65,3 +65,6 @@ using System.Diagnostics.CodeAnalysis;
 
 // AOT
 [assembly: SuppressMessage("CommunityToolkit.Mvvm.SourceGenerators.ObservablePropertyGenerator", "MVVMTK0045:Using [ObservableProperty] on fields is not AOT compatible for WinRT", Justification = "Updated MVVM toolkit package introduced this.", Scope = "namespaceanddescendants", Target = "HostsUILib")]
+[assembly: SuppressMessage("CommunityToolkit.Mvvm.SourceGenerators.ObservablePropertyGenerator", "MVVMTK0045:Using [ObservableProperty] on fields is not AOT compatible for WinRT", Justification = "Updated MVVM toolkit package introduced this.", Scope = "namespaceanddescendants", Target = "Peek.UI")]
+[assembly: SuppressMessage("CommunityToolkit.Mvvm.SourceGenerators.ObservablePropertyGenerator", "MVVMTK0045:Using [ObservableProperty] on fields is not AOT compatible for WinRT", Justification = "Updated MVVM toolkit package introduced this.", Scope = "namespaceanddescendants", Target = "Peek.UI.Views")]
+[assembly: SuppressMessage("CommunityToolkit.Mvvm.SourceGenerators.INotifyPropertyChangedGenerator", "MVVMTK0049:Using [INotifyPropertyChanged] is not AOT compatible for WinRT", Justification = "Updated MVVM toolkit package introduced this.", Scope = "type", Target = "~T:Peek.UI.Views.TitleBar")]
