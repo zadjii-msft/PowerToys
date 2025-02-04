@@ -14,7 +14,7 @@ using Windows.System;
 
 namespace Microsoft.CmdPal.UI.Controls;
 
-public sealed partial class ActionBar : UserControl,
+public sealed partial class CommandBar : UserControl,
     IRecipient<OpenContextMenuMessage>,
     ICurrentPageAware
 {
@@ -28,9 +28,9 @@ public sealed partial class ActionBar : UserControl,
 
     // Using a DependencyProperty as the backing store for CurrentPage.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty CurrentPageViewModelProperty =
-        DependencyProperty.Register(nameof(CurrentPageViewModel), typeof(PageViewModel), typeof(ActionBar), new PropertyMetadata(null));
+        DependencyProperty.Register(nameof(CurrentPageViewModel), typeof(PageViewModel), typeof(CommandBar), new PropertyMetadata(null));
 
-    public ActionBar()
+    public CommandBar()
     {
         this.InitializeComponent();
 
