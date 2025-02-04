@@ -4,30 +4,21 @@
 
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
 public abstract class JsonSettingsManager
 {
-    private readonly Settings _settings = new();
-
-    public Settings Settings => _settings;
+    public Settings Settings { get; } = new();
 
     public string FilePath { get; init; } = string.Empty;
 
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         WriteIndented = true,
-        Converters = { new JsonStringEnumConverter() },
     };
 
-    public Settings GetSettings()
-    {
-        return _settings;
-    }
-
-    public void LoadSettings()
+    public virtual void LoadSettings()
     {
         if (string.IsNullOrEmpty(FilePath))
         {
@@ -49,7 +40,7 @@ public abstract class JsonSettingsManager
             // Is it valid JSON?
             if (JsonNode.Parse(jsonContent) is JsonObject savedSettings)
             {
-                _settings.Update(jsonContent);
+                Settings.Update(jsonContent);
             }
             else
             {
@@ -62,7 +53,7 @@ public abstract class JsonSettingsManager
         }
     }
 
-    public void SaveSettings()
+    public virtual void SaveSettings()
     {
         if (string.IsNullOrEmpty(FilePath))
         {
@@ -72,7 +63,7 @@ public abstract class JsonSettingsManager
         try
         {
             // Serialize the main dictionary to JSON and save it to the file
-            var settingsJson = _settings.ToJson();
+            var settingsJson = Settings.ToJson();
 
             // Is it valid JSON?
             if (JsonNode.Parse(settingsJson) is JsonObject newSettings)

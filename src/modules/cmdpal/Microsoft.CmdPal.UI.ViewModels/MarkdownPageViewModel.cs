@@ -4,6 +4,7 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
@@ -29,8 +30,8 @@ public partial class MarkdownPageViewModel : PageViewModel
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
-    public MarkdownPageViewModel(IMarkdownPage model, TaskScheduler scheduler)
-        : base(model, scheduler)
+    public MarkdownPageViewModel(IMarkdownPage model, TaskScheduler scheduler, CommandPaletteHost host)
+        : base(model, scheduler, host)
     {
         _model = new(model);
     }
@@ -38,7 +39,7 @@ public partial class MarkdownPageViewModel : PageViewModel
     //// Run on background thread, from InitializeAsync or Model_ItemsChanged
     private void FetchContent()
     {
-        List<string> newBodies = new();
+        List<string> newBodies = [];
         try
         {
             var newItems = _model.Unsafe!.Bodies();

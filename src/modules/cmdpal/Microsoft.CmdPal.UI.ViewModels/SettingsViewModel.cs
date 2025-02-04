@@ -33,15 +33,56 @@ public partial class SettingsViewModel : PageViewModel
         }
     }
 
+    public bool HotkeyGoesHome
+    {
+        get => _settings.HotkeyGoesHome;
+        set
+        {
+            _settings.HotkeyGoesHome = value;
+            Save();
+        }
+    }
+
+    public bool BackspaceGoesBack
+    {
+        get => _settings.BackspaceGoesBack;
+        set
+        {
+            _settings.BackspaceGoesBack = value;
+            Save();
+        }
+    }
+
+    public bool SingleClickActivates
+    {
+        get => _settings.SingleClickActivates;
+        set
+        {
+            _settings.SingleClickActivates = value;
+            Save();
+        }
+    }
+
+    public bool HighlightSearchOnActivate
+    {
+        get => _settings.HighlightSearchOnActivate;
+        set
+        {
+            _settings.HighlightSearchOnActivate = value;
+            Save();
+        }
+    }
+
     public ObservableCollection<ProviderSettingsViewModel> CommandProviders { get; } = [];
 
     public SettingsViewModel(SettingsModel settings, IServiceProvider serviceProvider, TaskScheduler scheduler)
-        : base(null, scheduler)
+        : base(null, scheduler, CommandPaletteHost.Instance)
     {
         _settings = settings;
         _serviceProvider = serviceProvider;
 
-        Icon = new("\uE713");
+        Icon = new(new("\uE713"));
+        Icon.InitializeProperties();
         IsInitialized = true;
         ModelIsLoading = false;
         Title = "Settings";
@@ -76,8 +117,5 @@ public partial class SettingsViewModel : PageViewModel
         return allProviders;
     }
 
-    private void Save()
-    {
-        SettingsModel.SaveSettings(_settings);
-    }
+    private void Save() => SettingsModel.SaveSettings(_settings);
 }

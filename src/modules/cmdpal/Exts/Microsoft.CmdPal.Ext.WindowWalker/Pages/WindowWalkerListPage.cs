@@ -22,6 +22,7 @@ internal sealed partial class WindowWalkerListPage : DynamicListPage, IDisposabl
         Icon = new("\ue8f9"); // SwitchApps
         Name = Resources.windowwalker_name;
         Id = "com.microsoft.cmdpal.windowwalker";
+        PlaceholderText = Resources.windowwalker_PlaceholderText;
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch) =>
@@ -40,7 +41,7 @@ internal sealed partial class WindowWalkerListPage : DynamicListPage, IDisposabl
         SearchController.Instance.UpdateSearchText(query);
         var searchControllerResults = SearchController.Instance.SearchMatches;
 
-        return ResultHelper.GetResultList(searchControllerResults, !string.IsNullOrEmpty(query), "\uE946");
+        return ResultHelper.GetResultList(searchControllerResults, !string.IsNullOrEmpty(query));
     }
 
     public override IListItem[] GetItems() => Query(SearchText).ToArray();

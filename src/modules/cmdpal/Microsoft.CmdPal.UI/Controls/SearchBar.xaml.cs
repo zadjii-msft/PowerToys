@@ -20,6 +20,7 @@ namespace Microsoft.CmdPal.UI.Controls;
 
 public sealed partial class SearchBar : UserControl,
     IRecipient<GoHomeMessage>,
+    IRecipient<FocusSearchBoxMessage>,
     ICurrentPageAware
 {
     private readonly DispatcherQueue _queue = DispatcherQueue.GetForCurrentThread();
@@ -43,14 +44,23 @@ public sealed partial class SearchBar : UserControl,
     private static void OnCurrentPageViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         //// TODO: If the Debounce timer hasn't fired, we may want to store the current Filter in the OldValue/prior VM, but we don't want that to go actually do work...
+        var @this = (SearchBar)d;
 
-        if (d is SearchBar @this
+        if (@this != null
+            && e.OldValue is PageViewModel old)
+        {
+            old.PropertyChanged -= @this.Page_PropertyChanged;
+        }
+
+        if (@this != null
             && e.NewValue is PageViewModel page)
         {
             // TODO: In some cases we probably want commands to clear a filter
             // somewhere in the process, so we need to figure out when that is.
             @this.FilterBox.Text = page.Filter;
             @this.FilterBox.Select(@this.FilterBox.Text.Length, 0);
+
+            page.PropertyChanged += @this.Page_PropertyChanged;
         }
     }
 
@@ -58,6 +68,7 @@ public sealed partial class SearchBar : UserControl,
     {
         this.InitializeComponent();
         WeakReferenceMessenger.Default.Register<GoHomeMessage>(this);
+        WeakReferenceMessenger.Default.Register<FocusSearchBoxMessage>(this);
     }
 
     public void ClearSearch()
@@ -73,6 +84,16 @@ public sealed partial class SearchBar : UserControl,
             {
                 CurrentPageViewModel.Filter = string.Empty;
             }
+        }));
+    }
+
+    public void SelectSearch()
+    {
+        // TODO GH #239 switch back when using the new MD text block
+        // _ = _queue.EnqueueAsync(() =>
+        _queue.TryEnqueue(new(() =>
+        {
+            this.FilterBox.SelectAll();
         }));
     }
 
@@ -117,7 +138,7 @@ public sealed partial class SearchBar : UserControl,
         {
             if (string.IsNullOrEmpty(FilterBox.Text))
             {
-                WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
+                WeakReferenceMessenger.Default.Send<NavigateBackMessage>(new());
             }
             else
             {
@@ -152,7 +173,7 @@ public sealed partial class SearchBar : UserControl,
                 if (!_isBackspaceHeld)
                 {
                     // Navigate back on single backspace when empty
-                    WeakReferenceMessenger.Default.Send<NavigateBackMessage>();
+                    WeakReferenceMessenger.Default.Send<NavigateBackMessage>(new(true));
                 }
 
                 e.Handled = true;
@@ -212,5 +233,27 @@ public sealed partial class SearchBar : UserControl,
             immediate: FilterBox.Text.Length <= 1);
     }
 
+    // Used to handle the case when a ListPage's `SearchText` may have changed
+    private void Page_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        var property = e.PropertyName;
+        if (CurrentPageViewModel is ListViewModel list &&
+            property == nameof(ListViewModel.SearchText))
+        {
+            // Only if the text actually changed...
+            // (sometimes this triggers on a round-trip of the SearchText)
+            if (FilterBox.Text != list.SearchText)
+            {
+                // ... Update our displayed text, and...
+                FilterBox.Text = list.SearchText;
+
+                // ... Move the cursor to the end of the input
+                FilterBox.Select(FilterBox.Text.Length, 0);
+            }
+        }
+    }
+
     public void Receive(GoHomeMessage message) => ClearSearch();
+
+    public void Receive(FocusSearchBoxMessage message) => this.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
 }

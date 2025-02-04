@@ -6,6 +6,7 @@ using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -75,13 +76,18 @@ public sealed partial class ListPage : Page,
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]
     private void ListView_ItemClick(object sender, ItemClickEventArgs e)
     {
-        if (e.ClickedItem is ListItemViewModel item && item == ItemsList.SelectedItem)
+        if (e.ClickedItem is ListItemViewModel item)
         {
-            ViewModel?.InvokeItemCommand.Execute(item);
-        }
-        else if (e.ClickedItem is ListItemViewModel item2)
-        {
-            ViewModel?.UpdateSelectedItemCommand.Execute(item2);
+            var settings = App.Current.Services.GetService<SettingsModel>()!;
+            if (settings.SingleClickActivates)
+            {
+                ViewModel?.InvokeItemCommand.Execute(item);
+            }
+            else
+            {
+                ViewModel?.UpdateSelectedItemCommand.Execute(item);
+                WeakReferenceMessenger.Default.Send<FocusSearchBoxMessage>();
+            }
         }
     }
 
@@ -93,7 +99,11 @@ public sealed partial class ListPage : Page,
         // Debug.WriteLine($"  selected='{ItemsList.SelectedItem}'");
         if (ItemsList.SelectedItem is ListItemViewModel item)
         {
-            ViewModel?.UpdateSelectedItemCommand.Execute(item);
+            var vm = ViewModel;
+            _ = Task.Run(() =>
+            {
+                vm?.UpdateSelectedItemCommand.Execute(item);
+            });
         }
 
         // There's mysterious behavior here, where the selection seemingly
@@ -105,6 +115,29 @@ public sealed partial class ListPage : Page,
         // here, then in Page_ItemsUpdated trying to select that cached item if
         // it's in the list (otherwise, clear the cache), but that seems
         // aggressively bodgy for something that mostly just works today.
+
+        // When the selection changes, _smooth_ scroll to it.
+        // If you use ListView.ScrollIntoView() by itself, then this will
+        // intermittently _crash_ if an item has tags. The WCT extension
+        // though, to smooth scroll instead, slows things down just enough to
+        // prevent the crash.
+        if (ItemsList.SelectedItem != null)
+        {
+            ItemsList.ScrollIntoView(ItemsList.SelectedItem);
+        }
+    }
+
+    private void ListViewItem_DoubleTapped(object sender, Microsoft.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+    {
+        if (sender is ListViewItem viewItem &&
+            this.ItemsList.ItemFromContainer(viewItem) is ListItemViewModel vm)
+        {
+            var settings = App.Current.Services.GetService<SettingsModel>()!;
+            if (!settings.SingleClickActivates)
+            {
+                ViewModel?.InvokeItemCommand.Execute(vm);
+            }
+        }
     }
 
     public void Receive(NavigateNextCommand message)
@@ -116,7 +149,6 @@ public sealed partial class ListPage : Page,
         if (ItemsList.SelectedIndex < ItemsList.Items.Count - 1)
         {
             ItemsList.SelectedIndex++;
-            ItemsList.ScrollIntoView(ItemsList.SelectedItem);
         }
     }
 
@@ -125,7 +157,6 @@ public sealed partial class ListPage : Page,
         if (ItemsList.SelectedIndex > 0)
         {
             ItemsList.SelectedIndex--;
-            ItemsList.ScrollIntoView(ItemsList.SelectedItem);
         }
     }
 

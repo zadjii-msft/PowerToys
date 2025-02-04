@@ -25,7 +25,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
     public string Subtitle { get; private set; } = string.Empty;
 
-    public IconInfo Icon { get; private set; } = new(string.Empty);
+    public IconInfoViewModel Icon { get; private set; }// = new(string.Empty);
 
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
@@ -33,9 +33,11 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
     public bool HasMoreCommands => MoreCommands.Count > 0;
 
-    public string SecondaryCommandName => HasMoreCommands ? MoreCommands[0].Name : string.Empty;
+    public string SecondaryCommandName => SecondaryCommand?.Name ?? string.Empty;
 
     public CommandItemViewModel? SecondaryCommand => HasMoreCommands ? MoreCommands[0] : null;
+
+    public bool ShouldBeVisible => !string.IsNullOrEmpty(Name);
 
     public List<CommandContextItemViewModel> AllCommands
     {
@@ -54,6 +56,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         : base(errorContext)
     {
         _commandItemModel = item;
+        Icon = new(null);
     }
 
     //// Called from ListViewModel on background thread started in ListPage.xaml.cs
@@ -81,7 +84,9 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         Subtitle = model.Subtitle;
 
         var listIcon = model.Icon;
-        Icon = listIcon ?? Command.Unsafe!.Icon;
+        var iconInfo = listIcon ?? Command.Unsafe!.Icon;
+        Icon = new(iconInfo);
+        Icon.InitializeProperties();
 
         var more = model.MoreCommands;
         if (more != null)
@@ -130,7 +135,8 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
             Title = "Error";
             Subtitle = "Item failed to load";
             MoreCommands = [];
-            Icon = new("❌");
+            Icon = new(new("❌")); // new("❌");
+            Icon.InitializeProperties();
         }
 
         return false;
@@ -158,6 +164,12 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
         switch (propertyName)
         {
+            case nameof(Command):
+                this.Command = new(model.Command);
+                Name = model.Command?.Name ?? string.Empty;
+                UpdateProperty(nameof(Name));
+
+                break;
             case nameof(Name):
                 this.Name = model.Command?.Name ?? string.Empty;
                 break;
@@ -169,10 +181,13 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
                 break;
             case nameof(Icon):
                 var listIcon = model.Icon;
-                Icon = listIcon != null ? listIcon : Command.Unsafe!.Icon;
+                var iconInfo = listIcon ?? Command.Unsafe!.Icon;
+                Icon = new(iconInfo);
+                Icon.InitializeProperties();
                 break;
 
-                // TODO! MoreCommands array, which needs to also raise HasMoreCommands
+                // TODO GH #360 - make MoreCommands observable
+                // which needs to also raise HasMoreCommands
         }
 
         UpdateProperty(propertyName);

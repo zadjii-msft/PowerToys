@@ -35,16 +35,21 @@ public partial class ListViewModel : PageViewModel
     // cannot be marked [ObservableProperty]
     public bool ShowDetails { get; private set; }
 
-    public string PlaceholderText { get => string.IsNullOrEmpty(field) ? "Type here to search..." : field; private set; } = string.Empty;
+    public string ModelPlaceholderText { get => string.IsNullOrEmpty(field) ? "Type here to search..." : field; private set; } = string.Empty;
+
+    public override string PlaceholderText => ModelPlaceholderText;
+
+    public string SearchText { get; private set; } = string.Empty;
 
     private bool _isDynamic;
 
-    public ListViewModel(IListPage model, TaskScheduler scheduler)
-        : base(model, scheduler)
+    public ListViewModel(IListPage model, TaskScheduler scheduler, CommandPaletteHost host)
+        : base(model, scheduler, host)
     {
         _model = new(model);
     }
 
+    // TODO: Does this need to hop to a _different_ thread, so that we don't block the extension while we're fetching?
     private void Model_ItemsChanged(object sender, ItemsChangedEventArgs args) => FetchItems();
 
     protected override void OnFilterUpdated(string filter)
@@ -190,30 +195,41 @@ public partial class ListViewModel : PageViewModel
     // InvokeItemCommand is what this will be in Xaml due to source generator
     [RelayCommand]
     private void InvokeItem(ListItemViewModel item) =>
-        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command));
+        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command, item.Model));
 
     [RelayCommand]
     private void InvokeSecondaryCommand(ListItemViewModel item)
     {
         if (item.SecondaryCommand != null)
         {
-            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command));
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command, item.Model));
         }
     }
 
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item)
     {
-        WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(item));
+        // GH #322:
+        // For inexplicable reasons, if you try updating the command bar and
+        // the details on the same UI thread tick as updating the list, we'll
+        // explode
+        Task.Factory.StartNew(
+           () =>
+           {
+               WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(item));
 
-        if (ShowDetails && item.HasDetails)
-        {
-            WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
-        }
-        else
-        {
-            WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
-        }
+               if (ShowDetails && item.HasDetails)
+               {
+                   WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(item.Details));
+               }
+               else
+               {
+                   WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
+               }
+           },
+           CancellationToken.None,
+           TaskCreationOptions.None,
+           PageContext.Scheduler);
     }
 
     public override void InitializeProperties()
@@ -230,8 +246,12 @@ public partial class ListViewModel : PageViewModel
 
         ShowDetails = listPage.ShowDetails;
         UpdateProperty(nameof(ShowDetails));
-        PlaceholderText = listPage.PlaceholderText;
+
+        ModelPlaceholderText = listPage.PlaceholderText;
         UpdateProperty(nameof(PlaceholderText));
+
+        SearchText = listPage.SearchText;
+        UpdateProperty(nameof(SearchText));
 
         FetchItems();
         listPage.ItemsChanged += Model_ItemsChanged;
@@ -253,7 +273,10 @@ public partial class ListViewModel : PageViewModel
                 this.ShowDetails = model.ShowDetails;
                 break;
             case nameof(PlaceholderText):
-                this.PlaceholderText = model.PlaceholderText;
+                this.ModelPlaceholderText = model.PlaceholderText;
+                break;
+            case nameof(SearchText):
+                this.SearchText = model.SearchText;
                 break;
         }
 

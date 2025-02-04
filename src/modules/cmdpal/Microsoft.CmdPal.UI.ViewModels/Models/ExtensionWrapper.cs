@@ -17,6 +17,9 @@ public class ExtensionWrapper : IExtensionWrapper
 {
     private const int HResultRpcServerNotRunning = -2147023174;
 
+    private readonly string _appUserModelId;
+    private readonly string _extensionId;
+
     private readonly Lock _lock = new();
     private readonly List<ProviderType> _providerTypes = [];
 
@@ -37,7 +40,8 @@ public class ExtensionWrapper : IExtensionWrapper
         Publisher = appExtension.Package.PublisherDisplayName;
         InstalledDate = appExtension.Package.InstalledDate;
         Version = appExtension.Package.Id.Version;
-        ExtensionUniqueId = appExtension.AppInfo.AppUserModelId + "!" + appExtension.Id;
+        _appUserModelId = appExtension.AppInfo.AppUserModelId;
+        _extensionId = appExtension.Id;
     }
 
     public string PackageDisplayName { get; }
@@ -65,7 +69,7 @@ public class ExtensionWrapper : IExtensionWrapper
     /// <item>The Extension Id. This is the unique identifier of the extension within the application.</item>
     /// </list>
     /// </summary>
-    public string ExtensionUniqueId { get; }
+    public string ExtensionUniqueId => _appUserModelId + "!" + _extensionId;
 
     public bool IsRunning()
     {
@@ -102,6 +106,8 @@ public class ExtensionWrapper : IExtensionWrapper
                     var extensionPtr = nint.Zero;
                     try
                     {
+                        // -2147024809: E_INVALIDARG
+                        // -2147467262: E_NOINTERFACE
                         var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var extensionObj);
                         extensionPtr = Marshal.GetIUnknownForObject(extensionObj);
                         if (hr < 0)

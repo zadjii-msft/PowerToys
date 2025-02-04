@@ -4,14 +4,11 @@
 
 namespace Microsoft.CmdPal.Extensions.Helpers;
 
-public class Tag : BaseObservable, ITag
+public partial class Tag : BaseObservable, ITag
 {
     private OptionalColor _foreground;
     private OptionalColor _background;
-    private IconInfo _icon = new(string.Empty);
     private string _text = string.Empty;
-    private string _toolTip = string.Empty;
-    private ICommand? _command;
 
     public OptionalColor Foreground
     {
@@ -35,13 +32,15 @@ public class Tag : BaseObservable, ITag
 
     public IconInfo Icon
     {
-        get => _icon;
+        get;
         set
         {
-            _icon = value;
+            field = value;
             OnPropertyChanged(nameof(Icon));
         }
     }
+
+= new(string.Empty);
 
     public string Text
     {
@@ -55,21 +54,22 @@ public class Tag : BaseObservable, ITag
 
     public string ToolTip
     {
-        get => _toolTip;
+        get;
         set
         {
-            _toolTip = value;
+            field = value;
             OnPropertyChanged(nameof(ToolTip));
         }
     }
 
-    public ICommand? Command
+= string.Empty;
+
+    public Tag()
     {
-        get => _command;
-        set
-        {
-            _command = value;
-            OnPropertyChanged(nameof(Command));
-        }
+    }
+
+    public Tag(string text)
+    {
+        _text = text;
     }
 }

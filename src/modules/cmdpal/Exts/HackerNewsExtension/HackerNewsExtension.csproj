@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\Common.Dotnet.CsWinRT.props" />
+  <Import Project="..\..\..\..\Common.Dotnet.AotCompatibility.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <RootNamespace>HackerNewsExtension</RootNamespace>
@@ -29,7 +30,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\extensionsdk\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj" />
-    <ProjectReference Include="..\..\..\..\common\Common.UI\Common.UI.csproj" />
   </ItemGroup>
 
   <!--

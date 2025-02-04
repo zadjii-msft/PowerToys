@@ -15,16 +15,13 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
     // cannot be marked [ObservableProperty]
     public string Text { get; private set; } = string.Empty;
 
-    public string Tooltip { get; private set; } = string.Empty;
+    public string ToolTip { get; private set; } = string.Empty;
 
     public OptionalColor Foreground { get; private set; }
 
     public OptionalColor Background { get; private set; }
 
-    public IconInfo Icon { get; private set; } = new(string.Empty);
-
-    // TODO Terrible. When we redo the icons in tags, make this something the view exposes
-    public bool HasIcon => !string.IsNullOrEmpty(Icon.Light.Icon);
+    public IconInfoViewModel Icon { get; private set; } = new(null);
 
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
 
@@ -36,17 +33,17 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
             return;
         }
 
-        Command = new(model.Command);
         Text = model.Text;
         Foreground = model.Foreground;
         Background = model.Background;
-        Tooltip = model.ToolTip;
-        Icon = model.Icon;
+        ToolTip = model.ToolTip;
+        Icon = new(model.Icon);
+        Icon.InitializeProperties();
 
         UpdateProperty(nameof(Text));
         UpdateProperty(nameof(Foreground));
         UpdateProperty(nameof(Background));
-        UpdateProperty(nameof(Tooltip));
+        UpdateProperty(nameof(ToolTip));
         UpdateProperty(nameof(Icon));
     }
 }
