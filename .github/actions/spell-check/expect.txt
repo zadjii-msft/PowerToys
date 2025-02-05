@@ -1712,6 +1712,7 @@ TOPDOWNDIB
 TOUCHEVENTF
 TOUCHINPUT
 TRACEHANDLE
+TResult
 tracelogging
 tracerpt
 trackbar
@@ -1723,6 +1724,7 @@ triaging
 trl
 trx
 tsa
+TSender
 TServer
 tstoi
 TStr
