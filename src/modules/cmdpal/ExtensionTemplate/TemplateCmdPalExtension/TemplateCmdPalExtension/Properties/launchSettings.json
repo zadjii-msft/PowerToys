@@ -1,7 +1,8 @@
 {
   "profiles": {
     "TemplateCmdPalExtension (Package)": {
-      "commandName": "MsixPackage"
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": true
     },
     "TemplateCmdPalExtension (Unpackaged)": {
       "commandName": "Project"
