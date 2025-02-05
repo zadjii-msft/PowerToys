@@ -59,7 +59,5 @@
     <!-- Suppress DynamicallyAccessedMemberTypes.PublicParameterlessConstructor in fallback code path of Windows SDK projection -->
     <WarningsNotAsErrors>IL2081</WarningsNotAsErrors>
 
-    <!-- Set this to false if you don't want your extension compiled for AOT -->
-    <PublishAot>True</PublishAot>
   </PropertyGroup>
 </Project>
