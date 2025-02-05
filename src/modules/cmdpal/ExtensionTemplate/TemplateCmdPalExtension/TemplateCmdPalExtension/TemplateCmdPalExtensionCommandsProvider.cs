@@ -7,9 +7,9 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace TemplateCmdPalExtension;
 
-public partial class TemplateCmdPalExtensionActionsProvider : CommandProvider
+public partial class TemplateCmdPalExtensionCommandsProvider : CommandProvider
 {
-    public TemplateCmdPalExtensionActionsProvider()
+    public TemplateCmdPalExtensionCommandsProvider()
     {
         DisplayName = "TemplateDisplayName Commands";
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");

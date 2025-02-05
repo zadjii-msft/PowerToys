@@ -16,7 +16,7 @@ public sealed partial class TemplateCmdPalExtension : IExtension, IDisposable
 {
     private readonly ManualResetEvent _extensionDisposedEvent;
 
-    private readonly TemplateCmdPalExtensionActionsProvider _provider = new();
+    private readonly TemplateCmdPalExtensionCommandsProvider _provider = new();
 
     public TemplateCmdPalExtension(ManualResetEvent extensionDisposedEvent)
     {
