@@ -39,7 +39,7 @@ public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
                 }
                 catch
                 {
-                    Debug.WriteLine("Failed to load icon from streasm");
+                    Debug.WriteLine("Failed to load icon from stream");
                 }
             }
         }
