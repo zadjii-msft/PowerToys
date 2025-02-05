@@ -12,13 +12,13 @@ namespace TemplateCmdPalExtension;
 [ComVisible(true)]
 [Guid("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF")]
 [ComDefaultInterface(typeof(IExtension))]
-public sealed partial class SampleExtension : IExtension, IDisposable
+public sealed partial class TemplateCmdPalExtension : IExtension, IDisposable
 {
     private readonly ManualResetEvent _extensionDisposedEvent;
 
     private readonly TemplateCmdPalExtensionActionsProvider _provider = new();
 
-    public SampleExtension(ManualResetEvent extensionDisposedEvent)
+    public TemplateCmdPalExtension(ManualResetEvent extensionDisposedEvent)
     {
         this._extensionDisposedEvent = extensionDisposedEvent;
     }
