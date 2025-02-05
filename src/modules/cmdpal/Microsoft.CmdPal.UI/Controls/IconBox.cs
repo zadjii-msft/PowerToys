@@ -91,14 +91,14 @@ public partial class IconBox : ContentControl
             {
                 // TODO GH #239 switch back when using the new MD text block
                 // _ = @this._queue.EnqueueAsync(() =>
-                @this._queue.TryEnqueue(new(() =>
+                @this._queue.TryEnqueue(new(async () =>
                 {
                     var requestedTheme = @this.ActualTheme;
                     var eventArgs = new SourceRequestedEventArgs(e.NewValue, requestedTheme);
 
                     if (@this.SourceRequested != null)
                     {
-                        @this.SourceRequested.InvokeAsync(@this, eventArgs);
+                        await @this.SourceRequested.InvokeAsync(@this, eventArgs);
 
                         @this.Source = eventArgs.Value;
 
