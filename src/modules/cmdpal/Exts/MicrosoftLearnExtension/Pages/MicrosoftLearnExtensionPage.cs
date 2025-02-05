@@ -28,6 +28,8 @@ internal sealed partial class MicrosoftLearnExtensionPage : DynamicListPage
         PropertyNameCaseInsensitive = true,
     };
 
+    private readonly List<ListItem> _items = new();
+
     public MicrosoftLearnExtensionPage()
     {
         Icon = new("https://learn.microsoft.com/favicon.ico");
@@ -56,18 +58,105 @@ internal sealed partial class MicrosoftLearnExtensionPage : DynamicListPage
 
     public override IListItem[] GetItems()
     {
-        var t = DoGetItems(SearchText);
-        t.ConfigureAwait(false);
-        return t.Result;
+        if (_items.Count == 0)
+        {
+            // TODO: See if we can query this product list/portal section from "Product Documentation" menu in API?
+            _items.Add(new ListItem(new LinkAction(new SearchResult()
+            {
+                Title = "Microsoft 365",
+                Url = "https://learn.microsoft.com/microsoft-365/",
+            }))
+            {
+                Title = "Microsoft 365",
+            });
+            _items.Add(new ListItem(new LinkAction(new SearchResult()
+            {
+                Title = "Artificial Intelligence",
+                Url = "https://learn.microsoft.com/ai/",
+            }))
+            {
+                Title = "Artificial Intelligence",
+            });
+            _items.Add(new ListItem(new LinkAction(new SearchResult()
+            {
+                Title = "Azure",
+                Url = "https://learn.microsoft.com/azure/",
+            }))
+            {
+                Title = "Azure",
+            });
+            _items.Add(new ListItem(new LinkAction(new SearchResult()
+            {
+                Title = "Microsoft Copilot",
+                Url = "https://learn.microsoft.com/copilot/",
+            }))
+            {
+                Title = "Microsoft Copilot",
+            });
+            _items.Add(new ListItem(new LinkAction(new SearchResult()
+            {
+                Title = ".NET",
+                Url = "https://learn.microsoft.com/dotnet/",
+            }))
+            {
+                Title = ".NET",
+            });
+            _items.Add(new ListItem(new LinkAction(new SearchResult()
+            {
+                Title = "PowerShell",
+                Url = "https://learn.microsoft.com/powershell/",
+            }))
+            {
+                Title = "PowerShell",
+            });
+            _items.Add(new ListItem(new LinkAction(new SearchResult()
+            {
+                Title = "Visual Studio",
+                Url = "https://learn.microsoft.com/visualstudio/",
+            }))
+            {
+                Title = "Visual Studio",
+            });
+            _items.Add(new ListItem(new LinkAction(new SearchResult()
+            {
+                Title = "Windows",
+                Url = "https://learn.microsoft.com/windows/",
+            }))
+            {
+                Title = "Windows",
+            });
+            _items.Add(new ListItem(new LinkAction(new SearchResult()
+            {
+                Title = "Windows Developer",
+                Url = "https://developer.microsoft.com/windows/",
+            }))
+            {
+                Title = "Windows Developer",
+            });
+            IsLoading = false;
+        }
+
+        return _items.ToArray();
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
         IsLoading = true;
-        GetItems();
+
+        Task.Run(async () =>
+        {
+            var items = await DoGetItems(newSearch);
+
+            _items.Clear();
+            _items.AddRange(items);
+
+            IsLoading = false;
+
+            RaiseItemsChanged(items.Length);
+        });
     }
 
-    private async Task<IListItem[]> DoGetItems(string query)
+    private async Task<ListItem[]> DoGetItems(string query)
     {
         List<SearchResult> items = await SearchMicrosoftLearn(query);
         this.IsLoading = false;
