@@ -47,7 +47,7 @@ public sealed partial class MainWindow : Window,
 #pragma warning restore SA1310 // Field names should not contain underscore
 
     // Notification Area ("Tray") icon data
-    private NOTIFYICONDATAW? _trayIIconData;
+    private NOTIFYICONDATAW? _trayIconData;
     private bool _createdIcon;
     private DestroyIconSafeHandle? _largeIcon;
 
@@ -396,14 +396,14 @@ public sealed partial class MainWindow : Window,
     private void AddNotificationIcon()
     {
         // We only need to build the tray data once.
-        if (_trayIIconData == null)
+        if (_trayIconData == null)
         {
             // We need to stash this handle, so it doesn't clean itself up. If
             // explorer restarts, we'll come back through here, and we don't
             // really need to re-load the icon in that case. We can just use
             // the handle from the first time.
             _largeIcon = GetAppIconHandle();
-            _trayIIconData = new NOTIFYICONDATAW()
+            _trayIconData = new NOTIFYICONDATAW()
             {
                 cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW)),
                 hWnd = _hwnd,
@@ -415,7 +415,7 @@ public sealed partial class MainWindow : Window,
             };
         }
 
-        var d = (NOTIFYICONDATAW)_trayIIconData;
+        var d = (NOTIFYICONDATAW)_trayIconData;
 
         // Add the notification icon
         if (PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_ADD, in d))
@@ -426,9 +426,9 @@ public sealed partial class MainWindow : Window,
 
     private void RemoveNotificationIcon()
     {
-        if (_trayIIconData != null && _createdIcon)
+        if (_trayIconData != null && _createdIcon)
         {
-            var d = (NOTIFYICONDATAW)_trayIIconData;
+            var d = (NOTIFYICONDATAW)_trayIconData;
             if (PInvoke.Shell_NotifyIcon(NOTIFY_ICON_MESSAGE.NIM_DELETE, in d))
             {
                 _createdIcon = false;
