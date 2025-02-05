@@ -3,7 +3,7 @@
   <metadata minClientVersion="2.5">
     <id>Microsoft.CommandPalette.Extensions</id>
     <version>0.0.0</version>
-    <title>Command Palette SDK</title>
+    <title>Command Palette Extension SDK</title>
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
