@@ -2,20 +2,17 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Drawing;
 using System.Globalization;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media.Imaging;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.Win32;
+using Windows.Storage.Streams;
 
-namespace Microsoft.CmdPal.UI.Helpers;
+namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
-internal sealed class ThumbnailHelper
+public class ThumbnailHelper
 {
-    public static readonly string ProgramDirectory = Directory.GetParent(path: Assembly.GetExecutingAssembly().Location)?.ToString() ?? string.Empty;
+    public static readonly string ProgramDirectory = Directory.GetParent(path: AppContext.BaseDirectory)?.ToString() ?? string.Empty;
     public static readonly int ThumbnailSize = 64;
 
     private static readonly string[] ImageExtensions =
@@ -40,9 +37,9 @@ internal sealed class ThumbnailHelper
         InCacheOnly = 0x10,
     }
 
-    public static ImageSource? GetThumbnailResult(ref string path, bool generateThumbnailsFromFiles)
+    public static IRandomAccessStream? GetThumbnail(string path)
     {
-        ImageSource? image;
+        IRandomAccessStream? stream = null;
 
         if (!Path.IsPathRooted(path))
         {
@@ -57,7 +54,7 @@ internal sealed class ThumbnailHelper
              * Wox responsibility.
              * - Solution: just load the icon
              */
-            image = GetThumbnail(path, ThumbnailSize, ThumbnailSize, ThumbnailOptions.IconOnly);
+            stream = GetThumbnail(path, ThumbnailSize, ThumbnailSize, ThumbnailOptions.IconOnly);
         }
         else if (File.Exists(path))
         {
@@ -65,39 +62,22 @@ internal sealed class ThumbnailHelper
             var extension = Path.GetExtension(path).ToLower(CultureInfo.InvariantCulture);
             if (ImageExtensions.Contains(extension))
             {
-                // PowerToys Run internal images are png, so we make this exception
-                if (extension == ".png" || generateThumbnailsFromFiles)
-                {
-                    /* Although the documentation for GetImage on MSDN indicates that
-                    * if a thumbnail is available it will return one, this has proved to not
-                    * be the case in many situations while testing.
-                    * - Solution: explicitly pass the ThumbnailOnly flag
-                    */
-                    image = GetThumbnail(path, ThumbnailSize, ThumbnailSize, ThumbnailOptions.ThumbnailOnly);
-                }
-                else
-                {
-                    image = GetThumbnail(path, ThumbnailSize, ThumbnailSize, ThumbnailOptions.IconOnly);
-                }
+                stream = GetThumbnail(path, ThumbnailSize, ThumbnailSize, ThumbnailOptions.ThumbnailOnly);
             }
-            else if (!generateThumbnailsFromFiles || (extension == ".pdf" && DoesPdfUseAcrobatAsProvider()))
+            else if (extension == ".pdf" && DoesPdfUseAcrobatAsProvider())
             {
                 // The PDF thumbnail provider from Adobe Reader and Acrobat Pro lets crash PT Run with an Dispatcher exception. (https://github.com/microsoft/PowerToys/issues/18166)
                 // To not run into the crash, we only request the icon of PDF files if the PDF thumbnail handler is set to Adobe Reader/Acrobat Pro.
                 // Also don't get thumbnail if the GenerateThumbnailsFromFiles option is off.
-                image = GetThumbnail(path, ThumbnailSize, ThumbnailSize, ThumbnailOptions.IconOnly);
+                stream = GetThumbnail(path, ThumbnailSize, ThumbnailSize, ThumbnailOptions.IconOnly);
             }
             else
             {
-                image = GetThumbnail(path, ThumbnailSize, ThumbnailSize, ThumbnailOptions.RESIZETOFIT);
+                stream = GetThumbnail(path, ThumbnailSize, ThumbnailSize, ThumbnailOptions.RESIZETOFIT);
             }
         }
-        else
-        {
-            image = null;
-        }
 
-        return image;
+        return stream;
     }
 
     // Based on https://stackoverflow.com/questions/21751747/extract-thumbnail-for-any-file-in-windows
@@ -150,7 +130,7 @@ internal sealed class ThumbnailHelper
         }
     }
 
-    public static Microsoft.UI.Xaml.Media.Imaging.BitmapSource GetThumbnail(string fileName, int width, int height, ThumbnailOptions options)
+    public static IRandomAccessStream GetThumbnail(string fileName, int width, int height, ThumbnailOptions options)
     {
         var hBitmap = IntPtr.Zero;
 
@@ -165,16 +145,22 @@ internal sealed class ThumbnailHelper
 
         try
         {
-            var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-            var memoryStream = new MemoryStream();
-            var encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
-            encoder.Save(memoryStream);
-            memoryStream.Seek(0, SeekOrigin.Begin);
+            var bitmap = Image.FromHbitmap(hBitmap);
+            var stream = new InMemoryRandomAccessStream();
+            using (var outputStream = stream.GetOutputStreamAt(0))
+            using (var dataWriter = new DataWriter(outputStream))
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+                    var bytes = memoryStream.ToArray();
 
-            var bitmapImage = new Microsoft.UI.Xaml.Media.Imaging.BitmapImage();
-            bitmapImage.SetSource(memoryStream.AsRandomAccessStream());
-            return bitmapImage;
+                    dataWriter.WriteBytes(bytes);
+                    dataWriter.StoreAsync().GetAwaiter().GetResult();
+                }
+            }
+
+            return stream;
         }
         finally
         {
@@ -191,7 +177,9 @@ internal sealed class ThumbnailHelper
         try
         {
             var shellItem2Guid = new Guid(IShellItem2Guid);
+#pragma warning disable IL2050 // Correctness of COM interop cannot be guaranteed after trimming. Interfaces and interface members might be removed.
             var retCode = NativeMethods.SHCreateItemFromParsingName(fileName, IntPtr.Zero, ref shellItem2Guid, out nativeShellItem);
+#pragma warning restore IL2050 // Correctness of COM interop cannot be guaranteed after trimming. Interfaces and interface members might be removed.
 
             if (retCode != 0 || nativeShellItem == null)
             {
@@ -235,7 +223,7 @@ internal sealed class ThumbnailHelper
     public static IntPtr ExtractIconToHBitmap(string fileName)
     {
         // Extracts the icon associated with the file
-        using (var thumbnailIcon = System.Drawing.Icon.ExtractAssociatedIcon(fileName))
+        using (var thumbnailIcon = Icon.ExtractAssociatedIcon(fileName))
         {
             // Convert to Bitmap
             using (var bitmap = thumbnailIcon?.ToBitmap())

@@ -4,20 +4,20 @@
 
 using System.Runtime.InteropServices;
 
-namespace Microsoft.CmdPal.UI.Helpers;
+namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 internal sealed class NativeMethods
 {
     [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     internal static extern int SHCreateItemFromParsingName(
             [MarshalAs(UnmanagedType.LPWStr)] string path,
-            IntPtr pbc,
+            nint pbc,
             ref Guid riid,
             [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem);
 
     [DllImport("gdi32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool DeleteObject(IntPtr hObject);
+    internal static extern bool DeleteObject(nint hObject);
 }
 
 [ComImport]
@@ -26,10 +26,10 @@ internal sealed class NativeMethods
 public interface IShellItem
 {
     void BindToHandler(
-        IntPtr pbc,
+        nint pbc,
         [MarshalAs(UnmanagedType.LPStruct)] Guid bhid,
         [MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-        out IntPtr ppv);
+        out nint ppv);
 
     void GetParent(out IShellItem ppsi);
 

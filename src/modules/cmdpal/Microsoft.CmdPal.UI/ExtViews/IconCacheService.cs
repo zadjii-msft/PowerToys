@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using Microsoft.CmdPal.UI.Helpers;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.Terminal.UI;
 using Microsoft.UI.Dispatching;
@@ -15,12 +14,12 @@ namespace Microsoft.CmdPal.UI.ExtViews;
 
 public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
 {
-    public Task<IconSource?> GetIconSource(IconDataViewModel icon, bool getThumbnail) =>
+    public Task<IconSource?> GetIconSource(IconDataViewModel icon) =>
 
         // todo: actually implement a cache of some sort
-        IconToSource(icon, getThumbnail);
+        IconToSource(icon);
 
-    private async Task<IconSource?> IconToSource(IconDataViewModel icon, bool getThumbnail)
+    private async Task<IconSource?> IconToSource(IconDataViewModel icon)
     {
         // bodgy: apparently IIconData, despite being a struct, doesn't get
         // MarshalByValue'd into our process. What's even the point then?
@@ -28,15 +27,6 @@ public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
         {
             if (!string.IsNullOrEmpty(icon.Icon))
             {
-                if (getThumbnail)
-                {
-                    var path = icon.Icon;
-                    var thumb = ThumbnailHelper.GetThumbnailResult(ref path, true);
-                    var imageIconSource = new ImageIconSource() { ImageSource = thumb };
-
-                    return imageIconSource;
-                }
-
                 var source = IconPathConverter.IconSourceMUX(icon.Icon, false);
                 return source;
             }
