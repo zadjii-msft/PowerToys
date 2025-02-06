@@ -18,22 +18,42 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
     {
         Icon = new(string.Empty);
         Name = "TimeDate extension for cmdpal";
+        _items.Add(new ListItem(new CopyTextCommand(string.Empty)));
     }
 
     public override IListItem[] GetItems()
     {
-        return [
-            new ListItem(new NoOpCommand()) { Title = "TODO: Implement your extension here" }
-        ];
+        return _items.ToArray();
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
         if (!string.IsNullOrEmpty(newSearch))
         {
-            var result = TimeDateCalculator.ExecuteSearch(newSearch);
+            try
+            {
+                var result = TimeDateCalculator.ExecuteSearch(newSearch);
+                _items.Clear();
+                _items.AddRange(result);
+            }
+            catch (Exception e)
+            {
+                _items.Clear();
+                _items.Add(new ListItem(new CopyTextCommand(string.Empty)));
+                _items[0].Title = e.Message;
+            }
+
+            if (_items.Count == 0)
+            {
+                _items.Add(new ListItem(new CopyTextCommand(string.Empty)));
+                _items[0].Title = "Type an equation...";
+            }
+        }
+        else
+        {
             _items.Clear();
-            _items.AddRange(result);
+            _items.Add(new ListItem(new CopyTextCommand(string.Empty)));
+            _items[0].Title = "Type an equation...";
         }
     }
 }

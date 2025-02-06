@@ -2,15 +2,10 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Windows;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.PowerToys.Run.Plugin.TimeDate.Properties;
-
-[assembly: InternalsVisibleTo("Microsoft.PowerToys.Run.Plugin.TimeDate.UnitTests")]
 
 namespace TimeDateExtension.Helpers;
 
