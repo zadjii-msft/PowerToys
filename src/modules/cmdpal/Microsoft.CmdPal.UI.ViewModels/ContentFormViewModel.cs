@@ -83,22 +83,22 @@ public partial class ContentFormViewModel(IFormContent _form, IPageContext conte
             // var data = submitAction.DataJson.Stringify();
             var inputString = inputs.Stringify();
 
-            // _ = data;
-            _ = inputString;
-
-            try
+            _ = Task.Run(() =>
             {
-                var model = _formModel.Unsafe!;
-                if (model != null)
+                try
                 {
-                    var result = model.SubmitForm(inputString);
-                    WeakReferenceMessenger.Default.Send<HandleCommandResultMessage>(new(new(result)));
+                    var model = _formModel.Unsafe!;
+                    if (model != null)
+                    {
+                        var result = model.SubmitForm(inputString);
+                        WeakReferenceMessenger.Default.Send<HandleCommandResultMessage>(new(new(result)));
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                PageContext.ShowException(ex);
-            }
+                catch (Exception ex)
+                {
+                    PageContext.ShowException(ex);
+                }
+            });
         }
     }
 
