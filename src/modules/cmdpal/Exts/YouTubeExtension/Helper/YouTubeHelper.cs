@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.IO;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
-namespace YouTubeExtension.Actions;
+namespace YouTubeExtension.Helper;
 
 internal sealed class YouTubeHelper
 {

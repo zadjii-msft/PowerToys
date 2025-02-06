@@ -5,10 +5,10 @@
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
-using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
+using Microsoft.CommandPalette.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Animation;
@@ -245,7 +245,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
             var settingsWindow = new SettingsWindow();
             settingsWindow.Activate();
 
-            WeakReferenceMessenger.Default.Send<UpdateActionBarMessage>(new(null));
+            WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(null));
         });
     }
 

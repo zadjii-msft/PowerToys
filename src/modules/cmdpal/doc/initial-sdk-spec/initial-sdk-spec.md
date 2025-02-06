@@ -10,7 +10,7 @@ issue id: n/a
 _aka "DevPal", "PT Run v2", "DevSearch", "Windows Command Palette", this thing has many names. I'll use "DevPal" throughout the doc_
 
 > [NOTE!]
-> Are you here to just see what the SDK looks like? Skip to the [Actions
+> Are you here to just see what the SDK looks like? Skip to the [Commands
 > SDK details](#commands-sdk-details) section.
 
 ## Abstract
@@ -141,7 +141,7 @@ In the simplest case, extensions for Dev Pal can register themselves using their
         </com:ComServer>
     </com:Extension>
     <uap3:Extension Category="windows.appExtension">
-        <uap3:AppExtension Name="com.microsoft.windows.commandpalette"
+        <uap3:AppExtension Name="com.microsoft.commandpalette"
                            Id="YourApplicationUniqueId"
                            PublicFolder="Public"
                            DisplayName="Sample Extension"
@@ -152,7 +152,7 @@ In the simplest case, extensions for Dev Pal can register themselves using their
                         <CreateInstance ClassId="<Extension CLSID Here>" />
                     </Activation>
                     <SupportedInterfaces>
-                        <Actions />
+                        <Commands />
                     </SupportedInterfaces>
                 </CmdPalProvider>
             </uap3:Properties>
@@ -167,14 +167,14 @@ Notable elements:
   we can instantiate.
   * Make sure that this CLSID is unique, and matches the one in your application
 * The application must specify a `Extensions.uap3Extension.AppExtension` with
-  the Name set to `com.microsoft.windows.commandpalette`. This is the unique identifier which
+  the Name set to `com.microsoft.commandpalette`. This is the unique identifier which
   DevPal can use to find it's extensions.
 * In the `Properties` of your `AppExtension`, you must specify a
   `CmdPalProvider` element. This is where you specify the CLSID of the COM class
   that DevPal will instantiate to interact with your extension. Also, you
   specify which interfaces you support.
 
-Currently, only `Actions` is supported. If we need to add more
+Currently, only `Commands` is supported. If we need to add more
 in the future, we can add them to the `SupportedInterfaces` element.
 
 This is all exactly the same as the Dev Home Extension model, with a different
@@ -185,7 +185,7 @@ This is all exactly the same as the Dev Home Extension model, with a different
 Fortunately for DevPal, it is quite trivial to enumerate installed packages that
 have registered themselves as a `AppExtension` extensions. This is done by
 querying the `AppExtensionCatalog` for all extensions with the `Name` set to
-`com.microsoft.windows.commandpalette`.
+`com.microsoft.commandpalette`.
 
 #### Unpackaged extensions
 
@@ -229,10 +229,10 @@ list.
 
 When DevPal launches, it will enumerate all the extensions it knows about, and
 create the `IExtension` object for each one. DevPal will then get the
-`ICommandProvider` for apps that register as `Actions` providers in
+`ICommandProvider` for apps that register as `Commands` providers in
 `SupportedInterfaces`. Extension apps should have that COM object served
 quickly, for performance. That is the first object that DevPal needs, to load
-the top-level list of actions.
+the top-level list of commands.
 
 These commands will be loaded asynchronously, and the UI will be updated as they
 are loaded on a cold launch. Subsequent launches will have devpal already
@@ -264,15 +264,15 @@ Command providers can opt out of this behavior by setting `Frozen=false` in
 their extension. We'll call these extensions "**fresh, never frozen**".
 
 As some examples:
-* The "Hacker News" extension, only has a single top-level action. Once we load
+* The "Hacker News" extension, only has a single top-level command. Once we load
   that once, we don't need to `CreateProcess` just to find that command title.
   This is a **frozen** extension.
 * Similarly for something like the GitHub extension - it's got multiple
   top-level commands (My issues, Issue search, Repo search, etc), but these
   top-level commands never change. This is a **frozen** extension.
-* The "Quick Links" extension has a dynamic list of top-level actions.
+* The "Quick Links" extension has a dynamic list of top-level commands.
   This is a **fresh** extension.[^3]
-* The "Media Controls" extension only has a single top-level action, but it
+* The "Media Controls" extension only has a single top-level command, but it
   needs to be running to be able to update it's title and icon. So we can't just
   cache the state of it. This is a **fresh** extension.
 * Similarly, any top-level `IFallbackHandler` need to be running to get
@@ -448,7 +448,7 @@ apps who's manifest specifies that they are an extension. We could launch
 something like:
 
 ```
-ms-windows-store://assoc/?Tags=AppExtension-com.microsoft.windows.commandpalette
+ms-windows-store://assoc/?Tags=AppExtension-com.microsoft.commandpalette
 ```
 
 to open the store to a list of extensions. However, we can't list those
@@ -493,9 +493,9 @@ anything that a 1p built-in can do.
 ## SDK overview
 
 The SDK for DevPal is split into two namespaces:
-* `Microsoft.Windows.Run` - This namespace contains the interfaces that
+* `Microsoft.CommandPalette.Extensions` - This namespace contains the interfaces that
   developers will implement to create extensions for DevPal.
-* `Microsoft.CmdPal.Extensions.Helpers` - This namespace contains helper classes
+* `Microsoft.CommandPalette.Extensions.Toolkit` - This namespace contains helper classes
   that developers can use to make creating extensions easier.
 
 The first is highly abstract, and gives developers total control over the
@@ -506,14 +506,14 @@ extensions simpler.
 ## Commands SDK details
 
 Below details the SDK that developers can use to create extensions for the
-DevPal. These interfaces are exposed through the `Microsoft.Windows.Run`
+DevPal. These interfaces are exposed through the `Microsoft.CommandPalette.Extensions`
 namespace. We'll expose an SDK with helper classes and default implementations
-in the `Microsoft.CmdPal.Extensions` namespace.
+in the `Microsoft.CommandPalette.Extensions` namespace.
 
 > [NOTE!]
 >
 > In the following SDK details, `csharp` & `c#` code fences to show snippets of
-> what the `Microsoft.Windows.Run` interface will look like. This is roughly
+> what the `Microsoft.CommandPalette.Extensions` interface will look like. This is roughly
 > `midl` v3 in this spec, with one modification. I'm using the made up `async`
 > keyword to indicate that a method is async. In the real `.idl`, these methods
 > will be replaced with `IAsyncAction` for `async void` and `IAsyncOperation<T>`
@@ -538,7 +538,7 @@ Use `cs` for samples.
 interface ICommand requires INotifyPropChanged{
     String Name{ get; };
     String Id{ get; };
-    IconInfo Icon{ get; };
+    IIconInfo Icon{ get; };
 }
 
 enum CommandResultKind {
@@ -588,15 +588,15 @@ interface IInvokableCommand requires ICommand {
 
 ```
 
-If a developer wants to add a simple action to DevPal, they can create a
+If a developer wants to add a simple command to DevPal, they can create a
 class that implements `ICommand`, and implement the `Invoke` method. This
-method will be called when the user selects the action in DevPal.
+method will be called when the user selects the command in DevPal.
 
 As a simple example[^1]:
 
 ```cs
-class HackerNewsAction : Microsoft.CmdPal.Extensions.Helpers.InvokableCommand {
-    public class HackerNewsAction()
+class HackerNewsPage : Microsoft.CommandPalette.Extensions.Toolkit.InvokableCommand {
+    public class HackerNewsPage()
     {
         Name = "Hacker News";
         Icon = "https://news.ycombinator.com/favicon.ico";
@@ -609,12 +609,12 @@ class HackerNewsAction : Microsoft.CmdPal.Extensions.Helpers.InvokableCommand {
 }
 ```
 
-This will create a single action in DevPal that, when selected, will open
+This will create a single command in DevPal that, when selected, will open
 Hacker News in the user's default web browser.
 
 Commands can also be `Page`s, which represent additional "nested" pages within
-DevPal. When the user selects an action that implements `IPage`, DevPal will
-navigate to a page for that action, rather than calling `Invoke` on it. Skip
+DevPal. When the user selects an command that implements `IPage`, DevPal will
+navigate to a page for that command, rather than calling `Invoke` on it. Skip
 ahead to [Pages](#Pages) for more information on the different types of pages.
 
 The `Id` property is optional. This can be set but the extension author to
@@ -708,7 +708,7 @@ Use cases for each `CommandResultKind`:
 ### Pages
 
 Pages represent individual views in the application. They are the primary unit
-of navigation and interaction. Developers can author `Action`s as a page to
+of navigation and interaction. Developers can author `Command`s as a page to
 provide an additional page of functionality within the application. They are not
 wholly responsible for their own rendering. Rather, they provide bits of
 information that the host application will then use to render the page.
@@ -778,7 +778,7 @@ interface IContextItem {}
 interface ICommandItem requires INotifyPropChanged {
     ICommand Command{ get; };
     IContextItem[] MoreCommands{ get; };
-    IconInfo Icon{ get; };
+    IIconInfo Icon{ get; };
     String Title{ get; };
     String Subtitle{ get; };
 }
@@ -867,13 +867,13 @@ previous track context commands to the list of items:
 internal sealed class MediaListItem : ListItem
 {
     // Theis is an example of a ListItem that displays the currently track
-    // This TogglePlayMediaAction is the default action when the user selects the item.
-    public MediaListItem() : base(new TogglePlayMediaAction())
+    // This TogglePlayMediaCommand is the default action when the user selects the item.
+    public MediaListItem() : base(new TogglePlayMediaCommand())
     {
         // These two commands make up the "More commands" flyout for the item.
         this.MoreCommands = [
-            new CommandContextItem(new PrevNextTrackAction(true)),
-            new CommandContextItem(new PrevNextTrackAction(false))
+            new CommandContextItem(new PrevNextTrackCommand(true)),
+            new CommandContextItem(new PrevNextTrackCommand(false))
         ];
 
         GlobalSystemMediaTransportControlsSessionManager.RequestAsync().AsTask().ContinueWith(async (task) => {
@@ -886,9 +886,9 @@ internal sealed class MediaListItem : ListItem
 
     }
 }
-internal sealed class TogglePlayMediaAction : InvokableCommand
+internal sealed class TogglePlayMediaCommand : InvokableCommand
 {
-    public TogglePlayMediaAction()
+    public TogglePlayMediaCommand()
     {
         Name = "Play";
         Icon = new("\ue768"); //play
@@ -900,7 +900,7 @@ internal sealed class TogglePlayMediaAction : InvokableCommand
         return new ICommandResult(CommandResultKind.KeepOpen);
     }
 }
-// And a similar InvokableCommand for the PrevNextTrackAction
+// And a similar InvokableCommand for the PrevNextTrackCommand
 ```
 
 List items may also have an optional `Section` provided as a string. When
@@ -979,30 +979,30 @@ class NewsPost {
     string Poster;
     int Points;
 }
-class LinkAction(NewsPost post) : Microsoft.CmdPal.Extensions.Helpers.InvokableCommand {
+class LinkCommand(NewsPost post) : Microsoft.CommandPalette.Extensions.Toolkit.InvokableCommand {
     public string Name => "Open link";
     public CommandResult Invoke() {
         Process.Start(new ProcessStartInfo(post.Url) { UseShellExecute = true });
         return CommandResult.KeepOpen;
     }
 }
-class CommentAction(NewsPost post) : Microsoft.CmdPal.Extensions.Helpers.InvokableCommand {
+class CommentCommand(NewsPost post) : Microsoft.CommandPalette.Extensions.Toolkit.InvokableCommand {
     public string Name => "Open comments";
     public CommandResult Invoke() {
         Process.Start(new ProcessStartInfo(post.CommentsUrl) { UseShellExecute = true });
         return CommandResult.KeepOpen;
     }
 }
-class NewsListItem(NewsPost post) : Microsoft.CmdPal.Extensions.Helpers.ListItem {
+class NewsListItem(NewsPost post) : Microsoft.CommandPalette.Extensions.Toolkit.ListItem {
     public string Title => post.Title;
     public string Subtitle => post.Poster;
     public IContextItem[] Commands => [
-        new CommandContextItem(new LinkAction(post)),
-        new CommandContextItem(new CommentAction(post))
+        new CommandContextItem(new LinkCommand(post)),
+        new CommandContextItem(new CommentCommand(post))
     ];
     public ITag[] Tags => [ new Tag(){ Text=post.Points } ];
 }
-class HackerNewsPage: Microsoft.CmdPal.Extensions.Helpers.ListPage {
+class HackerNewsPage: Microsoft.CommandPalette.Extensions.Toolkit.ListPage {
     public bool Loading => true;
     IListItem[] GetItems() {
         List<NewsItem> items = /* do some RSS feed stuff */;
@@ -1107,7 +1107,7 @@ interface ISeparatorFilterItem requires IFilterItem {}
 interface IFilter requires IFilterItem {
     String Id { get; };
     String Name { get; };
-    IconInfo Icon { get; };
+    IIconInfo Icon { get; };
 }
 
 interface IFilters {
@@ -1253,24 +1253,24 @@ class GitHubIssue {
     string[] Tags;
     string[] AssignedTo;
 }
-class GithubIssuePage: Microsoft.CmdPal.Extensions.Helpers.ContentPage {
+class GithubIssuePage: Microsoft.CommandPalette.Extensions.Toolkit.ContentPage {
     private readonly MarkdownContent issueBody;
     public GithubIssuePage(GithubIssue issue)
     {
-        Commands = [ new CommandContextItem(new Microsoft.CmdPal.Extensions.Helpers.OpenUrlCommand(issue.Url)) ];
+        Commands = [ new CommandContextItem(new Microsoft.CommandPalette.Extensions.Toolkit.OpenUrlCommand(issue.Url)) ];
         Details = new Details(){
             Title = "",
             Body = "",
             Metadata = [
-                new Microsoft.CmdPal.Extensions.Helpers.DetailsTags(){
+                new Microsoft.CommandPalette.Extensions.Toolkit.DetailsTags(){
                     Key = "Author",
                     Tags = [new Tag(issue.Author)]
                 },
-                new Microsoft.CmdPal.Extensions.Helpers.DetailsTags(){
+                new Microsoft.CommandPalette.Extensions.Toolkit.DetailsTags(){
                     Key = "Assigned To",
                     Tags = issue.AssignedTo.Select((user) => new Tag(user)).ToArray()
                 },
-                new Microsoft.CmdPal.Extensions.Helpers.DetailsTags(){
+                new Microsoft.CommandPalette.Extensions.Toolkit.DetailsTags(){
                     Key = "Tags",
                     Tags = issue.Tags.Select((tag) => new Tag(tag)).ToArray()
                 }
@@ -1348,9 +1348,9 @@ struct IconData {
     String Icon { get; };
     Windows.Storage.Streams.IRandomAccessStreamReference Data { get; };
 }
-struct IconInfo {
-    IconInfo(String iconString);
-    IconInfo(IconData lightIcon, IconData darkIcon);
+struct IIconInfo {
+    IIconInfo(String iconString);
+    IIconInfo(IconData lightIcon, IconData darkIcon);
 
     IconData Light { get; };
     IconData Dark { get; };
@@ -1382,7 +1382,7 @@ struct Color
 struct OptionalColor
 {
     Boolean HasValue;
-    Microsoft.CmdPal.Extensions.Color Color;
+    Microsoft.CommandPalette.Extensions.Color Color;
 };
 ```
 
@@ -1413,7 +1413,7 @@ block, and the generator will pull this into the file first.   -->
 
 ```c#
 interface ITag {
-    IconInfo Icon { get; };
+    IIconInfo Icon { get; };
     String Text { get; };
     OptionalColor Foreground { get; };
     OptionalColor Background { get; };
@@ -1427,7 +1427,7 @@ interface IDetailsElement {
     IDetailsData Data { get; };
 }
 interface IDetails {
-    IconInfo HeroImage { get; };
+    IIconInfo HeroImage { get; };
     String Title { get; };
     String Body { get; };
     IDetailsElement[] Metadata { get; };
@@ -1496,7 +1496,7 @@ interface ICommandProvider requires Windows.Foundation.IClosable, INotifyItemsCh
 {
     String Id { get; };
     String DisplayName { get; };
-    IconInfo Icon { get; };
+    IIconInfo Icon { get; };
     ICommandSettings Settings { get; };
     Boolean Frozen { get; };
 
@@ -1565,7 +1565,7 @@ As an example, here's how a developer might implement a fallback action that
 changes its name to be mOcKiNgCaSe.
 
 ```cs
-public class SpongebotPage : Microsoft.CmdPal.Extensions.Helpers.MarkdownPage, IFallbackHandler
+public class SpongebotPage : Microsoft.CommandPalette.Extensions.Toolkit.MarkdownPage, IFallbackHandler
 {
     // Name, Icon, IPropertyChanged: all those are defined in the MarkdownPage base class
     public SpongebotPage()
@@ -1579,7 +1579,7 @@ public class SpongebotPage : Microsoft.CmdPal.Extensions.Helpers.MarkdownPage, I
         } else {
             this.Name = ConvertToAlternatingCase(query);
         }
-        return Task.CompletedTask.AsAsyncAction();
+        return Task.CompletedTask.AsAsyncCommand();
     }
     static string ConvertToAlternatingCase(string input) {
         StringBuilder sb = new StringBuilder();
@@ -1609,7 +1609,7 @@ internal sealed class SpongebotCommandsProvider : CommandProvider
 }
 ```
 
-`Microsoft.CmdPal.Extensions.Helpers.FallbackCommandItem` in the SDK helpers will automatically set
+`Microsoft.CommandPalette.Extensions.Toolkit.FallbackCommandItem` in the SDK helpers will automatically set
 the `FallbackHandler` property on the `IFallbackCommandItem` to the `Command` it's
 initialized with, if that command implements `IFallbackHandler`. This allows the
 action to directly update itself in response to the query. You may also specify
@@ -1661,7 +1661,7 @@ in building the form JSON themselves.
 
 ## Helper SDK Classes
 
-As a part of the `Microsoft.CmdPal.Extensions` namespace, we'll provide a set of
+As a part of the `Microsoft.CommandPalette.Extensions` namespace, we'll provide a set of
 default implementations and helper classes that developers can use to make
 authoring extensions easier.
 
@@ -1688,7 +1688,7 @@ We'll provide default implementations for the following interfaces:
 This will allow developers to quickly create extensions without having to worry
 about implementing every part of the interface. You can see that reference
 implementation in
-`extensionsdk\Microsoft.CmdPal.Extensions.Helpers.Lib\DefaultClasses.cs`.
+`extensionsdk\Microsoft.CommandPalette.Extensions.Toolkit.Lib\DefaultClasses.cs`.
 
 In addition to the default implementations we provide for the interfaces above,
 we should provide a set of helper classes that make it easier for developers to
@@ -1697,8 +1697,8 @@ write extensions.
 For example, we should have something like:
 
 ```cs
-class OpenUrlAction(string targetUrl, CommandResult result) : Microsoft.CmdPal.Extensions.Helpers.InvokableCommand {
-    public OpenUrlAction()
+class OpenUrlCommand(string targetUrl, CommandResult result) : Microsoft.CommandPalette.Extensions.Toolkit.InvokableCommand {
+    public OpenUrlCommand()
     {
         Name = "Open";
         Icon = new("\uE8A7"); // OpenInNewWindow
@@ -1715,7 +1715,7 @@ that no longer do we need to add additional classes for the actions. We just use
 the helper:
 
 ```cs
-class NewsListItem : Microsoft.CmdPal.Extensions.Helpers.ListItem {
+class NewsListItem : Microsoft.CommandPalette.Extensions.Toolkit.ListItem {
     private NewsPost _post;
     public NewsListItem(NewsPost post)
     {
@@ -1724,15 +1724,15 @@ class NewsListItem : Microsoft.CmdPal.Extensions.Helpers.ListItem {
         Subtitle = post.Url;
     }
     public IContextItem[] Commands => [
-        new CommandContextItem(new OpenUrlAction(post.Url, CommandResult.KeepOpen)),
-        new CommandContextItem(new OpenUrlAction(post.CommentsUrl, CommandResult.KeepOpen){
+        new CommandContextItem(new OpenUrlCommand(post.Url, CommandResult.KeepOpen)),
+        new CommandContextItem(new OpenUrlCommand(post.CommentsUrl, CommandResult.KeepOpen){
             Name = "Open comments",
             Icon = "\uE8F2" // ChatBubbles
         })
     ];
     public ITag[] Tags => [ new Tag(){ Text=post.Poster, new Tag(){ Text=post.Points } } ];
 }
-class HackerNewsPage: Microsoft.CmdPal.Extensions.Helpers.ListPage {
+class HackerNewsPage: Microsoft.CommandPalette.Extensions.Toolkit.ListPage {
     public HackerNewsPage()
     {
         Loading = true;
@@ -1802,7 +1802,7 @@ class MyAppSettings {
     }
 }
 
-class MySettingsPage : Microsoft.CmdPal.Extensions.Helpers.FormPage
+class MySettingsPage : Microsoft.CommandPalette.Extensions.Toolkit.FormPage
 {
     private readonly MyAppSettings mySettings;
     public MySettingsPage(MyAppSettings s) {
@@ -1968,7 +1968,7 @@ classDiagram
     class ICommand {
         String Name
         String Id
-        IconInfo Icon
+        IIconInfo Icon
     }
     IPage --|> ICommand
     class IPage  {
@@ -2013,7 +2013,7 @@ classDiagram
     class IFilter  {
         String Id
         String Name
-        IconInfo Icon
+        IIconInfo Icon
     }
 
     class IFilters {
@@ -2029,7 +2029,7 @@ classDiagram
 
     %% IListItem --|> INotifyPropChanged
     class IListItem  {
-        IconInfo Icon
+        IIconInfo Icon
         String Title
         String Subtitle
         ICommand Command
@@ -2072,14 +2072,14 @@ classDiagram
     }
 
     class IDetails {
-        IconInfo HeroImage
+        IIconInfo HeroImage
         String Title
         String Body
         IDetailsElement[] Metadata
     }
 
     class ITag {
-        IconInfo Icon
+        IIconInfo Icon
         String Text
         Color Color
         String ToolTip
@@ -2104,7 +2104,7 @@ classDiagram
 
     class ICommandProvider {
         String DisplayName
-        IconInfo Icon
+        IIconInfo Icon
         Boolean Frozen
 
         ICommandItem[] TopLevelCommands()
@@ -2217,7 +2217,7 @@ The `.idl` for this SDK can be generated directly from this file. To do so, run 
 Or, to generate straight to the place I'm consuming it from:
 
 ```ps1
-.\doc\initial-sdk-spec\generate-interface.ps1 > .\extensionsdk\Microsoft.CmdPal.Extensions\Microsoft.CmdPal.Extensions.Helpers.idl
+.\doc\initial-sdk-spec\generate-interface.ps1 > .\extensionsdk\Microsoft.CommandPalette.Extensions\Microsoft.CommandPalette.Extensions.Toolkit.idl
 ```
 
 ### Adding APIs

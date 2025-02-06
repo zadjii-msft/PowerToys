@@ -5,7 +5,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Microsoft.CmdPal.Extensions;
+using Microsoft.CommandPalette.Extensions;
 
 namespace Menus;
 
@@ -26,7 +26,7 @@ public sealed partial class SampleExtension : IExtension
         switch (providerType)
         {
             case ProviderType.Commands:
-                return new MenusActionsProvider();
+                return new MenusCommandsProvider();
             default:
                 return null;
         }

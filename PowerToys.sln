@@ -640,9 +640,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.Ext.Window
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extension SDK", "Extension SDK", "{F3D09629-59A2-4924-A4B9-D6BFAA2C1B49}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.CmdPal.Extensions", "src\modules\cmdpal\extensionsdk\Microsoft.CmdPal.Extensions\Microsoft.CmdPal.Extensions.vcxproj", "{305DD37E-C85D-4B08-AAFE-7381FA890463}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.CommandPalette.Extensions", "src\modules\cmdpal\extensionsdk\Microsoft.CommandPalette.Extensions\Microsoft.CommandPalette.Extensions.vcxproj", "{305DD37E-C85D-4B08-AAFE-7381FA890463}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.Extensions.Helpers", "src\modules\cmdpal\extensionsdk\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj", "{CA4D810F-C8F4-4B61-9DA9-71807E0B9F24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CommandPalette.Extensions.Toolkit", "src\modules\cmdpal\extensionsdk\Microsoft.CommandPalette.Extensions.Toolkit\Microsoft.CommandPalette.Extensions.Toolkit.csproj", "{CA4D810F-C8F4-4B61-9DA9-71807E0B9F24}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.Common", "src\modules\cmdpal\Microsoft.CmdPal.Common\Microsoft.CmdPal.Common.csproj", "{14E62033-58D0-4A7D-8990-52F50A08BBBD}"
 EndProject
@@ -696,13 +696,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.Ext.Shell"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.CmdPal.Ext.WindowWalker", "src\modules\cmdpal\Exts\Microsoft.CmdPal.Ext.WindowWalker\Microsoft.CmdPal.Ext.WindowWalker.csproj", "{3A9A7297-92C4-4F16-B6F9-8D4AB652C86C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedPaste.UnitTests", "src\modules\AdvancedPaste\AdvancedPaste.UnitTests\AdvancedPaste.UnitTests.csproj", "{D5E5F5EA-1B6C-4A73-88BE-304F36C9E4EE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.WebSearch", "src\modules\cmdpal\Exts\Microsoft.CmdPal.Ext.WebSearch\Microsoft.CmdPal.Ext.WebSearch.csproj", "{605E914B-7232-4789-AF46-BF5D3DDFC14E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedPaste.FuzzTests", "src\modules\AdvancedPaste\AdvancedPaste.FuzzTests\AdvancedPaste.FuzzTests.csproj", "{7F5B9557-5878-4438-A721-3E28296BA193}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.WinGet", "src\modules\cmdpal\Exts\Microsoft.CmdPal.Ext.WinGet\Microsoft.CmdPal.Ext.WinGet.csproj", "{E81A7D20-9862-ABDB-0AAE-9BC5B517A9F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedPaste.UnitTests", "src\modules\AdvancedPaste\AdvancedPaste.UnitTests\AdvancedPaste.UnitTests.csproj", "{D5E5F5EA-1B6C-4A73-88BE-304F36C9E4EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedPaste.FuzzTests", "src\modules\AdvancedPaste\AdvancedPaste.FuzzTests\AdvancedPaste.FuzzTests.csproj", "{7F5B9557-5878-4438-A721-3E28296BA193}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ZoomIt", "ZoomIt", "{DD6E12FE-5509-4ABC-ACC2-3D6DC98A238C}"
 EndProject

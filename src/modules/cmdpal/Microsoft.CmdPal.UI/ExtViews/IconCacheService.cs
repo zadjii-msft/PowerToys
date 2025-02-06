@@ -22,7 +22,7 @@ public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
 
     private async Task<IconSource?> IconToSource(IconDataViewModel icon, bool getThumbnail)
     {
-        // bodgy: apparently IconData, despite being a struct, doesn't get
+        // bodgy: apparently IIconData, despite being a struct, doesn't get
         // MarshalByValue'd into our process. What's even the point then?
         try
         {

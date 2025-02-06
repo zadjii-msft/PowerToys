@@ -2,14 +2,14 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace PokedexExtension;
 
-public partial class PokedexExtensionActionsProvider : CommandProvider
+public partial class PokedexExtensionCommandsProvider : CommandProvider
 {
-    public PokedexExtensionActionsProvider()
+    public PokedexExtensionCommandsProvider()
     {
         DisplayName = "Pocket Monsters for the Command Palette";
     }
