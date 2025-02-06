@@ -28,6 +28,8 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
     private int _numberOfPathsToWatch;
     private Collection<string> extensionsToWatch = new Collection<string> { "*.exe", $"*{LnkExtension}", "*.appref-ms", $"*{UrlExtension}" };
 
+    private bool _isDirty;
+
     private static ConcurrentQueue<string> commonEventHandlingQueue = new ConcurrentQueue<string>();
 
     public Win32ProgramRepository(IList<IFileSystemWatcherWrapper> fileSystemWatcherHelpers, AllAppsSettings settings, string[] pathsToWatch)
@@ -55,10 +57,21 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
                     if (app != null)
                     {
                         Add(app);
+                        _isDirty = true;
                     }
                 }
             }
         }).ConfigureAwait(false);
+    }
+
+    public bool ShouldReload()
+    {
+        return _isDirty;
+    }
+
+    public void ResetReloadFlag()
+    {
+        _isDirty = false;
     }
 
     private void InitializeFileSystemWatchers()
@@ -128,12 +141,14 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
             else
             {
                 Remove(oldApp);
+                _isDirty = true;
             }
         }
 
         if (newApp != null)
         {
             Add(newApp);
+            _isDirty = true;
         }
     }
 
@@ -173,6 +188,7 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
         if (app != null)
         {
             Remove(app);
+            _isDirty = true;
         }
     }
 
@@ -219,6 +235,7 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
             if (app != null)
             {
                 Add(app);
+                _isDirty = true;
             }
         }
     }

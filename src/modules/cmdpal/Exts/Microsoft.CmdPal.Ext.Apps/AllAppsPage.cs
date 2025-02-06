@@ -76,12 +76,15 @@ public sealed partial class AllAppsPage : ListPage, IDisposable
 
     public override IListItem[] GetItems()
     {
-        if (this.allAppsSection == null || allAppsSection.Length == 0)
+        if (this.allAppsSection == null || allAppsSection.Length == 0 || _packageRepository.ShouldReload() || _win32ProgramRepository.ShouldReload())
         {
             var apps = GetPrograms();
             this.allAppsSection = apps
                             .Select((app) => new AppListItem(app))
                             .ToArray();
+
+            _packageRepository.ResetReloadFlag();
+            _win32ProgramRepository.ResetReloadFlag();
         }
 
         return allAppsSection;

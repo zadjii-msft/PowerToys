@@ -19,6 +19,18 @@ internal sealed class PackageRepository : ListRepository<UWPApplication>, IProgr
 {
     private readonly IPackageCatalog _packageCatalog;
 
+    private bool _isDirty;
+
+    public bool ShouldReload()
+    {
+        return _isDirty;
+    }
+
+    public void ResetReloadFlag()
+    {
+        _isDirty = false;
+    }
+
     // private readonly PluginInitContext _context;
     public PackageRepository(IPackageCatalog packageCatalog) // , PluginInitContext context)
     {
@@ -75,6 +87,7 @@ internal sealed class PackageRepository : ListRepository<UWPApplication>, IProgr
             {
                 app.UpdateLogoPath(ThemeHelper.GetCurrentTheme());
                 Add(app);
+                _isDirty = true;
             }
         }
 
@@ -97,6 +110,7 @@ internal sealed class PackageRepository : ListRepository<UWPApplication>, IProgr
         foreach (var app in apps)
         {
             Remove(app);
+            _isDirty = true;
         }
     }
 
