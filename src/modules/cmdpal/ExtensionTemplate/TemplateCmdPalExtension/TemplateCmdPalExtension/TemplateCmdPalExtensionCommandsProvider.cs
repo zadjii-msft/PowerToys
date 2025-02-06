@@ -9,15 +9,20 @@ namespace TemplateCmdPalExtension;
 
 public partial class TemplateCmdPalExtensionCommandsProvider : CommandProvider
 {
+    private readonly ICommandItem[] _commands;
+
     public TemplateCmdPalExtensionCommandsProvider()
     {
-        DisplayName = "TemplateDisplayName Commands";
+        DisplayName = "TemplateDisplayName";
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
+        _commands = [
+            new CommandItem(new TemplateCmdPalExtensionPage()) { Title = DisplayName },
+        ];
     }
 
-    private readonly ICommandItem[] _commands = [
-        new CommandItem(new TemplateCmdPalExtensionPage()),
-    ];
+    public override ICommandItem[] TopLevelCommands()
+    {
+        return _commands;
+    }
 
-    public override ICommandItem[] TopLevelCommands() => _commands;
 }
