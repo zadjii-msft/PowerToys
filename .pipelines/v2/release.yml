@@ -98,6 +98,8 @@ extends:
                 akvName: $(SigningAKVName)
                 authCertName: $(SigningAuthCertName)
                 signCertName: $(SigningSignCertName)
+                useManagedIdentity: $(SigningUseManagedIdentity)
+                clientId: $(SigningOriginalClientId)
               # Have msbuild use the release nuget config profile
               additionalBuildOptions: /p:RestoreConfigFile="$(Build.SourcesDirectory)\.pipelines\release-nuget.config"
               beforeBuildSteps:
@@ -134,6 +136,8 @@ extends:
                 akvName: $(SigningAKVName)
                 authCertName: $(SigningAuthCertName)
                 signCertName: $(SigningSignCertName)
+                useManagedIdentity: $(SigningUseManagedIdentity)
+                clientId: $(SigningOriginalClientId)
 
       - stage: Publish
         displayName: Publish
