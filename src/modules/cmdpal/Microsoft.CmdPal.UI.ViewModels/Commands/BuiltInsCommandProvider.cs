@@ -57,8 +57,8 @@ public partial class BuiltinsExtensionHost
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "testing")]
 public partial class NewExtensionPage : ContentPage
 {
-    private readonly NewExtensionForm _inputForm = new();
-    private IFormContent? _resultForm;
+    private NewExtensionForm _inputForm = new();
+    private NewExtensionFormBase? _resultForm;
 
     public override IContent[] GetContent()
     {
@@ -79,15 +79,38 @@ public partial class NewExtensionPage : ContentPage
         _inputForm.FormSubmitted += FormSubmitted;
     }
 
-    private void FormSubmitted(NewExtensionForm sender, IFormContent args)
+    private void FormSubmitted(NewExtensionFormBase sender, NewExtensionFormBase? args)
     {
+        if (_resultForm != null)
+        {
+            _resultForm.FormSubmitted -= FormSubmitted;
+        }
+
         _resultForm = args;
+        if (_resultForm != null)
+        {
+            _resultForm.FormSubmitted += FormSubmitted;
+        }
+        else
+        {
+            _inputForm = new();
+            _inputForm.FormSubmitted += FormSubmitted;
+        }
+
         RaiseItemsChanged(1);
     }
 }
 
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "testing")]
-internal sealed partial class NewExtensionForm : FormContent
+internal abstract partial class NewExtensionFormBase : FormContent
+{
+    public event TypedEventHandler<NewExtensionFormBase, NewExtensionFormBase?>? FormSubmitted;
+
+    protected void RaiseFormSubmit(NewExtensionFormBase? next) => FormSubmitted?.Invoke(this, next);
+}
+
+[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "testing")]
+internal sealed partial class NewExtensionForm : NewExtensionFormBase
 {
     private static readonly string _creatingText = "Creating new extension...";
     private readonly StatusMessage _creatingMessage = new()
@@ -95,8 +118,6 @@ internal sealed partial class NewExtensionForm : FormContent
         Message = _creatingText,
         Progress = new ProgressState() { IsIndeterminate = true },
     };
-
-    public event TypedEventHandler<NewExtensionForm, IFormContent>? FormSubmitted;
 
     public NewExtensionForm()
     {
@@ -213,7 +234,7 @@ internal sealed partial class NewExtensionForm : FormContent
             BuiltinsExtensionHost.Instance.HideStatus(_creatingMessage);
 
             // BuiltinsExtensionHost.Instance.HideStatus(_creatingMessage);
-            FormSubmitted?.Invoke(this, new CreatedExtensionForm(extensionName, displayName, outputPath));
+            RaiseFormSubmit(new CreatedExtensionForm(extensionName, displayName, outputPath));
 
             // _toast.Message.State = MessageState.Success;
             // _toast.Message.Message = $"Successfully created extension";
@@ -296,7 +317,7 @@ internal sealed partial class NewExtensionForm : FormContent
 }
 
 [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "testing")]
-public partial class CreatedExtensionForm : FormContent
+internal sealed partial class CreatedExtensionForm : NewExtensionFormBase
 {
     public CreatedExtensionForm(string name, string displayName, string path)
     {
@@ -308,6 +329,49 @@ public partial class CreatedExtensionForm : FormContent
     "displayName": {{JsonSerializer.Serialize(displayName)}}
 }
 """;
+        _name = name;
+        _displayName = displayName;
+        _path = path;
+    }
+
+    public override ICommandResult SubmitForm(string inputs, string data)
+    {
+        var dataInput = JsonNode.Parse(data)?.AsObject();
+        if (dataInput == null)
+        {
+            return CommandResult.KeepOpen();
+        }
+
+        var verb = dataInput["x"]?.AsValue()?.ToString() ?? string.Empty;
+        return verb switch
+        {
+            "sln" => OpenSolution(),
+            "dir" => OpenDirectory(),
+            "new" => CreateNew(),
+            _ => CommandResult.KeepOpen(),
+        };
+    }
+
+    private ICommandResult OpenSolution()
+    {
+        string[] parts = [_path, _name, $"{_name}.sln"];
+        var pathToSolution = Path.Combine(parts);
+        ShellHelpers.OpenInShell(pathToSolution);
+        return CommandResult.GoHome();
+    }
+
+    private ICommandResult OpenDirectory()
+    {
+        string[] parts = [_path, _name];
+        var pathToDir = Path.Combine(parts);
+        ShellHelpers.OpenInShell(pathToDir);
+        return CommandResult.GoHome();
+    }
+
+    private ICommandResult CreateNew()
+    {
+        RaiseFormSubmit(null);
+        return CommandResult.KeepOpen();
     }
 
     private static readonly string CardTemplate = """
@@ -381,4 +445,8 @@ public partial class CreatedExtensionForm : FormContent
     ]
 }
 """;
+
+    private readonly string _name;
+    private readonly string _displayName;
+    private readonly string _path;
 }
