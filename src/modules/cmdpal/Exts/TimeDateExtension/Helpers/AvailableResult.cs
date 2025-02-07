@@ -40,19 +40,11 @@ internal class AvailableResult
     {
         return IconType switch
         {
-            ResultIconType.Time => CreateIconInfo("time"),
-            ResultIconType.Date => CreateIconInfo("calendar"),
-            ResultIconType.DateTime => CreateIconInfo("timdate"),
+            ResultIconType.Time => ResultHelper.CreateIconInfo("time"),
+            ResultIconType.Date => ResultHelper.CreateIconInfo("calendar"),
+            ResultIconType.DateTime => ResultHelper.CreateIconInfo("timeDate"),
             _ => null,
         };
-    }
-
-    public static IconInfo CreateIconInfo(string inconType)
-    {
-        var lightIcon = new IconData($"Assets\\{inconType}.light.png");
-        var darkIcon = new IconData($"Assets\\{inconType}.dark.png");
-
-        return new IconInfo(lightIcon, darkIcon);
     }
 
     public ListItem ToListItem()

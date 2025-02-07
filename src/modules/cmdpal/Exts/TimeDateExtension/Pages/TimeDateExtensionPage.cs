@@ -17,8 +17,9 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
     public TimeDateExtensionPage()
     {
         Icon = new(string.Empty);
-        Name = "TimeDate extension for cmdpal";
-        _items.Add(new ListItem(new CopyTextCommand(string.Empty)));
+        Name = "TimeDate";
+        _items.Add(new ListItem(new NoOpCommand()));
+        _items[0].Title = "Type an equation...init";
     }
 
     public override IListItem[] GetItems()
@@ -30,30 +31,10 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
     {
         if (!string.IsNullOrEmpty(newSearch))
         {
-            try
-            {
-                var result = TimeDateCalculator.ExecuteSearch(newSearch);
-                _items.Clear();
-                _items.AddRange(result);
-            }
-            catch (Exception e)
-            {
-                _items.Clear();
-                _items.Add(new ListItem(new CopyTextCommand(string.Empty)));
-                _items[0].Title = e.Message;
-            }
-
-            if (_items.Count == 0)
-            {
-                _items.Add(new ListItem(new CopyTextCommand(string.Empty)));
-                _items[0].Title = "Type an equation...";
-            }
-        }
-        else
-        {
+            var result = TimeDateCalculator.ExecuteSearch(newSearch);
             _items.Clear();
-            _items.Add(new ListItem(new CopyTextCommand(string.Empty)));
-            _items[0].Title = "Type an equation...";
+            _items.AddRange(result);
+            RaiseItemsChanged(0);
         }
     }
 }

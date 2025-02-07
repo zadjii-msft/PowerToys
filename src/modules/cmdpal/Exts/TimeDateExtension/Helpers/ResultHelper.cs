@@ -2,10 +2,12 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Globalization;
+using System.IO;
 using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Microsoft.PowerToys.Run.Plugin.TimeDate.Properties;
+using TimeDateExtension.Properties;
 
 namespace TimeDateExtension.Helpers;
 
@@ -45,10 +47,14 @@ internal static class ResultHelper
         Icon = CreateIconInfo("Warning"),
     };
 
-    public static IconInfo CreateIconInfo(string inconType)
+    public static IconInfo CreateIconInfo(string iconName)
     {
-        var lightIcon = new IconData($"Assets\\{inconType}.light.png");
-        var darkIcon = new IconData($"Assets\\{inconType}.dark.png");
+        var rootPath = Path.Combine(AppContext.BaseDirectory, "Assets");
+        var lightIconPath = Path.Combine(rootPath, $"{iconName}.light.png");
+        var darkIconPath = Path.Combine(rootPath, $"{iconName}.dark.png");
+
+        var lightIcon = new IconData(lightIconPath);
+        var darkIcon = new IconData(darkIconPath);
 
         return new IconInfo(lightIcon, darkIcon);
     }

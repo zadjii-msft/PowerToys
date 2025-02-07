@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Microsoft.PowerToys.Run.Plugin.TimeDate.Properties;
+using TimeDateExtension.Properties;
 
 namespace TimeDateExtension.Helpers;
 

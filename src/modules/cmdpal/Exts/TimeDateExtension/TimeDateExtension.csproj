@@ -13,16 +13,6 @@
     <!-- MRT from windows app sdk will search for a pri file with the same name of the module before defaulting to resources.pri -->
     <ProjectPriFileName>TimeDateExtension.pri</ProjectPriFileName>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Remove="Assets\calendar.dark.png" />
-    <Content Remove="Assets\calendar.light.png" />
-    <Content Remove="Assets\time.dark.png" />
-    <Content Remove="Assets\time.light.png" />
-    <Content Remove="Assets\timeDate.dark.png" />
-    <Content Remove="Assets\timeDate.light.png" />
-    <Content Remove="Assets\Warning.dark.png" />
-    <Content Remove="Assets\Warning.light.png" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -32,6 +22,28 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\calendar.dark.png" />
+    <Content Include="Assets\calendar.light.png" />
+    <Content Include="Assets\time.dark.png" />
+    <Content Include="Assets\time.light.png" />
+    <Content Include="Assets\timeDate.dark.png" />
+    <Content Include="Assets\timeDate.light.png" />
+    <Content Include="Assets\Warning.dark.png" />
+    <Content Include="Assets\Warning.light.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

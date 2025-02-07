@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CmdPal.Extensions.Helpers;
-using Microsoft.PowerToys.Run.Plugin.TimeDate.Properties;
+using TimeDateExtension.Properties;
 
 namespace TimeDateExtension.Helpers;
 
@@ -94,6 +94,12 @@ public sealed partial class TimeDateCalculator
             {
                 results.Add(ResultHelper.CreateNumberErrorResult());
             }
+        }
+
+        if (results.Count == 0)
+        {
+            results.Add(new ListItem(new NoOpCommand()));
+            results[0].Title = "Type an equation";
         }
 
         return results;
