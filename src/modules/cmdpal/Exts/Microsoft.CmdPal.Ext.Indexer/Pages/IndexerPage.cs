@@ -92,7 +92,7 @@ internal sealed partial class IndexerPage : DynamicListPage, IDisposable
                 while (!_searchQuery.SearchResults.IsEmpty && _searchQuery.SearchResults.TryDequeue(out result) && ++index <= limit)
                 {
                     IconInfo icon = null;
-                    var stream = ThumbnailHelper.GetThumbnail(result.LaunchUri);
+                    var stream = ThumbnailHelper.GetThumbnail(result.LaunchUri).Result;
                     if (stream != null)
                     {
                         var data = new IconData(RandomAccessStreamReference.CreateFromStream(stream));

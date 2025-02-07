@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation
+﻿// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -24,21 +24,21 @@ public class ThumbnailHelper
         ".ico",
     ];
 
-    public static IRandomAccessStream? GetThumbnail(string path)
+    public static async Task<IRandomAccessStream> GetThumbnail(string path)
     {
         var extension = Path.GetExtension(path).ToLower(CultureInfo.InvariantCulture);
         if (ImageExtensions.Contains(extension))
         {
             try
             {
-                return GetImageThumbnailAsync(path).Result;
+                return await GetImageThumbnailAsync(path);
             }
             catch (Exception)
             {
             }
         }
 
-        return GetFileIconStream(path);
+        return await Task.FromResult(GetFileIconStream(path));
     }
 
     private const uint SHGFIICON = 0x000000100;
