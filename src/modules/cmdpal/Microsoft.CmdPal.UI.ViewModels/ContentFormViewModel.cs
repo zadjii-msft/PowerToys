@@ -80,7 +80,7 @@ public partial class ContentFormViewModel(IFormContent _form, IPageContext conte
         if (action is AdaptiveSubmitAction or AdaptiveExecuteAction)
         {
             // Get the data and inputs
-            // var data = submitAction.DataJson.Stringify();
+            var dataString = (action as AdaptiveSubmitAction)?.DataJson.Stringify() ?? string.Empty;
             var inputString = inputs.Stringify();
 
             _ = Task.Run(() =>
@@ -90,7 +90,7 @@ public partial class ContentFormViewModel(IFormContent _form, IPageContext conte
                     var model = _formModel.Unsafe!;
                     if (model != null)
                     {
-                        var result = model.SubmitForm(inputString);
+                        var result = model.SubmitForm(inputString, dataString);
                         WeakReferenceMessenger.Default.Send<HandleCommandResultMessage>(new(new(result)));
                     }
                 }
