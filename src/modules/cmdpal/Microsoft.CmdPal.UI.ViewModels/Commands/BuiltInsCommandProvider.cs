@@ -4,11 +4,13 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.CmdPal.Common;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 
@@ -56,14 +58,31 @@ public partial class BuiltinsExtensionHost
 public partial class NewExtensionPage : ContentPage
 {
     private readonly NewExtensionForm _inputForm = new();
+    private IFormContent? _resultForm;
 
-    public override IContent[] GetContent() => [_inputForm];
+    public override IContent[] GetContent()
+    {
+        if (_resultForm != null)
+        {
+            return [_resultForm];
+        }
+
+        return [_inputForm];
+    }
 
     public NewExtensionPage()
     {
         Name = "Open";
         Title = "Create a new extension";
         Icon = new IconInfo("\uEA86"); // Puzzle
+
+        _inputForm.FormSubmitted += FormSubmitted;
+    }
+
+    private void FormSubmitted(NewExtensionForm sender, IFormContent args)
+    {
+        _resultForm = args;
+        RaiseItemsChanged(1);
     }
 }
 
@@ -77,7 +96,8 @@ internal sealed partial class NewExtensionForm : FormContent
         Progress = new ProgressState() { IsIndeterminate = true },
     };
 
-    // private readonly ToastStatusMessage _toast = new(string.Empty) { Host = BuiltinsExtensionHost.Instance.Host };
+    public event TypedEventHandler<NewExtensionForm, IFormContent>? FormSubmitted;
+
     public NewExtensionForm()
     {
         TemplateJson = $$"""
@@ -187,11 +207,13 @@ internal sealed partial class NewExtensionForm : FormContent
         {
             CreateExtension(extensionName, displayName, outputPath);
 
-            _creatingMessage.Progress = null;
-            _creatingMessage.State = MessageState.Success;
-            _creatingMessage.Message = $"Successfully created extension";
+            // _creatingMessage.Progress = null;
+            // _creatingMessage.State = MessageState.Success;
+            // _creatingMessage.Message = $"Successfully created extension";
+            BuiltinsExtensionHost.Instance.HideStatus(_creatingMessage);
 
             // BuiltinsExtensionHost.Instance.HideStatus(_creatingMessage);
+            FormSubmitted?.Invoke(this, new CreatedExtensionForm(extensionName, displayName, outputPath));
 
             // _toast.Message.State = MessageState.Success;
             // _toast.Message.Message = $"Successfully created extension";
@@ -207,12 +229,11 @@ internal sealed partial class NewExtensionForm : FormContent
             // _toast.Show();
         }
 
-        _ = Task.Run(() =>
-        {
-            Thread.Sleep(2500);
-            BuiltinsExtensionHost.Instance.HideStatus(_creatingMessage);
-        });
-
+        // _ = Task.Run(() =>
+        // {
+        //    Thread.Sleep(2500);
+        //    BuiltinsExtensionHost.Instance.HideStatus(_creatingMessage);
+        // });
         return CommandResult.KeepOpen();
     }
 
@@ -272,4 +293,92 @@ internal sealed partial class NewExtensionForm : FormContent
         // Delete the temp dir
         Directory.Delete(tempDir, true);
     }
+}
+
+[SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "testing")]
+public partial class CreatedExtensionForm : FormContent
+{
+    public CreatedExtensionForm(string name, string displayName, string path)
+    {
+        TemplateJson = CardTemplate;
+        DataJson = $$"""
+{
+    "name": {{JsonSerializer.Serialize(name)}},
+    "directory": {{JsonSerializer.Serialize(path)}},
+    "displayName": {{JsonSerializer.Serialize(displayName)}}
+}
+""";
+    }
+
+    private static readonly string CardTemplate = """
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.6",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Successfully created your new extension!",
+            "size": "large",
+            "weight": "bolder",
+            "style": "heading",
+            "wrap": true
+        },
+        {
+            "type": "TextBlock",
+            "text": "Your new extension \"${displayName}\" was created in:",
+            "wrap": true
+        },
+        {
+            "type": "TextBlock",
+            "text": "${directory}",
+            "fontType": "Monospace"
+        },
+        {
+            "type": "TextBlock",
+            "text": "Next steps",
+            "style": "heading",
+            "wrap": true
+        },
+        {
+            "type": "TextBlock",
+            "text": "Now that your extension project has been created, open the solution up in Visual Studio to start writing your extension code.",
+            "wrap": true
+        },
+        {
+            "type": "TextBlock",
+            "text": "Navigate to ${name}Page.cs to start adding items to the list, or to ${name}CommandsProvider.cs to add new commands.",
+            "wrap": true
+        },
+        {
+            "type": "TextBlock",
+            "text": "Once you're ready to test deploy the package locally with Visual Studio, then run the \"Reload\" command in the Command Palette to load your new extension.",
+            "wrap": true
+        }
+    ],
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Open Solution",
+            "data": {
+                "x": "sln"
+            }
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Open directory",
+            "data": {
+                "x": "dir"
+            }
+        },
+        {
+            "type": "Action.Submit",
+            "title": "Create another",
+            "data": {
+                "x": "new"
+            }
+        }
+    ]
+}
+""";
 }
