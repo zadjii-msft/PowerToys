@@ -396,7 +396,7 @@ internal sealed partial class CreatedExtensionForm : NewExtensionFormBase
         {
             "type": "TextBlock",
             "text": "${directory}",
-            "fontType": "Monospace"
+            "fontType": "monospace"
         },
         {
             "type": "TextBlock",
@@ -411,7 +411,7 @@ internal sealed partial class CreatedExtensionForm : NewExtensionFormBase
         },
         {
             "type": "TextBlock",
-            "text": "Navigate to ${name}Page.cs to start adding items to the list, or to ${name}CommandsProvider.cs to add new commands.",
+            "text": "Navigate to `${name}Page.cs` to start adding items to the list, or to `${name}CommandsProvider.cs` to add new commands.",
             "wrap": true
         },
         {

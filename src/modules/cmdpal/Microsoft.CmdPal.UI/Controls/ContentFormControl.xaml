@@ -13,11 +13,10 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <ResourceDictionary>
-            <converters:StringVisibilityConverter
-                x:Key="StringNotEmptyToVisibilityConverter"
-                EmptyValue="Collapsed"
-                NotEmptyValue="Visible" />
+        <ResourceDictionary x:Name="CardOverrideStyles">
+            <Style x:Key="Adaptive.TextBlock" TargetType="TextBlock">
+                <Setter Property="IsTextSelectionEnabled" Value="True"></Setter>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
