@@ -16,19 +16,9 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Apps;
 
-public sealed partial class AllAppsPage : ListPage, IDisposable
+public sealed partial class AllAppsPage : ListPage
 {
     private IListItem[] allAppsSection = [];
-
-    private AllAppsSettings settings = AllAppsSettings.Instance;
-
-    private PackageRepository _packageRepository;
-
-    private Win32ProgramFileSystemWatchers _win32ProgramRepositoryHelper;
-
-    private Win32ProgramRepository _win32ProgramRepository;
-
-    private bool _disposed;
 
     public AllAppsPage()
     {
@@ -37,55 +27,19 @@ public sealed partial class AllAppsPage : ListPage, IDisposable
         this.ShowDetails = true;
         this.IsLoading = true;
         this.PlaceholderText = Resources.search_installed_apps_placeholder;
-
-        // This helper class initializes the file system watchers based on the locations to watch
-        _win32ProgramRepositoryHelper = new Win32ProgramFileSystemWatchers();
-
-        // Initialize the Win32ProgramRepository with the settings object
-        _win32ProgramRepository = new Win32ProgramRepository(_win32ProgramRepositoryHelper.FileSystemWatchers.Cast<IFileSystemWatcherWrapper>().ToList(), settings, _win32ProgramRepositoryHelper.PathsToWatch);
-
-        _packageRepository = new PackageRepository(new PackageCatalogWrapper());
-
-        var a = Task.Run(() =>
-        {
-            _win32ProgramRepository.IndexPrograms();
-        });
-
-        var b = Task.Run(() =>
-        {
-            _packageRepository.IndexPrograms();
-            UpdateUWPIconPath(ThemeHelper.GetCurrentTheme());
-        });
-
-        Task.WaitAll(a, b);
-
-        this.IsLoading = false;
-
-        settings.LastIndexTime = DateTime.Today;
-    }
-
-    private void UpdateUWPIconPath(Theme theme)
-    {
-        if (_packageRepository != null)
-        {
-            foreach (UWPApplication app in _packageRepository)
-            {
-                app.UpdateLogoPath(theme);
-            }
-        }
     }
 
     public override IListItem[] GetItems()
     {
-        if (this.allAppsSection == null || allAppsSection.Length == 0 || _packageRepository.ShouldReload() || _win32ProgramRepository.ShouldReload())
+        if (this.allAppsSection == null || allAppsSection.Length == 0 || AppCache.Instance.Value.ShouldReload())
         {
             var apps = GetPrograms();
             this.allAppsSection = apps
                             .Select((app) => new AppListItem(app))
                             .ToArray();
+            this.IsLoading = false;
 
-            _packageRepository.ResetReloadFlag();
-            _win32ProgramRepository.ResetReloadFlag();
+            AppCache.Instance.Value.ResetReloadFlag();
         }
 
         return allAppsSection;
@@ -93,7 +47,7 @@ public sealed partial class AllAppsPage : ListPage, IDisposable
 
     internal List<AppItem> GetPrograms()
     {
-        var uwpResults = _packageRepository
+        var uwpResults = AppCache.Instance.Value.UWPs
             .Where((application) => application.Enabled)
             .Select(app =>
                 new AppItem()
@@ -108,7 +62,7 @@ public sealed partial class AllAppsPage : ListPage, IDisposable
                     Commands = app.Commands,
                 });
 
-        var win32Results = _win32ProgramRepository
+        var win32Results = AppCache.Instance.Value.Win32s
             .Where((application) => application.Enabled && application.Valid)
             .Select(app =>
             {
@@ -125,23 +79,5 @@ public sealed partial class AllAppsPage : ListPage, IDisposable
             });
 
         return uwpResults.Concat(win32Results).OrderBy(app => app.Name).ToList();
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                _win32ProgramRepositoryHelper?.Dispose();
-                _disposed = true;
-            }
-        }
     }
 }
