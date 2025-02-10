@@ -82,8 +82,6 @@ public partial class UWP
         }
         else
         {
-            // var e = Marshal.GetExceptionForHR((int)hResult);
-            // ProgramLogger.Exception("Error caused while trying to get the details of the UWP program", e, GetType(), path);
             Apps = Array.Empty<UWPApplication>();
         }
     }
@@ -104,7 +102,6 @@ public partial class UWP
         }
         else
         {
-            // Log.Error($"Error occurred while trying to get the XML from {path}", MethodBase.GetCurrentMethod().DeclaringType);
             return Array.Empty<string>();
         }
     }
@@ -117,7 +114,6 @@ public partial class UWP
             return;
         }
 
-        // ProgramLogger.Exception($"|Trying to get the package version of the UWP program, but a unknown UWP appmanifest version {FullName} from location {Location} is returned.", new FormatException(), GetType(), Location);
         Version = PackageVersion.Unknown;
     }
 
@@ -137,7 +133,6 @@ public partial class UWP
                 }
                 catch (Exception )
                 {
-                    // ProgramLogger.Exception($"Unable to convert Package to UWP for {p.FullName}", e, MethodBase.GetCurrentMethod().DeclaringType, p.InstalledLocation);
                     return Array.Empty<UWPApplication>();
                 }
 
@@ -168,7 +163,6 @@ public partial class UWP
             }
             catch (Exception )
             {
-                // ProgramLogger.Exception("An unexpected error occurred and unable to verify if package is valid", e, MethodBase.GetCurrentMethod().DeclaringType, "id");
                 return false;
             }
         });

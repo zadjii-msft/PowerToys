@@ -49,7 +49,6 @@ internal sealed class Win32ProgramFileSystemWatchers : IDisposable
             }
             catch (Exception)
             {
-                // Log.Exception($"Failed to get files in {path}", ex, typeof(Win32ProgramFileSystemWatchers));
                 invalidPaths.Add(path);
             }
         }

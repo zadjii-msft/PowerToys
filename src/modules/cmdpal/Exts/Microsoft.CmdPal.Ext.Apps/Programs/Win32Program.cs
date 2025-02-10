@@ -155,17 +155,17 @@ public class Win32Program : IProgram
             case ApplicationType.Win32Application:
             case ApplicationType.ShortcutApplication:
             case ApplicationType.ApprefApplication:
-                return Resources.application; // Properties.Resources.powertoys_run_plugin_program_win32_application;
+                return Resources.application;
             case ApplicationType.InternetShortcutApplication:
-                return Resources.internet_shortcut_application; // Properties.Resources.powertoys_run_plugin_program_internet_shortcut_application;
+                return Resources.internet_shortcut_application;
             case ApplicationType.WebApplication:
-                return Resources.web_application; // Properties.Resources.powertoys_run_plugin_program_web_application;
+                return Resources.web_application;
             case ApplicationType.RunCommand:
-                return Resources.run_command; // Properties.Resources.powertoys_run_plugin_program_run_command;
+                return Resources.run_command;
             case ApplicationType.Folder:
-                return Resources.folder; // Properties.Resources.powertoys_run_plugin_program_folder_type;
+                return Resources.folder;
             case ApplicationType.GenericFile:
-                return Resources.file; // Properties.Resources.powertoys_run_plugin_program_generic_file_type;
+                return Resources.file;
             default:
                 return string.Empty;
         }
@@ -185,7 +185,7 @@ public class Win32Program : IProgram
         return true;
     }
 
-    public List<CommandContextItem> GetCommands(/*string queryArguments, IPublicAPI api*/)
+    public List<CommandContextItem> GetCommands()
     {
         List<CommandContextItem> commands = new List<CommandContextItem>();
 
@@ -241,12 +241,10 @@ public class Win32Program : IProgram
         }
         catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
         {
-            // ProgramLogger.Warn($"|Permission denied when trying to load the program from {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
         catch (Exception)
         {
-            // ProgramLogger.Exception($"|An unexpected error occurred in the calling method CreateWin32Program at {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
     }
@@ -276,7 +274,6 @@ public class Win32Program : IProgram
 
                     if (!Uri.TryCreate(urlPath, UriKind.RelativeOrAbsolute, out var _))
                     {
-                        // ProgramLogger.Warn("url could not be parsed", null, MethodBase.GetCurrentMethod().DeclaringType, urlPath);
                         return InvalidProgram;
                     }
 
@@ -322,13 +319,11 @@ public class Win32Program : IProgram
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                // ProgramLogger.Warn($"|Permission denied when trying to load the program from {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
                 return InvalidProgram;
             }
         }
         catch (Exception)
         {
-            // ProgramLogger.Exception($"|An unexpected error occurred in the calling method InternetShortcutProgram at {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
     }
@@ -382,7 +377,6 @@ public class Win32Program : IProgram
         }
         catch (System.IO.FileLoadException)
         {
-            // ProgramLogger.Warn($"Couldn't load the link file at {path}. This might be caused by a new link being created and locked by the OS.", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
 
@@ -390,7 +384,6 @@ public class Win32Program : IProgram
         // Error caused likely due to trying to get the description of the program
         catch (Exception)
         {
-            // ProgramLogger.Exception($"|An unexpected error occurred in the calling method LnkProgram at {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
     }
@@ -410,17 +403,14 @@ public class Win32Program : IProgram
         }
         catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
         {
-            // ProgramLogger.Warn($"|Permission denied when trying to load the program from {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
         catch (FileNotFoundException)
         {
-            // ProgramLogger.Warn($"|Unable to locate exe file at {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
         catch (Exception)
         {
-            // ProgramLogger.Exception($"|An unexpected error occurred in the calling method ExeProgram at {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return InvalidProgram;
         }
     }
@@ -528,17 +518,14 @@ public class Win32Program : IProgram
                     }
                     catch (DirectoryNotFoundException)
                     {
-                        // ProgramLogger.Warn("|The directory trying to load the program from does not exist", e, MethodBase.GetCurrentMethod().DeclaringType, currentDirectory);
                     }
                 }
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                // ProgramLogger.Warn($"|Permission denied when trying to load programs from {currentDirectory}", e, MethodBase.GetCurrentMethod().DeclaringType, currentDirectory);
             }
             catch (Exception)
             {
-                // ProgramLogger.Exception($"|An unexpected error occurred in the calling method ProgramPaths at {currentDirectory}", e, MethodBase.GetCurrentMethod().DeclaringType, currentDirectory);
             }
 
             try
@@ -562,11 +549,9 @@ public class Win32Program : IProgram
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                // ProgramLogger.Warn($"|Permission denied when trying to load programs from {currentDirectory}", e, MethodBase.GetCurrentMethod().DeclaringType, currentDirectory);
             }
             catch (Exception)
             {
-                // ProgramLogger.Exception($"|An unexpected error occurred in the calling method ProgramPaths at {currentDirectory}", e, MethodBase.GetCurrentMethod().DeclaringType, currentDirectory);
             }
         }
         while (folderQueue.Count > 0);
@@ -698,7 +683,6 @@ public class Win32Program : IProgram
         }
         catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
         {
-            // ProgramLogger.Warn($"|Permission denied when trying to load the program from {path}", e, MethodBase.GetCurrentMethod().DeclaringType, path);
             return string.Empty;
         }
     }
@@ -788,7 +772,6 @@ public class Win32Program : IProgram
         }
         catch (IOException)
         {
-            // ProgramLogger.Warn($"|Error whilst retrieving the redirection path from app execution alias {program.FullPath}", e, MethodBase.GetCurrentMethod().DeclaringType, program.FullPath);
         }
 
         icoPath = null;
@@ -859,7 +842,6 @@ public class Win32Program : IProgram
         }
         catch (Exception)
         {
-            // ProgramLogger.Exception("An unexpected error occurred", e, MethodBase.GetCurrentMethod().DeclaringType, "Not available");
             return Array.Empty<Win32Program>();
         }
     }

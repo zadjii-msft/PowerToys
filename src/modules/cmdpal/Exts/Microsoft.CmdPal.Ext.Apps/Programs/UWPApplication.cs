@@ -68,7 +68,7 @@ public class UWPApplication : IProgram
     // Function to set the subtitle based on the Type of application
     public static string Type()
     {
-        return Resources.packaged_application; // Properties.Resources.powertoys_run_plugin_program_packaged_application
+        return Resources.packaged_application;
     }
 
     public void InitCommands()
@@ -158,7 +158,6 @@ public class UWPApplication : IProgram
                 }
                 catch (Exception)
                 {
-                    // ProgramLogger.Exception($"Unable to parse manifest file for {DisplayName}", e, MethodBase.GetCurrentMethod().DeclaringType, manifest);
                 }
             }
         }
@@ -219,7 +218,6 @@ public class UWPApplication : IProgram
                         }
                         else
                         {
-                            // ProgramLogger.Exception($"Can't load null or empty result pri {sourceFallback} in uwp location {Package.Location}", new ArgumentNullException(null), GetType(), Package.Location);
                             return string.Empty;
                         }
                     }
@@ -231,8 +229,6 @@ public class UWPApplication : IProgram
                 // for
                 // Microsoft.MicrosoftOfficeHub_17.7608.23501.0_x64__8wekyb3d8bbwe: ms-resource://Microsoft.MicrosoftOfficeHub/officehubintl/AppManifest_GetOffice_Description
                 // Microsoft.BingFoodAndDrink_3.0.4.336_x64__8wekyb3d8bbwe: ms-resource:AppDescription
-                // var e = Marshal.GetExceptionForHR((int)hResult);
-                // ProgramLogger.Exception($"Load pri failed {source} with HResult {hResult} and location {Package.Location}", e, GetType(), Package.Location);
                 return string.Empty;
             }
             else
@@ -244,7 +240,6 @@ public class UWPApplication : IProgram
                 }
                 else
                 {
-                    // ProgramLogger.Exception($"Can't load null or empty result pri {source} in uwp location {Package.Location}", new ArgumentNullException(null), GetType(), Package.Location);
                     return string.Empty;
                 }
             }
@@ -493,8 +488,6 @@ public class UWPApplication : IProgram
         {
             LogoPath = string.Empty;
             LogoType = LogoType.Error;
-
-            // ProgramLogger.Exception($"|{UserModelId} can't find logo uri for {uri} in package location: {Package.Location}", new FileNotFoundException(), GetType(), Package.Location);
         }
     }
 

@@ -32,11 +32,10 @@ internal sealed class PackageRepository : ListRepository<UWPApplication>, IProgr
     }
 
     // private readonly PluginInitContext _context;
-    public PackageRepository(IPackageCatalog packageCatalog) // , PluginInitContext context)
+    public PackageRepository(IPackageCatalog packageCatalog)
     {
         _packageCatalog = packageCatalog ?? throw new ArgumentNullException(nameof(packageCatalog), "PackageRepository expects an interface to be able to subscribe to package events");
 
-        // _context = context ?? throw new ArgumentNullException(nameof(context));
         _packageCatalog.PackageInstalling += OnPackageInstalling;
         _packageCatalog.PackageUninstalling += OnPackageUninstalling;
         _packageCatalog.PackageUpdating += OnPackageUpdating;
@@ -96,7 +95,6 @@ internal sealed class PackageRepository : ListRepository<UWPApplication>, IProgr
         // eg. "Could not find file 'C:\\Program Files\\WindowsApps\\Microsoft.WindowsTerminalPreview_2020.616.45.0_neutral_~_8wekyb3d8bbwe\\AppxManifest.xml'."
         catch (System.IO.FileNotFoundException)
         {
-            // ProgramLogger.Exception(e.Message, e, GetType(), package.InstalledLocation.ToString());
         }
     }
 
@@ -121,7 +119,6 @@ internal sealed class PackageRepository : ListRepository<UWPApplication>, IProgr
 
         var applications = support ? Programs.UWP.All() : Array.Empty<UWPApplication>();
 
-        // Log.Info($"Indexed {applications.Length} packaged applications", GetType());
         SetList(applications);
     }
 }

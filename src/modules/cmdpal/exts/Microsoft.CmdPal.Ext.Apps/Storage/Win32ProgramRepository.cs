@@ -128,7 +128,6 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
         }
         catch (Exception)
         {
-            // Log.Exception($"OnAppRenamed-{extension} Program|{e.OldName}|Unable to create program from {oldPath}", ex, GetType());
         }
 
         // To remove the old app which has been renamed and to add the new application.
@@ -136,7 +135,6 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
         {
             if (string.IsNullOrWhiteSpace(oldApp.Name) || string.IsNullOrWhiteSpace(oldApp.ExecutableName) || string.IsNullOrWhiteSpace(oldApp.FullPath))
             {
-                // Log.Warn($"Old app data was not initialized properly for removal after file renaming. This likely means it was not a valid app to begin with and removal is not needed. OldFullPath: {e.OldFullPath}; OldName: {e.OldName}; FullPath: {e.FullPath}", GetType());
             }
             else
             {
@@ -182,7 +180,6 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
         }
         catch (Exception)
         {
-            // Log.Exception($"OnAppDeleted-{extension}Program|{path}|Unable to create program from {path}", ex, GetType());
         }
 
         if (app != null)
@@ -257,7 +254,6 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
     {
         var applications = Programs.Win32Program.All(_settings);
 
-        // Log.Info($"Indexed {applications.Count} win32 applications", GetType());
         SetList(applications);
     }
 }

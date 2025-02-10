@@ -39,7 +39,6 @@ public class ListRepository<T> : IRepository<T>, IEnumerable<T>
         }
         catch (ArgumentException)
         {
-            // Log.Info($"Trying to insert a duplicate item {e.Message}", GetType());
         }
     }
 
@@ -54,7 +53,6 @@ public class ListRepository<T> : IRepository<T>, IEnumerable<T>
         {
             if (!_items.TryAdd(insertedItem.GetHashCode(), insertedItem))
             {
-                // Log.Error($"Item Already Exists <{insertedItem}>", GetType());
             }
         }
     }
@@ -65,7 +63,6 @@ public class ListRepository<T> : IRepository<T>, IEnumerable<T>
         {
             if (!_items.TryRemove(removedItem.GetHashCode(), out _))
             {
-                // Log.Error($"Item Not Found <{removedItem}>", GetType());
             }
         }
     }
