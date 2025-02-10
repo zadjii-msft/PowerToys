@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
 using Microsoft.CmdPal.Ext.Apps.Commands;
+using Microsoft.CmdPal.Ext.Apps.Properties;
 using Microsoft.CmdPal.Ext.Apps.Utils;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
@@ -67,7 +68,7 @@ public class UWPApplication : IProgram
     // Function to set the subtitle based on the Type of application
     public static string Type()
     {
-        return "Packaged application"; // Properties.Resources.powertoys_run_plugin_program_packaged_application
+        return Resources.packaged_application; // Properties.Resources.powertoys_run_plugin_program_packaged_application
     }
 
     public void InitCommands()
@@ -85,7 +86,7 @@ public class UWPApplication : IProgram
             new CommandContextItem(
                 new OpenPathCommand(Location)
                 {
-                    Name = "Open containing folder",
+                    Name = Resources.open_containing_folder,
                     Icon = new("\ue838"),
                 }));
 

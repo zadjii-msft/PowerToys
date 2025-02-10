@@ -3,8 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Apps.Programs;
+using Microsoft.CmdPal.Ext.Apps.Properties;
+using Microsoft.CmdPal.Ext.Apps.Utils;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Apps;
@@ -17,7 +20,7 @@ internal sealed partial class AppCommand : InvokableCommand
     {
         _app = app;
 
-        Name = "Run";
+        Name = Resources.run_command_action;
         Icon = new IconInfo(_app.IcoPath);
     }
 

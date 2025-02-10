@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.CmdPal.Ext.Apps.Commands;
+using Microsoft.CmdPal.Ext.Apps.Properties;
 using Microsoft.CmdPal.Ext.Apps.Utils;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.Win32;
@@ -154,17 +155,17 @@ public class Win32Program : IProgram
             case ApplicationType.Win32Application:
             case ApplicationType.ShortcutApplication:
             case ApplicationType.ApprefApplication:
-                return "Application"; // Properties.Resources.powertoys_run_plugin_program_win32_application;
+                return Resources.application; // Properties.Resources.powertoys_run_plugin_program_win32_application;
             case ApplicationType.InternetShortcutApplication:
-                return "Internet shortcut application"; // Properties.Resources.powertoys_run_plugin_program_internet_shortcut_application;
+                return Resources.internet_shortcut_application; // Properties.Resources.powertoys_run_plugin_program_internet_shortcut_application;
             case ApplicationType.WebApplication:
-                return "Web application"; // Properties.Resources.powertoys_run_plugin_program_web_application;
+                return Resources.web_application; // Properties.Resources.powertoys_run_plugin_program_web_application;
             case ApplicationType.RunCommand:
-                return "Run command"; // Properties.Resources.powertoys_run_plugin_program_run_command;
+                return Resources.run_command; // Properties.Resources.powertoys_run_plugin_program_run_command;
             case ApplicationType.Folder:
-                return "Folder"; // Properties.Resources.powertoys_run_plugin_program_folder_type;
+                return Resources.folder; // Properties.Resources.powertoys_run_plugin_program_folder_type;
             case ApplicationType.GenericFile:
-                return "File"; // Properties.Resources.powertoys_run_plugin_program_generic_file_type;
+                return Resources.file; // Properties.Resources.powertoys_run_plugin_program_generic_file_type;
             default:
                 return string.Empty;
         }

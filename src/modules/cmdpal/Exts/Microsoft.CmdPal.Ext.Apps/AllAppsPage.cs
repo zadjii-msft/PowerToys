@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Apps.Programs;
+using Microsoft.CmdPal.Ext.Apps.Properties;
 using Microsoft.CmdPal.Ext.Apps.Storage;
 using Microsoft.CmdPal.Ext.Apps.Utils;
 using Microsoft.CommandPalette.Extensions;
@@ -31,11 +32,11 @@ public sealed partial class AllAppsPage : ListPage, IDisposable
 
     public AllAppsPage()
     {
-        this.Name = "All Apps";
+        this.Name = Resources.all_apps;
         this.Icon = new IconInfo("\ue71d");
         this.ShowDetails = true;
         this.IsLoading = true;
-        this.PlaceholderText = "Search installed apps...";
+        this.PlaceholderText = Resources.search_installed_apps_placeholder;
 
         // This helper class initializes the file system watchers based on the locations to watch
         _win32ProgramRepositoryHelper = new Win32ProgramFileSystemWatchers();

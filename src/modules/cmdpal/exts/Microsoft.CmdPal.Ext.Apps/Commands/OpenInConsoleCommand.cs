@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.CmdPal.Ext.Apps.Properties;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Apps.Commands;
@@ -16,7 +17,7 @@ internal sealed partial class OpenInConsoleCommand : InvokableCommand
 
     public OpenInConsoleCommand(string target)
     {
-        Name = "Open path in console";
+        Name = Resources.open_path_in_console;
         Icon = new IconInfo("\ue838");
 
         _target = target;
