@@ -56,6 +56,9 @@ parameters:
   - name: versionNumber
     type: string
     default: '0.0.1'
+  - name: cmdPalVersionNumber
+    type: string
+    default: '0.0.1'
   - name: useLatestWinAppSDK
     type: boolean
     default: false
