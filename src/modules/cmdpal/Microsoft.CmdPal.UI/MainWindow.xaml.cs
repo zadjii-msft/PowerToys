@@ -5,7 +5,6 @@
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Common.Services;
-using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CmdPal.UI.ViewModels.Settings;
@@ -405,7 +404,7 @@ public sealed partial class MainWindow : Window,
             _largeIcon = GetAppIconHandle();
             _trayIconData = new NOTIFYICONDATAW()
             {
-                cbSize = (uint)Marshal.SizeOf(typeof(NOTIFYICONDATAW)),
+                cbSize = (uint)Marshal.SizeOf<NOTIFYICONDATAW>(),
                 hWnd = _hwnd,
                 uID = MY_NOTIFY_ID,
                 uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP,
@@ -438,7 +437,8 @@ public sealed partial class MainWindow : Window,
 
     private DestroyIconSafeHandle GetAppIconHandle()
     {
-        var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        // var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location; TODO!
+        var exePath = string.Empty;
         DestroyIconSafeHandle largeIcon;
         DestroyIconSafeHandle smallIcon;
         PInvoke.ExtractIconEx(exePath, 0, out largeIcon, out smallIcon, 1);

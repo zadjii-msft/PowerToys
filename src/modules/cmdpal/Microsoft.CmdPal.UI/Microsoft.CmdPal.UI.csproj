@@ -188,4 +188,14 @@
   </ItemGroup>
   <!-- </AdaptiveCardsWorkaround> -->
 
+  <PropertyGroup>
+    <SelfContained>true</SelfContained>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishAot>true</PublishAot>
+    <WarningsNotAsErrors>IL2059</WarningsNotAsErrors>
+
+  </PropertyGroup>
+
 </Project>
