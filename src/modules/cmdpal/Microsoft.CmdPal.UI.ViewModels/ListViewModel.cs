@@ -226,6 +226,8 @@ public partial class ListViewModel : PageViewModel
                {
                    WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
                }
+
+               TextToSuggest = item.TextToSuggest;
            },
            CancellationToken.None,
            TaskCreationOptions.None,
