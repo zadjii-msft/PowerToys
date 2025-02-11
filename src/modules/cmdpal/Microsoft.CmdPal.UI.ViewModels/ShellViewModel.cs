@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -95,9 +94,12 @@ public partial class ShellViewModel(IServiceProvider _serviceProvider, TaskSched
                     // TODO GH #239 switch back when using the new MD text block
                     // _ = _queue.EnqueueAsync(() =>
                     _ = Task.Factory.StartNew(
-                        () =>
+                        async () =>
                         {
-                            var result = (bool)viewModel.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
+                            // bool f = await viewModel.InitializeCommand.ExecutionTask.;
+                            // var result = viewModel.InitializeCommand.ExecutionTask.GetResultOrDefault()!;
+                            // var result = viewModel.InitializeCommand.ExecutionTask.GetResultOrDefault<bool?>()!;
+                            var result = await viewModel.InitializeAsync();
 
                             CurrentPage = viewModel; // result ? viewModel : null;
                             ////LoadedState = result ? ViewModelLoadedState.Loaded : ViewModelLoadedState.Error;

@@ -11,6 +11,7 @@ using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
 
+// [assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]
 namespace Microsoft.CmdPal.UI.ViewModels.Models;
 
 public class ExtensionWrapper : IExtensionWrapper
@@ -109,14 +110,19 @@ public class ExtensionWrapper : IExtensionWrapper
                         // -2147024809: E_INVALIDARG
                         // -2147467262: E_NOINTERFACE
                         var guid = typeof(IExtension).GUID;
-                        var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, guid, out var extensionObj);
-                        extensionPtr = Marshal.GetIUnknownForObject(extensionObj);
-                        if (hr < 0)
+                        unsafe
                         {
-                            Marshal.ThrowExceptionForHR(hr);
-                        }
+                            var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, guid, out var extensionObj);
 
-                        _extensionObject = MarshalInterface<IExtension>.FromAbi(extensionPtr);
+                            // extensionPtr = Marshal.GetIUnknownForObject(extensionObj);
+                            extensionPtr = (nint)extensionObj;
+                            if (hr < 0)
+                            {
+                                Marshal.ThrowExceptionForHR(hr);
+                            }
+
+                            _extensionObject = MarshalInterface<IExtension>.FromAbi(extensionPtr);
+                        }
                     }
                     finally
                     {
