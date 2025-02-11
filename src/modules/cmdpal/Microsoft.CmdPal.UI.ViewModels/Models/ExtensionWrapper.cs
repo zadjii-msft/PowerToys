@@ -4,7 +4,7 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.CmdPal.Common.Services;
-using Microsoft.CmdPal.Extensions;
+using Microsoft.CommandPalette.Extensions;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Win32;
@@ -108,7 +108,8 @@ public class ExtensionWrapper : IExtensionWrapper
                     {
                         // -2147024809: E_INVALIDARG
                         // -2147467262: E_NOINTERFACE
-                        var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var extensionObj);
+                        var guid = typeof(IExtension).GUID;
+                        var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, guid, out var extensionObj);
                         extensionPtr = Marshal.GetIUnknownForObject(extensionObj);
                         if (hr < 0)
                         {

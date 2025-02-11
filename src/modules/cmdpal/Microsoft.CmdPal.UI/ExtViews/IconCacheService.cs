@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -21,14 +21,13 @@ public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
 
     private async Task<IconSource?> IconToSource(IconDataViewModel icon)
     {
-        // bodgy: apparently IconData, despite being a struct, doesn't get
+        // bodgy: apparently IIconData, despite being a struct, doesn't get
         // MarshalByValue'd into our process. What's even the point then?
         try
         {
             if (!string.IsNullOrEmpty(icon.Icon))
             {
                 var source = IconPathConverter.IconSourceMUX(icon.Icon, false);
-
                 return source;
             }
             else if (icon.Data != null)

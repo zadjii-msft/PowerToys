@@ -11,8 +11,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.WinGet.Pages;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.Management.Deployment;
 
 namespace Microsoft.CmdPal.Ext.WinGet;
@@ -30,7 +30,7 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
 
     private IEnumerable<CatalogPackage>? _results;
 
-    public static IconInfo WinGetIcon { get; } = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\WinGet.png"));
+    public static IconInfo WinGetIcon { get; } = IconHelpers.FromRelativePath("Assets\\AppList.scale-100.png");
 
     public static IconInfo ExtensionsIcon { get; } = new("\uEA86"); // Puzzle
 

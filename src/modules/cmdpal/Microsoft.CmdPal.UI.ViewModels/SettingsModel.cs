@@ -7,8 +7,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Settings;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
@@ -22,7 +22,7 @@ public partial class SettingsModel : ObservableObject
 
     ///////////////////////////////////////////////////////////////////////////
     // SETTINGS HERE
-    public HotkeySettings? Hotkey { get; set; } = new HotkeySettings(true, true, false, false, 0xBE);
+    public HotkeySettings? Hotkey { get; set; } = new HotkeySettings(true, false, true, false, 0x20); // win+alt+space
 
     public bool ShowAppDetails { get; set; }
 

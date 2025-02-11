@@ -30,7 +30,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\extensionsdk\Microsoft.CmdPal.Extensions.Helpers\Microsoft.CmdPal.Extensions.Helpers.csproj" />
+    <ProjectReference Include="..\..\extensionsdk\Microsoft.CommandPalette.Extensions.Toolkit\Microsoft.CommandPalette.Extensions.Toolkit.csproj" />
   </ItemGroup>
 
   <!--
@@ -54,5 +54,11 @@
   -->
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
 </Project>
