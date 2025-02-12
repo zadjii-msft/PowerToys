@@ -11,9 +11,8 @@ namespace TimeDateExtension;
 
 public partial class TimeDateExtensionActionsProvider : CommandProvider
 {
-    private readonly SettingsManager _settingsManager = new();
-
     private readonly CommandItem _command;
+    private readonly SettingsManager _settingsManager = new();
 
     public TimeDateExtensionActionsProvider()
     {

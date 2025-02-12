@@ -26,6 +26,8 @@ public class SettingsManager : JsonSettingsManager
         new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_SettingFirstWeekRule_FirstFourDayWeek, "2"),
     };
 
+    private static readonly List<ChoiceSetSetting.Choice> _firstDayOfWeekCoices = GetFirstDayOfWeekChoices();
+
     private static List<ChoiceSetSetting.Choice> GetFirstDayOfWeekChoices()
     {
         // List (Sorted for first day is Sunday)
@@ -64,10 +66,10 @@ public class SettingsManager : JsonSettingsManager
         _firstWeekOfYearChoices);
 
     private readonly ChoiceSetSetting _firstDayOfWeek = new(
-        Namespaced(nameof(FirstWeekOfYear)),
+        Namespaced(nameof(FirstDayOfWeek)),
         Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek,
         Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek,
-        GetFirstDayOfWeekChoices());
+        _firstDayOfWeekCoices);
 
     private readonly ToggleSetting _onlyDateTimeNowGlobal = new(
         Namespaced(nameof(OnlyDateTimeNowGlobal)),
