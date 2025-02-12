@@ -8,19 +8,21 @@ using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using TimeDateExtension.Helpers;
 
-namespace TimeDateExtension;
+namespace TimeDateExtension.Pages;
 
 internal sealed partial class TimeDateExtensionPage : DynamicListPage
 {
     private readonly List<ListItem> _items = new();
+    private SettingsManager _settingsManager;
 
-    public TimeDateExtensionPage()
+    public TimeDateExtensionPage(SettingsManager settingsManager)
     {
         Icon = new(string.Empty);
         Name = "TimeDate";
         _items.Add(new ListItem(new NoOpCommand()));
         _items[0].Title = "Type an equation...init";
         Id = "com.microsoft.cmdpal.timedate";
+        _settingsManager = settingsManager;
     }
 
     public override IListItem[] GetItems()

@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "SSHKeychainExtension (Package)": {
+    "TimeDateExtension (Package)": {
       "commandName": "MsixPackage"
     },
-    "SSHKeychainExtension (Unpackaged)": {
+    "TimeDateExtension (Unpackaged)": {
       "commandName": "Project"
     }
   }
