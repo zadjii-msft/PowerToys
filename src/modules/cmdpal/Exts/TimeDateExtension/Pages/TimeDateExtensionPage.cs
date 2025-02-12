@@ -20,6 +20,7 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
         Name = "TimeDate";
         _items.Add(new ListItem(new NoOpCommand()));
         _items[0].Title = "Type an equation...init";
+        Id = "com.microsoft.cmdpal.timedate";
     }
 
     public override IListItem[] GetItems()
