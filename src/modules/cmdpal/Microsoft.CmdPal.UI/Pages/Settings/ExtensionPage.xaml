@@ -25,6 +25,11 @@
                 x:Key="InvertedStringEmptyVisibilityConverter"
                 EmptyValue="Visible"
                 NotEmptyValue="Collapsed" />
+
+            <converters:BoolToVisibilityConverter
+                x:Key="BoolToInvertedVisibilityConverter"
+                FalseValue="Visible"
+                TrueValue="Collapsed" />
         </ResourceDictionary>
     </Page.Resources>
     
@@ -119,13 +124,6 @@
                                             here on the right. Sad.
                                         -->
 
-                                        <!--<ContentPresenter
-                                Grid.Column="2"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                HorizontalContentAlignment="Right">
-                                <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=TwoWay}"/>
-                            </ContentPresenter>-->
                                     </Grid>
                                 </controls:SettingsCard>
                             </DataTemplate>
@@ -146,7 +144,7 @@
                         x:Uid="ExtensionAboutHeader" 
                         Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
-                    <controls:SettingsExpander
+                    <controls:SettingsCard
                         Visibility="{x:Bind ViewModel.IsFromExtension, Mode=OneWay}"
                         Description="{x:Bind ViewModel.Extension.Publisher, Mode=OneWay}"
                         Header="{x:Bind ViewModel.Extension.PackageDisplayName, Mode=OneWay}">
@@ -154,15 +152,13 @@
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             IsTextSelectionEnabled="True"
                             Text="{x:Bind ViewModel.ExtensionVersion}" />
-                        <controls:SettingsExpander.Items>
-                            <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
-                                <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                    <!--<HyperlinkButton Content="View GitHub Repo" NavigateUri="https://github.com/zadjii-msft/PowerToys" />-->
-                                    <!--<HyperlinkButton Content="Extension SDK docs" NavigateUri="https://github.com/zadjii-msft/PowerToys/blob/main/src/modules/cmdpal/doc/initial-sdk-spec/initial-sdk-spec.md" />-->
-                                </StackPanel>
-                            </controls:SettingsCard>
-                        </controls:SettingsExpander.Items>
-                    </controls:SettingsExpander>
+                    </controls:SettingsCard>
+                    
+                    <controls:SettingsCard
+                        Visibility="{x:Bind ViewModel.IsFromExtension, Mode=OneWay, Converter={StaticResource BoolToInvertedVisibilityConverter}}"
+                        Description="These commands are built-in to the Windows Command Palette"
+                        Header="Built-in">
+                    </controls:SettingsCard>
 
                 </StackPanel>
             </Grid>
