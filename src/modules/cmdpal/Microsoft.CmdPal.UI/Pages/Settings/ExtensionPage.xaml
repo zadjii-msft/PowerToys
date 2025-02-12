@@ -35,7 +35,7 @@
         <TextBlock
             MaxWidth="1000"
             Style="{StaticResource TitleTextBlockStyle}"
-            Text="Extensions" />
+            Text="{x:Bind ViewModel.DisplayName, Mode=OneWay}" />
         <ScrollViewer Grid.Row="1" Padding="0,0,8,0">
             <Grid Padding="8,16,8,8">
                 <StackPanel
@@ -43,7 +43,7 @@
                     HorizontalAlignment="Stretch"
                     Spacing="{StaticResource SettingsCardSpacing}">
 
-                    <TextBlock x:Uid="ExtensionsCommandsHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
+                    <TextBlock x:Uid="ExtensionCommandsHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
                     <ItemsRepeater
                         ItemsSource="{x:Bind ViewModel.TopLevelCommands, Mode=OneWay}"
@@ -134,11 +134,30 @@
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
                     </ItemsRepeater>
-
-                    <TextBlock x:Uid="ExtensionAboutHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
                     <TextBlock x:Uid="ExtensionSettingsHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
-                    
-                    
+
+                    <TextBlock 
+                        x:Uid="ExtensionAboutHeader" 
+                        Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
+
+                    <controls:SettingsExpander
+                        Visibility="{x:Bind ViewModel.IsFromExtension, Mode=OneWay}"
+                        Description="{x:Bind ViewModel.Extension.Publisher, Mode=OneWay}"
+                        Header="{x:Bind ViewModel.Extension.PackageDisplayName, Mode=OneWay}">
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            IsTextSelectionEnabled="True"
+                            Text="{x:Bind ViewModel.ExtensionVersion}" />
+                        <controls:SettingsExpander.Items>
+                            <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                                <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                                    <!--<HyperlinkButton Content="View GitHub Repo" NavigateUri="https://github.com/zadjii-msft/PowerToys" />-->
+                                    <!--<HyperlinkButton Content="Extension SDK docs" NavigateUri="https://github.com/zadjii-msft/PowerToys/blob/main/src/modules/cmdpal/doc/initial-sdk-spec/initial-sdk-spec.md" />-->
+                                </StackPanel>
+                            </controls:SettingsCard>
+                        </controls:SettingsExpander.Items>
+                    </controls:SettingsExpander>
+
                 </StackPanel>
             </Grid>
         </ScrollViewer>

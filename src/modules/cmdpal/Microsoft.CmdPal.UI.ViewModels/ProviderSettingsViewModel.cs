@@ -2,7 +2,9 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.CmdPal.Common.Services;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -13,6 +15,13 @@ public partial class ProviderSettingsViewModel(CommandProviderWrapper _provider,
     public string ExtensionName => _provider.Extension?.ExtensionDisplayName ?? "Built-in";
 
     public string ExtensionSubtext => $"{ExtensionName}, {TopLevelCommands.Count} commands";
+
+    [MemberNotNullWhen(true, nameof(Extension))]
+    public bool IsFromExtension => _provider.Extension != null;
+
+    public IExtensionWrapper? Extension => _provider.Extension;
+
+    public string ExtensionVersion => IsFromExtension ? $"{Extension.Version.Major}.{Extension.Version.Minor}.{Extension.Version.Build}.{Extension.Version.Revision}" : string.Empty;
 
     public IconInfoViewModel Icon => _provider.Icon;
 
