@@ -34,7 +34,7 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
     {
         if (!string.IsNullOrEmpty(newSearch))
         {
-            var result = TimeDateCalculator.ExecuteSearch(newSearch);
+            var result = TimeDateCalculator.ExecuteSearch(_settingsManager, newSearch);
             _items.Clear();
             _items.AddRange(result);
             RaiseItemsChanged(0);

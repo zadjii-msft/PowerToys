@@ -28,7 +28,7 @@ public sealed partial class TimeDateCalculator
     /// </summary>
     /// <param name="query">Search query object</param>
     /// <returns>List of Wox <see cref="Result"/>s.</returns>
-    public static List<ListItem> ExecuteSearch(string query)
+    public static List<ListItem> ExecuteSearch(SettingsManager settings, string query)
     {
         var isEmptySearchInput = string.IsNullOrEmpty(query);
         List<AvailableResult> availableFormats = new List<AvailableResult>();
@@ -39,7 +39,7 @@ public sealed partial class TimeDateCalculator
         {
             // Return all results for system time/date on empty keyword search
             // or only time, date and now results for system time on global queries if the corresponding setting is enabled
-            availableFormats.AddRange(AvailableResultsList.GetList());
+            availableFormats.AddRange(AvailableResultsList.GetList(settings));
         }
         else if (Regex.IsMatch(query, @".+" + Regex.Escape(InputDelimiter) + @".+"))
         {
@@ -47,20 +47,20 @@ public sealed partial class TimeDateCalculator
             var userInput = query.Split(InputDelimiter);
             if (TimeAndDateHelper.ParseStringAsDateTime(userInput[1], out DateTime timestamp))
             {
-                availableFormats.AddRange(AvailableResultsList.GetList(null, null, timestamp));
+                availableFormats.AddRange(AvailableResultsList.GetList(settings, null, null, timestamp));
                 query = userInput[0];
             }
         }
         else if (TimeAndDateHelper.ParseStringAsDateTime(query, out DateTime timestamp))
         {
             // Return all formats for specified time/date value
-            availableFormats.AddRange(AvailableResultsList.GetList(null, null, timestamp));
+            availableFormats.AddRange(AvailableResultsList.GetList(settings, null, null, timestamp));
             query = string.Empty;
         }
         else
         {
             // Search for specified format with system time/date (All other cases)
-            availableFormats.AddRange(AvailableResultsList.GetList());
+            availableFormats.AddRange(AvailableResultsList.GetList(settings));
         }
 
         // Check searchTerm after getting results to select type of result list
@@ -90,7 +90,7 @@ public sealed partial class TimeDateCalculator
         if (!isEmptySearchInput && results.Count == 0 && Regex.IsMatch(query, @"\w+\d+.*$") && !query.Any(char.IsWhiteSpace) && (TimeAndDateHelper.IsSpecialInputParsing(query) || !Regex.IsMatch(query, @"\d+[\.:/]\d+")))
         {
             // Without plugin key word show only if message is not hidden by setting
-            if (!TimeDateSettings.Instance.HideNumberMessageOnGlobalQuery)
+            if (!settings.HideNumberMessageOnGlobalQuery)
             {
                 results.Add(ResultHelper.CreateNumberErrorResult());
             }

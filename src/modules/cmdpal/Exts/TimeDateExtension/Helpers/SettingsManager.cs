@@ -95,9 +95,45 @@ public class SettingsManager : JsonSettingsManager
         Resources.Microsoft_plugin_timedate_SettingHideNumberMessageOnGlobalQuery,
         true); // TODO -- double check default value
 
-    public string FirstWeekOfYear => _firstWeekOfYear.Value != null ? _firstWeekOfYear.Value : string.Empty;
+    public int FirstWeekOfYear
+    {
+        get
+        {
+            if (_firstWeekOfYear.Value == null || string.IsNullOrEmpty(_firstWeekOfYear.Value))
+            {
+                return -1;
+            }
 
-    public string FirstDayOfWeek => _firstDayOfWeek.Value != null ? _firstDayOfWeek.Value : string.Empty;
+            var success = int.TryParse(_firstWeekOfYear.Value, out var result);
+
+            if (!success)
+            {
+                return -1;
+            }
+
+            return result;
+        }
+    }
+
+    public int FirstDayOfWeek
+    {
+        get
+        {
+            if (_firstDayOfWeek.Value == null || string.IsNullOrEmpty(_firstDayOfWeek.Value))
+            {
+                return -1;
+            }
+
+            var success = int.TryParse(_firstDayOfWeek.Value, out var result);
+
+            if (!success)
+            {
+                return -1;
+            }
+
+            return result;
+        }
+    }
 
     public bool OnlyDateTimeNowGlobal => _onlyDateTimeNowGlobal.Value;
 
