@@ -27,14 +27,6 @@ internal sealed partial class AppListItem : ListItem
             Body = "### " + app.Type,
         };
 
-        if (!_app.IsPackaged)
-        {
-            // Win32 exe or other non UWP app
-            MoreCommands = _app.Commands!.ToArray();
-        }
-        else
-        {
-            MoreCommands = _app.Commands!.ToArray();
-        }
+        MoreCommands = _app.Commands!.ToArray();
     }
 }

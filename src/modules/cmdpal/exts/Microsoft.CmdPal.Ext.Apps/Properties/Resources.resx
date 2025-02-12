@@ -59,7 +59,10 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema id="root"
+    xmlns=""
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -159,5 +162,14 @@
   </data>
   <data name="file" xml:space="preserve">
     <value>File</value>
+  </data>
+  <data name="open_location" xml:space="preserve">
+    <value>Open location</value>
+  </data>
+  <data name="run_as_administrator" xml:space="preserve">
+    <value>Run as administrator</value>
+  </data>
+  <data name="run_as_different_user" xml:space="preserve">
+    <value>Run as different user</value>
   </data>
 </root>

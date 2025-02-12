@@ -5,22 +5,24 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.CmdPal.Ext.Apps.Properties;
 using Microsoft.CmdPal.Ext.Apps.Utils;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Apps.Commands;
 
-// NOTE this is pretty close to what we'd put in the SDK
 internal sealed partial class RunAsAdminCommand : InvokableCommand
 {
+    private static readonly IconInfo TheIcon = new("\uE7EF");
+
     private readonly string _target;
     private readonly string _parentDir;
     private readonly bool _packaged;
 
     public RunAsAdminCommand(string target, string parentDir, bool packaged)
     {
-        Name = "Run as administrator";
-        Icon = new IconInfo("\uE7EF");
+        Name = Resources.run_as_administrator;
+        Icon = TheIcon;
 
         _target = target;
         _parentDir = parentDir;

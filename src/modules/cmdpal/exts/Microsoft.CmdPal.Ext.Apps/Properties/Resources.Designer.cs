@@ -124,6 +124,15 @@ namespace Microsoft.CmdPal.Ext.Apps.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open location.
+        /// </summary>
+        internal static string open_location {
+            get {
+                return ResourceManager.GetString("open_location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open path in console.
         /// </summary>
         internal static string open_path_in_console {
@@ -138,6 +147,24 @@ namespace Microsoft.CmdPal.Ext.Apps.Properties {
         internal static string packaged_application {
             get {
                 return ResourceManager.GetString("packaged_application", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run as administrator.
+        /// </summary>
+        internal static string run_as_administrator {
+            get {
+                return ResourceManager.GetString("run_as_administrator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run as different user.
+        /// </summary>
+        internal static string run_as_different_user {
+            get {
+                return ResourceManager.GetString("run_as_different_user", resourceCulture);
             }
         }
         

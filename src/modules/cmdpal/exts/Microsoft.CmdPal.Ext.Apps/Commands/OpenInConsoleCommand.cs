@@ -10,15 +10,16 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Apps.Commands;
 
-// NOTE this is pretty close to what we'd put in the SDK
 internal sealed partial class OpenInConsoleCommand : InvokableCommand
 {
+    private static readonly IconInfo TheIcon = new("\ue838");
+
     private readonly string _target;
 
     public OpenInConsoleCommand(string target)
     {
         Name = Resources.open_path_in_console;
-        Icon = new IconInfo("\ue838");
+        Icon = TheIcon;
 
         _target = target;
     }

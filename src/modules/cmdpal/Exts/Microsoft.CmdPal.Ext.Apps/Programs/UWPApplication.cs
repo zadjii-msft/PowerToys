@@ -57,8 +57,6 @@ public class UWPApplication : IProgram
 
     public UWP Package { get; set; }
 
-    public List<CommandContextItem> Commands { get; set; } = new List<CommandContextItem>();
-
     private string logoUri;
 
     private const string ContrastWhite = "contrast-white";
@@ -71,18 +69,20 @@ public class UWPApplication : IProgram
         return Resources.packaged_application;
     }
 
-    public void InitCommands()
+    public List<CommandContextItem> GetCommands()
     {
+        List<CommandContextItem> commands = new List<CommandContextItem>();
+
         if (CanRunElevated)
         {
-            Commands.Add(
+            commands.Add(
                 new CommandContextItem(
                     new RunAsAdminCommand(UniqueIdentifier, string.Empty, true)));
 
             // We don't add context menu to 'run as different user', because UWP applications normally installed per user and not for all users.
         }
 
-        Commands.Add(
+        commands.Add(
             new CommandContextItem(
                 new OpenPathCommand(Location)
                 {
@@ -90,9 +90,11 @@ public class UWPApplication : IProgram
                     Icon = new("\ue838"),
                 }));
 
-        Commands.Add(
+        commands.Add(
         new CommandContextItem(
             new OpenInConsoleCommand(Package.Location)));
+
+        return commands;
     }
 
     public UWPApplication(IAppxManifestApplication manifestApp, UWP package)
@@ -125,8 +127,6 @@ public class UWPApplication : IProgram
 
         Enabled = true;
         CanRunElevated = IfApplicationCanRunElevated();
-
-        InitCommands();
     }
 
     private bool IfApplicationCanRunElevated()

@@ -4,18 +4,21 @@
 
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.CmdPal.Ext.Apps.Properties;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Apps.Commands;
 
 internal sealed partial class OpenPathCommand : InvokableCommand
 {
+    private static readonly IconInfo TheIcon = new("\ue838");
+
     private readonly string _target;
 
     public OpenPathCommand(string target)
     {
-        Name = "Open location";
-        Icon = new IconInfo("\ue838");
+        Name = Resources.open_location;
+        Icon = TheIcon;
 
         _target = target;
     }

@@ -59,7 +59,7 @@ public sealed partial class AllAppsPage : ListPage
                     DirPath = app.Location,
                     UserModelId = app.UserModelId,
                     IsPackaged = true,
-                    Commands = app.Commands,
+                    Commands = app.GetCommands(),
                 });
 
         var win32Results = AppCache.Instance.Value.Win32s
