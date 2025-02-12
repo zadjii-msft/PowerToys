@@ -1328,6 +1328,7 @@ EXHIBIT A -Mozilla Public License.
 - Microsoft.CodeAnalysis.NetAnalyzers 9.0.0
 - Microsoft.Data.Sqlite 9.0.2
 - Microsoft.Diagnostics.Tracing.TraceEvent 3.1.16
+- Microsoft.DotNet.ILCompiler (A)
 - Microsoft.Extensions.DependencyInjection 9.0.2
 - Microsoft.Extensions.Hosting 9.0.2
 - Microsoft.Extensions.Hosting.WindowsServices 9.0.2
@@ -1336,7 +1337,7 @@ EXHIBIT A -Mozilla Public License.
 - Microsoft.NET.ILLink.Tasks (A)
 - Microsoft.SemanticKernel 1.15.0
 - Microsoft.Toolkit.Uwp.Notifications 7.1.2
-- Microsoft.Web.WebView2 1.0.2739.15
+- Microsoft.Web.WebView2 1.0.2903.40
 - Microsoft.Win32.SystemEvents 9.0.2
 - Microsoft.Windows.Compatibility 9.0.2
 - Microsoft.Windows.CsWin32 0.2.46-beta
@@ -1369,11 +1370,14 @@ EXHIBIT A -Mozilla Public License.
 - System.IO.Abstractions 21.0.29
 - System.IO.Abstractions.TestingHelpers 21.0.29
 - System.Management 9.0.2
+- System.Net.Http 4.3.4
+- System.Private.Uri 4.3.2
 - System.Reactive 6.0.1
 - System.Runtime.Caching 9.0.2
 - System.ServiceProcess.ServiceController 9.0.2
 - System.Text.Encoding.CodePages 9.0.2
 - System.Text.Json 9.0.2
+- System.Text.RegularExpressions 4.3.1
 - UnicodeInformation 2.6.0
 - UnitsNet 5.56.0
 - UTF.Unknown 2.5.1
