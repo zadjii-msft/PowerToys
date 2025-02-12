@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="Microsoft.CmdPal.UI.Pages.ExtensionsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -29,10 +29,10 @@
                     <ItemsRepeater ItemsSource="{x:Bind viewModel.CommandProviders, Mode=OneWay}" Layout="{StaticResource VerticalStackLayout}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:ProviderSettingsViewModel">
-                                <controls:SettingsCard 
-                                    DataContext="{x:Bind}"
-                                    ContentAlignment="Left" 
+                                <controls:SettingsCard
                                     Click="SettingsCard_Click"
+                                    ContentAlignment="Left"
+                                    DataContext="{x:Bind}"
                                     IsClickEnabled="True">
                                     <!--
                                         What we're doing here is 90% stupid.
