@@ -49,7 +49,7 @@
                         ItemsSource="{x:Bind ViewModel.TopLevelCommands, Mode=OneWay}"
                         Layout="{StaticResource VerticalStackLayout}">
                         <ItemsRepeater.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodels:TopLevelCommandItemWrapper">
+                            <DataTemplate x:DataType="viewmodels:TopLevelViewModel">
                                 <controls:SettingsCard
                                     DataContext="{x:Bind}"
                                     ContentAlignment="Left" >
@@ -79,7 +79,7 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                        <!--<Viewbox
+                                        <Viewbox
                                             Grid.RowSpan="1"
                                             MaxWidth="20"
                                             MaxHeight="20"
@@ -91,7 +91,7 @@
                                                 AutomationProperties.AccessibilityView="Raw"
                                                 SourceKey="{x:Bind Icon, Mode=OneWay}"
                                                 SourceRequested="{x:Bind helpers:IconCacheProvider.SourceRequested}" />
-                                        </Viewbox>-->
+                                        </Viewbox>
 
                                         <StackPanel
                                             Grid.Column="1"

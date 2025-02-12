@@ -31,24 +31,35 @@ public partial class ProviderSettingsViewModel(CommandProviderWrapper _provider,
         set => _providerSettings.IsEnabled = value;
     }
 
-    public List<TopLevelCommandItemWrapper> TopLevelCommands
+    [field: AllowNull]
+    public List<TopLevelViewModel> TopLevelCommands
     {
         get
         {
-            var topLevelCommands = _tlcManager.TopLevelCommands;
-            var thisProvider = _provider;
-            var providersCommands = thisProvider.TopLevelItems;
-            List<TopLevelCommandItemWrapper> results = [];
-            foreach (var command in providersCommands)
+            if (field == null)
             {
-                var match = topLevelCommands.Where(tlc => tlc.Model.Unsafe == command).FirstOrDefault();
-                if (match != null)
-                {
-                    results.Add(match);
-                }
+                field = BuildTopLevelViewModels();
             }
 
-            return results;
+            return field;
         }
+    }
+
+    private List<TopLevelViewModel> BuildTopLevelViewModels()
+    {
+        var topLevelCommands = _tlcManager.TopLevelCommands;
+        var thisProvider = _provider;
+        var providersCommands = thisProvider.TopLevelItems;
+        List<TopLevelViewModel> results = [];
+        foreach (var command in providersCommands)
+        {
+            var match = topLevelCommands.Where(tlc => tlc.Model.Unsafe == command).FirstOrDefault();
+            if (match != null)
+            {
+                results.Add(new(match));
+            }
+        }
+
+        return results;
     }
 }
