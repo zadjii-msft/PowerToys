@@ -4,11 +4,12 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -38,7 +39,7 @@ public partial class MarkdownPageViewModel : PageViewModel
     //// Run on background thread, from InitializeAsync or Model_ItemsChanged
     private void FetchContent()
     {
-        List<string> newBodies = new();
+        List<string> newBodies = [];
         try
         {
             var newItems = _model.Unsafe!.Bodies();

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.System;
 
 namespace Microsoft.CmdPal.Ext.Bookmarks;
@@ -88,7 +88,7 @@ internal sealed partial class BookmarkPlaceholderForm : Form
 
         try
         {
-            Uri? uri = UrlAction.GetUri(target);
+            Uri? uri = UrlCommand.GetUri(target);
             if (uri != null)
             {
                 _ = Launcher.LaunchUriAsync(uri);

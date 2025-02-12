@@ -10,9 +10,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
-using YouTubeExtension.Actions;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
+using YouTubeExtension.Commands;
+using YouTubeExtension.Helper;
 
 namespace YouTubeExtension.Pages;
 
@@ -23,7 +24,7 @@ internal sealed partial class YouTubeChannelVideosPage : DynamicListPage
 
     public YouTubeChannelVideosPage(string channelId = null, string channelName = null)
     {
-        Icon = new("https://www.youtube.com/favicon.ico");
+        Icon = new IconInfo("https://www.youtube.com/favicon.ico");
         Name = $"Search for Videos by {channelName ?? "Channel"}";
         this.ShowDetails = true;
 
@@ -37,30 +38,24 @@ internal sealed partial class YouTubeChannelVideosPage : DynamicListPage
         _channelName = channelName;
     }
 
-    public override void UpdateSearchText(string oldSearch, string newSearch)
-    {
-        RaiseItemsChanged(0); // 0 is bodgy
-    }
+    public override void UpdateSearchText(string oldSearch, string newSearch) => RaiseItemsChanged(0); // 0 is bodgy
 
-    public override IListItem[] GetItems()
-    {
-        return DoGetItems(SearchText).GetAwaiter().GetResult(); // Fetch and await the task synchronously
-    }
+    public override IListItem[] GetItems() => DoGetItems(SearchText).GetAwaiter().GetResult(); // Fetch and await the task synchronously
 
     private async Task<IListItem[]> DoGetItems(string query)
     {
         // Fetch YouTube videos scoped to the channel
-        List<YouTubeVideo> items = await GetYouTubeChannelVideos(query, _channelId, _channelName);
+        var items = await GetYouTubeChannelVideos(query, _channelId, _channelName);
 
         // Create a section and populate it with the video results
-        var section = items.Select(video => new ListItem(new OpenVideoLinkAction(video.Link))
+        var section = items.Select(video => new ListItem(new OpenVideoLinkCommand(video.Link))
         {
             Title = video.Title,
             Subtitle = $"{video.Channel}",
             Details = new Details()
             {
                 Title = video.Title,
-                HeroImage = new(video.ThumbnailUrl),
+                HeroImage = new IconInfo(video.ThumbnailUrl),
                 Body = $"{video.Channel}",
             },
             Tags = [
@@ -70,7 +65,7 @@ internal sealed partial class YouTubeChannelVideosPage : DynamicListPage
                     }
                 ],
             MoreCommands = [
-                    new CommandContextItem(new OpenChannelLinkAction(video.ChannelUrl)),
+                    new CommandContextItem(new OpenChannelLinkCommand(video.ChannelUrl)),
                     new CommandContextItem(new YouTubeVideoInfoMarkdownPage(video)),
                     new CommandContextItem(new YouTubeAPIPage()),
                 ],
@@ -88,7 +83,7 @@ internal sealed partial class YouTubeChannelVideosPage : DynamicListPage
 
         var videos = new List<YouTubeVideo>();
 
-        using HttpClient client = new HttpClient();
+        using var client = new HttpClient();
         {
             try
             {

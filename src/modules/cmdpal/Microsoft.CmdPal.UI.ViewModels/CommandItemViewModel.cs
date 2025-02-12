@@ -2,9 +2,9 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -33,9 +33,11 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
     public bool HasMoreCommands => MoreCommands.Count > 0;
 
-    public string SecondaryCommandName => HasMoreCommands ? MoreCommands[0].Name : string.Empty;
+    public string SecondaryCommandName => SecondaryCommand?.Name ?? string.Empty;
 
     public CommandItemViewModel? SecondaryCommand => HasMoreCommands ? MoreCommands[0] : null;
+
+    public bool ShouldBeVisible => !string.IsNullOrEmpty(Name);
 
     public List<CommandContextItemViewModel> AllCommands
     {
@@ -133,14 +135,14 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
             Title = "Error";
             Subtitle = "Item failed to load";
             MoreCommands = [];
-            Icon = new(new("❌")); // new("❌");
+            Icon = new(new IconInfo("❌")); // new("❌");
             Icon.InitializeProperties();
         }
 
         return false;
     }
 
-    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    private void Model_PropChanged(object sender, IPropChangedEventArgs args)
     {
         try
         {
@@ -162,6 +164,12 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
         switch (propertyName)
         {
+            case nameof(Command):
+                this.Command = new(model.Command);
+                Name = model.Command?.Name ?? string.Empty;
+                UpdateProperty(nameof(Name));
+
+                break;
             case nameof(Name):
                 this.Name = model.Command?.Name ?? string.Empty;
                 break;
@@ -173,12 +181,13 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
                 break;
             case nameof(Icon):
                 var listIcon = model.Icon;
-                var iconInfo = listIcon != null ? listIcon : Command.Unsafe!.Icon;
+                var iconInfo = listIcon ?? Command.Unsafe!.Icon;
                 Icon = new(iconInfo);
                 Icon.InitializeProperties();
                 break;
 
-                // TODO! MoreCommands array, which needs to also raise HasMoreCommands
+                // TODO GH #360 - make MoreCommands observable
+                // which needs to also raise HasMoreCommands
         }
 
         UpdateProperty(propertyName);

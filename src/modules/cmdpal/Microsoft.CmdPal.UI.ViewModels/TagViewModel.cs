@@ -2,8 +2,8 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Microsoft.CommandPalette.Extensions;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -33,7 +33,6 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
             return;
         }
 
-        Command = new(model.Command);
         Text = model.Text;
         Foreground = model.Foreground;
         Background = model.Background;

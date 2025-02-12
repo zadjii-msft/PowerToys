@@ -1328,6 +1328,7 @@ EXHIBIT A -Mozilla Public License.
 - Microsoft.CodeAnalysis.NetAnalyzers 9.0.0
 - Microsoft.Data.Sqlite 9.0.1
 - Microsoft.Diagnostics.Tracing.TraceEvent 3.1.16
+- Microsoft.DotNet.ILCompiler (A)
 - Microsoft.Extensions.DependencyInjection 9.0.1
 - Microsoft.Extensions.Hosting 9.0.1
 - Microsoft.Extensions.Hosting.WindowsServices 9.0.1
@@ -1343,6 +1344,7 @@ EXHIBIT A -Mozilla Public License.
 - Microsoft.Windows.CsWinRT 2.1.5
 - Microsoft.Windows.SDK.BuildTools 10.0.22621.2428
 - Microsoft.WindowsAppSDK 1.6.241114003
+- Microsoft.WindowsPackageManager.ComInterop 1.10.120-preview
 - Microsoft.Xaml.Behaviors.WinUI.Managed 2.0.9
 - Microsoft.Xaml.Behaviors.Wpf 1.1.39
 - ModernWpfUI 0.9.4

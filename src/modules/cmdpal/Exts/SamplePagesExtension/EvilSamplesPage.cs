@@ -4,8 +4,8 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace SamplePagesExtension;
 
@@ -37,12 +37,37 @@ public partial class EvilSamplesPage : ListPage
            Title = "Terminate this extension",
            Subtitle = "Will exit this extension (while it's loaded!)",
        },
+        new ListItem(new NoOpCommand())
+        {
+           Title = "I have lots of nulls",
+           Subtitle = null,
+           MoreCommands = null,
+           Tags = null,
+           Details = new Details()
+           {
+               Title = null,
+               HeroImage = null,
+               Metadata = null,
+           },
+        },
+        new ListItem(new NoOpCommand())
+        {
+           Title = "I also have nulls",
+           Subtitle = null,
+           MoreCommands = null,
+           Details = new Details()
+           {
+               Title = null,
+               HeroImage = null,
+               Metadata = [new DetailsElement() { Key = "Oops all nulls", Data = new DetailsTags() { Tags = null } }],
+           },
+        }
     ];
 
     public EvilSamplesPage()
     {
         Name = "Evil Samples";
-        Icon = new("👿"); // Info
+        Icon = new IconInfo("👿"); // Info
     }
 
     public override IListItem[] GetItems() => _commands;
@@ -69,7 +94,7 @@ internal sealed partial class ExplodeOnPropChange : ListPage
 
     public ExplodeOnPropChange()
     {
-        Icon = new(string.Empty);
+        Icon = new IconInfo(string.Empty);
         Name = "Open";
     }
 

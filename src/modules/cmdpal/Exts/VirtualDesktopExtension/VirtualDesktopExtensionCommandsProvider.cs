@@ -7,14 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace VirtualDesktopExtension;
 
-public partial class VirtualDesktopExtensionActionsProvider : CommandProvider
+public partial class VirtualDesktopExtensionCommandsProvider : CommandProvider
 {
-    public VirtualDesktopExtensionActionsProvider()
+    public VirtualDesktopExtensionCommandsProvider()
     {
         DisplayName = "Virtual Desktop Manager for Command Palette Commands";
     }

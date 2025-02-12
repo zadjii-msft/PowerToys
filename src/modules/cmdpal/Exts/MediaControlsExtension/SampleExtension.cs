@@ -5,7 +5,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Microsoft.CmdPal.Extensions;
+using Microsoft.CommandPalette.Extensions;
 
 namespace MediaControlsExtension;
 
@@ -16,7 +16,7 @@ public sealed partial class SampleExtension : IExtension, IDisposable
 {
     private readonly ManualResetEvent _extensionDisposedEvent;
 
-    private readonly MediaActionsProvider _provider = new();
+    private readonly MediaCommandsProvider _provider = new();
 
     public SampleExtension(ManualResetEvent extensionDisposedEvent)
     {

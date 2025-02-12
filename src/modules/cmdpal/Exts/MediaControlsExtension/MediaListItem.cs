@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.Media.Control;
 
 namespace MediaControlsExtension;
@@ -14,14 +14,14 @@ internal sealed partial class MediaListItem : CommandItem
     private GlobalSystemMediaTransportControlsSession _mediaSession;
 
     public MediaListItem()
-        : base(new TogglePlayMediaAction())
+        : base(new TogglePlayMediaCommand())
     {
         var task = GlobalSystemMediaTransportControlsSessionManager.RequestAsync().AsTask();
         task.ContinueWith(async t =>
         {
             var manager = t.Result;
             _mediaSession = manager.GetCurrentSession();
-            ((TogglePlayMediaAction)this.Command).MediaSession = _mediaSession;
+            ((TogglePlayMediaCommand)this.Command).MediaSession = _mediaSession;
 
             _mediaSession.MediaPropertiesChanged += MediaSession_MediaPropertiesChanged;
             _mediaSession.PlaybackInfoChanged += MediaSession_PlaybackInfoChanged;
@@ -40,8 +40,8 @@ internal sealed partial class MediaListItem : CommandItem
 
         if (properties == null)
         {
-            var a = (TogglePlayMediaAction)this.Command;
-            a.Icon = new(string.Empty);
+            var a = (TogglePlayMediaCommand)this.Command;
+            a.Icon = new IconInfo(string.Empty);
             a.Name = "No media playing";
 
             return;
@@ -50,25 +50,25 @@ internal sealed partial class MediaListItem : CommandItem
         this.Title = properties.Title;
 
         // hack
-        ((TogglePlayMediaAction)this.Command).Name = this.Title;
+        ((TogglePlayMediaCommand)this.Command).Name = this.Title;
         this.Subtitle = properties.Artist;
         var status = _mediaSession.GetPlaybackInfo().PlaybackStatus;
 
-        var internalAction = (TogglePlayMediaAction)this.Command;
+        var internalAction = (TogglePlayMediaCommand)this.Command;
         if (status == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused)
         {
-            internalAction.Icon = new("\ue768"); // play
+            internalAction.Icon = new IconInfo("\ue768"); // play
             internalAction.Name = "Paused";
         }
         else if (status == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)
         {
-            internalAction.Icon = new("\ue769"); // pause
+            internalAction.Icon = new IconInfo("\ue769"); // pause
             internalAction.Name = "Playing";
         }
 
         MoreCommands = [
-            new CommandContextItem(new PrevNextTrackAction(true, _mediaSession)),
-            new CommandContextItem(new PrevNextTrackAction(false, _mediaSession))
+            new CommandContextItem(new PrevNextTrackCommand(true, _mediaSession)),
+            new CommandContextItem(new PrevNextTrackCommand(false, _mediaSession))
         ];
     }
 

@@ -9,9 +9,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
-using YouTubeExtension.Actions;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
+using YouTubeExtension.Commands;
+using YouTubeExtension.Helper;
 
 namespace YouTubeExtension.Pages;
 
@@ -19,20 +20,14 @@ internal sealed partial class YouTubeChannelsPage : DynamicListPage
 {
     public YouTubeChannelsPage()
     {
-        Icon = new("https://www.youtube.com/favicon.ico");
+        Icon = new IconInfo("https://www.youtube.com/favicon.ico");
         Name = "YouTube (Channel Search)";
         this.ShowDetails = true;
     }
 
-    public override void UpdateSearchText(string oldSearch, string newSearch)
-    {
-        RaiseItemsChanged(0); // 0 is bodgy
-    }
+    public override void UpdateSearchText(string oldSearch, string newSearch) => RaiseItemsChanged(0); // 0 is bodgy
 
-    public override IListItem[] GetItems()
-    {
-        return DoGetItems(SearchText).GetAwaiter().GetResult(); // Fetch and await the task synchronously
-    }
+    public override IListItem[] GetItems() => DoGetItems(SearchText).GetAwaiter().GetResult(); // Fetch and await the task synchronously
 
     private async Task<IListItem[]> DoGetItems(string query)
     {
@@ -40,14 +35,14 @@ internal sealed partial class YouTubeChannelsPage : DynamicListPage
         var items = await GetYouTubeChannels(query);
 
         // Create a section and populate it with the channel results
-        var section = items.Select(channel => new ListItem(new OpenChannelLinkAction(channel.ChannelUrl))
+        var section = items.Select(channel => new ListItem(new OpenChannelLinkCommand(channel.ChannelUrl))
         {
             Title = channel.Name,
             Subtitle = $"{channel.SubscriberCount} subscribers",
             Details = new Details()
             {
                 Title = channel.Name,
-                HeroImage = new(channel.ProfilePicUrl),
+                HeroImage = new IconInfo(channel.ProfilePicUrl),
                 Body = $"Subscribers: {channel.SubscriberCount}\nChannel Description: {channel.Description}",
             },
             MoreCommands = [

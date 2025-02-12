@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using Microsoft.CmdPal.Ext.WindowWalker.Components;
 using Microsoft.CmdPal.Ext.WindowWalker.Properties;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.WindowWalker.Pages;
 
@@ -19,7 +19,7 @@ internal sealed partial class WindowWalkerListPage : DynamicListPage, IDisposabl
 
     public WindowWalkerListPage()
     {
-        Icon = new("\ue8f9"); // SwitchApps
+        Icon = new IconInfo("\ue8f9"); // SwitchApps
         Name = Resources.windowwalker_name;
         Id = "com.microsoft.cmdpal.windowwalker";
         PlaceholderText = Resources.windowwalker_PlaceholderText;
@@ -41,7 +41,7 @@ internal sealed partial class WindowWalkerListPage : DynamicListPage, IDisposabl
         SearchController.Instance.UpdateSearchText(query);
         var searchControllerResults = SearchController.Instance.SearchMatches;
 
-        return ResultHelper.GetResultList(searchControllerResults, !string.IsNullOrEmpty(query), "\uE946");
+        return ResultHelper.GetResultList(searchControllerResults, !string.IsNullOrEmpty(query));
     }
 
     public override IListItem[] GetItems() => Query(SearchText).ToArray();

@@ -2,14 +2,12 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Commands;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Properties;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace Microsoft.CmdPal.Ext.WindowsTerminal.Pages;
@@ -18,7 +16,7 @@ internal sealed partial class ProfilesListPage : ListPage
 {
     private readonly TerminalQuery _terminalQuery = new();
     private readonly SettingsManager _terminalSettings;
-    private readonly Dictionary<string, BitmapImage> _logoCache = new();
+    private readonly Dictionary<string, BitmapImage> _logoCache = [];
 
     private bool showHiddenProfiles;
     private bool openNewTab;
@@ -26,7 +24,7 @@ internal sealed partial class ProfilesListPage : ListPage
 
     public ProfilesListPage(SettingsManager terminalSettings)
     {
-        Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Images\\WindowsTerminal.dark.png"));
+        Icon = WindowsTerminalCommandsProvider.TerminalIcon;
         Name = Resources.profiles_list_page_name;
         _terminalSettings = terminalSettings;
     }
@@ -71,10 +69,7 @@ internal sealed partial class ProfilesListPage : ListPage
         return result;
     }
 
-    public override IListItem[] GetItems()
-    {
-        return Query().ToArray();
-    }
+    public override IListItem[] GetItems() => Query().ToArray();
 
     private BitmapImage GetLogo(TerminalPackage terminal)
     {

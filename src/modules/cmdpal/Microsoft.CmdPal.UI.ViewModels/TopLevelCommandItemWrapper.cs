@@ -2,9 +2,11 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
@@ -84,7 +86,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
         }
     }
 
-    private void Model_PropChanged(object sender, PropChangedEventArgs args)
+    private void Model_PropChanged(object sender, IPropChangedEventArgs args)
     {
         try
         {
@@ -124,19 +126,25 @@ public partial class TopLevelCommandItemWrapper : ListItem
             return;
         }
 
-        try
-        {
-            _ = Task.Run(() =>
+        _ = Task.Run(() =>
             {
-                var model = Model.Unsafe;
-                if (model is IFallbackCommandItem fallback)
+                try
                 {
-                    fallback.FallbackHandler.UpdateQuery(newQuery);
+                    var model = Model.Unsafe;
+                    if (model is IFallbackCommandItem fallback)
+                    {
+                        var wasEmpty = string.IsNullOrEmpty(Title);
+                        fallback.FallbackHandler.UpdateQuery(newQuery);
+                        var isEmpty = string.IsNullOrEmpty(Title);
+                        if (wasEmpty != isEmpty)
+                        {
+                            WeakReferenceMessenger.Default.Send<UpdateFallbackItemsMessage>();
+                        }
+                    }
+                }
+                catch (Exception)
+                {
                 }
             });
-        }
-        catch (Exception)
-        {
-        }
     }
 }

@@ -2,14 +2,35 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Microsoft.CommandPalette.Extensions;
 
 namespace Microsoft.CmdPal.UI.ViewModels.Messages;
 
 /// <summary>
 /// Used to do a command - navigate to a page or invoke it
 /// </summary>
-public record PerformCommandMessage(ExtensionObject<ICommand> Command)
+public record PerformCommandMessage
 {
+    public ExtensionObject<ICommand> Command { get; }
+
+    public object? Context { get; }
+
+    public PerformCommandMessage(ExtensionObject<ICommand> command)
+    {
+        Command = command;
+        Context = null;
+    }
+
+    public PerformCommandMessage(ExtensionObject<ICommand> command, ExtensionObject<IListItem> context)
+    {
+        Command = command;
+        Context = context.Unsafe;
+    }
+
+    public PerformCommandMessage(ExtensionObject<ICommand> command, ExtensionObject<ICommandContextItem> context)
+    {
+        Command = command;
+        Context = context.Unsafe;
+    }
 }

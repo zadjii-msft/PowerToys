@@ -2,14 +2,14 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Extensions;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Microsoft.CommandPalette.Extensions;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class CommandContextItemViewModel(ICommandContextItem contextItem, IPageContext context) : CommandItemViewModel(new(contextItem), context)
 {
-    private readonly ExtensionObject<ICommandContextItem> _contextItemModel = new(contextItem);
+    public ExtensionObject<ICommandContextItem> Model { get; } = new(contextItem);
 
     public bool IsCritical { get; private set; }
 
@@ -19,7 +19,7 @@ public partial class CommandContextItemViewModel(ICommandContextItem contextItem
     {
         base.InitializeProperties();
 
-        var contextItem = _contextItemModel.Unsafe;
+        var contextItem = Model.Unsafe;
         if (contextItem == null)
         {
             return; // throw?

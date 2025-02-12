@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace HackerNewsExtension;
 
@@ -15,12 +15,12 @@ public partial class HackerNewsCommandsProvider : CommandProvider
         DisplayName = "Hacker News Commands";
     }
 
-    private readonly ICommandItem[] _actions = [
+    private readonly ICommandItem[] _commands = [
         new CommandItem(new HackerNewsPage()),
     ];
 
     public override ICommandItem[] TopLevelCommands()
     {
-        return _actions;
+        return _commands;
     }
 }

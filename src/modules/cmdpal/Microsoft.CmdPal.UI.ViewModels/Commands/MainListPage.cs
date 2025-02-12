@@ -2,14 +2,13 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Ext.Apps.Programs;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.ViewModels.MainPage;
@@ -19,12 +18,12 @@ namespace Microsoft.CmdPal.UI.ViewModels.MainPage;
 /// TODO: Need to think about how we structure/interop for the page -> section -> item between the main setup, the extensions, and our viewmodels.
 /// </summary>
 public partial class MainListPage : DynamicListPage,
-    IRecipient<ClearSearchMessage>
+    IRecipient<ClearSearchMessage>,
+    IRecipient<UpdateFallbackItemsMessage>
 {
     private readonly IServiceProvider _serviceProvider;
 
-    private readonly ObservableCollection<TopLevelCommandItemWrapper> _commands;
-
+    private readonly TopLevelCommandManager _tlcManager;
     private IEnumerable<IListItem>? _filteredItems;
 
     private bool _appsLoading = true;
@@ -33,17 +32,15 @@ public partial class MainListPage : DynamicListPage,
     public MainListPage(IServiceProvider serviceProvider)
     {
         Name = "Command Palette";
-        Icon = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\StoreLogo.scale-200.png"));
+        Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.scale-200.png");
         _serviceProvider = serviceProvider;
 
-        var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>()!;
-        tlcManager.PropertyChanged += TlcManager_PropertyChanged;
-
-        // reference the TLC collection directly... maybe? TODO is this a good idea ot a terrible one?
-        _commands = tlcManager.TopLevelCommands;
-        _commands.CollectionChanged += Commands_CollectionChanged;
+        _tlcManager = _serviceProvider.GetService<TopLevelCommandManager>()!;
+        _tlcManager.PropertyChanged += TlcManager_PropertyChanged;
+        _tlcManager.TopLevelCommands.CollectionChanged += Commands_CollectionChanged;
 
         WeakReferenceMessenger.Default.Register<ClearSearchMessage>(this);
+        WeakReferenceMessenger.Default.Register<UpdateFallbackItemsMessage>(this);
 
         var settings = _serviceProvider.GetService<SettingsModel>()!;
         settings.SettingsChanged += SettingsChangedHandler;
@@ -60,7 +57,7 @@ public partial class MainListPage : DynamicListPage,
         }
     }
 
-    private void Commands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => RaiseItemsChanged(_commands.Count);
+    private void Commands_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => RaiseItemsChanged(_tlcManager.TopLevelCommands.Count);
 
     public override IListItem[] GetItems()
     {
@@ -70,9 +67,20 @@ public partial class MainListPage : DynamicListPage,
             _startedAppLoad = true;
         }
 
-        return string.IsNullOrEmpty(SearchText)
-            ? _commands.Select(tlc => tlc).Where(tlc => !string.IsNullOrEmpty(tlc.Title)).ToArray()
-            : _filteredItems?.ToArray() ?? [];
+        if (string.IsNullOrEmpty(SearchText))
+        {
+            lock (_tlcManager.TopLevelCommands)
+            {
+                return _tlcManager.TopLevelCommands.Select(tlc => tlc).Where(tlc => !string.IsNullOrEmpty(tlc.Title)).ToArray();
+            }
+        }
+        else
+        {
+            lock (_tlcManager.TopLevelCommands)
+            {
+                return _filteredItems?.ToArray() ?? [];
+            }
+        }
     }
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
@@ -89,40 +97,43 @@ public partial class MainListPage : DynamicListPage,
             }
         }
 
-        // This gets called on a background thread, because ListViewModel
-        // updates the .SearchText of all extensions on a BG thread.
-        foreach (var command in _commands)
+        var commands = _tlcManager.TopLevelCommands;
+        lock (commands)
         {
-            command.TryUpdateFallbackText(newSearch);
-        }
+            // This gets called on a background thread, because ListViewModel
+            // updates the .SearchText of all extensions on a BG thread.
+            foreach (var command in commands)
+            {
+                command.TryUpdateFallbackText(newSearch);
+            }
 
-        // Cleared out the filter text? easy. Reset _filteredItems, and bail out.
-        if (string.IsNullOrEmpty(newSearch))
-        {
-            _filteredItems = null;
-            RaiseItemsChanged(_commands.Count);
-            return;
-        }
+            // Cleared out the filter text? easy. Reset _filteredItems, and bail out.
+            if (string.IsNullOrEmpty(newSearch))
+            {
+                _filteredItems = null;
+                RaiseItemsChanged(commands.Count);
+                return;
+            }
 
-        // If the new string doesn't start with the old string, then we can't
-        // re-use previous results. Reset _filteredItems, and keep er moving.
-        if (!newSearch.StartsWith(oldSearch, StringComparison.CurrentCultureIgnoreCase))
-        {
-            _filteredItems = null;
-        }
+            // If the new string doesn't start with the old string, then we can't
+            // re-use previous results. Reset _filteredItems, and keep er moving.
+            if (!newSearch.StartsWith(oldSearch, StringComparison.CurrentCultureIgnoreCase))
+            {
+                _filteredItems = null;
+            }
 
-        // If we don't have any previous filter results to work with, start
-        // with a list of all our commands & apps.
-        if (_filteredItems == null)
-        {
-            IEnumerable<IListItem> commands = _commands;
-            IEnumerable<IListItem> apps = AllAppsCommandProvider.Page.GetItems();
-            _filteredItems = commands.Concat(apps);
-        }
+            // If we don't have any previous filter results to work with, start
+            // with a list of all our commands & apps.
+            if (_filteredItems == null)
+            {
+                IEnumerable<IListItem> apps = AllAppsCommandProvider.Page.GetItems();
+                _filteredItems = commands.Concat(apps);
+            }
 
-        // Produce a list of everything that matches the current filter.
-        _filteredItems = ListHelpers.FilterList<IListItem>(_filteredItems, SearchText, ScoreTopLevelItem);
-        RaiseItemsChanged(_filteredItems.Count());
+            // Produce a list of everything that matches the current filter.
+            _filteredItems = ListHelpers.FilterList<IListItem>(_filteredItems, SearchText, ScoreTopLevelItem);
+            RaiseItemsChanged(_filteredItems.Count());
+        }
     }
 
     private bool ActuallyLoading()
@@ -186,18 +197,11 @@ public partial class MainListPage : DynamicListPage,
         return finalScore; // but downweight them
     }
 
-    public void Receive(ClearSearchMessage message)
-    {
-        SearchText = string.Empty;
-    }
+    public void Receive(ClearSearchMessage message) => SearchText = string.Empty;
 
-    private void SettingsChangedHandler(SettingsModel sender, object? args)
-    {
-        HotReloadSettings(sender);
-    }
+    public void Receive(UpdateFallbackItemsMessage message) => RaiseItemsChanged(_tlcManager.TopLevelCommands.Count);
 
-    private void HotReloadSettings(SettingsModel settings)
-    {
-        ShowDetails = settings.ShowAppDetails;
-    }
+    private void SettingsChangedHandler(SettingsModel sender, object? args) => HotReloadSettings(sender);
+
+    private void HotReloadSettings(SettingsModel settings) => ShowDetails = settings.ShowAppDetails;
 }
