@@ -82,8 +82,6 @@ public class Win32Program : IProgram
 
     public static IFile FileWrapper { get; set; } = new FileSystem().File;
 
-    public static IShellLinkHelper ShellLinkHelper { get; set; } = new ShellLinkHelper();
-
     private const string ShortcutExtension = "lnk";
     private const string ApplicationReferenceExtension = "appref-ms";
     private const string InternetShortcutExtension = "url";
@@ -333,7 +331,8 @@ public class Win32Program : IProgram
         try
         {
             var program = CreateWin32Program(path);
-            var target = ShellLinkHelper.RetrieveTargetPath(path);
+            var shellLinkHelper = new ShellLinkHelper();
+            var target = shellLinkHelper.RetrieveTargetPath(path);
 
             if (!string.IsNullOrEmpty(target))
             {
@@ -351,14 +350,14 @@ public class Win32Program : IProgram
                 program.FullPath = Path.GetFullPath(target);
                 program.FullPathLocalized = ShellLocalization.Instance.GetLocalizedPath(target);
 
-                program.Arguments = ShellLinkHelper.Arguments;
+                program.Arguments = shellLinkHelper.Arguments;
 
                 // A .lnk could be a (Chrome) PWA, set correct AppType
                 program.AppType = program.IsWebApplication()
                     ? ApplicationType.WebApplication
                     : GetAppTypeFromPath(target);
 
-                var description = ShellLinkHelper.Description;
+                var description = shellLinkHelper.Description;
                 if (!string.IsNullOrEmpty(description))
                 {
                     program.Description = description;
