@@ -20,6 +20,8 @@ public sealed partial class AllAppsPage : ListPage
 {
     private IListItem[] allAppsSection = [];
 
+    private object l = new();
+
     public AllAppsPage()
     {
         this.Name = Resources.all_apps;
@@ -27,19 +29,37 @@ public sealed partial class AllAppsPage : ListPage
         this.ShowDetails = true;
         this.IsLoading = true;
         this.PlaceholderText = Resources.search_installed_apps_placeholder;
+
+        Task.Run(() =>
+        {
+            lock (l)
+            {
+                this.allAppsSection = GetPrograms()
+                                .Select((app) => new AppListItem(app))
+                                .ToArray();
+
+                this.IsLoading = false;
+            }
+        });
     }
 
     public override IListItem[] GetItems()
     {
         if (this.allAppsSection == null || allAppsSection.Length == 0 || AppCache.Instance.Value.ShouldReload())
         {
-            var apps = GetPrograms();
-            this.allAppsSection = apps
-                            .Select((app) => new AppListItem(app))
-                            .ToArray();
-            this.IsLoading = false;
+            lock (l)
+            {
+                this.IsLoading = true;
 
-            AppCache.Instance.Value.ResetReloadFlag();
+                var apps = GetPrograms();
+                this.allAppsSection = apps
+                                .Select((app) => new AppListItem(app))
+                                .ToArray();
+
+                this.IsLoading = false;
+
+                AppCache.Instance.Value.ResetReloadFlag();
+            }
         }
 
         return allAppsSection;
