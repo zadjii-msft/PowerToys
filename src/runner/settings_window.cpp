@@ -694,15 +694,18 @@ std::string ESettingsWindowNames_to_string(ESettingsWindowNames value)
         return "AdvancedPaste";
     case ESettingsWindowNames::NewPlus:
         return "NewPlus";
+<<<<<<< HEAD
     case ESettingsWindowNames::CmdPal:
         return "CmdPal";
-    case ESettingsWindowNames::ZoomIt:
+    == == == =
+>>>>>>> mainPT/main
+                 case ESettingsWindowNames::ZoomIt:
         return "ZoomIt";
-    default:
-    {
-        Logger::error(L"Can't convert ESettingsWindowNames value={} to string", static_cast<int>(value));
-        assert(false);
-    }
+        default:
+        {
+            Logger::error(L"Can't convert ESettingsWindowNames value={} to string", static_cast<int>(value));
+            assert(false);
+        }
     }
     return "";
 }
