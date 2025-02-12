@@ -13,7 +13,6 @@ public partial class CommandSettingsViewModel(ICommandSettings _unsafeSettings, 
 
     public ContentPageViewModel? SettingsPage { get; private set; }
 
-    //// Called from ListViewModel on background thread started in ListPage.xaml.cs
     public void InitializeProperties()
     {
         var model = _model.Unsafe;

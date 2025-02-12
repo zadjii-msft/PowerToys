@@ -16,7 +16,7 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class SettingsWindow : Window,
     IRecipient<NavigateToExtensionSettingsMessage>
 {
-    public ObservableCollection<Crumb> Breadcrumbs { get; } = [];
+    public ObservableCollection<Crumb> BreadCrumbs { get; } = [];
 
     public SettingsWindow()
     {
@@ -55,8 +55,8 @@ public sealed partial class SettingsWindow : Window,
         };
         if (pageType is not null)
         {
-            Breadcrumbs.Clear();
-            Breadcrumbs.Add(new(page, page));
+            BreadCrumbs.Clear();
+            BreadCrumbs.Add(new(page, page));
             NavFrame.Navigate(pageType);
         }
     }
@@ -64,7 +64,7 @@ public sealed partial class SettingsWindow : Window,
     private void Navigate(ProviderSettingsViewModel extension)
     {
         NavFrame.Navigate(typeof(ExtensionPage), extension);
-        Breadcrumbs.Add(new(extension.DisplayName, string.Empty));
+        BreadCrumbs.Add(new(extension.DisplayName, string.Empty));
     }
 
     private void PositionCentered()

@@ -62,7 +62,7 @@
                     x:Name="NavigationBreadcrumbBar"
                     MaxWidth="1000"
                     ItemClicked="NavigationBreadcrumbBar_ItemClicked"
-                    ItemsSource="{x:Bind Breadcrumbs, Mode=OneWay}">
+                    ItemsSource="{x:Bind BreadCrumbs, Mode=OneWay}">
                     <BreadcrumbBar.ItemTemplate>
                         <DataTemplate x:DataType="local:Crumb">
                             <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{x:Bind Label, Mode=OneWay}" />
