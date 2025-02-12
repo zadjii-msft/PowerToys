@@ -33,12 +33,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock
-            MaxWidth="1000"
-            Style="{StaticResource TitleTextBlockStyle}"
-            Text="{x:Bind ViewModel.DisplayName, Mode=OneWay}" />
         <ScrollViewer Grid.Row="1" Padding="0,0,8,0">
-            <Grid Padding="8,16,8,8">
+            <Grid Padding="8,-8,8,8">
                 <StackPanel
                     MaxWidth="1000"
                     HorizontalAlignment="Stretch"

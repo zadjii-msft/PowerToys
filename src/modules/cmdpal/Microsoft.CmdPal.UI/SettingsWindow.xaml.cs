@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.UI.Pages;
 using Microsoft.CmdPal.UI.ViewModels;
@@ -15,6 +16,8 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class SettingsWindow : Window,
     IRecipient<NavigateToExtensionSettingsMessage>
 {
+    public ObservableCollection<Crumb> Breadcrumbs { get; } = [];
+
     public SettingsWindow()
     {
         this.InitializeComponent();
@@ -52,11 +55,17 @@ public sealed partial class SettingsWindow : Window,
         };
         if (pageType is not null)
         {
+            Breadcrumbs.Clear();
+            Breadcrumbs.Add(new(page, page));
             NavFrame.Navigate(pageType);
         }
     }
 
-    private void Navigate(ProviderSettingsViewModel extension) => NavFrame.Navigate(typeof(ExtensionPage), extension);
+    private void Navigate(ProviderSettingsViewModel extension)
+    {
+        NavFrame.Navigate(typeof(ExtensionPage), extension);
+        Breadcrumbs.Add(new(extension.DisplayName, string.Empty));
+    }
 
     private void PositionCentered()
     {
@@ -72,4 +81,33 @@ public sealed partial class SettingsWindow : Window,
     }
 
     public void Receive(NavigateToExtensionSettingsMessage message) => Navigate(message.ProviderSettingsVM);
+
+    private void NavigationBreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
+    {
+        if (args.Item is Crumb crumb)
+        {
+            if (crumb.Data is string data)
+            {
+                if (!string.IsNullOrEmpty(data))
+                {
+                    Navigate(data);
+                }
+            }
+        }
+    }
+}
+
+public readonly struct Crumb
+{
+    public Crumb(string label, object data)
+    {
+        Label = label;
+        Data = data;
+    }
+
+    public string Label { get; }
+
+    public object Data { get; }
+
+    public override string ToString() => Label;
 }

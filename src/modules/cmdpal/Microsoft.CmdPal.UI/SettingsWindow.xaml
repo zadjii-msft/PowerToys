@@ -51,7 +51,30 @@
                     Icon="{ui:FontIcon Glyph=&#xEA86;}"
                     Tag="Extensions" />
             </NavigationView.MenuItems>
-            <Frame x:Name="NavFrame" />
+            
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <BreadcrumbBar 
+                    MaxWidth="1000"
+                    x:Name="NavigationBreadcrumbBar" 
+                    ItemClicked="NavigationBreadcrumbBar_ItemClicked"
+                    ItemsSource="{x:Bind Breadcrumbs, Mode=OneWay}">
+                    <BreadcrumbBar.ItemTemplate>
+                        <DataTemplate x:DataType="local:Crumb">
+                            <TextBlock
+                                Text="{x:Bind Label, Mode=OneWay}"
+                                Style="{StaticResource TitleTextBlockStyle}"/>
+                        </DataTemplate>
+                    </BreadcrumbBar.ItemTemplate>
+                </BreadcrumbBar>
+
+                <Frame x:Name="NavFrame" Grid.Row="1"/>
+
+            </Grid>
         </NavigationView>
     </Grid>
 </Window>

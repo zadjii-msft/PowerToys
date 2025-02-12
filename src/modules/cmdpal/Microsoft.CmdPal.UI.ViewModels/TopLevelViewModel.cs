@@ -17,10 +17,6 @@ public sealed class TopLevelViewModel
 
     public string Subtitle => _item.Subtitle;
 
-    public List<CommandAlias> Aliases { get; private set; } = [];
-
-    public bool HasAliases => Aliases.Count != 0;
-
     public TopLevelViewModel(TopLevelCommandItemWrapper item)
     {
         _item = item;
