@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TimeDateExtension (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "TimeDateExtension (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
