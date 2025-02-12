@@ -22,21 +22,29 @@ internal sealed partial class AppCommand : InvokableCommand
         _app = app;
 
         Name = Resources.run_command_action;
-        IconInfo? icon = null;
-        try
-        {
-            var stream = ThumbnailHelper.GetThumbnail(_app.ExePath).Result;
-            if (stream != null)
-            {
-                var data = new IconData(RandomAccessStreamReference.CreateFromStream(stream));
-                icon = new IconInfo(data, data);
-            }
-        }
-        catch
-        {
-        }
 
-        Icon = icon ?? new IconInfo(_app.IcoPath);
+        if (_app.IsPackaged)
+        {
+            Icon = new IconInfo(_app.IcoPath);
+        }
+        else
+        {
+            IconInfo? icon = null;
+            try
+            {
+                var stream = ThumbnailHelper.GetThumbnail(_app.ExePath).Result;
+                if (stream != null)
+                {
+                    var data = new IconData(RandomAccessStreamReference.CreateFromStream(stream));
+                    icon = new IconInfo(data, data);
+                }
+            }
+            catch
+            {
+            }
+
+            Icon = icon ?? new IconInfo(_app.IcoPath);
+        }
     }
 
     internal static async Task StartApp(string aumid)
