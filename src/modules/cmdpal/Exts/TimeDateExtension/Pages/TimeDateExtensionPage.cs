@@ -4,8 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using TimeDateExtension.Helpers;
 
 namespace TimeDateExtension;
