@@ -6,7 +6,6 @@ using System.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
-using Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions;
@@ -166,14 +165,6 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                     // See RootFrame_Navigated event handler.
                 });
             }
-            else if (command is OpenSettingsCommand)
-            {
-                _ = DispatcherQueue.TryEnqueue(() =>
-                {
-                    var settingsWindow = new SettingsWindow();
-                    settingsWindow.Activate();
-                });
-            }
             else if (command is IInvokableCommand invokable)
             {
                 var result = invokable.Invoke(message.Context);
@@ -249,12 +240,12 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         _ = DispatcherQueue.TryEnqueue(() =>
         {
             // Also hide our details pane about here, if we had one
-            // HideDetails();
-            var settingsWindow = new SettingsWindow();
+            HideDetails();
 
+            var settingsWindow = new SettingsWindow();
             settingsWindow.Activate();
 
-            // WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(null));
+            WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(null));
         });
     }
 
