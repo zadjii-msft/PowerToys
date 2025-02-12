@@ -46,7 +46,10 @@
         <DataTemplate x:Key="ListItemViewModelTemplate" x:DataType="viewmodels:ListItemViewModel">
 
             <!--  TODO: collapse item if it's empty  -->
-            <ListViewItem DoubleTapped="ListViewItem_DoubleTapped" IsDoubleTapEnabled="True">
+            <ListViewItem 
+                Tapped="ListViewItem_Tapped"
+                DoubleTapped="ListViewItem_DoubleTapped" 
+                IsDoubleTapEnabled="True">
                 <Grid Padding="0,12,0,12" ColumnSpacing="12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="28" />
@@ -101,7 +104,6 @@
     <ListView
         x:Name="ItemsList"
         IsItemClickEnabled="True"
-        ItemClick="ListView_ItemClick"
         ItemTemplate="{StaticResource ListItemViewModelTemplate}"
         ItemsSource="{x:Bind ViewModel.FilteredItems, Mode=OneWay}"
         SelectionChanged="ItemsList_SelectionChanged">

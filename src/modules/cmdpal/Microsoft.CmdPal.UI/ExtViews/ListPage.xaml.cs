@@ -76,16 +76,34 @@ public sealed partial class ListPage : Page,
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]
     private void ListView_ItemClick(object sender, ItemClickEventArgs e)
     {
-        if (e.ClickedItem is ListItemViewModel item)
+        // if (e.ClickedItem is ListItemViewModel item)
+        // {
+        //    var settings = App.Current.Services.GetService<SettingsModel>()!;
+        //    if (settings.SingleClickActivates)
+        //    {
+        //        ViewModel?.InvokeItemCommand.Execute(item);
+        //    }
+        //    else
+        //    {
+        //        ViewModel?.UpdateSelectedItemCommand.Execute(item);
+        //        WeakReferenceMessenger.Default.Send<FocusSearchBoxMessage>();
+        //    }
+        // }
+    }
+
+    private void ListViewItem_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
+    {
+        if (sender is ListViewItem viewItem &&
+            this.ItemsList.ItemFromContainer(viewItem) is ListItemViewModel vm)
         {
             var settings = App.Current.Services.GetService<SettingsModel>()!;
             if (settings.SingleClickActivates)
             {
-                ViewModel?.InvokeItemCommand.Execute(item);
+                ViewModel?.InvokeItemCommand.Execute(vm);
             }
             else
             {
-                ViewModel?.UpdateSelectedItemCommand.Execute(item);
+                ViewModel?.UpdateSelectedItemCommand.Execute(vm);
                 WeakReferenceMessenger.Default.Send<FocusSearchBoxMessage>();
             }
         }
