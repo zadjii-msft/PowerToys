@@ -2,10 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.CmdPal.Common.Services;
-
 namespace Microsoft.CmdPal.UI.ViewModels;
 
 public sealed class TopLevelViewModel
@@ -28,7 +24,7 @@ public sealed class TopLevelViewModel
     public TopLevelViewModel(TopLevelCommandItemWrapper item)
     {
         _item = item;
-        Icon = new(item.Icon);
+        Icon = new(item.Icon ?? item.Command?.Icon);
         Icon.InitializeProperties();
     }
 }

@@ -6,6 +6,7 @@
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:cpcontrols="using:Microsoft.CmdPal.UI.Controls"
+    xmlns:cmdpalUI="using:Microsoft.CmdPal.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helpers="using:Microsoft.CmdPal.UI.Helpers"
     xmlns:local="using:Microsoft.CmdPal.UI.Pages"
@@ -134,8 +135,17 @@
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
                     </ItemsRepeater>
-                    <TextBlock x:Uid="ExtensionSettingsHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
+                    <TextBlock 
+                        x:Uid="ExtensionSettingsHeader" 
+                        Visibility="{x:Bind ViewModel.HasSettings}"
+                        Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
+                    <Frame 
+                        x:Name="SettingsFrame" 
+                        Visibility="{x:Bind ViewModel.HasSettings}">
+                        <cmdpalUI:ContentPage ViewModel="{x:Bind ViewModel.SettingsPage, Mode=OneWay}" />
+                    </Frame>
+                    
                     <TextBlock 
                         x:Uid="ExtensionAboutHeader" 
                         Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />

@@ -31,6 +31,10 @@ public partial class ProviderSettingsViewModel(CommandProviderWrapper _provider,
         set => _providerSettings.IsEnabled = value;
     }
 
+    public bool HasSettings => _provider.Settings != null && _provider.Settings.SettingsPage != null;
+
+    public ContentPageViewModel? SettingsPage => HasSettings ? _provider?.Settings?.SettingsPage : null;
+
     [field: AllowNull]
     public List<TopLevelViewModel> TopLevelCommands
     {
