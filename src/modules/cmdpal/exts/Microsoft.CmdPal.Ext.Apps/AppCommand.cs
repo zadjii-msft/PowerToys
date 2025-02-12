@@ -9,6 +9,7 @@ using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Ext.Apps.Properties;
 using Microsoft.CmdPal.Ext.Apps.Utils;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Storage.Streams;
 
 namespace Microsoft.CmdPal.Ext.Apps;
 
@@ -21,7 +22,21 @@ internal sealed partial class AppCommand : InvokableCommand
         _app = app;
 
         Name = Resources.run_command_action;
-        Icon = new IconInfo(_app.IcoPath);
+        IconInfo? icon = null;
+        try
+        {
+            var stream = ThumbnailHelper.GetThumbnail(_app.ExePath).Result;
+            if (stream != null)
+            {
+                var data = new IconData(RandomAccessStreamReference.CreateFromStream(stream));
+                icon = new IconInfo(data, data);
+            }
+        }
+        catch
+        {
+        }
+
+        Icon = icon ?? new IconInfo(_app.IcoPath);
     }
 
     internal static async Task StartApp(string aumid)
