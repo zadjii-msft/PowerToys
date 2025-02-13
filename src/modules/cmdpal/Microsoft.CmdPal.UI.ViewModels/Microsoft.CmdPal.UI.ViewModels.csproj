@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\template.zip" CopyToOutputDirectory="PreserveNewest" />
+    <None Remove="Assets\template.zip" />
   </ItemGroup>
 
 </Project>
