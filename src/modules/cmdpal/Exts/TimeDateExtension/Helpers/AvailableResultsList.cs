@@ -21,7 +21,7 @@ internal static class AvailableResultsList
     /// <param name="firstWeekOfYear">Required for UnitTest: Use custom first week of the year instead of the plugin setting.</param>
     /// <param name="firstDayOfWeek">Required for UnitTest: Use custom first day of the week instead the plugin setting.</param>
     /// <returns>List of results</returns>
-    internal static List<AvailableResult> GetList(SettingsManager settings, bool? timeLongFormat = null, bool? dateLongFormat = null, DateTime? timestamp = null, CalendarWeekRule? firstWeekOfYear = null, DayOfWeek? firstDayOfWeek = null)
+    internal static List<AvailableResult> GetList(bool isKeywordSearch, SettingsManager settings, bool? timeLongFormat = null, bool? dateLongFormat = null, DateTime? timestamp = null, CalendarWeekRule? firstWeekOfYear = null, DayOfWeek? firstDayOfWeek = null)
     {
         var results = new List<AvailableResult>();
         var calendar = CultureInfo.CurrentCulture.Calendar;
@@ -61,7 +61,7 @@ internal static class AvailableResultsList
             },
         });
 
-        if (!settings.OnlyDateTimeNowGlobal)
+        if (isKeywordSearch || !settings.OnlyDateTimeNowGlobal)
         {
             // We use long instead of int for unix time stamp because int is too small after 03:14:07 UTC 2038-01-19
             var unixTimestamp = ((DateTimeOffset)dateTimeNowUtc).ToUnixTimeSeconds();

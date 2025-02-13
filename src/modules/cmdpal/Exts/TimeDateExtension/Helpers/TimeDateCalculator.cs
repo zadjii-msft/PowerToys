@@ -34,12 +34,15 @@ public sealed partial class TimeDateCalculator
         List<AvailableResult> availableFormats = new List<AvailableResult>();
         List<ListItem> results = new List<ListItem>();
 
+        // currently, all of the search in V2 is keyword search.
+        var isKeywordSearch = true;
+
         // Switch search type
-        if (isEmptySearchInput)
+        if (isEmptySearchInput || (!isKeywordSearch && settings.OnlyDateTimeNowGlobal))
         {
             // Return all results for system time/date on empty keyword search
             // or only time, date and now results for system time on global queries if the corresponding setting is enabled
-            availableFormats.AddRange(AvailableResultsList.GetList(settings));
+            availableFormats.AddRange(AvailableResultsList.GetList(isKeywordSearch, settings));
         }
         else if (Regex.IsMatch(query, @".+" + Regex.Escape(InputDelimiter) + @".+"))
         {
@@ -47,20 +50,20 @@ public sealed partial class TimeDateCalculator
             var userInput = query.Split(InputDelimiter);
             if (TimeAndDateHelper.ParseStringAsDateTime(userInput[1], out DateTime timestamp))
             {
-                availableFormats.AddRange(AvailableResultsList.GetList(settings, null, null, timestamp));
+                availableFormats.AddRange(AvailableResultsList.GetList(isKeywordSearch, settings, null, null, timestamp));
                 query = userInput[0];
             }
         }
         else if (TimeAndDateHelper.ParseStringAsDateTime(query, out DateTime timestamp))
         {
             // Return all formats for specified time/date value
-            availableFormats.AddRange(AvailableResultsList.GetList(settings, null, null, timestamp));
+            availableFormats.AddRange(AvailableResultsList.GetList(isKeywordSearch, settings, null, null, timestamp));
             query = string.Empty;
         }
         else
         {
             // Search for specified format with system time/date (All other cases)
-            availableFormats.AddRange(AvailableResultsList.GetList(settings));
+            availableFormats.AddRange(AvailableResultsList.GetList(isKeywordSearch, settings));
         }
 
         // Check searchTerm after getting results to select type of result list
