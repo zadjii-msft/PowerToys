@@ -32,12 +32,9 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        if (!string.IsNullOrEmpty(newSearch))
-        {
-            var result = TimeDateCalculator.ExecuteSearch(_settingsManager, newSearch);
-            _items.Clear();
-            _items.AddRange(result);
-            RaiseItemsChanged(0);
-        }
+        var result = TimeDateCalculator.ExecuteSearch(_settingsManager, newSearch);
+        _items.Clear();
+        _items.AddRange(result);
+        RaiseItemsChanged(0);
     }
 }
