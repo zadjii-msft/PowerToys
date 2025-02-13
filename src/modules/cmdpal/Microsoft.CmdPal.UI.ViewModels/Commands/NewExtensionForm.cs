@@ -2,14 +2,10 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 
@@ -176,7 +172,7 @@ internal sealed partial class NewExtensionForm : NewExtensionFormBase
             Directory.CreateDirectory(outputPath);
         }
 
-        var assetsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Assets\\template.zip");
+        var assetsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory.ToString(), "Microsoft.CmdPal.UI.ViewModels\\Assets\\template.zip");
         ZipFile.ExtractToDirectory(assetsPath, tempDir);
 
         var files = Directory.GetFiles(tempDir, "*", SearchOption.AllDirectories);
