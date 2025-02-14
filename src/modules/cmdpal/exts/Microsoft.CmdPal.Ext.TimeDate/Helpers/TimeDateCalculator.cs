@@ -101,7 +101,7 @@ public sealed partial class TimeDateCalculator
         if (results.Count == 0)
         {
             results.Add(new ListItem(new NoOpCommand()));
-            results[0].Title = "Type an equation";
+            results[0].Title = Resources.Microsoft_plugin_timedate_error_result_text;
         }
 
         return results;

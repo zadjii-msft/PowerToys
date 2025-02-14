@@ -169,6 +169,15 @@ namespace Microsoft.CmdPal.Ext.TimeDate.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error: Invalid custom timestamp.
+        /// </summary>
+        public static string Microsoft_plugin_timedate_error_result_text {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_timedate_error_result_text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Valid prefixes: &apos;u&apos; for Unix Timestamp, &apos;ums&apos; for Unix Timestamp in milliseconds, &apos;ft&apos; for Windows file time.
         /// </summary>
         public static string Microsoft_plugin_timedate_ErrorResultSubTitle {
@@ -241,11 +250,20 @@ namespace Microsoft.CmdPal.Ext.TimeDate.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TimeDate extension main page.
+        ///   Looks up a localized string similar to Open.
         /// </summary>
         public static string Microsoft_plugin_timedate_main_page_name {
             get {
                 return ResourceManager.GetString("Microsoft_plugin_timedate_main_page_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time &amp; Date.
+        /// </summary>
+        public static string Microsoft_plugin_timedate_main_page_title {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_timedate_main_page_title", resourceCulture);
             }
         }
         
@@ -313,7 +331,16 @@ namespace Microsoft.CmdPal.Ext.TimeDate.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provides time and date values for the system time or a custom time stamp (e.g.&apos;{0}&apos;, &apos;{1}&apos;, &apos;{2}&apos;, &apos;{3}&apos;).
+        ///   Looks up a localized string similar to Search values or type a custom time stamp....
+        /// </summary>
+        public static string Microsoft_plugin_timedate_placeholder_text {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_timedate_placeholder_text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provides time and date values in different formats.
         /// </summary>
         public static string Microsoft_plugin_timedate_plugin_description {
             get {

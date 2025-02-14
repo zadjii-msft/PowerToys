@@ -18,8 +18,9 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
     public TimeDateExtensionPage(SettingsManager settingsManager)
     {
         Icon = new("\uEC92"); // DateTime icon
-        Title = Resources.Microsoft_plugin_timedate_plugin_name;
+        Title = Resources.Microsoft_plugin_timedate_main_page_title;
         Name = Resources.Microsoft_plugin_timedate_main_page_name;
+        PlaceholderText = Resources.Microsoft_plugin_timedate_placeholder_text;
         Id = "com.microsoft.cmdpal.timedate";
         _settingsManager = settingsManager;
     }
@@ -48,7 +49,7 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
             // So, we add a prompt for user.
             var items = new List<ListItem>();
             items.Add(new ListItem(new NoOpCommand()));
-            items[0].Title = "Type an equation...";
+            items[0].Title = Resources.Microsoft_plugin_timedate_error_result_text;
             return items;
         }
     }
