@@ -21,16 +21,11 @@ internal static class ResultHelper
     /// <returns>The string from the resource file, or <see cref="string.Empty"/> otherwise.</returns>
     internal static string SelectStringFromResources(bool isSystemTimeDate, string stringId, string stringIdNow = default)
     {
-        if (!isSystemTimeDate)
-        {
-            return Resources.ResourceManager.GetString(stringId, CultureInfo.CurrentUICulture) ?? string.Empty;
-        }
-        else
-        {
-            return !string.IsNullOrEmpty(stringIdNow)
+        return !isSystemTimeDate
+            ? Resources.ResourceManager.GetString(stringId, CultureInfo.CurrentUICulture) ?? string.Empty
+            : !string.IsNullOrEmpty(stringIdNow)
                 ? Resources.ResourceManager.GetString(stringIdNow, CultureInfo.CurrentUICulture) ?? string.Empty
                 : Resources.ResourceManager.GetString(stringId + "Now", CultureInfo.CurrentUICulture) ?? string.Empty;
-        }
     }
 
     /// <summary>
@@ -43,6 +38,18 @@ internal static class ResultHelper
         Subtitle = Resources.Microsoft_plugin_timedate_ErrorResultSubTitle,
         Icon = CreateIconInfo("Warning"),
     };
+
+    public static IconInfo TimeIcon { get; } = IconHelpers.FromRelativePaths(
+        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\time.light.png",
+        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\time.dark.png");
+
+    public static IconInfo CalendarIcon { get; } = IconHelpers.FromRelativePaths(
+        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\calendar.light.png",
+        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\calendar.dark.png");
+
+    public static IconInfo TimeDateIcon { get; } = IconHelpers.FromRelativePaths(
+        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\timeDate.light.png",
+        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\timeDate.dark.png");
 
     public static IconInfo CreateIconInfo(string iconName)
     {

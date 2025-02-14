@@ -9,6 +9,18 @@
     <ProjectPriFileName>Microsoft.CmdPal.Ext.TimeDate.pri</ProjectPriFileName>
   </PropertyGroup>
 
+
+  <ItemGroup>
+    <None Remove="Assets\calendar.dark.png" />
+    <None Remove="Assets\calendar.light.png" />
+    <None Remove="Assets\time.dark.png" />
+    <None Remove="Assets\time.light.png" />
+    <None Remove="Assets\timeDate.dark.png" />
+    <None Remove="Assets\timeDate.light.png" />
+    <None Remove="Assets\Warning.dark.png" />
+    <None Remove="Assets\Warning.light.png" />
+  </ItemGroup>
+  
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
