@@ -61,7 +61,7 @@ public class AllAppsSettings : JsonSettingsManager
         Namespaced(nameof(EnablePathEnvironmentVariableSource)),
         Resources.enable_path_environment_variable_source,
         Resources.enable_path_environment_variable_source,
-        true);
+        false); // This one is even noisier
 
     public double MinScoreThreshold { get; set; } = 0.75;
 
