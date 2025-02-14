@@ -17,7 +17,6 @@ namespace TimeDateExtension.Pages;
 
 internal sealed partial class TimeDateExtensionPage : DynamicListPage
 {
-    private readonly List<ListItem> _items = new();
     private SettingsManager _settingsManager;
 
     public TimeDateExtensionPage(SettingsManager settingsManager)
@@ -31,7 +30,11 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
 
     public override IListItem[] GetItems() => DoExecuteSearch(SearchText).ToArray();
 
-    public override void UpdateSearchText(string oldSearch, string newSearch) => RaiseItemsChanged(0);
+    public override void UpdateSearchText(string oldSearch, string newSearch)
+    {
+        DoExecuteSearch(newSearch);
+        RaiseItemsChanged(0);
+    }
 
     private List<ListItem> DoExecuteSearch(string query)
     {
