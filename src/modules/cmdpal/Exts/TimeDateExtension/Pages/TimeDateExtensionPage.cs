@@ -19,10 +19,9 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
     {
         Icon = new(string.Empty);
         Name = "TimeDate";
-        _items.Add(new ListItem(new NoOpCommand()));
-        _items[0].Title = "Type an equation...init";
         Id = "com.microsoft.cmdpal.timedate";
         _settingsManager = settingsManager;
+        DoExecuteSearch(string.Empty);
     }
 
     public override IListItem[] GetItems()
@@ -32,9 +31,28 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
 
     public override void UpdateSearchText(string oldSearch, string newSearch)
     {
-        var result = TimeDateCalculator.ExecuteSearch(_settingsManager, newSearch);
-        _items.Clear();
-        _items.AddRange(result);
-        RaiseItemsChanged(0);
+        DoExecuteSearch(newSearch);
+    }
+
+    private void DoExecuteSearch(string query)
+    {
+        try
+        {
+            var result = TimeDateCalculator.ExecuteSearch(_settingsManager, query);
+            _items.Clear();
+            _items.AddRange(result);
+            RaiseItemsChanged(0);
+        }
+        catch (Exception)
+        {
+            // sometimes, user's input may not correct.
+            // In most of the time, user may not have completed their input.
+            // So, we need to clean the result.
+            // But in that time, empty result may cause exception.
+            // So, we add a prompt for user.
+            _items.Clear();
+            _items.Add(new ListItem(new NoOpCommand()));
+            _items[0].Title = "Type an equation...";
+        }
     }
 }
