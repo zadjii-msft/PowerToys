@@ -150,7 +150,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                             _ => throw new NotSupportedException(),
                         },
                         pageViewModel,
-                        _slideRightTransition);
+                        message.WithAnimation ? _slideRightTransition : _noAnimation);
 
                     // Refocus on the Search for continual typing on the next search request
                     SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
@@ -285,13 +285,34 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
         _ = DispatcherQueue.TryEnqueue(() =>
         {
-            if (settings.HotkeyGoesHome)
+            var commandId = message.CommandId;
+            var isRoot = string.IsNullOrEmpty(commandId);
+            if (isRoot)
             {
-                GoHome(false);
+                if (settings.HotkeyGoesHome)
+                {
+                    GoHome(false);
+                }
+                else if (settings.HighlightSearchOnActivate)
+                {
+                    SearchBox.SelectSearch();
+                }
             }
-            else if (settings.HighlightSearchOnActivate)
+            else
             {
-                SearchBox.SelectSearch();
+                try
+                {
+                    var tlcManager = App.Current.Services.GetService<TopLevelCommandManager>()!;
+                    var topLevelCommand = tlcManager.LookupCommand(commandId);
+                    if (topLevelCommand != null)
+                    {
+                        var msg = new PerformCommandMessage(new(topLevelCommand.Command)) { WithAnimation = false };
+                        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(msg);
+                    }
+                }
+                catch
+                {
+                }
             }
 
             WeakReferenceMessenger.Default.Send<FocusSearchBoxMessage>();

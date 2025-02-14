@@ -36,6 +36,10 @@ public partial class SettingsModel : ObservableObject
 
     public Dictionary<string, ProviderSettings> ProviderSettings { get; set; } = [];
 
+    public Dictionary<string, CommandAlias> Aliases { get; set; } = [];
+
+    public List<TopLevelHotkey> CommandHotkeys { get; set; } = [];
+
     // END SETTINGS
     ///////////////////////////////////////////////////////////////////////////
 
@@ -66,7 +70,10 @@ public partial class SettingsModel : ObservableObject
 
             Debug.WriteLine(loaded != null ? "Loaded settings file" : "Failed to parse");
 
-            return loaded ?? new();
+            var bodgy = loaded ?? new();
+            bodgy.CommandHotkeys.Add(new(new(false, true, true, false, 77), "com.microsoft.cmdpal.windowwalker"));
+
+            return bodgy;
         }
         catch (Exception ex)
         {
