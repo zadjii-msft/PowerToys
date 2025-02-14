@@ -4,20 +4,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
+using Microsoft.CmdPal.Ext.TimeDate.Helpers;
+using Microsoft.CmdPal.Ext.TimeDate.Properties;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using Microsoft.UI.Xaml.Controls;
-using TimeDateExtension.Helpers;
-using TimeDateExtension.Properties;
 
-namespace TimeDateExtension.Pages;
+namespace Microsoft.CmdPal.Ext.TimeDate.Pages;
 
 internal sealed partial class TimeDateExtensionPage : DynamicListPage
 {
-    private SettingsManager _settingsManager;
+    private readonly SettingsManager _settingsManager;
 
     public TimeDateExtensionPage(SettingsManager settingsManager)
     {

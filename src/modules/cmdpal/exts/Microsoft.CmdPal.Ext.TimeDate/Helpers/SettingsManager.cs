@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Microsoft.CmdPal.Ext.TimeDate.Properties;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using TimeDateExtension.Properties;
 
-namespace TimeDateExtension.Helpers;
+namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 
 public class SettingsManager : JsonSettingsManager
 {
@@ -33,14 +33,14 @@ public class SettingsManager : JsonSettingsManager
         // List (Sorted for first day is Sunday)
         var list = new List<ChoiceSetSetting.Choice>
             {
-                new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_Setting_UseSystemSetting, "-1"),
-                new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Sunday, "0"),
-                new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Monday, "1"),
-                new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Tuesday, "2"),
-                new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Wednesday, "3"),
-                new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Thursday, "4"),
-                new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Friday, "5"),
-                new ChoiceSetSetting.Choice(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Saturday, "6"),
+                new(Resources.Microsoft_plugin_timedate_Setting_UseSystemSetting, "-1"),
+                new(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Sunday, "0"),
+                new(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Monday, "1"),
+                new(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Tuesday, "2"),
+                new(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Wednesday, "3"),
+                new(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Thursday, "4"),
+                new(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Friday, "5"),
+                new(Resources.Microsoft_plugin_timedate_SettingFirstDayOfWeek_Saturday, "6"),
             };
 
         // Order Rules
@@ -106,12 +106,7 @@ public class SettingsManager : JsonSettingsManager
 
             var success = int.TryParse(_firstWeekOfYear.Value, out var result);
 
-            if (!success)
-            {
-                return -1;
-            }
-
-            return result;
+            return !success ? -1 : result;
         }
     }
 
@@ -126,12 +121,7 @@ public class SettingsManager : JsonSettingsManager
 
             var success = int.TryParse(_firstDayOfWeek.Value, out var result);
 
-            if (!success)
-            {
-                return -1;
-            }
-
-            return result;
+            return !success ? -1 : result;
         }
     }
 

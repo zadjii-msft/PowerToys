@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using TimeDateExtension.Properties;
+using Microsoft.CmdPal.Ext.TimeDate.Properties;
 
-namespace TimeDateExtension.Helpers;
+namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 
 internal static class AvailableResultsList
 {

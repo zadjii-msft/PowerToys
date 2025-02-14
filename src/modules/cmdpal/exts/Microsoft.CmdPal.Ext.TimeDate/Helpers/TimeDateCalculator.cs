@@ -2,14 +2,13 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.CmdPal.Ext.TimeDate.Properties;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using TimeDateExtension.Properties;
 
-namespace TimeDateExtension.Helpers;
+namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 
 public sealed partial class TimeDateCalculator
 {
@@ -31,8 +30,8 @@ public sealed partial class TimeDateCalculator
     public static List<ListItem> ExecuteSearch(SettingsManager settings, string query)
     {
         var isEmptySearchInput = string.IsNullOrEmpty(query);
-        List<AvailableResult> availableFormats = new List<AvailableResult>();
-        List<ListItem> results = new List<ListItem>();
+        var availableFormats = new List<AvailableResult>();
+        var results = new List<ListItem>();
 
         // currently, all of the search in V2 is keyword search.
         var isKeywordSearch = true;
@@ -48,13 +47,13 @@ public sealed partial class TimeDateCalculator
         {
             // Search for specified format with specified time/date value
             var userInput = query.Split(InputDelimiter);
-            if (TimeAndDateHelper.ParseStringAsDateTime(userInput[1], out DateTime timestamp))
+            if (TimeAndDateHelper.ParseStringAsDateTime(userInput[1], out var timestamp))
             {
                 availableFormats.AddRange(AvailableResultsList.GetList(isKeywordSearch, settings, null, null, timestamp));
                 query = userInput[0];
             }
         }
-        else if (TimeAndDateHelper.ParseStringAsDateTime(query, out DateTime timestamp))
+        else if (TimeAndDateHelper.ParseStringAsDateTime(query, out var timestamp))
         {
             // Return all formats for specified time/date value
             availableFormats.AddRange(AvailableResultsList.GetList(isKeywordSearch, settings, null, null, timestamp));

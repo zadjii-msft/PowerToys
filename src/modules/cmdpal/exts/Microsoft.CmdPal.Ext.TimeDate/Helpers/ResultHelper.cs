@@ -5,11 +5,10 @@
 using System;
 using System.Globalization;
 using System.IO;
-using Microsoft.CommandPalette.Extensions;
+using Microsoft.CmdPal.Ext.TimeDate.Properties;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using TimeDateExtension.Properties;
 
-namespace TimeDateExtension.Helpers;
+namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 
 internal static class ResultHelper
 {
@@ -26,13 +25,11 @@ internal static class ResultHelper
         {
             return Resources.ResourceManager.GetString(stringId, CultureInfo.CurrentUICulture) ?? string.Empty;
         }
-        else if (!string.IsNullOrEmpty(stringIdNow))
-        {
-            return Resources.ResourceManager.GetString(stringIdNow, CultureInfo.CurrentUICulture) ?? string.Empty;
-        }
         else
         {
-            return Resources.ResourceManager.GetString(stringId + "Now", CultureInfo.CurrentUICulture) ?? string.Empty;
+            return !string.IsNullOrEmpty(stringIdNow)
+                ? Resources.ResourceManager.GetString(stringIdNow, CultureInfo.CurrentUICulture) ?? string.Empty
+                : Resources.ResourceManager.GetString(stringId + "Now", CultureInfo.CurrentUICulture) ?? string.Empty;
         }
     }
 
@@ -40,7 +37,7 @@ internal static class ResultHelper
     /// Gets a result with an error message that only numbers can't be parsed
     /// </summary>
     /// <returns>Element of type <see cref="Result"/>.</returns>
-    internal static ListItem CreateNumberErrorResult() => new ListItem(new NoOpCommand())
+    internal static ListItem CreateNumberErrorResult() => new(new NoOpCommand())
     {
         Title = Resources.Microsoft_plugin_timedate_ErrorResultTitle,
         Subtitle = Resources.Microsoft_plugin_timedate_ErrorResultSubTitle,
