@@ -4,9 +4,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Microsoft.UI.Xaml.Controls;
 using TimeDateExtension.Helpers;
+using TimeDateExtension.Properties;
 
 namespace TimeDateExtension.Pages;
 
@@ -17,31 +22,23 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
 
     public TimeDateExtensionPage(SettingsManager settingsManager)
     {
-        Icon = new(string.Empty);
-        Name = "TimeDate";
+        Icon = new("\uEC92"); // DateTime icon
+        Title = Resources.Microsoft_plugin_timedate_plugin_name;
+        Name = Resources.Microsoft_plugin_timedate_main_page_name;
         Id = "com.microsoft.cmdpal.timedate";
         _settingsManager = settingsManager;
-        DoExecuteSearch(string.Empty);
     }
 
-    public override IListItem[] GetItems()
-    {
-        return _items.ToArray();
-    }
+    public override IListItem[] GetItems() => DoExecuteSearch(SearchText).ToArray();
 
-    public override void UpdateSearchText(string oldSearch, string newSearch)
-    {
-        DoExecuteSearch(newSearch);
-    }
+    public override void UpdateSearchText(string oldSearch, string newSearch) => RaiseItemsChanged(0);
 
-    private void DoExecuteSearch(string query)
+    private List<ListItem> DoExecuteSearch(string query)
     {
         try
         {
             var result = TimeDateCalculator.ExecuteSearch(_settingsManager, query);
-            _items.Clear();
-            _items.AddRange(result);
-            RaiseItemsChanged(0);
+            return result;
         }
         catch (Exception)
         {
@@ -50,9 +47,10 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
             // So, we need to clean the result.
             // But in that time, empty result may cause exception.
             // So, we add a prompt for user.
-            _items.Clear();
-            _items.Add(new ListItem(new NoOpCommand()));
-            _items[0].Title = "Type an equation...";
+            var items = new List<ListItem>();
+            items.Add(new ListItem(new NoOpCommand()));
+            items[0].Title = "Type an equation...";
+            return items;
         }
     }
 }

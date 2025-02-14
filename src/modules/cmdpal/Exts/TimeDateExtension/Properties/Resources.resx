@@ -360,4 +360,7 @@
   <data name="Microsoft_plugin_timedate_Setting_UseSystemSetting" xml:space="preserve">
     <value>Use system setting</value>
   </data>
+  <data name="Microsoft_plugin_timedate_main_page_name" xml:space="preserve">
+    <value>TimeDate extension main page</value>
+  </data>
 </root>

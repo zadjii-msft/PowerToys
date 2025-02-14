@@ -241,6 +241,15 @@ namespace TimeDateExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TimeDate extension main page.
+        /// </summary>
+        public static string Microsoft_plugin_timedate_main_page_name {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_timedate_main_page_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Millisecond.
         /// </summary>
         public static string Microsoft_plugin_timedate_Millisecond {
