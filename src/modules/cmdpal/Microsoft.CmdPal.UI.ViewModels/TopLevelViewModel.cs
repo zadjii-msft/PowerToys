@@ -2,6 +2,8 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.CmdPal.UI.ViewModels.Settings;
+
 namespace Microsoft.CmdPal.UI.ViewModels;
 
 public sealed class TopLevelViewModel
@@ -16,6 +18,11 @@ public sealed class TopLevelViewModel
     public string Title => _item.Title;
 
     public string Subtitle => _item.Subtitle;
+
+    public HotkeySettings? Hotkey
+    {
+        get => _item.Hotkey; set { }
+    }
 
     public TopLevelViewModel(TopLevelCommandItemWrapper item)
     {

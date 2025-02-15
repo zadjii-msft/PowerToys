@@ -5,6 +5,7 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CmdPal.UI.ViewModels.Models;
+using Microsoft.CmdPal.UI.ViewModels.Settings;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,8 @@ public partial class TopLevelCommandItemWrapper : ListItem
     private readonly TopLevelCommandWrapper _topLevelCommand;
 
     public string? Alias { get; private set; }
+
+    public HotkeySettings? Hotkey { get; private set; }
 
     public CommandPaletteHost? ExtensionHost { get => _topLevelCommand.ExtensionHost; set => _topLevelCommand.ExtensionHost = value; }
 
@@ -79,11 +82,27 @@ public partial class TopLevelCommandItemWrapper : ListItem
         if (aliases != null)
         {
             Alias = aliases.KeysFromId(Id);
-            if (Alias is string keys)
-            {
-                this.Tags = [new Tag() { Text = keys }];
-            }
         }
+
+        var settings = _serviceProvider.GetService<SettingsModel>()!;
+        var hotkey = settings.CommandHotkeys.Where(hk => hk.CommandId == Id).FirstOrDefault();
+        if (hotkey != null)
+        {
+            Hotkey = hotkey.Hotkey;
+        }
+
+        var tags = new List<Tag>();
+        if (Alias is string keys)
+        {
+            tags.Add(new Tag() { Text = keys });
+        }
+
+        if (Hotkey != null)
+        {
+            tags.Add(new Tag() { Text = Hotkey.ToString() });
+        }
+
+        this.Tags = tags.ToArray();
     }
 
     private void Model_PropChanged(object sender, IPropChangedEventArgs args)

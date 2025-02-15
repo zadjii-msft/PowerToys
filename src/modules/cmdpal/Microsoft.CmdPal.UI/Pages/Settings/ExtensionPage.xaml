@@ -50,7 +50,7 @@
                     <ItemsRepeater ItemsSource="{x:Bind ViewModel.TopLevelCommands, Mode=OneWay}" Layout="{StaticResource VerticalStackLayout}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:TopLevelViewModel">
-                                <controls:SettingsCard ContentAlignment="Left" DataContext="{x:Bind}">
+                                <controls:SettingsExpander DataContext="{x:Bind}">
                                     <!--
                                         What we're doing here is 90% stupid.
                                         
@@ -121,7 +121,17 @@
                                         -->
 
                                     </Grid>
-                                </controls:SettingsCard>
+
+
+                                    <controls:SettingsExpander.Items>
+                                        <controls:SettingsCard
+                                            Description="Directly open Command Palette to this command"
+                                            Header="Global hotkey"
+                                            HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}">
+                                            <cpcontrols:ShortcutControl HotkeySettings="{x:Bind Hotkey, Mode=TwoWay}" />
+                                        </controls:SettingsCard>
+                                    </controls:SettingsExpander.Items>
+                                </controls:SettingsExpander>
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
                     </ItemsRepeater>
