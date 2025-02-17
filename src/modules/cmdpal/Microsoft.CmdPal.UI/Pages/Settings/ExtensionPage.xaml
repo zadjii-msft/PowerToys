@@ -25,7 +25,6 @@
                 x:Key="InvertedStringEmptyVisibilityConverter"
                 EmptyValue="Visible"
                 NotEmptyValue="Collapsed" />
-
             <converters:BoolToVisibilityConverter
                 x:Key="BoolToInvertedVisibilityConverter"
                 FalseValue="Visible"
@@ -52,40 +51,24 @@
                         Layout="{StaticResource VerticalStackLayout}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:TopLevelViewModel">
-                                <controls:SettingsExpander 
-                                    Header="{x:Bind Title, Mode=OneWay}"
+                                <controls:SettingsExpander
+                                    DataContext="{x:Bind}"
                                     Description="{x:Bind Subtitle, Mode=OneWay}"
-                                    IsExpanded="False"
-                                    DataContext="{x:Bind}">
+                                    Header="{x:Bind Title, Mode=OneWay}">
                                     <controls:SettingsExpander.HeaderIcon>
-                                        <IconSourceElement x:Name="Ico"></IconSourceElement>
+                                        <cpcontrols:ContentIcon>
+                                            <cpcontrols:ContentIcon.Content>
+                                                <cpcontrols:IconBox
+                                                    Width="20"
+                                                    Height="20"
+                                                    AutomationProperties.AccessibilityView="Raw"
+                                                    SourceKey="{x:Bind Icon, Mode=OneWay}"
+                                                    SourceRequested="{x:Bind helpers:IconCacheProvider.SourceRequested}" />
+                                            </cpcontrols:ContentIcon.Content>
+                                        </cpcontrols:ContentIcon>
                                     </controls:SettingsExpander.HeaderIcon>
-                                    <!--
-                                        What we're doing here is 95% stupid.
-                                        
-                                        The SettingsCard APIs only explicitly allow an
-                                        Icon as the content for the HeaderIcon property.
-                                    
-                                        We of course, have to do the goofy async IconBox thing.
-                                        
-                                        So what we're doing is taking the IconBox,
-                                        collapsing it, but telling it to update
-                                        the icon over at "Ico" instead of itself
-                                    -->
-                                    <Grid
-                                        Visibility="Collapsed"
-                                        Margin="0,-12,0,0"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Top">
-                                        <cpcontrols:IconBox
-                                            Width="20"
-                                            Height="20"
-                                            Margin="0,0,0,0"
-                                            TargetIcon="{Binding ElementName=Ico}"
-                                            AutomationProperties.AccessibilityView="Raw"
-                                            SourceKey="{x:Bind Icon, Mode=OneWay}"
-                                            SourceRequested="{x:Bind helpers:IconCacheProvider.SourceRequested}" />
-                                    </Grid>
+
+                                    <!--  Content goes here  -->
 
                                     <controls:SettingsExpander.Items>
                                         <controls:SettingsCard
