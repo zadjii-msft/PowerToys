@@ -274,23 +274,11 @@ public sealed partial class MainWindow : Window,
 
     public void Summon(string commandId)
     {
-        WeakReferenceMessenger.Default.Send<HotkeySummonMessage>(new(commandId));
-
-        // Remember, IsIconic == "minimized", which is entirely different state
-        // from "show/hide"
-        // If we're currently minimized, restore us first, before we reveal
-        // our window. Otherwise we'd just be showing a minimized window -
-        // which would remain not visible to the user.
-        if (PInvoke.IsIconic(_hwnd))
-        {
-            PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_RESTORE);
-        }
-
-        PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_SHOW);
-        PInvoke.SetForegroundWindow(_hwnd);
-        PInvoke.SetActiveWindow(_hwnd);
-
-        // MainPage.ViewModel.Summon();
+        // The actual showing and hiding of the window will be done by the
+        // ShellPage. This is because we don't want to show the window if the
+        // user bound a hotkey to just an invokable command, which we can't
+        // know till the message is being handled.
+        WeakReferenceMessenger.Default.Send<HotkeySummonMessage>(new(commandId, _hwnd));
     }
 
 #pragma warning disable SA1310 // Field names should not contain underscore

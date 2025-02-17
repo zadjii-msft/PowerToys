@@ -4,6 +4,6 @@
 
 namespace Microsoft.CmdPal.UI.ViewModels.Messages;
 
-public record HotkeySummonMessage(string CommandId)
+public record HotkeySummonMessage(string CommandId, IntPtr Hwnd)
 {
 }
