@@ -47,11 +47,12 @@
 
                     <TextBlock x:Uid="ExtensionCommandsHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
-                    <ItemsRepeater 
+                    <ItemsView 
                         ItemsSource="{x:Bind ViewModel.TopLevelCommands, Mode=OneWay}" 
                         Layout="{StaticResource VerticalStackLayout}">
-                        <ItemsRepeater.ItemTemplate>
+                        <ItemsView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:TopLevelViewModel">
+                                <ItemContainer>
                                 <controls:SettingsExpander 
                                     Header="{x:Bind Title, Mode=OneWay}"
                                     Description="{x:Bind Subtitle, Mode=OneWay}"
@@ -144,9 +145,10 @@
                                         </controls:SettingsCard>
                                     </controls:SettingsExpander.Items>
                                 </controls:SettingsExpander>
+                                </ItemContainer>
                             </DataTemplate>
-                        </ItemsRepeater.ItemTemplate>
-                    </ItemsRepeater>
+                        </ItemsView.ItemTemplate>
+                    </ItemsView>
                     <TextBlock
                         x:Uid="ExtensionSettingsHeader"
                         Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
