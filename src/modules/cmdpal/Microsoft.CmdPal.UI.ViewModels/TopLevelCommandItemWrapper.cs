@@ -9,6 +9,7 @@ using Microsoft.CmdPal.UI.ViewModels.Settings;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.Extensions.DependencyInjection;
+using WyHash;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -20,29 +21,48 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public partial class TopLevelCommandItemWrapper : ListItem
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly string _commandProviderId;
 
     public ExtensionObject<ICommandItem> Model { get; }
 
     public bool IsFallback { get; private set; }
 
-    public string Id { get; private set; } = string.Empty;
+    private readonly string _idFromModel = string.Empty;
+    private string _generatedId = string.Empty;
+
+    public string Id => string.IsNullOrEmpty(_idFromModel) ? _generatedId : _idFromModel;
 
     private readonly TopLevelCommandWrapper _topLevelCommand;
 
     public string? Alias { get; private set; }
 
-    public HotkeySettings? Hotkey { get; set; }
+    private HotkeySettings? _hotkey;
 
-    public CommandPaletteHost? ExtensionHost { get => _topLevelCommand.ExtensionHost; set => _topLevelCommand.ExtensionHost = value; }
+    public HotkeySettings? Hotkey
+    {
+        get => _hotkey;
+        set
+        {
+            _hotkey = value;
+            UpdateTags();
+        }
+    }
+
+    public CommandPaletteHost ExtensionHost { get => _topLevelCommand.ExtensionHost; }
 
     public TopLevelCommandItemWrapper(
         ExtensionObject<ICommandItem> commandItem,
         bool isFallback,
+        CommandPaletteHost extensionHost,
+        string commandProviderId,
         IServiceProvider serviceProvider)
-        : base(new TopLevelCommandWrapper(commandItem.Unsafe?.Command ?? new NoOpCommand()))
+        : base(new TopLevelCommandWrapper(
+            commandItem.Unsafe?.Command ?? new NoOpCommand(),
+            extensionHost))
     {
         _serviceProvider = serviceProvider;
         _topLevelCommand = (TopLevelCommandWrapper)this.Command!;
+        _commandProviderId = commandProviderId;
 
         IsFallback = isFallback;
 
@@ -62,7 +82,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
 
             _topLevelCommand.UnsafeInitializeProperties();
 
-            Id = _topLevelCommand.Id;
+            _idFromModel = _topLevelCommand.Id;
 
             Title = model.Title;
             Subtitle = model.Subtitle;
@@ -77,6 +97,20 @@ public partial class TopLevelCommandItemWrapper : ListItem
             System.Diagnostics.Debug.WriteLine(ex);
         }
 
+        GenerateId();
+        UpdateTags();
+    }
+
+    private void GenerateId()
+    {
+        // Use WyHash64 to generate stable ID hashes.
+        // manually seeding with 0, so that the hash is stable across launches
+        var result = WyHash64.ComputeHash64(_commandProviderId + Title + Subtitle, seed: 0);
+        _generatedId = $"{_commandProviderId}{result}";
+    }
+
+    private void UpdateTags()
+    {
         // Add tags for the alias, if we have one.
         var aliases = _serviceProvider.GetService<AliasManager>();
         if (aliases != null)
@@ -88,18 +122,19 @@ public partial class TopLevelCommandItemWrapper : ListItem
         var hotkey = settings.CommandHotkeys.Where(hk => hk.CommandId == Id).FirstOrDefault();
         if (hotkey != null)
         {
-            Hotkey = hotkey.Hotkey;
+            _hotkey = hotkey.Hotkey;
         }
 
         var tags = new List<Tag>();
-        if (Alias is string keys)
-        {
-            tags.Add(new Tag() { Text = keys });
-        }
 
         if (Hotkey != null)
         {
             tags.Add(new Tag() { Text = Hotkey.ToString() });
+        }
+
+        if (Alias is string keys)
+        {
+            tags.Add(new Tag() { Text = keys });
         }
 
         this.Tags = tags.ToArray();
