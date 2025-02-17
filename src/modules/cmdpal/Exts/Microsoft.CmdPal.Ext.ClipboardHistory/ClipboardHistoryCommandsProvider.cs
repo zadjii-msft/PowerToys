@@ -4,8 +4,8 @@
 
 using System;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Pages;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.ClipboardHistory;
 
@@ -18,7 +18,7 @@ public partial class ClipboardHistoryCommandsProvider : CommandProvider
         _clipboardHistoryListItem = new ListItem(new ClipboardHistoryListPage())
         {
             Title = "Search Clipboard History",
-            Icon = new("ClipboardHistory"),
+            Icon = new IconInfo("ClipboardHistory"),
         };
 
         DisplayName = $"Settings";

@@ -13,8 +13,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Helpers;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Models;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
+
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Networking.NetworkOperators;
 using Windows.System;

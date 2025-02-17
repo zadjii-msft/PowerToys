@@ -4,9 +4,10 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Commands;
-using Microsoft.CmdPal.Extensions;
-using Microsoft.CmdPal.Extensions.Helpers;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.Streams;
 
@@ -50,7 +51,7 @@ public class ClipboardItem
 
         if (IsImage())
         {
-            var iconData = IconData.FromStream(ImageData);
+            var iconData = new IconData(ImageData);
             var heroImage = new IconInfo(iconData, iconData);
             listItem = new(new CopyCommand(this, ClipboardFormat.Image))
             {
