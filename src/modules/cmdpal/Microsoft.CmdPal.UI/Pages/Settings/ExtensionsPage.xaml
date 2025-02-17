@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="Microsoft.CmdPal.UI.Pages.ExtensionsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -19,10 +19,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock
-            MaxWidth="1000"
-            Style="{StaticResource TitleTextBlockStyle}"
-            Text="Extensions" />
         <ScrollViewer Grid.Row="1" Padding="0,0,8,0">
             <Grid Padding="8,16,8,8">
                 <StackPanel
@@ -33,7 +29,11 @@
                     <ItemsRepeater ItemsSource="{x:Bind viewModel.CommandProviders, Mode=OneWay}" Layout="{StaticResource VerticalStackLayout}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:ProviderSettingsViewModel">
-                                <controls:SettingsCard ContentAlignment="Left" IsClickEnabled="True">
+                                <controls:SettingsCard
+                                    Click="SettingsCard_Click"
+                                    ContentAlignment="Left"
+                                    DataContext="{x:Bind}"
+                                    IsClickEnabled="True">
                                     <!--
                                         What we're doing here is 90% stupid.
                                         
@@ -87,7 +87,7 @@
                                                 TextWrapping="Wrap" />
 
                                             <ContentPresenter
-                                                Content="{x:Bind ExtensionName, Mode=OneWay}"
+                                                Content="{x:Bind ExtensionSubtext, Mode=OneWay}"
                                                 FontSize="12"
                                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                 TextWrapping="Wrap" />
