@@ -21,7 +21,8 @@ public sealed class TopLevelViewModel
 
     public HotkeySettings? Hotkey
     {
-        get => _item.Hotkey; set { }
+        get => _item.Hotkey;
+        set => _item.Hotkey = value;
     }
 
     public TopLevelViewModel(TopLevelCommandItemWrapper item)

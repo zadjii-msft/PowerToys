@@ -47,10 +47,20 @@
 
                     <TextBlock x:Uid="ExtensionCommandsHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.TopLevelCommands, Mode=OneWay}" Layout="{StaticResource VerticalStackLayout}">
+                    <ItemsRepeater 
+                        ItemsSource="{x:Bind ViewModel.TopLevelCommands, Mode=OneWay}" 
+                        Layout="{StaticResource VerticalStackLayout}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:TopLevelViewModel">
-                                <controls:SettingsExpander DataContext="{x:Bind}">
+                                <controls:SettingsExpander 
+                                    Header="{x:Bind Title, Mode=OneWay}"
+                                    Description="{x:Bind Subtitle, Mode=OneWay}"
+                                    
+                        IsExpanded="True"
+                                    DataContext="{x:Bind}">
+                                    <controls:SettingsExpander.HeaderIcon>
+                                        <IconSourceElement x:Name="Ico"></IconSourceElement>
+                                    </controls:SettingsExpander.HeaderIcon>
                                     <!--
                                         What we're doing here is 90% stupid.
                                         
@@ -66,6 +76,7 @@
                                         https://github.com/CommunityToolkit/Windows/blob/main/components/SettingsControls/src/SettingsCard/SettingsCard.xaml
                                     -->
                                     <Grid
+                                        Visibility="Collapsed"
                                         Margin="0,-12,0,0"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Top">
@@ -89,12 +100,13 @@
                                                 Width="20"
                                                 Height="20"
                                                 Margin="0,0,0,0"
+                                                TargetIcon="{Binding ElementName=Ico}"
                                                 AutomationProperties.AccessibilityView="Raw"
                                                 SourceKey="{x:Bind Icon, Mode=OneWay}"
                                                 SourceRequested="{x:Bind helpers:IconCacheProvider.SourceRequested}" />
                                         </Viewbox>
 
-                                        <StackPanel
+                                        <!--<StackPanel
                                             Grid.Column="1"
                                             Margin="0,0,24,0"
                                             VerticalAlignment="Top"
@@ -112,7 +124,7 @@
                                                 Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                                 TextWrapping="Wrap" />
                                             <Border Height="6" Visibility="{x:Bind Subtitle, Mode=OneWay, Converter={StaticResource InvertedStringEmptyVisibilityConverter}}" />
-                                        </StackPanel>
+                                        </StackPanel>-->
 
                                         <!--
                                             Because of this insane XAML thing we're

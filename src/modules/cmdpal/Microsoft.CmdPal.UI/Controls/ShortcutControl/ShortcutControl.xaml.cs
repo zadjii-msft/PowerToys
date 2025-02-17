@@ -107,9 +107,6 @@ public sealed partial class ShortcutControl : UserControl, IDisposable
         InitializeComponent();
         internalSettings = new HotkeySettings();
 
-        this.Unloaded += ShortcutControl_Unloaded;
-        this.Loaded += ShortcutControl_Loaded;
-
         var resourceLoader = Microsoft.CmdPal.UI.Helpers.ResourceLoaderInstance.ResourceLoader;
 
         // We create the Dialog in C# because doing it in XAML is giving WinUI/XAML Island bugs when using dark theme.
@@ -125,7 +122,12 @@ public sealed partial class ShortcutControl : UserControl, IDisposable
         };
         shortcutDialog.SecondaryButtonClick += ShortcutDialog_Reset;
         shortcutDialog.RightTapped += ShortcutDialog_Disable;
+        this.Unloaded += ShortcutControl_Unloaded;
+        this.Loaded += ShortcutControl_Loaded;
 
+        // Not quite right
+        // shortcutDialog.Unloaded += ShortcutControl_Unloaded;
+        // shortcutDialog.Loaded += ShortcutControl_Loaded;
         AutomationProperties.SetName(EditButton, resourceLoader.GetString("Activation_Shortcut_Title"));
 
         OnAllowDisableChanged(this, null);

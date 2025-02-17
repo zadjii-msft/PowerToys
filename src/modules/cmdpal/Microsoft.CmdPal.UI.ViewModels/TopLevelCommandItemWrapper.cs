@@ -31,7 +31,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
 
     public string? Alias { get; private set; }
 
-    public HotkeySettings? Hotkey { get; private set; }
+    public HotkeySettings? Hotkey { get; set; }
 
     public CommandPaletteHost? ExtensionHost { get => _topLevelCommand.ExtensionHost; set => _topLevelCommand.ExtensionHost = value; }
 
