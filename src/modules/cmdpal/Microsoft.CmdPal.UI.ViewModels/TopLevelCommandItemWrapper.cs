@@ -43,7 +43,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
         get => _hotkey;
         set
         {
-            _hotkey = value;
+            UpdateHotkey();
             UpdateTags();
         }
     }
@@ -98,6 +98,9 @@ public partial class TopLevelCommandItemWrapper : ListItem
         }
 
         GenerateId();
+
+        UpdateAlias();
+        UpdateHotkey();
         UpdateTags();
     }
 
@@ -109,7 +112,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
         _generatedId = $"{_commandProviderId}{result}";
     }
 
-    private void UpdateTags()
+    private void UpdateAlias()
     {
         // Add tags for the alias, if we have one.
         var aliases = _serviceProvider.GetService<AliasManager>();
@@ -117,14 +120,20 @@ public partial class TopLevelCommandItemWrapper : ListItem
         {
             Alias = aliases.KeysFromId(Id);
         }
+    }
 
+    private void UpdateHotkey()
+    {
         var settings = _serviceProvider.GetService<SettingsModel>()!;
         var hotkey = settings.CommandHotkeys.Where(hk => hk.CommandId == Id).FirstOrDefault();
         if (hotkey != null)
         {
             _hotkey = hotkey.Hotkey;
         }
+    }
 
+    private void UpdateTags()
+    {
         var tags = new List<Tag>();
 
         if (Hotkey != null)

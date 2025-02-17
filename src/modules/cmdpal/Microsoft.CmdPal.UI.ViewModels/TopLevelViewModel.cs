@@ -28,8 +28,8 @@ public sealed class TopLevelViewModel
         get => _item.Hotkey;
         set
         {
-            _item.Hotkey = value;
             _serviceProvider.GetService<HotkeyManager>()!.UpdateHotkey(_item.Id, value);
+            _item.Hotkey = value;
             Save();
         }
     }
