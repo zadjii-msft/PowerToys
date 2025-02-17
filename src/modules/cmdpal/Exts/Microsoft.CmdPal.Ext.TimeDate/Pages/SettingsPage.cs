@@ -2,11 +2,11 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.CmdPal.Ext.TimeDate.Helpers;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using TimeDateExtension.Helpers;
 
-namespace TimeDateExtension.Pages;
+namespace Microsoft.CmdPal.Ext.TimeDate.Pages;
 
 internal sealed partial class SettingsPage : FormPage
 {

@@ -7,9 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using TimeDateExtension.Properties;
 
-namespace TimeDateExtension.Helpers;
+namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 
 public sealed partial class TimeDateCalculator
 {

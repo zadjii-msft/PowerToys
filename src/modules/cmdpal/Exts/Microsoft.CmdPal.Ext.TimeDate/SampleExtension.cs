@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.CommandPalette.Extensions;
 
-namespace TimeDateExtension;
+namespace Microsoft.CmdPal.Ext.TimeDate;
 
 [ComVisible(true)]
 [Guid("50972678-fa56-4103-8ca7-93cbd97d2fa5")]
@@ -16,7 +16,7 @@ public sealed partial class SampleExtension : IExtension, IDisposable
 {
     private readonly ManualResetEvent _extensionDisposedEvent;
 
-    private readonly TimeDateExtensionActionsProvider _provider = new();
+    private readonly TimeDateCommandsProvider _provider = new();
 
     public SampleExtension(ManualResetEvent extensionDisposedEvent)
     {

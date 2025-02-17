@@ -6,7 +6,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace TimeDateExtension.Helpers;
+namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 
 internal static class TimeAndDateHelper
 {

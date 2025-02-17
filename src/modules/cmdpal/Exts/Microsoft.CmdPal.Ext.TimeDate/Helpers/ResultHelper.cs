@@ -6,9 +6,8 @@ using System;
 using System.Globalization;
 using System.IO;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using TimeDateExtension.Properties;
 
-namespace TimeDateExtension.Helpers;
+namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 
 internal static class ResultHelper
 {

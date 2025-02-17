@@ -6,7 +6,7 @@ using System;
 using System.Threading;
 using Microsoft.CommandPalette.Extensions;
 
-namespace TimeDateExtension;
+namespace Microsoft.CmdPal.Ext.TimeDate;
 
 public class Program
 {

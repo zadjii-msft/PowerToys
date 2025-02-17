@@ -5,21 +5,20 @@
 using System;
 using System.Globalization;
 using System.Text;
+using Microsoft.CmdPal.Ext.TimeDate.Helpers;
+using Microsoft.CmdPal.Ext.TimeDate.Pages;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using TimeDateExtension.Helpers;
-using TimeDateExtension.Pages;
-using TimeDateExtension.Properties;
 
-namespace TimeDateExtension;
+namespace Microsoft.CmdPal.Ext.TimeDate;
 
-public partial class TimeDateExtensionActionsProvider : CommandProvider
+public partial class TimeDateCommandsProvider : CommandProvider
 {
     private readonly CommandItem _command;
     private readonly SettingsManager _settingsManager = new();
-    private static readonly CompositeFormat MicrosoftPluginTimedatePluginDescription = System.Text.CompositeFormat.Parse(Properties.Resources.Microsoft_plugin_timedate_plugin_description);
+    private static readonly CompositeFormat MicrosoftPluginTimedatePluginDescription = System.Text.CompositeFormat.Parse(Resources.Microsoft_plugin_timedate_plugin_description);
 
-    public TimeDateExtensionActionsProvider()
+    public TimeDateCommandsProvider()
     {
         DisplayName = Resources.Microsoft_plugin_timedate_plugin_name;
 

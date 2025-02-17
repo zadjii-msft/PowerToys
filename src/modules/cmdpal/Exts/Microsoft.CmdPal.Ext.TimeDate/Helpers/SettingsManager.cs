@@ -8,9 +8,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using TimeDateExtension.Properties;
 
-namespace TimeDateExtension.Helpers;
+namespace Microsoft.CmdPal.Ext.TimeDate.Helpers;
 
 public class SettingsManager : JsonSettingsManager
 {
