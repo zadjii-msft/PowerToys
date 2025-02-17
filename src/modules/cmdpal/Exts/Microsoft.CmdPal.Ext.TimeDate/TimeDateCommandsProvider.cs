@@ -27,7 +27,7 @@ public partial class TimeDateCommandsProvider : CommandProvider
             Icon = new IconInfo("\uEC92"), // DateTime icon
             Title = Resources.Microsoft_plugin_timedate_plugin_name,
             Subtitle = GetTranslatedPluginDescription(),
-            MoreCommands = [new CommandContextItem(new SettingsPage(_settingsManager))],
+            MoreCommands = [new CommandContextItem(_settingsManager.Settings.SettingsPage)],
         };
     }
 
