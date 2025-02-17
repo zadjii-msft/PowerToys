@@ -205,7 +205,7 @@
     <comment>'UTC' means here 'Universal Time Convention'</comment>
   </data>
   <data name="Microsoft_plugin_timedate_plugin_description" xml:space="preserve">
-    <value>Provides time and date values for the system time or a custom time stamp (e.g.'{0}', '{1}', '{2}', '{3}')</value>
+    <value>Provides time and date values in different formats</value>
     <comment>Do not translate the placeholders like '{0}' because it will be replaced in code.</comment>
   </data>
   <data name="Microsoft_plugin_timedate_plugin_description_example_calendarWeek" xml:space="preserve">
@@ -361,6 +361,15 @@
     <value>Use system setting</value>
   </data>
   <data name="Microsoft_plugin_timedate_main_page_name" xml:space="preserve">
-    <value>TimeDate extension main page</value>
+    <value>Open</value>
+  </data>
+  <data name="Microsoft_plugin_timedate_placeholder_text" xml:space="preserve">
+    <value>Search values or type a custom time stamp...</value>
+  </data>
+  <data name="Microsoft_plugin_timedate_error_result_text" xml:space="preserve">
+    <value>Error: Invalid custom timestamp</value>
+  </data>
+  <data name="Microsoft_plugin_timedate_main_page_title" xml:space="preserve">
+    <value>Time &amp;amp; Date</value>
   </data>
 </root>

@@ -2,7 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 using System.Runtime.CompilerServices;
-using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 [assembly: InternalsVisibleTo("Microsoft.PowerToys.Run.Plugin.TimeDate.UnitTests")]
@@ -40,9 +39,9 @@ internal class AvailableResult
     {
         return IconType switch
         {
-            ResultIconType.Time => ResultHelper.CreateIconInfo("time"),
-            ResultIconType.Date => ResultHelper.CreateIconInfo("calendar"),
-            ResultIconType.DateTime => ResultHelper.CreateIconInfo("timeDate"),
+            ResultIconType.Time => ResultHelper.TimeIcon,
+            ResultIconType.Date => ResultHelper.CalendarIcon,
+            ResultIconType.DateTime => ResultHelper.TimeDateIcon,
             _ => null,
         };
     }
