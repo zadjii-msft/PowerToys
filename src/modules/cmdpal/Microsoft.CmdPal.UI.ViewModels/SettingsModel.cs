@@ -70,10 +70,7 @@ public partial class SettingsModel : ObservableObject
 
             Debug.WriteLine(loaded != null ? "Loaded settings file" : "Failed to parse");
 
-            var bodgy = loaded ?? new();
-            bodgy.CommandHotkeys.Add(new(new(false, true, true, false, 77), "com.microsoft.cmdpal.windowwalker"));
-
-            return bodgy;
+            return loaded ?? new();
         }
         catch (Exception ex)
         {

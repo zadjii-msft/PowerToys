@@ -49,16 +49,6 @@ public partial class IconBox : ContentControl
     /// </summary>
     public event TypedEventHandler<IconBox, SourceRequestedEventArgs>? SourceRequested;
 
-    public object? TargetIcon
-    {
-        get => (object?)GetValue(TargetIconProperty);
-        set => SetValue(TargetIconProperty, value);
-    }
-
-    // Using a DependencyProperty as the backing store for SourceKey.  This enables animation, styling, binding, etc...
-    public static readonly DependencyProperty TargetIconProperty =
-        DependencyProperty.Register(nameof(TargetIcon), typeof(object), typeof(IconBox), new PropertyMetadata(null, null));
-
     private static void OnSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is IconBox @this)
@@ -119,12 +109,6 @@ public partial class IconBox : ContentControl
                         if (eventArgs.Key != @this.SourceKey)
                         {
                             // If the requested icon has changed, then just bail
-                            return;
-                        }
-
-                        if (@this.TargetIcon is IconSourceElement elem)
-                        {
-                            elem.IconSource = eventArgs.Value;
                             return;
                         }
 

@@ -123,16 +123,20 @@ public sealed partial class ShortcutControl : UserControl, IDisposable, IRecipie
         };
         shortcutDialog.SecondaryButtonClick += ShortcutDialog_Reset;
         shortcutDialog.RightTapped += ShortcutDialog_Disable;
-        this.Unloaded += ShortcutControl_Unloaded;
-        this.Loaded += ShortcutControl_Loaded;
+
+        // The original ShortcutControl from PowerToys would hook up the bodies
+        // of DoLoad and DoUnload as `Loaded` and `Unloaded` handlers for `this`.
+        // We can't do that - since we might be virtualized in a list /
+        // ItemsRepeater, where those events are weirdly busted. We'd get both
+        // a Loaded and Unloaded as soon as we're displayed, which won't do.
+        //
+        // Instead, we'll do the work they used to do on Load/Unload when the
+        // dialog for this control is Opened/Close, respectively.
         shortcutDialog.Opened += (s, e) => DoLoad();
         shortcutDialog.Closed += (s, e) => DoUnload();
         shortcutDialog.Opened += ShortcutDialog_Opened;
         shortcutDialog.Closing += ShortcutDialog_Closing;
 
-        // Not quite right
-        // shortcutDialog.Unloaded += ShortcutControl_Unloaded;
-        // shortcutDialog.Loaded += ShortcutControl_Loaded;
         AutomationProperties.SetName(EditButton, resourceLoader.GetString("Activation_Shortcut_Title"));
 
         WeakReferenceMessenger.Default.Register<WindowActivatedEventArgs>(this);
@@ -140,31 +144,23 @@ public sealed partial class ShortcutControl : UserControl, IDisposable, IRecipie
         OnAllowDisableChanged(this, null);
     }
 
-    private void ShortcutControl_Unloaded(object sender, RoutedEventArgs e)
-    {
-        // DoUnload();
-    }
-
     private void DoUnload()
     {
         shortcutDialog.PrimaryButtonClick -= ShortcutDialog_PrimaryButtonClick;
 
-        // shortcutDialog.Opened -= ShortcutDialog_Opened;
-        // shortcutDialog.Closing -= ShortcutDialog_Closing;
-        // if (App.Current.AppWindow != null)
-        // {
-        //    App.Current.AppWindow.Activated -= ShortcutDialog_SettingsWindow_Activated;
-        // }
+        // The original version of this control in PowerToys would add an event
+        // handler to the AppWindow here, to track if the window was active or
+        // inactive.
+        //
+        // That doesn't really work in our setup, as we might have multiple
+        // AppWindows per instance. Instead, we're having the SettingsWindow
+        // send us the WindowActivatedEventArgs, so that we can know when to
+        // stop our hook thread
 
         // Dispose the HotkeySettingsControlHook object to terminate the hook threads when the textbox is unloaded
         hook?.Dispose();
 
         hook = null;
-    }
-
-    private void ShortcutControl_Loaded(object sender, RoutedEventArgs e)
-    {
-        // DoLoad();
     }
 
     private void DoLoad()
@@ -175,13 +171,6 @@ public sealed partial class ShortcutControl : UserControl, IDisposable, IRecipie
         hook = new HotkeySettingsControlHook(Hotkey_KeyDown, Hotkey_KeyUp, Hotkey_IsActive, FilterAccessibleKeyboardEvents);
 
         shortcutDialog.PrimaryButtonClick += ShortcutDialog_PrimaryButtonClick;
-
-        // shortcutDialog.Opened += ShortcutDialog_Opened;
-        // shortcutDialog.Closing += ShortcutDialog_Closing;
-        // if (App.Current.AppWindow != null)
-        // {
-        //    App.Current.AppWindow.Activated += ShortcutDialog_SettingsWindow_Activated;
-        // }
     }
 
     private void KeyEventHandler(int key, bool matchValue, int matchValueCode)
@@ -473,11 +462,6 @@ public sealed partial class ShortcutControl : UserControl, IDisposable, IRecipie
     }
 
     public void Receive(WindowActivatedEventArgs message) => DoWindowActivated(message);
-
-    private void ShortcutDialog_SettingsWindow_Activated(object sender, WindowActivatedEventArgs args)
-    {
-        DoWindowActivated(args);
-    }
 
     private void DoWindowActivated(WindowActivatedEventArgs args)
     {

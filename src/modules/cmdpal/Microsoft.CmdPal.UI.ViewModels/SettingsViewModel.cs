@@ -82,7 +82,6 @@ public partial class SettingsViewModel : PageViewModel
         _settings = settings;
         _serviceProvider = serviceProvider;
 
-        // var tlcManager = _serviceProvider.GetService<TopLevelCommandManager>()!;
         Icon = new(new IconInfo("\uE713"));
         Icon.InitializeProperties();
         IsInitialized = true;

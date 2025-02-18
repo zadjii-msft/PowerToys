@@ -16,12 +16,11 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
 {
     public ExtensionObject<IListItem> Model { get; } = new(model);
 
-    // Remember - "observable" properties from the model (via PropChanged)
-    // cannot be marked [ObservableProperty]
-    // public List<TagViewModel> Tags { get; private set; } = [];
     [ObservableProperty]
     public partial ObservableCollection<TagViewModel> Tags { get; set; } = [];
 
+    // Remember - "observable" properties from the model (via PropChanged)
+    // cannot be marked [ObservableProperty]
     public bool HasTags => Tags.Count > 0;
 
     public string TextToSuggest { get; private set; } = string.Empty;

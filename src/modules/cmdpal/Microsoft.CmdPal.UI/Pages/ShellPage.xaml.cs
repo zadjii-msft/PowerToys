@@ -343,23 +343,23 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         });
     }
 
-    private void ShowHwnd(IntPtr hwnd)
+    private void ShowHwnd(IntPtr hwndValue)
     {
-        var hwnd1 = new HWND(hwnd);
+        var hwnd = new HWND(hwndValue);
 
         // Remember, IsIconic == "minimized", which is entirely different state
         // from "show/hide"
         // If we're currently minimized, restore us first, before we reveal
         // our window. Otherwise we'd just be showing a minimized window -
         // which would remain not visible to the user.
-        if (PInvoke.IsIconic(hwnd1))
+        if (PInvoke.IsIconic(hwnd))
         {
-            PInvoke.ShowWindow(hwnd1, SHOW_WINDOW_CMD.SW_RESTORE);
+            PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_RESTORE);
         }
 
-        PInvoke.ShowWindow(hwnd1, SHOW_WINDOW_CMD.SW_SHOW);
-        PInvoke.SetForegroundWindow(hwnd1);
-        PInvoke.SetActiveWindow(hwnd1);
+        PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_SHOW);
+        PInvoke.SetForegroundWindow(hwnd);
+        PInvoke.SetActiveWindow(hwnd);
     }
 
     private void GoBack(bool withAnimation = true)
