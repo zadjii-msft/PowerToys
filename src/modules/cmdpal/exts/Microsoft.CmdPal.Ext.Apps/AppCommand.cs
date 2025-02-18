@@ -3,11 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.Apps.Programs;
 using Microsoft.CmdPal.Ext.Apps.Properties;
-using Microsoft.CmdPal.Ext.Apps.Utils;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.Storage.Streams;
 
@@ -29,21 +27,24 @@ internal sealed partial class AppCommand : InvokableCommand
         }
         else
         {
-            IconInfo? icon = null;
-            try
+            _ = Task.Run(async () =>
             {
-                var stream = ThumbnailHelper.GetThumbnail(_app.ExePath).Result;
-                if (stream != null)
+                IconInfo? icon = null;
+                try
                 {
-                    var data = new IconData(RandomAccessStreamReference.CreateFromStream(stream));
-                    icon = new IconInfo(data, data);
+                    var stream = await ThumbnailHelper.GetThumbnail(_app.ExePath);
+                    if (stream != null)
+                    {
+                        var data = new IconData(RandomAccessStreamReference.CreateFromStream(stream));
+                        icon = new IconInfo(data, data);
+                    }
                 }
-            }
-            catch
-            {
-            }
+                catch
+                {
+                }
 
-            Icon = icon ?? new IconInfo(_app.IcoPath);
+                Icon = icon ?? new IconInfo(_app.IcoPath);
+            });
         }
     }
 
