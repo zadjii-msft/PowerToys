@@ -169,15 +169,6 @@ namespace Microsoft.CmdPal.Ext.TimeDate {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Invalid custom timestamp.
-        /// </summary>
-        public static string Microsoft_plugin_timedate_error_result_text {
-            get {
-                return ResourceManager.GetString("Microsoft_plugin_timedate_error_result_text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Valid prefixes: &apos;u&apos; for Unix Timestamp, &apos;ums&apos; for Unix Timestamp in milliseconds, &apos;ft&apos; for Windows file time.
         /// </summary>
         public static string Microsoft_plugin_timedate_ErrorResultSubTitle {
@@ -210,6 +201,24 @@ namespace Microsoft.CmdPal.Ext.TimeDate {
         public static string Microsoft_plugin_timedate_Hour {
             get {
                 return ResourceManager.GetString("Microsoft_plugin_timedate_Hour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Valid prefixes: &apos;u&apos; for Unix Timestamp, &apos;ums&apos; for Unix Timestamp in milliseconds, &apos;ft&apos; for Windows file time.
+        /// </summary>
+        public static string Microsoft_plugin_timedate_InvalidInput_ErrorMessageSubTitle {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_timedate_InvalidInput_ErrorMessageSubTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: Invalid input.
+        /// </summary>
+        public static string Microsoft_plugin_timedate_InvalidInput_ErrorMessageTitle {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_timedate_InvalidInput_ErrorMessageTitle", resourceCulture);
             }
         }
         

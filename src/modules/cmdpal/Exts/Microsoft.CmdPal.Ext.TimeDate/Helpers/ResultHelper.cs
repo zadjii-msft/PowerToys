@@ -27,17 +27,11 @@ internal static class ResultHelper
                 : Resources.ResourceManager.GetString(stringId + "Now", CultureInfo.CurrentUICulture) ?? string.Empty;
     }
 
-    public static IconInfo TimeIcon { get; } = IconHelpers.FromRelativePaths(
-        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\time.light.png",
-        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\time.dark.png");
+    public static IconInfo TimeIcon { get; } = new IconInfo("\uE823");
 
-    public static IconInfo CalendarIcon { get; } = IconHelpers.FromRelativePaths(
-        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\calendar.light.png",
-        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\calendar.dark.png");
+    public static IconInfo CalendarIcon { get; } = new IconInfo("\uE787");
 
-    public static IconInfo TimeDateIcon { get; } = IconHelpers.FromRelativePaths(
-        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\timeDate.light.png",
-        "Microsoft.CmdPal.Ext.TimeDate\\Assets\\timeDate.dark.png");
+    public static IconInfo TimeDateIcon { get; } = new IconInfo("\uEC92");
 
     /// <summary>
     /// Gets a result with an error message that only numbers can't be parsed
@@ -47,18 +41,13 @@ internal static class ResultHelper
     {
         Title = Resources.Microsoft_plugin_timedate_ErrorResultTitle,
         Subtitle = Resources.Microsoft_plugin_timedate_ErrorResultSubTitle,
-        Icon = CreateIconInfo("Warning"),
+        Icon = IconHelpers.FromRelativePaths("Microsoft.CmdPal.Ext.TimeDate\\Assets\\Warning.light.png", "Microsoft.CmdPal.Ext.TimeDate\\Assets\\Warning.dark.png"),
     };
 
-    public static IconInfo CreateIconInfo(string iconName)
+    internal static ListItem CreateInvalidInputErrorResult() => new ListItem(new NoOpCommand())
     {
-        var rootPath = Path.Combine(AppContext.BaseDirectory, "Assets");
-        var lightIconPath = Path.Combine(rootPath, $"{iconName}.light.png");
-        var darkIconPath = Path.Combine(rootPath, $"{iconName}.dark.png");
-
-        var lightIcon = new IconData(lightIconPath);
-        var darkIcon = new IconData(darkIconPath);
-
-        return new IconInfo(lightIcon, darkIcon);
-    }
+        Title = Resources.Microsoft_plugin_timedate_InvalidInput_ErrorMessageTitle,
+        Subtitle = Resources.Microsoft_plugin_timedate_InvalidInput_ErrorMessageSubTitle,
+        Icon = IconHelpers.FromRelativePaths("Microsoft.CmdPal.Ext.TimeDate\\Assets\\Warning.light.png", "Microsoft.CmdPal.Ext.TimeDate\\Assets\\Warning.dark.png"),
+    };
 }

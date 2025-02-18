@@ -45,12 +45,12 @@ internal sealed partial class TimeDateExtensionPage : DynamicListPage
             // In most of the time, user may not have completed their input.
             // So, we need to clean the result.
             // But in that time, empty result may cause exception.
-            // So, we add a prompt for user.
+            // So, we need to add at least on item to user.
             var items = new List<ListItem>
             {
-                new(new NoOpCommand()),
+                ResultHelper.CreateInvalidInputErrorResult(),
             };
-            items[0].Title = Resources.Microsoft_plugin_timedate_error_result_text;
+
             return items;
         }
     }

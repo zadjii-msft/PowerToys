@@ -366,10 +366,13 @@
   <data name="Microsoft_plugin_timedate_placeholder_text" xml:space="preserve">
     <value>Search values or type a custom time stamp...</value>
   </data>
-  <data name="Microsoft_plugin_timedate_error_result_text" xml:space="preserve">
-    <value>Error: Invalid custom timestamp</value>
+  <data name="Microsoft_plugin_timedate_InvalidInput_ErrorMessageTitle" xml:space="preserve">
+    <value>Error: Invalid input</value>
   </data>
   <data name="Microsoft_plugin_timedate_main_page_title" xml:space="preserve">
     <value>Time &amp;amp; Date</value>
+  </data>
+  <data name="Microsoft_plugin_timedate_InvalidInput_ErrorMessageSubTitle" xml:space="preserve">
+    <value>Valid prefixes: 'u' for Unix Timestamp, 'ums' for Unix Timestamp in milliseconds, 'ft' for Windows file time</value>
   </data>
 </root>
