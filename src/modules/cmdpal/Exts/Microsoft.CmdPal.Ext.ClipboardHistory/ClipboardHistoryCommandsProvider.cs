@@ -18,7 +18,9 @@ public partial class ClipboardHistoryCommandsProvider : CommandProvider
         _clipboardHistoryListItem = new ListItem(new ClipboardHistoryListPage())
         {
             Title = "Search Clipboard History",
-            Icon = new IconInfo("ClipboardHistory"),
+            Icon = new IconInfo("\xE8C8"), // Copy icon
+
+            // Icon = new IconInfo("ClipboardHistory"),
         };
 
         DisplayName = $"Settings";

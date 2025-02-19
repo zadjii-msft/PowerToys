@@ -28,7 +28,14 @@ internal sealed partial class CopyCommand : InvokableCommand
         _clipboardItem = clipboardItem;
         _clipboardFormat = clipboardFormat;
         Name = "Copy";
-        Icon = new("\xE8C8"); // Copy icon
+        if (clipboardFormat == ClipboardFormat.Text)
+        {
+            Icon = new("\xE8C8"); // Copy icon
+        }
+        else
+        {
+            Icon = new("\xE8B9"); // Picture icon
+        }
     }
 
     public override CommandResult Invoke()
