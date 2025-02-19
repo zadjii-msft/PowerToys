@@ -125,7 +125,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
         model.PropChanged += Model_PropChanged;
 
-        // _initialized = true;
+        IsInitialized = true;
     }
 
     public bool SafeInitializeProperties()
