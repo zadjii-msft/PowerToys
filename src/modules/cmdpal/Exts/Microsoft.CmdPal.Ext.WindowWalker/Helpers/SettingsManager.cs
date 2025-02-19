@@ -62,7 +62,7 @@ public class SettingsManager : JsonSettingsManager
         Namespaced(nameof(HideExplorerSettingInfo)),
         Resources.windowwalker_SettingExplorerSettingInfo,
         Resources.windowwalker_SettingExplorerSettingInfo_Description,
-        false);
+        true);
 
     private readonly ToggleSetting _inMruOrder = new(
         Namespaced(nameof(InMruOrder)),
@@ -113,6 +113,8 @@ public class SettingsManager : JsonSettingsManager
 
         // Load settings from file upon initialization
         LoadSettings();
+
+        Settings.SettingsChanged += (s, a) => this.SaveSettings();
     }
 
     internal static SettingsManager Instance

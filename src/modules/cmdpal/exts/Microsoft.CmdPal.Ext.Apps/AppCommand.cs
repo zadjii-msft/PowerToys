@@ -4,9 +4,12 @@
 
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.CmdPal.Ext.Apps.Programs;
+using Microsoft.CmdPal.Ext.Apps.Properties;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Storage.Streams;
 
-namespace Microsoft.CmdPal.Ext.Apps.Programs;
+namespace Microsoft.CmdPal.Ext.Apps;
 
 internal sealed partial class AppCommand : InvokableCommand
 {
@@ -16,8 +19,7 @@ internal sealed partial class AppCommand : InvokableCommand
     {
         _app = app;
 
-        Name = "Run";
-        Icon = new IconInfo(_app.IcoPath);
+        Name = Resources.run_command_action;
     }
 
     internal static async Task StartApp(string aumid)
@@ -49,7 +51,7 @@ internal sealed partial class AppCommand : InvokableCommand
 
     internal async Task Launch()
     {
-        if (string.IsNullOrEmpty(_app.ExePath))
+        if (_app.IsPackaged)
         {
             await StartApp(_app.UserModelId);
         }

@@ -2,7 +2,9 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Storage.Streams;
 
 namespace Microsoft.CmdPal.Ext.Apps.Programs;
 
@@ -10,7 +12,6 @@ internal sealed partial class AppListItem : ListItem
 {
     private readonly AppItem _app;
     private static readonly Tag _appTag = new("App");
-    private static readonly IconInfo _openPathIcon = new IconInfo("\ue838");
 
     public AppListItem(AppItem app)
         : base(new AppCommand(app))
@@ -24,25 +25,34 @@ internal sealed partial class AppListItem : ListItem
         {
             Title = this.Title,
             HeroImage = ((AppCommand)Command!).Icon ?? new IconInfo(string.Empty),
-            Body = "### App",
+            Body = "### " + app.Type,
         };
 
-        if (string.IsNullOrEmpty(app.UserModelId))
+        MoreCommands = _app.Commands!.ToArray();
+    }
+
+    public async Task FetchIcon()
+    {
+        if (_app.IsPackaged)
         {
-            // Win32 exe or other non UWP app
-            MoreCommands = [
-                new CommandContextItem(
-                    new OpenPathCommand(app.DirPath)
-                    {
-                        Name = "Open location",
-                        Icon = _openPathIcon,
-                    })
-            ];
+            Icon = new IconInfo(_app.IcoPath);
+            return;
         }
-        else
+
+        IconInfo? icon = null;
+        try
         {
-            // UWP app
-            MoreCommands = [];
+            var stream = await ThumbnailHelper.GetThumbnail(_app.ExePath);
+            if (stream != null)
+            {
+                var data = new IconData(RandomAccessStreamReference.CreateFromStream(stream));
+                icon = new IconInfo(data, data);
+            }
         }
+        catch
+        {
+        }
+
+        Icon = icon ?? new IconInfo(_app.IcoPath);
     }
 }

@@ -2,8 +2,6 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Collections.ObjectModel;
-
 namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public partial class ListHelpers
@@ -65,7 +63,7 @@ public partial class ListHelpers
     /// <typeparam name="T">Any type that can be compared for equality</typeparam>
     /// <param name="original">Collection to modify</param>
     /// <param name="newContents">The enumerable which `original` should match</param>
-    public static void InPlaceUpdateList<T>(Collection<T> original, IEnumerable<T> newContents)
+    public static void InPlaceUpdateList<T>(IList<T> original, IEnumerable<T> newContents)
         where T : class
     {
         // we're not changing newContents - stash this so we don't re-evaluate it every time
@@ -89,7 +87,7 @@ public partial class ListHelpers
             for (var j = i; j < original.Count; j++)
             {
                 var og_2 = original[j];
-                var areEqual_2 = og_2.Equals(newItem);
+                var areEqual_2 = og_2?.Equals(newItem) ?? false;
                 if (areEqual_2)
                 {
                     for (var k = i; k < j; k++)
@@ -103,7 +101,7 @@ public partial class ListHelpers
             }
 
             var og = original[i];
-            var areEqual = og.Equals(newItem);
+            var areEqual = og?.Equals(newItem) ?? false;
 
             // Is this new item already in the list?
             if (areEqual)
