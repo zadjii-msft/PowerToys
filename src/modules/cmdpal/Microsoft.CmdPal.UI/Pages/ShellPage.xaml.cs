@@ -318,11 +318,12 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                     if (topLevelCommand != null)
                     {
                         var command = topLevelCommand.Command;
+                        var isPage = command is TopLevelCommandWrapper wrapper && wrapper.Command is not IInvokableCommand;
 
                         // If the bound command is an invokable command, then
                         // we don't want to open the window at all - we want to
                         // just do it.
-                        if (command is TopLevelCommandWrapper wrapper && wrapper.Command is not IInvokableCommand)
+                        if (isPage)
                         {
                             // If we're here, then the bound command was a page
                             // of some kind. Let's pop the stack, show the window, and navigate to it.
@@ -332,6 +333,11 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
                         var msg = new PerformCommandMessage(new(topLevelCommand.Command)) { WithAnimation = false };
                         WeakReferenceMessenger.Default.Send<PerformCommandMessage>(msg);
+
+                        // we can't necessarily SelectSearch() here, because when the page is loaded,
+                        // we'll fetch the SearchText from the page itself, and that'll stomp the
+                        // selection we start now.
+                        // That's probably okay though.
                     }
                 }
                 catch
