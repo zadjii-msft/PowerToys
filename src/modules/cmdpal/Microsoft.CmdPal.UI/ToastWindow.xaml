@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Window
     x:Class="Microsoft.CmdPal.UI.ToastWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,8 +7,8 @@
     xmlns:local="using:Microsoft.CmdPal.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:CommunityToolkit.WinUI"
-    Activated="OnActivated"
     Title="Command Palette Toast"
+    Activated="OnActivated"
     mc:Ignorable="d">
     <!--<Window.SystemBackdrop>
         <MicaBackdrop />
@@ -17,10 +17,9 @@
         <TextBlock
             x:Name="ToastText"
             Padding="8,8,28,20"
-            Text="{x:Bind ViewModel.ToastMessage, Mode=OneWay}"
-            
-            TextAlignment="Left"
             FontSize="16"
-            Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+            Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
+            Text="{x:Bind ViewModel.ToastMessage, Mode=OneWay}"
+            TextAlignment="Left" />
     </StackPanel>
 </Window>
