@@ -1,0 +1,153 @@
+﻿// Copyright (c) Microsoft Corporation
+// The Microsoft Corporation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using System.Xml.Linq;
+using Microsoft.CmdPal.Ext.Shell;
+using Microsoft.CommandPalette.Extensions;
+using Microsoft.CommandPalette.Extensions.Toolkit;
+using Microsoft.UI.Xaml.Controls;
+using Windows.System;
+using static Microsoft.CmdPal.Ext.System.Helpers.Native;
+
+namespace Microsoft.CmdPal.Ext.System.Helpers;
+
+internal static class ResultHelper
+{
+    private static bool executingEmptyRecycleBinTask;
+
+    internal static bool ExecuteCommand(bool confirm, string confirmationMessage, Action command)
+    {
+        if (confirm)
+        {
+            var result = DisplayConfirmDialog(Resources.Microsoft_plugin_sys_confirmation, confirmationMessage, "Yes", "No").GetAwaiter().GetResult();
+
+            // MessageBoxResult messageBoxResult = MessageBox.Show(
+            //    confirmationMessage,
+            //    Resources.Microsoft_plugin_sys_confirmation,
+            //    MessageBoxButton.YesNo,
+            //    MessageBoxImage.Warning);
+            if (result == ContentDialogResult.Secondary)
+            {
+                return false;
+            }
+        }
+
+        command();
+        return true;
+    }
+
+    internal static bool CopyToClipBoard(in string text)
+    {
+        try
+        {
+            ClipboardHelper.SetText(text);
+            return true;
+        }
+        catch (Exception exception)
+        {
+            var name = "Plugin: SystemCommandExtension";
+            var message = $"Can't copy to clipboard. ex: {exception.Message}";
+            ExtensionHost.LogMessage(new LogMessage() { Message = name + message });
+
+            return false;
+        }
+    }
+
+    public static async void EmptyRecycleBinAsync(bool settingEmptyRBSuccesMsg)
+    {
+        if (executingEmptyRecycleBinTask)
+        {
+            _ = await DisplayConfirmDialog("Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning, "OK", "Information");
+
+            // _ = MessageBox.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        await Task.Run(() => EmptyRecycleBinTask(settingEmptyRBSuccesMsg));
+    }
+
+    public static CommandContextItem CreateCommandContextItemByType(ResultContextType type, bool settingEmptyRBSuccesMsg)
+    {
+        switch (type)
+        {
+            case ResultContextType.NetworkAdapterInfo:
+                return new CommandContextItem(new NetworkAdapterCommand())
+                {
+                    Title = Resources.Microsoft_plugin_sys_CopyDetails,
+                    Icon = new IconInfo("\xE8C8"),
+                    RequestedShortcut = KeyChordHelpers.FromModifiers(true, false, false, false, (int)VirtualKey.C, 0),
+                };
+            case ResultContextType.RecycleBinCommand:
+                return new CommandContextItem(new RecycleBinCommand(settingEmptyRBSuccesMsg))
+                {
+                    Title = Resources.Microsoft_plugin_sys_RecycleBin_contextMenu,
+                    Icon = new IconInfo("\xE74D"),
+                    RequestedShortcut = KeyChordHelpers.FromModifiers(false, false, true, false, (int)VirtualKey.D, 0),
+                };
+        }
+
+        return new CommandContextItem(new NoOpCommand());
+    }
+
+    private static async Task<ContentDialogResult> DisplayConfirmDialog(string title, string content, string primaryButtonText, string closeButtonText)
+    {
+        ContentDialog noWifiDialog = new ContentDialog
+        {
+            Title = title,
+            Content = content,
+            PrimaryButtonText = primaryButtonText,
+            CloseButtonText = closeButtonText,
+        };
+
+        var result = await noWifiDialog.ShowAsync();
+
+        return result;
+    }
+
+    /// <summary>
+    /// Method to process the empty recycle bin command in a separate task
+    /// </summary>
+    private static async void EmptyRecycleBinTask(bool settingEmptyRBSuccesMsg)
+    {
+        executingEmptyRecycleBinTask = true;
+
+        // https://learn.microsoft.com/windows/win32/api/shellapi/nf-shellapi-shemptyrecyclebina/
+        // http://www.pinvoke.net/default.aspx/shell32/SHEmptyRecycleBin.html/
+        // If the recycle bin is already empty, it will return -2147418113 (0x8000FFFF (E_UNEXPECTED))
+        // If the user canceled the deletion task it will return 2147943623 (0x800704C7 (E_CANCELLED - The operation was canceled by the user.))
+        // On success it will return 0 (S_OK)
+        var result = NativeMethods.SHEmptyRecycleBin(IntPtr.Zero, 0);
+        if (result == (uint)HRESULT.E_UNEXPECTED)
+        {
+            _ = await DisplayConfirmDialog("Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, Resources.Microsoft_plugin_sys_RecycleBin_IsEmpty, "OK", "Information");
+
+            // _ = MessageBox.Show(Resources.Microsoft_plugin_sys_RecycleBin_IsEmpty, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        else if (result != (uint)HRESULT.S_OK && result != (uint)HRESULT.E_CANCELLED)
+        {
+            var errorDesc = Win32Helpers.MessageFromHResult((int)result);
+            var name = "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name;
+            var message = $"{Resources.Microsoft_plugin_sys_RecycleBin_ErrorMsg} {errorDesc}";
+
+            ExtensionHost.LogMessage(new LogMessage() { Message = message + " - Please refer to https://msdn.microsoft.com/library/windows/desktop/aa378137 for more information." });
+            _ = await DisplayConfirmDialog(name, message, "OK", "Error");
+
+            // _ = MessageBox.Show(message, name, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        if (result == (uint)HRESULT.S_OK && settingEmptyRBSuccesMsg)
+        {
+            _ = await DisplayConfirmDialog("Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, Resources.Microsoft_plugin_sys_RecycleBin_EmptySuccessMessage, "OK", "Information");
+
+            // _ = MessageBox.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptySuccessMessage, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        executingEmptyRecycleBinTask = false;
+    }
+}

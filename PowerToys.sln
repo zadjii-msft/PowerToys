@@ -710,6 +710,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZoomItSettingsInterop", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.TimeDate", "src\modules\cmdpal\Exts\Microsoft.CmdPal.Ext.TimeDate\Microsoft.CmdPal.Ext.TimeDate.csproj", "{DCC6BD67-17BB-47AA-B507-FB0FE43A7449}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.CmdPal.Ext.System", "src\modules\cmdpal\Exts\Microsoft.CmdPal.Ext.System\Microsoft.CmdPal.Ext.System.csproj", "{64B88F02-CD88-4ED8-9624-989A800230F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -3388,6 +3390,18 @@ Global
 		{DCC6BD67-17BB-47AA-B507-FB0FE43A7449}.Release|x86.ActiveCfg = Release|x64
 		{DCC6BD67-17BB-47AA-B507-FB0FE43A7449}.Release|x86.Build.0 = Release|x64
 		{DCC6BD67-17BB-47AA-B507-FB0FE43A7449}.Release|x86.Deploy.0 = Release|x64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Debug|ARM64.Build.0 = Debug|ARM64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Debug|x64.ActiveCfg = Debug|x64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Debug|x64.Build.0 = Debug|x64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Debug|x86.ActiveCfg = Debug|x64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Debug|x86.Build.0 = Debug|x64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Release|ARM64.ActiveCfg = Release|ARM64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Release|ARM64.Build.0 = Release|ARM64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Release|x64.ActiveCfg = Release|x64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Release|x64.Build.0 = Release|x64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Release|x86.ActiveCfg = Release|x64
+		{64B88F02-CD88-4ED8-9624-989A800230F9}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3660,6 +3674,7 @@ Global
 		{E4585179-2AC1-4D5F-A3FF-CFC5392F694C} = {DD6E12FE-5509-4ABC-ACC2-3D6DC98A238C}
 		{CA7D8106-30B9-4AEC-9D05-B69B31B8C461} = {DD6E12FE-5509-4ABC-ACC2-3D6DC98A238C}
 		{DCC6BD67-17BB-47AA-B507-FB0FE43A7449} = {ECB8E0D1-7603-4E5C-AB10-D1E545E6F8E2}
+		{64B88F02-CD88-4ED8-9624-989A800230F9} = {ECB8E0D1-7603-4E5C-AB10-D1E545E6F8E2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C3A2F9D1-7930-4EF4-A6FC-7EE0A99821D0}
