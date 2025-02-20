@@ -4,13 +4,17 @@
 
 using CommunityToolkit.WinUI;
 using Microsoft.CmdPal.UI.ViewModels;
+using Microsoft.UI.Composition;
+using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
+using Windows.UI;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+using WinRT;
 
 namespace Microsoft.CmdPal.UI;
 
@@ -21,6 +25,9 @@ public sealed partial class ToastWindow : Window
     public ToastViewModel ViewModel { get; } = new();
 
     private readonly DispatcherQueueTimer _debounceTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
+
+    private DesktopAcrylicController? _acrylicController;
+    private SystemBackdropConfiguration? _configurationSource;
 
     public ToastWindow()
     {
@@ -36,15 +43,17 @@ public sealed partial class ToastWindow : Window
         _hwnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
         PInvoke.EnableWindow(_hwnd, false);
 
-        // PositionCentered();
+        SetAcrylic();
+        ToastText.ActualThemeChanged += (s, e) => UpdateAcrylic();
     }
 
     private void PositionCentered()
     {
-        // AppWindow.Resize(new SizeInt32 { Width = 1280, Height = 32 });
-
-        // var floatSize = ToastText.ActualSize.ToSize();
-        var intSize = new SizeInt32 { Width = Convert.ToInt32(ToastText.ActualWidth), Height = Convert.ToInt32(ToastText.ActualHeight) };
+        var intSize = new SizeInt32
+        {
+            Width = Convert.ToInt32(ToastText.ActualWidth),
+            Height = Convert.ToInt32(ToastText.ActualHeight),
+        };
         AppWindow.Resize(intSize);
 
         var displayArea = DisplayArea.GetFromWindowId(AppWindow.Id, DisplayAreaFallback.Nearest);
@@ -69,7 +78,7 @@ public sealed partial class ToastWindow : Window
         {
             PositionCentered();
 
-            // AppWindow.Show();
+            // SW_SHOWNA prevents us from getting activated (and stealing FG)
             PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_SHOWNA);
 
             _debounceTimer.Debounce(
@@ -80,5 +89,72 @@ public sealed partial class ToastWindow : Window
                 interval: TimeSpan.FromMilliseconds(2500),
                 immediate: false);
         });
+    }
+
+    // We want to use DesktopAcrylicKind.Thin and custom colors as this is the default material
+    // other Shell surfaces are using, this cannot be set in XAML however.
+    private void SetAcrylic()
+    {
+        if (DesktopAcrylicController.IsSupported())
+        {
+            // Hooking up the policy object.
+            _configurationSource = new SystemBackdropConfiguration
+            {
+                // Initial configuration state.
+                IsInputActive = true,
+            };
+            UpdateAcrylic();
+        }
+    }
+
+    private void UpdateAcrylic()
+    {
+        _acrylicController = GetAcrylicConfig(Content);
+
+        // Enable the system backdrop.
+        // Note: Be sure to have "using WinRT;" to support the Window.As<...>() call.
+        _acrylicController.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
+        _acrylicController.SetSystemBackdropConfiguration(_configurationSource);
+    }
+
+    private static DesktopAcrylicController GetAcrylicConfig(UIElement content)
+    {
+        var feContent = content as FrameworkElement;
+
+        return feContent?.ActualTheme == ElementTheme.Light
+            ? new DesktopAcrylicController()
+            {
+                Kind = DesktopAcrylicKind.Thin,
+                TintColor = Color.FromArgb(255, 243, 243, 243),
+                LuminosityOpacity = 0.90f,
+                TintOpacity = 0.0f,
+                FallbackColor = Color.FromArgb(255, 238, 238, 238),
+            }
+            : new DesktopAcrylicController()
+            {
+                Kind = DesktopAcrylicKind.Thin,
+                TintColor = Color.FromArgb(255, 32, 32, 32),
+                LuminosityOpacity = 0.96f,
+                TintOpacity = 0.5f,
+                FallbackColor = Color.FromArgb(255, 28, 28, 28),
+            };
+    }
+
+    private void DisposeAcrylic()
+    {
+        if (_acrylicController != null)
+        {
+            _acrylicController.Dispose();
+            _acrylicController = null!;
+            _configurationSource = null!;
+        }
+    }
+
+    internal void OnActivated(object sender, WindowActivatedEventArgs args)
+    {
+        if (_configurationSource != null)
+        {
+            _configurationSource.IsInputActive = args.WindowActivationState != WindowActivationState.Deactivated;
+        }
     }
 }

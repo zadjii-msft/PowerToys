@@ -7,11 +7,12 @@
     xmlns:local="using:Microsoft.CmdPal.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="using:CommunityToolkit.WinUI"
+    Activated="OnActivated"
     Title="Command Palette Toast"
     mc:Ignorable="d">
-    <Window.SystemBackdrop>
+    <!--<Window.SystemBackdrop>
         <MicaBackdrop />
-    </Window.SystemBackdrop>
+    </Window.SystemBackdrop>-->
     <StackPanel x:Name="ToastGrid">
         <TextBlock
             x:Name="ToastText"
