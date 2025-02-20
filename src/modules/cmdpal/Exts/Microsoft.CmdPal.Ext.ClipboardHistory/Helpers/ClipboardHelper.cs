@@ -68,6 +68,7 @@ internal static class ClipboardHelper
     {
         // TODO(stefan): For some reason Flush() fails from time to time when directly activated via hotkey.
         // Calling inside a loop makes it work.
+        // Exception is: The operation is not permitted because the calling application is not the owner of the data on the clipboard.
         const int maxAttempts = 5;
         for (var i = 1; i <= maxAttempts; i++)
         {

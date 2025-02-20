@@ -71,7 +71,6 @@ public class ClipboardItem
     {
         // Determine the minimum leading whitespace
         var minLeadingWhitespace = lines
-            .Where(line => !string.IsNullOrWhiteSpace(line))
             .Min(line => line.TakeWhile(char.IsWhiteSpace).Count());
 
         // Remove the minimum leading whitespace from each line

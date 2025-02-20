@@ -5,14 +5,19 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Models;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.Win32;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Store;
 using Windows.Storage.Streams;
 
 namespace Microsoft.CmdPal.Ext.ClipboardHistory.Pages;
@@ -30,7 +35,37 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         Name = "Clipboard History";
         ShowDetails = true;
 
-        // Clipboard.ContentChanged += Clipboard_ContentChanged; TODO GH #131 -- fixed in PR #142 -- need to raise the event here and handle clipboard change
+        // Clipboard.ContentChanged += Clipboard_ContentChanged;
+        // Clipboard.ContentChanged += new EventHandler<object>(this.TrackClipboardChanges_EventHandler);
+        Clipboard.HistoryChanged += TrackClipboardHistoryChanged_EventHandler;
+    }
+
+    private void TrackClipboardHistoryChanged_EventHandler(object sender, ClipboardHistoryChangedEventArgs e)
+    {
+        DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
+        {
+            RaiseItemsChanged(0);
+        });
+    }
+
+    private async void TrackClipboardChanges_EventHandler(object sender, object e)
+    {
+        DataPackageView dataPackageView = Clipboard.GetContent();
+        if (dataPackageView.Contains(StandardDataFormats.Text))
+        {
+            var text = await dataPackageView.GetTextAsync();
+
+            // To output the text from this example, you need a TextBlock control
+            // with a name of "TextOutput".
+            // TextOutput.Text = "Clipboard now contains: " + text;
+        }
+
+        RaiseItemsChanged(0);
+    }
+
+    private void Clipboard_ContentChanged(object sender, object e)
+    {
+        RaiseItemsChanged(0);
     }
 
     private bool IsClipboardHistoryEnabled()
@@ -74,23 +109,27 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         {
             List<ClipboardItem> items = new();
 
-            if (Clipboard.IsHistoryEnabled())
+            if (!Clipboard.IsHistoryEnabled())
             {
-                var historyItems = await Clipboard.GetHistoryItemsAsync();
-                if (historyItems.Status == ClipboardHistoryItemsResultStatus.Success)
+                return;
+            }
+
+            var historyItems = await Clipboard.GetHistoryItemsAsync();
+            if (historyItems.Status != ClipboardHistoryItemsResultStatus.Success)
+            {
+                return;
+            }
+
+            foreach (var item in historyItems.Items)
+            {
+                if (item.Content.Contains(StandardDataFormats.Text))
                 {
-                    foreach (var item in historyItems.Items)
-                    {
-                        if (item.Content.Contains(StandardDataFormats.Text))
-                        {
-                            var text = await item.Content.GetTextAsync();
-                            items.Add(new ClipboardItem { Content = text, Item = item });
-                        }
-                        else if (item.Content.Contains(StandardDataFormats.Bitmap))
-                        {
-                            items.Add(new ClipboardItem { Item = item });
-                        }
-                    }
+                    var text = await item.Content.GetTextAsync();
+                    items.Add(new ClipboardItem { Content = text, Item = item });
+                }
+                else if (item.Content.Contains(StandardDataFormats.Bitmap))
+                {
+                    items.Add(new ClipboardItem { Item = item });
                 }
             }
 
@@ -116,13 +155,34 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         {
             // TODO GH #108 We need to figure out some logging
             // Logger.LogError("Loading clipboard history failed", ex);
+            Debug.WriteLine("Loading clipboard history failed");
+            Debug.WriteLine(ex.ToString());
         }
 #pragma warning restore CS0168, IDE0059
     }
 
-    private async Task<ListItem[]> GetClipboardHistoryListItems()
+    private void LoadClipboardHistoryInSTA()
     {
-        await LoadClipboardHistoryAsync();
+        // https://github.com/microsoft/windows-rs/issues/317
+        // Clipboard API needs to be called in STA or it
+        // hangs.
+        Thread thread = new Thread(() =>
+        {
+            var t = LoadClipboardHistoryAsync();
+            t.ConfigureAwait(false);
+            t.Wait();
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+    }
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    private async Task<ListItem[]> GetClipboardHistoryListItems()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+    {
+        // await LoadClipboardHistoryAsync();
+        LoadClipboardHistoryInSTA();
         ListItem[] listItems = new ListItem[clipboardHistory.Count];
         for (var i = 0; i < clipboardHistory.Count; i++)
         {

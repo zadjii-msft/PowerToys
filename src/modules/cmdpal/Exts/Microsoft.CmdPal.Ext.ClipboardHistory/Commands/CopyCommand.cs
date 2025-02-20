@@ -41,7 +41,7 @@ internal sealed partial class CopyCommand : InvokableCommand
     public override CommandResult Invoke()
     {
         ClipboardHelper.SetClipboardContent(_clipboardItem, _clipboardFormat);
-
+        CommandResult.ShowToast("Copied to clipboard");
         return CommandResult.Dismiss();
     }
 }
