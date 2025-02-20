@@ -12,14 +12,14 @@
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
-    <Grid>
+    <StackPanel x:Name="ToastGrid">
         <TextBlock
             x:Name="ToastText"
-            Margin="20"
-            Text="Test toast"
-            TextWrapping="Wrap"
-            TextAlignment="Center"
-            FontSize="20"
+            Padding="8,8,28,20"
+            Text="{x:Bind ViewModel.ToastMessage, Mode=OneWay}"
+            
+            TextAlignment="Left"
+            FontSize="16"
             Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" />
-    </Grid>
+    </StackPanel>
 </Window>

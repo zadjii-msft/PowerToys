@@ -151,7 +151,7 @@ internal sealed partial class FallbackCalculatorItem : FallbackCommandItem
         if (CalculatorListPage.ParseQuery(query, out var result))
         {
             _copyCommand.Text = result;
-            _copyCommand.Name = "Copy";
+            _copyCommand.Name = string.IsNullOrWhiteSpace(query) ? string.Empty : "Copy";
             Title = result;
 
             // we have to make the subtitle the equation,

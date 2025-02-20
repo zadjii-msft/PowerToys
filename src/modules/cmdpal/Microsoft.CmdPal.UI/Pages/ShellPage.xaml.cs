@@ -235,9 +235,9 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
                     case CommandResultKind.ShowToast:
                         {
-                            _toast.AppWindow.Show();
                             if (result.Args is IToastArgs a)
                             {
+                                _toast.ShowToast(a.Message);
                                 HandleCommandResult(a.Result);
                             }
 
