@@ -35,35 +35,10 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         Name = "Clipboard History";
         ShowDetails = true;
 
-        // Clipboard.ContentChanged += Clipboard_ContentChanged;
-        // Clipboard.ContentChanged += new EventHandler<object>(this.TrackClipboardChanges_EventHandler);
         Clipboard.HistoryChanged += TrackClipboardHistoryChanged_EventHandler;
     }
 
     private void TrackClipboardHistoryChanged_EventHandler(object sender, ClipboardHistoryChangedEventArgs e)
-    {
-        DispatcherQueue.GetForCurrentThread().TryEnqueue(() =>
-        {
-            RaiseItemsChanged(0);
-        });
-    }
-
-    private async void TrackClipboardChanges_EventHandler(object sender, object e)
-    {
-        DataPackageView dataPackageView = Clipboard.GetContent();
-        if (dataPackageView.Contains(StandardDataFormats.Text))
-        {
-            var text = await dataPackageView.GetTextAsync();
-
-            // To output the text from this example, you need a TextBlock control
-            // with a name of "TextOutput".
-            // TextOutput.Text = "Clipboard now contains: " + text;
-        }
-
-        RaiseItemsChanged(0);
-    }
-
-    private void Clipboard_ContentChanged(object sender, object e)
     {
         RaiseItemsChanged(0);
     }
@@ -150,7 +125,6 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
                 clipboardHistory.Add(item);
             }
         }
-#pragma warning disable CS0168, IDE0059
         catch (Exception ex)
         {
             // TODO GH #108 We need to figure out some logging
@@ -158,7 +132,6 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
             Debug.WriteLine("Loading clipboard history failed");
             Debug.WriteLine(ex.ToString());
         }
-#pragma warning restore CS0168, IDE0059
     }
 
     private void LoadClipboardHistoryInSTA()
@@ -177,11 +150,8 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         thread.Join();
     }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    private async Task<ListItem[]> GetClipboardHistoryListItems()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+    private ListItem[] GetClipboardHistoryListItems()
     {
-        // await LoadClipboardHistoryAsync();
         LoadClipboardHistoryInSTA();
         ListItem[] listItems = new ListItem[clipboardHistory.Count];
         for (var i = 0; i < clipboardHistory.Count; i++)
@@ -195,13 +165,6 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
 
     public override IListItem[] GetItems()
     {
-        var t = DoGetItems();
-        t.ConfigureAwait(false);
-        return t.Result;
-    }
-
-    private async Task<IListItem[]> DoGetItems()
-    {
-        return await GetClipboardHistoryListItems();
+        return GetClipboardHistoryListItems();
     }
 }
