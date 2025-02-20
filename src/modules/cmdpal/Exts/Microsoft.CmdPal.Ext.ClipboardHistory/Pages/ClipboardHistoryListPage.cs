@@ -33,6 +33,7 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         _defaultIconPath = string.Empty;
         Icon = new("\uF0E3"); // ClipboardList icon
         Name = "Clipboard History";
+        Id = "com.microsoft.cmdpal.clipboardhistory";
         ShowDetails = true;
 
         Clipboard.HistoryChanged += TrackClipboardHistoryChanged_EventHandler;
