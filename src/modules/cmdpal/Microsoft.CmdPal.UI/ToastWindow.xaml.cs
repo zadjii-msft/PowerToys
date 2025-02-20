@@ -8,11 +8,16 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Microsoft.CmdPal.UI;
 
 public sealed partial class ToastWindow : Window
 {
+    private readonly HWND _hwnd;
+
     public ToastViewModel ViewModel { get; } = new();
 
     private readonly DispatcherQueueTimer _debounceTimer = DispatcherQueue.GetForCurrentThread().CreateTimer();
@@ -27,6 +32,9 @@ public sealed partial class ToastWindow : Window
         AppWindow.SetIcon("ms-appx:///Assets/Icons/StoreLogo.png");
         AppWindow.Title = "Command Palette Settings";
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
+
+        _hwnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
+        PInvoke.EnableWindow(_hwnd, false);
 
         // PositionCentered();
     }
@@ -60,7 +68,9 @@ public sealed partial class ToastWindow : Window
             () =>
         {
             PositionCentered();
-            AppWindow.Show();
+
+            // AppWindow.Show();
+            PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_SHOWNA);
 
             _debounceTimer.Debounce(
                 () =>
