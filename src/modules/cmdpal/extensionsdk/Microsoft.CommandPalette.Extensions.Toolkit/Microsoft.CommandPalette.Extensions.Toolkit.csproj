@@ -13,6 +13,9 @@
     <ProjectPriFileName>Microsoft.CommandPalette.Extensions.Toolkit.pri</ProjectPriFileName>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+
+    <CETCompat>false</CETCompat>
+
   </PropertyGroup>
 
   <PropertyGroup>

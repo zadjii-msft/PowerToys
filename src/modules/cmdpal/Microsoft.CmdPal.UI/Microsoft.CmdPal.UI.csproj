@@ -20,6 +20,8 @@
 
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+
+    <CETCompat>false</CETCompat>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(CIBuild)'=='true'">
