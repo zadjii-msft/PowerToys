@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CmdPal.Ext.Shell;
 using Microsoft.CmdPal.Ext.Shell.Helpers;
 using Microsoft.CommandPalette.Extensions;
@@ -38,10 +40,8 @@ internal static class Commands
     /// <param name="splitRecycleBinResults">Value indicating if we should show two results for Recycle Bin.</param>
     /// <param name="confirmCommands">A value indicating if the user should confirm the system commands</param>
     /// <param name="emptyRBSuccessMessage">Show a success message after empty Recycle Bin.</param>
-    /// <param name="iconTheme">The current theme to use for the icons</param>
-    /// <param name="culture">The culture to use for the result's title and sub title</param>
     /// <returns>A list of all results</returns>
-    internal static List<IListItem> GetSystemCommands(bool isUefi, bool splitRecycleBinResults, bool confirmCommands, bool emptyRBSuccessMessage, string iconTheme, CultureInfo culture)
+    internal static List<IListItem> GetSystemCommands(bool isUefi, bool splitRecycleBinResults, bool confirmCommands, bool emptyRBSuccessMessage)
     {
         var results = new List<IListItem>();
         results.AddRange(new[]
@@ -154,7 +154,7 @@ internal static class Commands
     /// <param name="iconTheme">The theme to use for the icons</param>
     /// <param name="culture">The culture to use for the result's title and sub title</param>
     /// <returns>The list of available results</returns>
-    internal static List<IListItem> GetNetworkConnectionResults(string iconTheme, CultureInfo culture)
+    internal static List<IListItem> GetNetworkConnectionResults()
     {
         var results = new List<IListItem>();
 
@@ -204,6 +204,26 @@ internal static class Commands
                 });
             }
         }
+
+        return results;
+    }
+
+    public static List<IListItem> GetAllCommands()
+    {
+        List<IListItem> results = new List<IListItem>();
+        var isBootedInUefiMode = Win32Helpers.GetSystemFirmwareType() == FirmwareType.Uefi;
+        var separateEmptyRB = true;
+        var confirmSystemCommands = true;
+        var showSuccessOnEmptyRB = true;
+
+        // normal system commands are fast and can be returned immediately
+        var systemCommands = Commands.GetSystemCommands(isBootedInUefiMode, separateEmptyRB, confirmSystemCommands, showSuccessOnEmptyRB);
+        results.AddRange(systemCommands);
+
+        // Network (ip and mac) results are slow with many network cards and returned delayed.
+        // On global queries the first word/part has to be 'ip', 'mac' or 'address' for network results
+        var networkConnectionResults = GetNetworkConnectionResults();
+        results.AddRange(networkConnectionResults);
 
         return results;
     }
