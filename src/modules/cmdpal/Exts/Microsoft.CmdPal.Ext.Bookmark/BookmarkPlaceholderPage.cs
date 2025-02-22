@@ -13,6 +13,11 @@ internal sealed partial class BookmarkPlaceholderPage : FormPage
 
     public override IForm[] Forms() => [_bookmarkPlaceholder];
 
+    public BookmarkPlaceholderPage(BookmarkData data)
+        : this(data.Name, data.Bookmark, data.Type)
+    {
+    }
+
     public BookmarkPlaceholderPage(string name, string url, string type)
     {
         Name = name;
