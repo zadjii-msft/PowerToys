@@ -173,7 +173,10 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
             else if (command is IInvokableCommand invokable)
             {
                 var result = invokable.Invoke(message.Context);
-                HandleCommandResult(result);
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    HandleCommandResultOnUiThread(result);
+                });
             }
         }
         catch (Exception ex)
@@ -189,7 +192,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         }
     }
 
-    private void HandleCommandResult(ICommandResult? result)
+    private void HandleCommandResultOnUiThread(ICommandResult? result)
     {
         try
         {
@@ -238,7 +241,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                             if (result.Args is IToastArgs a)
                             {
                                 _toast.ShowToast(a.Message);
-                                HandleCommandResult(a.Result);
+                                HandleCommandResultOnUiThread(a.Result);
                             }
 
                             break;
@@ -289,7 +292,13 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
     public void Receive(LaunchUriMessage message) => _ = global::Windows.System.Launcher.LaunchUriAsync(message.Uri);
 
-    public void Receive(HandleCommandResultMessage message) => HandleCommandResult(message.Result.Unsafe);
+    public void Receive(HandleCommandResultMessage message)
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            HandleCommandResultOnUiThread(message.Result.Unsafe);
+        });
+    }
 
     private void HideDetails() => ViewModel.IsDetailsVisible = false;
 
