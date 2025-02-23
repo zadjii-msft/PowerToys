@@ -86,20 +86,20 @@ public partial class BookmarksCommandProvider : CommandProvider
         contextMenu.Add(new CommandContextItem(edit));
 
         var delete = new CommandContextItem(
-            () =>
-        {
-            if (_bookmarks != null)
-            {
-                _bookmarks.Data.Remove(bookmark);
-                var jsonPath = BookmarksCommandProvider.StateJsonPath();
-                Bookmarks.WriteToFile(jsonPath, _bookmarks);
-                _commands.Clear();
-                LoadCommands();
-                RaiseItemsChanged(0);
-            }
-        },
             title: "Delete bookmark",
             name: "Delete",
+            action: () =>
+            {
+                if (_bookmarks != null)
+                {
+                    _bookmarks.Data.Remove(bookmark);
+                    var jsonPath = BookmarksCommandProvider.StateJsonPath();
+                    Bookmarks.WriteToFile(jsonPath, _bookmarks);
+                    _commands.Clear();
+                    LoadCommands();
+                    RaiseItemsChanged(0);
+                }
+            },
             result: CommandResult.KeepOpen())
         {
             IsCritical = true,

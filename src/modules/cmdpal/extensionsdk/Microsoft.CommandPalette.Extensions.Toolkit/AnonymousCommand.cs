@@ -6,11 +6,11 @@ namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public sealed partial class AnonymousCommand : InvokableCommand
 {
-    private readonly Action _action;
+    private readonly Action? _action;
 
     public ICommandResult Result { get; set; } = CommandResult.Dismiss();
 
-    public AnonymousCommand(Action action)
+    public AnonymousCommand(Action? action)
     {
         Name = "Invoke";
         _action = action;
@@ -18,7 +18,11 @@ public sealed partial class AnonymousCommand : InvokableCommand
 
     public override ICommandResult Invoke()
     {
-        _action();
+        if (_action != null)
+        {
+            _action();
+        }
+
         return Result;
     }
 }

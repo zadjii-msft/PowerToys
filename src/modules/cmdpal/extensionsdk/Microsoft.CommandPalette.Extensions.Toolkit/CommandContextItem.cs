@@ -16,10 +16,10 @@ public partial class CommandContextItem : CommandItem, ICommandContextItem
     }
 
     public CommandContextItem(
-        Action action,
         string title,
         string subtitle = "",
         string name = "",
+        Action? action = null,
         ICommandResult? result = null)
     {
         var c = new AnonymousCommand(action);
