@@ -126,6 +126,8 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                     // Also hide our details pane about here, if we had one
                     HideDetails();
 
+                    WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(null));
+
                     var isMainPage = command is MainListPage;
 
                     // Construct our ViewModel of the appropriate type and pass it the UI Thread context.
@@ -270,6 +272,16 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
     public void Receive(ShowDetailsMessage message)
     {
+        // TERRIBLE HACK TODO GH #245
+        // There's weird wacky bugs with debounce currently.
+        if (!ViewModel.IsDetailsVisible)
+        {
+            ViewModel.Details = message.Details;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
+            ViewModel.IsDetailsVisible = true;
+            return;
+        }
+
         // GH #322:
         // For inexplicable reasons, if you try to change the details too fast,
         // we'll explode. This seemingly only happens if you change the details
@@ -300,7 +312,11 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         });
     }
 
-    private void HideDetails() => ViewModel.IsDetailsVisible = false;
+    private void HideDetails()
+    {
+        ViewModel.Details = null;
+        ViewModel.IsDetailsVisible = false;
+    }
 
     public void Receive(ClearSearchMessage message) => SearchBox.ClearSearch();
 
@@ -418,6 +434,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         if (focusSearch)
         {
             SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+            SearchBox.SelectSearch();
         }
     }
 

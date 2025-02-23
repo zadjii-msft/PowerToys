@@ -13,10 +13,15 @@ namespace Microsoft.CmdPal.Ext.Bookmarks;
 
 public partial class BookmarksCommandProvider : CommandProvider
 {
-    private readonly List<BookmarkData> _bookmarks = [];
     private readonly List<CommandItem> _commands = [];
 
     private readonly AddBookmarkPage _addNewCommand = new();
+
+    private Bookmarks? _bookmarks;
+
+    public static IconInfo DeleteIcon { get; private set; } = new("\uE74D"); // Delete
+
+    public static IconInfo EditIcon { get; private set; } = new("\uE70F"); // Edit
 
     public BookmarksCommandProvider()
     {
@@ -41,7 +46,10 @@ public partial class BookmarksCommandProvider : CommandProvider
 
         LoadBookmarksFromFile();
 
-        collected.AddRange(_bookmarks.Select(BookmarkToCommandItem));
+        if (_bookmarks != null)
+        {
+            collected.AddRange(_bookmarks.Data.Select(BookmarkToCommandItem));
+        }
 
         _commands.Clear();
         _commands.AddRange(collected);
@@ -54,24 +62,7 @@ public partial class BookmarksCommandProvider : CommandProvider
             var jsonFile = StateJsonPath();
             if (File.Exists(jsonFile))
             {
-                var data = Bookmarks.ReadFromFile(jsonFile);
-
-                if (data != null)
-                {
-                    var items = data?.Data;
-                    _bookmarks.Clear();
-                    if (items != null)
-                    {
-                        items.RemoveAll(item =>
-                        {
-                            var nameToken = item.Name;
-                            var urlToken = item.Bookmark;
-                            var typeToken = item.Type;
-                            return nameToken == null || urlToken == null || typeToken == null;
-                        });
-                        _bookmarks.AddRange(items);
-                    }
-                }
+                _bookmarks = Bookmarks.ReadFromFile(jsonFile);
             }
         }
         catch (Exception ex)
@@ -90,9 +81,31 @@ public partial class BookmarksCommandProvider : CommandProvider
         var listItem = new CommandItem(command);
 
         List<CommandContextItem> contextMenu = [];
-        var edit = new AddBookmarkPage(bookmark.Name, bookmark.Bookmark);
+        var edit = new AddBookmarkPage(bookmark.Name, bookmark.Bookmark) { Icon = EditIcon };
         edit.AddedCommand += AddNewCommand_AddedCommand;
         contextMenu.Add(new CommandContextItem(edit));
+
+        var delete = new CommandContextItem(
+            () =>
+        {
+            if (_bookmarks != null)
+            {
+                _bookmarks.Data.Remove(bookmark);
+                var jsonPath = BookmarksCommandProvider.StateJsonPath();
+                Bookmarks.WriteToFile(jsonPath, _bookmarks);
+                _commands.Clear();
+                LoadCommands();
+                RaiseItemsChanged(0);
+            }
+        },
+            title: "Delete bookmark",
+            name: "Delete",
+            result: CommandResult.KeepOpen())
+        {
+            IsCritical = true,
+            Icon = DeleteIcon,
+        };
+        contextMenu.Add(delete);
 
         // Add commands for folder types
         if (command is UrlCommand urlCommand)

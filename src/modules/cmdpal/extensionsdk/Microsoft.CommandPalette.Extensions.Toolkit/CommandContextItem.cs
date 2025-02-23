@@ -14,4 +14,28 @@ public partial class CommandContextItem : CommandItem, ICommandContextItem
         : base(command)
     {
     }
+
+    public CommandContextItem(
+        Action action,
+        string title,
+        string subtitle = "",
+        string name = "",
+        ICommandResult? result = null)
+    {
+        var c = new AnonymousCommand(action);
+        if (!string.IsNullOrEmpty(name))
+        {
+            c.Name = name;
+        }
+
+        if (result != null)
+        {
+            c.Result = result;
+        }
+
+        Command = c;
+
+        Title = title;
+        Subtitle = subtitle;
+    }
 }
