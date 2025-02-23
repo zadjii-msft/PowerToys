@@ -86,10 +86,10 @@ public partial class CommandItem : BaseObservable, ICommandItem
     }
 
     public CommandItem(
-        Action action,
         string title,
         string subtitle = "",
         string name = "",
+        Action? action = null,
         ICommandResult? result = null)
     {
         var c = new AnonymousCommand(action);
