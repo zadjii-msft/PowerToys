@@ -8,13 +8,16 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.System.Pages;
 
-internal sealed partial class SystemCommandPage : ListPage
+public sealed partial class SystemCommandPage : ListPage
 {
+    private SystemCommandsCache commandsCache;
+
     public SystemCommandPage()
     {
         Title = "SystemCommandPage";
         Name = "Open";
+        commandsCache = new SystemCommandsCache();
     }
 
-    public override IListItem[] GetItems() => Commands.GetAllCommands().ToArray();
+    public override IListItem[] GetItems() => commandsCache.CachedCommands;
 }

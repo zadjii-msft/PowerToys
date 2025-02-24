@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.CmdPal.Ext.Apps;
+using Microsoft.CmdPal.Ext.System;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
@@ -129,7 +130,8 @@ public partial class MainListPage : DynamicListPage,
             if (_filteredItems == null)
             {
                 IEnumerable<IListItem> apps = AllAppsCommandProvider.Page.GetItems();
-                _filteredItems = commands.Concat(apps);
+                IEnumerable<IListItem> systemCommands = SystemCommandExtensionProvider.Page.GetItems();
+                _filteredItems = commands.Concat(apps).Concat(systemCommands);
             }
 
             // Produce a list of everything that matches the current filter.

@@ -11,12 +11,17 @@ namespace Microsoft.CmdPal.Ext.System;
 public partial class SystemCommandExtensionProvider : CommandProvider
 {
     private readonly ICommandItem[] _commands;
+    public static readonly SystemCommandPage Page = new();
 
     public SystemCommandExtensionProvider()
     {
-        DisplayName = "System Command Extension Provider Name";
+        DisplayName = "Windows System commands";
         _commands = [
-            new CommandItem(new SystemCommandPage()) { Title = DisplayName },
+            new CommandItem(Page)
+            {
+                Title = DisplayName,
+                Icon = new IconInfo("\uE72E"),
+            },
         ];
     }
 

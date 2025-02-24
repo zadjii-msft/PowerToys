@@ -8,8 +8,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.CmdPal.Ext.Shell;
-using Microsoft.CmdPal.Ext.Shell.Helpers;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.Devices.Geolocation;
@@ -27,6 +25,8 @@ internal static class Commands
     internal const int EWXFORCE = 0x00000004;
     internal const int EWXPOWEROFF = 0x00000008;
     internal const int EWXFORCEIFHUNG = 0x00000010;
+    private static readonly Tag _systemCommandTag = new("System");
+    private static readonly Tag _networkTag = new("Network");
 
     // Cache for network interface information to save query time
     private const int UpdateCacheIntervalSeconds = 5;
@@ -41,7 +41,7 @@ internal static class Commands
     /// <param name="confirmCommands">A value indicating if the user should confirm the system commands</param>
     /// <param name="emptyRBSuccessMessage">Show a success message after empty Recycle Bin.</param>
     /// <returns>A list of all results</returns>
-    internal static List<IListItem> GetSystemCommands(bool isUefi, bool splitRecycleBinResults, bool confirmCommands, bool emptyRBSuccessMessage)
+    public static List<IListItem> GetSystemCommands(bool isUefi, bool splitRecycleBinResults, bool confirmCommands, bool emptyRBSuccessMessage)
     {
         var results = new List<IListItem>();
         results.AddRange(new[]
@@ -51,36 +51,42 @@ internal static class Commands
                 Title = Resources.Microsoft_plugin_sys_shutdown_computer,
                 Subtitle = Resources.Microsoft_plugin_sys_shutdown_computer_description,
                 Icon = Icons.ShutdownIcon,
+                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_restart_computer_confirmation, () => OpenInShellHelper.OpenInShell("shutdown", "/g /t 0")))
             {
                 Title = Resources.Microsoft_plugin_sys_restart_computer,
                 Subtitle = Resources.Microsoft_plugin_sys_restart_computer_description,
                 Icon = Icons.RestartIcon,
+                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_sign_out_confirmation, () => NativeMethods.ExitWindowsEx(EWXLOGOFF, 0)))
             {
                 Title = Resources.Microsoft_plugin_sys_sign_out,
                 Subtitle = Resources.Microsoft_plugin_sys_sign_out_description,
                 Icon = Icons.LogoffIcon,
+                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_lock_confirmation, () => NativeMethods.LockWorkStation()))
             {
                 Title = Resources.Microsoft_plugin_sys_lock,
                 Subtitle = Resources.Microsoft_plugin_sys_lock_description,
                 Icon = Icons.LockIcon,
+                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_sleep_confirmation, () => NativeMethods.SetSuspendState(false, true, true)))
             {
                 Title = Resources.Microsoft_plugin_sys_sleep,
                 Subtitle = Resources.Microsoft_plugin_sys_sleep_description,
                 Icon = Icons.SleepIcon,
+                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_hibernate_confirmation, () => NativeMethods.SetSuspendState(true, true, true)))
             {
                 Title = Resources.Microsoft_plugin_sys_hibernate,
                 Subtitle = Resources.Microsoft_plugin_sys_hibernate_description,
                 Icon = Icons.SleepIcon, // Icon change needed
+                Tags = [_systemCommandTag],
             },
         });
 
@@ -94,18 +100,21 @@ internal static class Commands
                     Title = Resources.Microsoft_plugin_sys_RecycleBinOpen,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
                     Icon = Icons.RecycleBinIcon,
+                    Tags = [_systemCommandTag],
                 },
                 new ListItem(new OpenInShellCommand("explorer.exe", "shell:RecycleBinFolder"))
                 {
                     Title = Resources.Microsoft_plugin_sys_RecycleBinOpen,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
                     Icon = Icons.RecycleBinIcon,
+                    Tags = [_systemCommandTag],
                 },
                 new ListItem(new RecycleBinCommand(emptyRBSuccessMessage))
                 {
                     Title = Resources.Microsoft_plugin_sys_RecycleBinEmptyResult,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBinEmpty_description,
                     Icon = Icons.RecycleBinIcon,
+                    Tags = [_systemCommandTag],
                 },
             });
         }
@@ -131,6 +140,7 @@ internal static class Commands
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
                     Icon = Icons.RecycleBinIcon,
                     MoreCommands = [ResultHelper.CreateCommandContextItemByType(ResultContextType.RecycleBinCommand, false)],
+                    Tags = [_systemCommandTag],
                 });
         }
 
@@ -142,6 +152,7 @@ internal static class Commands
                 Title = Resources.Microsoft_plugin_sys_uefi,
                 Subtitle = Resources.Microsoft_plugin_sys_uefi_description,
                 Icon = Icons.FirmwareSettingsIcon,
+                Tags = [_systemCommandTag],
             });
         }
 
@@ -154,7 +165,7 @@ internal static class Commands
     /// <param name="iconTheme">The theme to use for the icons</param>
     /// <param name="culture">The culture to use for the result's title and sub title</param>
     /// <returns>The list of available results</returns>
-    internal static List<IListItem> GetNetworkConnectionResults()
+    public static List<IListItem> GetNetworkConnectionResults()
     {
         var results = new List<IListItem>();
 
@@ -179,6 +190,7 @@ internal static class Commands
                     Title = intInfo.IPv4,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysIpv4DescriptionCompositeFormate, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
+                    Tags = [_networkTag],
                 });
             }
 
@@ -190,6 +202,7 @@ internal static class Commands
                     Title = intInfo.IPv6Primary,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysIpv4DescriptionCompositeFormate, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
+                    Tags = [_networkTag],
                 });
             }
 
@@ -201,29 +214,10 @@ internal static class Commands
                     Title = intInfo.PhysicalAddress,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysMacDescriptionCompositeFormate, intInfo.Adapter, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
+                    Tags = [_networkTag],
                 });
             }
         }
-
-        return results;
-    }
-
-    public static List<IListItem> GetAllCommands()
-    {
-        List<IListItem> results = new List<IListItem>();
-        var isBootedInUefiMode = Win32Helpers.GetSystemFirmwareType() == FirmwareType.Uefi;
-        var separateEmptyRB = true;
-        var confirmSystemCommands = true;
-        var showSuccessOnEmptyRB = true;
-
-        // normal system commands are fast and can be returned immediately
-        var systemCommands = Commands.GetSystemCommands(isBootedInUefiMode, separateEmptyRB, confirmSystemCommands, showSuccessOnEmptyRB);
-        results.AddRange(systemCommands);
-
-        // Network (ip and mac) results are slow with many network cards and returned delayed.
-        // On global queries the first word/part has to be 'ip', 'mac' or 'address' for network results
-        var networkConnectionResults = GetNetworkConnectionResults();
-        results.AddRange(networkConnectionResults);
 
         return results;
     }

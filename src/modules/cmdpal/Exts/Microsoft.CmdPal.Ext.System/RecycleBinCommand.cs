@@ -5,7 +5,7 @@
 using Microsoft.CmdPal.Ext.System.Helpers;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
-namespace Microsoft.CmdPal.Ext.Shell;
+namespace Microsoft.CmdPal.Ext.System;
 
 public sealed partial class RecycleBinCommand : InvokableCommand
 {

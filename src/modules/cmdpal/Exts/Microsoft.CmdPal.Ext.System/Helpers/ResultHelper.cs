@@ -3,17 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using System.Xml.Linq;
-using Microsoft.CmdPal.Ext.Shell;
-using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.UI.Xaml.Controls;
 using Windows.System;
-using static Microsoft.CmdPal.Ext.System.Helpers.Native;
 
 namespace Microsoft.CmdPal.Ext.System.Helpers;
 
