@@ -185,7 +185,7 @@ public partial class MainListPage : DynamicListPage,
         };
         var max = scores.Max();
 
-        var history = _serviceProvider.GetService<RecentCommandsManager>()!;
+        var history = _serviceProvider.GetService<AppStateModel>()!.RecentCommands;
         var recentWeightBoost = history.GetCommandHistoryWeight(id);
 
         var finalScore = (max / (isFallback ? 3 : 1))
@@ -205,8 +205,10 @@ public partial class MainListPage : DynamicListPage,
     public void UpdateHistory(IListItem topLevelOrAppItem)
     {
         var id = IdForTopLevelOrAppItem(topLevelOrAppItem);
-        var history = _serviceProvider.GetService<RecentCommandsManager>()!;
+        var state = _serviceProvider.GetService<AppStateModel>()!;
+        var history = state.RecentCommands;
         history.AddHistoryItem(id);
+        AppStateModel.SaveState(state);
     }
 
     private string IdForTopLevelOrAppItem(IListItem topLevelOrAppItem)
