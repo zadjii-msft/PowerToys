@@ -10,7 +10,6 @@ using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.Extensions.DependencyInjection;
-using WyHash;
 
 namespace Microsoft.CmdPal.UI.ViewModels.MainPage;
 
@@ -194,14 +193,6 @@ public partial class MainListPage : DynamicListPage,
         return finalScore; // but downweight them
     }
 
-    private string GenerateIdForApp(IListItem app)
-    {
-        // Use WyHash64 to generate stable ID hashes.
-        // manually seeding with 0, so that the hash is stable across launches
-        var result = WyHash64.ComputeHash64(app.Title + app.Subtitle, seed: 0);
-        return $"{app.Title}_{result}";
-    }
-
     public void UpdateHistory(IListItem topLevelOrAppItem)
     {
         var id = IdForTopLevelOrAppItem(topLevelOrAppItem);
@@ -220,7 +211,7 @@ public partial class MainListPage : DynamicListPage,
         else
         {
             // we've got an app here
-            return GenerateIdForApp(topLevelOrAppItem);
+            return topLevelOrAppItem.Command?.Id ?? string.Empty;
         }
     }
 
