@@ -132,5 +132,8 @@ public partial class AppStateModel : ObservableObject
     {
         PropertyNameCaseInsensitive = true,
         IncludeFields = true,
+        AllowTrailingCommas = true,
+        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
+        ReadCommentHandling = JsonCommentHandling.Skip,
     };
 }

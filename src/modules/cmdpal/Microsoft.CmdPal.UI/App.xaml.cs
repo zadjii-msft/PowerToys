@@ -103,9 +103,10 @@ public partial class App : Application
         services.AddSingleton<TopLevelCommandManager>();
         services.AddSingleton<AliasManager>();
         services.AddSingleton<HotkeyManager>();
-        services.AddSingleton<AppStateModel>();
         var sm = SettingsModel.LoadSettings();
         services.AddSingleton(sm);
+        var state = AppStateModel.LoadState();
+        services.AddSingleton(state);
         services.AddSingleton<IExtensionService, ExtensionService>();
 
         // ViewModels
