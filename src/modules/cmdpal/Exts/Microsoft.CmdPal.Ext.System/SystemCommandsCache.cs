@@ -14,7 +14,7 @@ namespace Microsoft.CmdPal.Ext.System;
 
 public sealed partial class SystemCommandsCache
 {
-    public SystemCommandsCache()
+    public SystemCommandsCache(SettingsManager manager)
     {
         var list = new List<IListItem>();
         var listLock = new object();
@@ -22,9 +22,9 @@ public sealed partial class SystemCommandsCache
         var a = Task.Run(() =>
         {
             var isBootedInUefiMode = Win32Helpers.GetSystemFirmwareType() == FirmwareType.Uefi;
-            var separateEmptyRB = true;
-            var confirmSystemCommands = true;
-            var showSuccessOnEmptyRB = true;
+            var separateEmptyRB = manager.ShowSeparateResultForEmptyRecycleBin;
+            var confirmSystemCommands = manager.ShowDialogToConfirmCommand;
+            var showSuccessOnEmptyRB = manager.ShowSuccessMessageAfterEmptyingRecycleBin;
 
             // normal system commands are fast and can be returned immediately
             var systemCommands = Commands.GetSystemCommands(isBootedInUefiMode, separateEmptyRB, confirmSystemCommands, showSuccessOnEmptyRB);

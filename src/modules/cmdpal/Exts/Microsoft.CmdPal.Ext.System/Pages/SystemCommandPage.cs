@@ -11,12 +11,14 @@ namespace Microsoft.CmdPal.Ext.System.Pages;
 public sealed partial class SystemCommandPage : ListPage
 {
     private SystemCommandsCache commandsCache;
+    private SettingsManager _settingsManager;
 
-    public SystemCommandPage()
+    public SystemCommandPage(SettingsManager settingsManager)
     {
         Title = "SystemCommandPage";
         Name = "Open";
-        commandsCache = new SystemCommandsCache();
+        _settingsManager = settingsManager;
+        commandsCache = new SystemCommandsCache(settingsManager);
     }
 
     public override IListItem[] GetItems() => commandsCache.CachedCommands;
