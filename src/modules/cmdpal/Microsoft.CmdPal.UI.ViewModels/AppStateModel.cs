@@ -17,11 +17,16 @@ public partial class AppStateModel : ObservableObject
     [JsonIgnore]
     public static readonly string FilePath;
 
+    [JsonIgnore]
+    public RecentCommandsManager RecentCommands { get; }
+
     public event TypedEventHandler<AppStateModel, object?>? StateChanged;
 
     ///////////////////////////////////////////////////////////////////////////
     // STATE HERE
-    public RecentCommandsManager RecentCommands { get; private set; } = new();
+    [JsonInclude]
+    [JsonPropertyName("History")]
+    internal List<HistoryItem> History { get; private set; } = [];
 
     // END SETTINGS
     ///////////////////////////////////////////////////////////////////////////
@@ -29,6 +34,11 @@ public partial class AppStateModel : ObservableObject
     static AppStateModel()
     {
         FilePath = StateJsonPath();
+    }
+
+    private AppStateModel()
+    {
+        RecentCommands = new(this);
     }
 
     public static AppStateModel LoadState()
