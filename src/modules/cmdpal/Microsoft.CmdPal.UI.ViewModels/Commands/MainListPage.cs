@@ -10,6 +10,7 @@ using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Microsoft.Extensions.DependencyInjection;
+using WyHash;
 
 namespace Microsoft.CmdPal.UI.ViewModels.MainPage;
 
@@ -148,7 +149,7 @@ public partial class MainListPage : DynamicListPage,
     // Almost verbatim ListHelpers.ScoreListItem, but also accounting for the
     // fact that we want fallback handlers down-weighted, so that they don't
     // _always_ show up first.
-    private static int ScoreTopLevelItem(string query, IListItem topLevelOrAppItem)
+    private int ScoreTopLevelItem(string query, IListItem topLevelOrAppItem)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
@@ -163,6 +164,7 @@ public partial class MainListPage : DynamicListPage,
 
         var isFallback = false;
         var isAlias = false;
+        var id = IdForTopLevelOrAppItem(topLevelOrAppItem);
         if (topLevelOrAppItem is TopLevelCommandItemWrapper toplevel)
         {
             isFallback = toplevel.IsFallback;
@@ -182,9 +184,42 @@ public partial class MainListPage : DynamicListPage,
              isFallback ? 1 : 0, // Always give fallbacks a chance
         };
         var max = scores.Max();
+
+        var history = _serviceProvider.GetService<RecentCommandsManager>()!;
+        var recentWeightBoost = history.GetCommandHistoryWeight(id);
+
         var finalScore = (max / (isFallback ? 3 : 1))
+            + recentWeightBoost
             + (isAlias ? 9001 : 0);
         return finalScore; // but downweight them
+    }
+
+    private string GenerateIdForApp(IListItem app)
+    {
+        // Use WyHash64 to generate stable ID hashes.
+        // manually seeding with 0, so that the hash is stable across launches
+        var result = WyHash64.ComputeHash64(app.Title + app.Subtitle, seed: 0);
+        return $"{app.Title}_{result}";
+    }
+
+    public void UpdateHistory(IListItem topLevelOrAppItem)
+    {
+        var id = IdForTopLevelOrAppItem(topLevelOrAppItem);
+        var history = _serviceProvider.GetService<RecentCommandsManager>()!;
+        history.AddHistoryItem(id);
+    }
+
+    private string IdForTopLevelOrAppItem(IListItem topLevelOrAppItem)
+    {
+        if (topLevelOrAppItem is TopLevelCommandItemWrapper toplevel)
+        {
+            return toplevel.Id;
+        }
+        else
+        {
+            // we've got an app here
+            return GenerateIdForApp(topLevelOrAppItem);
+        }
     }
 
     public void Receive(ClearSearchMessage message) => SearchText = string.Empty;
