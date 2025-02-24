@@ -2,24 +2,24 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
 public partial class RecentCommandsManager : ObservableObject
 {
-    private readonly AppStateModel _state;
+    [JsonInclude]
+    [JsonPropertyName("History")]
+    private readonly List<HistoryItem> _history = [];
 
-    private List<HistoryItem> History => _state.History;
-
-    public RecentCommandsManager(AppStateModel state)
+    public RecentCommandsManager()
     {
-        _state = state;
     }
 
     public int GetCommandHistoryWeight(string commandId)
     {
-        var entry = History
+        var entry = _history
             .Index()
             .Where(item => item.Item.CommandId == commandId)
             .FirstOrDefault();
@@ -52,24 +52,24 @@ public partial class RecentCommandsManager : ObservableObject
 
     public void AddHistoryItem(string commandId)
     {
-        var entry = History
+        var entry = _history
             .Where(item => item.CommandId == commandId)
             .FirstOrDefault();
         if (entry == null)
         {
             var newitem = new HistoryItem() { CommandId = commandId, Uses = 1 };
-            History.Insert(0, newitem);
+            _history.Insert(0, newitem);
         }
         else
         {
-            History.Remove(entry);
+            _history.Remove(entry);
             entry.Uses++;
-            History.Insert(0, entry);
+            _history.Insert(0, entry);
         }
 
-        if (History.Count > 50)
+        if (_history.Count > 50)
         {
-            History.RemoveRange(50, History.Count);
+            _history.RemoveRange(50, _history.Count);
         }
     }
 }
