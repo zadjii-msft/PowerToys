@@ -3,10 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.System;
+using static Microsoft.CmdPal.Ext.System.Helpers.MessageBoxHelper;
 
 namespace Microsoft.CmdPal.Ext.System.Helpers;
 
@@ -18,14 +21,16 @@ internal static class ResultHelper
     {
         if (confirm)
         {
-            var result = DisplayConfirmDialog(Resources.Microsoft_plugin_sys_confirmation, confirmationMessage, "Yes", "No").GetAwaiter().GetResult();
+            // var result = DisplayConfirmDialog(Resources.Microsoft_plugin_sys_confirmation, confirmationMessage, "Yes", "No").GetAwaiter().GetResult();
 
             // MessageBoxResult messageBoxResult = MessageBox.Show(
-            //    confirmationMessage,
-            //    Resources.Microsoft_plugin_sys_confirmation,
-            //    MessageBoxButton.YesNo,
-            //    MessageBoxImage.Warning);
-            if (result == ContentDialogResult.Secondary)
+            //   confirmationMessage,
+            //   Resources.Microsoft_plugin_sys_confirmation,
+            //   MessageBoxButton.YesNo,
+            //   MessageBoxImage.Warning);
+            var result = MessageBoxHelper.Show(confirmationMessage, Resources.Microsoft_plugin_sys_confirmation, MessageBoxHelper.MessageBoxType.YesOrNo);
+
+            if (result == MessageBoxResult.No)
             {
                 return false;
             }
@@ -56,7 +61,8 @@ internal static class ResultHelper
     {
         if (executingEmptyRecycleBinTask)
         {
-            _ = await DisplayConfirmDialog("Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning, "OK", "Information");
+            // _ = await DisplayConfirmDialog("Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning, "OK", "Information");
+            MessageBoxHelper.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxType.OK);
 
             // _ = MessageBox.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxButton.OK, MessageBoxImage.Information);
             return;
@@ -106,7 +112,7 @@ internal static class ResultHelper
     /// <summary>
     /// Method to process the empty recycle bin command in a separate task
     /// </summary>
-    private static async void EmptyRecycleBinTask(bool settingEmptyRBSuccesMsg)
+    private static void EmptyRecycleBinTask(bool settingEmptyRBSuccesMsg)
     {
         executingEmptyRecycleBinTask = true;
 
@@ -118,9 +124,8 @@ internal static class ResultHelper
         var result = NativeMethods.SHEmptyRecycleBin(IntPtr.Zero, 0);
         if (result == (uint)HRESULT.E_UNEXPECTED)
         {
-            _ = await DisplayConfirmDialog("Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, Resources.Microsoft_plugin_sys_RecycleBin_IsEmpty, "OK", "Information");
-
-            // _ = MessageBox.Show(Resources.Microsoft_plugin_sys_RecycleBin_IsEmpty, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxButton.OK, MessageBoxImage.Information);
+            // _ = await DisplayConfirmDialog("Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, Resources.Microsoft_plugin_sys_RecycleBin_IsEmpty, "OK", "Information
+            _ = MessageBoxHelper.Show(Resources.Microsoft_plugin_sys_RecycleBin_IsEmpty, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxType.OK);
         }
         else if (result != (uint)HRESULT.S_OK && result != (uint)HRESULT.E_CANCELLED)
         {
@@ -129,16 +134,15 @@ internal static class ResultHelper
             var message = $"{Resources.Microsoft_plugin_sys_RecycleBin_ErrorMsg} {errorDesc}";
 
             ExtensionHost.LogMessage(new LogMessage() { Message = message + " - Please refer to https://msdn.microsoft.com/library/windows/desktop/aa378137 for more information." });
-            _ = await DisplayConfirmDialog(name, message, "OK", "Error");
 
-            // _ = MessageBox.Show(message, name, MessageBoxButton.OK, MessageBoxImage.Error);
+            // _ = await DisplayConfirmDialog(name, message, "OK", "Error");
+            _ = MessageBoxHelper.Show(message, name, MessageBoxType.OK);
         }
 
         if (result == (uint)HRESULT.S_OK && settingEmptyRBSuccesMsg)
         {
-            _ = await DisplayConfirmDialog("Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, Resources.Microsoft_plugin_sys_RecycleBin_EmptySuccessMessage, "OK", "Information");
-
-            // _ = MessageBox.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptySuccessMessage, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxButton.OK, MessageBoxImage.Information);
+            // _ = await DisplayConfirmDialog("Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, Resources.Microsoft_plugin_sys_RecycleBin_EmptySuccessMessage, "OK", "Information");
+            _ = MessageBoxHelper.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptySuccessMessage, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, MessageBoxType.OK);
         }
 
         executingEmptyRecycleBinTask = false;
