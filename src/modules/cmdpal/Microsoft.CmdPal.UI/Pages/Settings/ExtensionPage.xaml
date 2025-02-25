@@ -29,7 +29,7 @@
                 x:Key="BoolToInvertedVisibilityConverter"
                 FalseValue="Visible"
                 TrueValue="Collapsed" />
-            <converters:EmptyStringToObjectConverter 
+            <converters:EmptyStringToObjectConverter
                 x:Key="StringEmptyToBoolConverter"
                 EmptyValue="False"
                 NotEmptyValue="True" />
@@ -85,15 +85,15 @@
                                             Header="Alias"
                                             HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
                                             <StackPanel Orientation="Vertical">
-                                                <TextBox Text="{x:Bind AliasText, Mode=TwoWay}"/>
-                                                <ToggleSwitch 
-                                                    IsOn="{x:Bind IsDirectAlias, Mode=TwoWay}" 
-                                                    IsEnabled="{x:Bind AliasText, Converter={StaticResource StringEmptyToBoolConverter}, Mode=OneWay}" 
-                                                    OffContent="Indirect" 
-                                                    OnContent="Direct"/>
+                                                <TextBox Text="{x:Bind AliasText, Mode=TwoWay}" />
+                                                <ToggleSwitch
+                                                    IsEnabled="{x:Bind AliasText, Converter={StaticResource StringEmptyToBoolConverter}, Mode=OneWay}"
+                                                    IsOn="{x:Bind IsDirectAlias, Mode=TwoWay}"
+                                                    OffContent="Indirect"
+                                                    OnContent="Direct" />
                                             </StackPanel>
                                         </controls:SettingsCard>
-                                        
+
                                     </controls:SettingsExpander.Items>
                                 </controls:SettingsExpander>
                             </DataTemplate>
