@@ -17,7 +17,7 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
     public ExtensionObject<IListItem> Model { get; } = new(model);
 
     [ObservableProperty]
-    public partial ObservableCollection<TagViewModel> Tags { get; set; } = [];
+    public partial Collection<TagViewModel> Tags { get; set; } = [];
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]

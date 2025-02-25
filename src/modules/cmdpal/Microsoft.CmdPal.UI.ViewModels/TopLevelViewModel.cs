@@ -2,12 +2,13 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.CmdPal.UI.ViewModels.Settings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public sealed class TopLevelViewModel
+public sealed partial class TopLevelViewModel : ObservableObject
 {
     private readonly SettingsModel _settings;
     private readonly IServiceProvider _serviceProvider;
@@ -34,6 +35,26 @@ public sealed class TopLevelViewModel
         }
     }
 
+    public string AliasText
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdateAlias();
+        }
+    }
+
+    public bool IsDirectAlias
+    {
+        get => field;
+        set
+        {
+            field = value;
+            UpdateAlias();
+        }
+    }
+
     public TopLevelViewModel(TopLevelCommandItemWrapper item, SettingsModel settings, IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
@@ -42,7 +63,20 @@ public sealed class TopLevelViewModel
         _item = item;
         Icon = new(item.Icon ?? item.Command?.Icon);
         Icon.InitializeProperties();
+
+        var aliases = _serviceProvider.GetService<AliasManager>()!;
+        AliasText = _item.Alias ?? string.Empty;
     }
 
     private void Save() => SettingsModel.SaveSettings(_settings);
+
+    private void UpdateAlias()
+    {
+        var newAliasString = string.IsNullOrWhiteSpace(AliasText) ?
+            string.Empty :
+            AliasText + (IsDirectAlias ? string.Empty : " ");
+
+        _item.UpdateAlias(newAliasString);
+        Save();
+    }
 }

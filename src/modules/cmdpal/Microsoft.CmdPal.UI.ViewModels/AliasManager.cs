@@ -11,6 +11,8 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public partial class AliasManager : ObservableObject
 {
     private readonly TopLevelCommandManager _topLevelCommandManager;
+
+    // REMEMBER, CommandAlias.SearchPrefix is what we use as keys
     private readonly Dictionary<string, CommandAlias> _aliases;
 
     public AliasManager(TopLevelCommandManager tlcManager, SettingsModel settings)
@@ -66,5 +68,44 @@ public partial class AliasManager : ObservableObject
             .Where(kv => kv.Value.CommandId == commandId)
             .Select(kv => kv.Value.Alias)
             .FirstOrDefault();
+    }
+
+    public void UpdateAlias(string commandId, string newAliasText)
+    {
+        if (string.IsNullOrEmpty(commandId))
+        {
+            // do nothing?
+            return;
+        }
+
+        if (_aliases.TryGetValue(newAliasText, out var existingAlias))
+        {
+            if (existingAlias.CommandId == commandId)
+            {
+                return;
+            }
+        }
+
+        // Look for the old alias, and remove it
+        List<CommandAlias> toRemove = [];
+        foreach (var kv in _aliases)
+        {
+            if (kv.Value.CommandId == commandId)
+            {
+                toRemove.Add(kv.Value);
+            }
+        }
+
+        foreach (var alias in toRemove)
+        {
+            // REMEMBER, SearchPrefix is what we use as keys
+            _aliases.Remove(alias.SearchPrefix);
+        }
+
+        if (!string.IsNullOrEmpty(newAliasText))
+        {
+            var alias = CommandAlias.FromSearchText(newAliasText, commandId);
+            AddAlias(alias);
+        }
     }
 }

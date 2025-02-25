@@ -112,6 +112,13 @@ public partial class TopLevelCommandItemWrapper : ListItem
         _generatedId = $"{_commandProviderId}{result}";
     }
 
+    public void UpdateAlias(string newAlias)
+    {
+        _serviceProvider.GetService<AliasManager>()!.UpdateAlias(Id, newAlias);
+        UpdateAlias();
+        UpdateTags();
+    }
+
     private void UpdateAlias()
     {
         // Add tags for the alias, if we have one.
