@@ -16,16 +16,28 @@ public sealed partial class MessageBoxHelper
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int MessageBox(IntPtr hWnd, string text, string caption, int type);
 
-    public static MessageBoxResult Show(string text, string caption, MessageBoxType type)
+    public static MessageBoxResult Show(string text, string caption, IconType iconType, MessageBoxType type)
     {
-        return (MessageBoxResult)MessageBox(IntPtr.Zero, text, caption, (int)type);
+        return (MessageBoxResult)MessageBox(IntPtr.Zero, text, caption, (int)type | (int)iconType);
+    }
+
+    public enum IconType
+    {
+        Error = 0x00000010,
+        Help = 0x00000020,
+        Warning = 0x00000030,
+        Info = 0x00000040,
     }
 
     public enum MessageBoxType
     {
         OK = 0x00000000,
         OkAndCancel = 0x00000001,
+        AboartRetryIgnore = 0x00000002,
+        YesNoCancel = 0x00000003,
         YesOrNo = 0x00000004,
+        RetryAndCancel = 0x00000005,
+        CancelTryAgainAndContinue = 0x00000006,
     }
 
     public enum MessageBoxResult
