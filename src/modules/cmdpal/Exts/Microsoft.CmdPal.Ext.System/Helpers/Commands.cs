@@ -106,7 +106,6 @@ internal static class Commands
                     Title = Resources.Microsoft_plugin_sys_RecycleBin,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
                     Icon = Icons.RecycleBinIcon,
-                    Tags = [new Tag(Resources.Microsoft_plugin_sys_RecycleBin_searchTag)],
                 });
         }
 
@@ -155,6 +154,7 @@ internal static class Commands
                     Title = intInfo.IPv4,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysIpv4DescriptionCompositeFormate, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
+                    Tags = [new Tag() { Text = Resources.Microsoft_plugin_ext_copy, ToolTip = intInfo.GetConnectionDetails() }],
                 });
             }
 
@@ -166,6 +166,7 @@ internal static class Commands
                     Title = intInfo.IPv6Primary,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysIpv4DescriptionCompositeFormate, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
+                    Tags = [new Tag() { Text = Resources.Microsoft_plugin_ext_copy, ToolTip = intInfo.GetConnectionDetails() }],
                 });
             }
 
@@ -177,6 +178,7 @@ internal static class Commands
                     Title = intInfo.PhysicalAddress,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysMacDescriptionCompositeFormate, intInfo.Adapter, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
+                    Tags = [new Tag() { Text = Resources.Microsoft_plugin_ext_copy, ToolTip = intInfo.GetConnectionDetails() }],
                 });
             }
         }

@@ -19,9 +19,11 @@ public sealed partial class SystemCommandsCache
         var a = Task.Run(() =>
         {
             var isBootedInUefiMode = Win32Helpers.GetSystemFirmwareType() == FirmwareType.Uefi;
-            var separateEmptyRB = manager.ShowSeparateResultForEmptyRecycleBin;
+
+            // var separateEmptyRB = manager.ShowSeparateResultForEmptyRecycleBin;
             var confirmSystemCommands = manager.ShowDialogToConfirmCommand;
             var showSuccessOnEmptyRB = manager.ShowSuccessMessageAfterEmptyingRecycleBin;
+            var separateEmptyRB = false;
 
             // normal system commands are fast and can be returned immediately
             var systemCommands = Commands.GetSystemCommands(isBootedInUefiMode, separateEmptyRB, confirmSystemCommands, showSuccessOnEmptyRB);

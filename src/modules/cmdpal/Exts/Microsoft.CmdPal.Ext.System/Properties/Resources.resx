@@ -120,6 +120,9 @@
   <data name="confirm_system_commands" xml:space="preserve">
     <value>Show a dialog to confirm system commands</value>
   </data>
+  <data name="Microsoft_plugin_ext_copy" xml:space="preserve">
+    <value>Copy to clipboard</value>
+  </data>
   <data name="Microsoft_plugin_ext_provider_name" xml:space="preserve">
     <value>Microsoft System Command</value>
   </data>

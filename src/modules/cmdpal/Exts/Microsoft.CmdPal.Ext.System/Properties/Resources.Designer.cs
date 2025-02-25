@@ -70,6 +70,15 @@ namespace Microsoft.CmdPal.Ext.System {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy to clipboard.
+        /// </summary>
+        public static string Microsoft_plugin_ext_copy {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_ext_copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft System Command.
         /// </summary>
         public static string Microsoft_plugin_ext_provider_name {
