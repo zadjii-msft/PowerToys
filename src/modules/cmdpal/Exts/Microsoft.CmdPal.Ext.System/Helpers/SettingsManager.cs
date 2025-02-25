@@ -13,12 +13,6 @@ public class SettingsManager : JsonSettingsManager
 
     private static string Namespaced(string propertyName) => $"{_namespace}.{propertyName}";
 
-    private readonly ToggleSetting _includeInGlobalResult = new(
-        Namespaced(nameof(IncludeInGlobalResult)),
-        "Include in global result",
-        "Include in global result",
-        true); // TODO -- double check default value
-
     private readonly ToggleSetting _showDialogToConfirmCommand = new(
         Namespaced(nameof(ShowDialogToConfirmCommand)),
         "Show a dialog to confirm system commands",
@@ -49,8 +43,6 @@ public class SettingsManager : JsonSettingsManager
         "Reduce the priority of 'IP' and 'MAC' results to improve the order in the global results",
         true); // TODO -- double check default value
 
-    public bool IncludeInGlobalResult => _includeInGlobalResult.Value;
-
     public bool ShowDialogToConfirmCommand => _showDialogToConfirmCommand.Value;
 
     public bool ShowSuccessMessageAfterEmptyingRecycleBin => _showSuccessMessageAfterEmptyingRecycleBin.Value;
@@ -74,7 +66,6 @@ public class SettingsManager : JsonSettingsManager
     {
         FilePath = SettingsJsonPath();
 
-        Settings.Add(_includeInGlobalResult);
         Settings.Add(_showDialogToConfirmCommand);
         Settings.Add(_showSuccessMessageAfterEmptyingRecycleBin);
         Settings.Add(_useLocalizedSystemCommandsInsteadOfEnglishOnes);

@@ -84,12 +84,6 @@ internal static class Commands
         {
             results.AddRange(new[]
             {
-                new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_hibernate_confirmation, () => NativeMethods.SetSuspendState(true, true, true)))
-                {
-                    Title = Resources.Microsoft_plugin_sys_RecycleBinOpen,
-                    Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
-                    Icon = Icons.RecycleBinIcon,
-                },
                 new ListItem(new OpenInShellCommand("explorer.exe", "shell:RecycleBinFolder"))
                 {
                     Title = Resources.Microsoft_plugin_sys_RecycleBinOpen,

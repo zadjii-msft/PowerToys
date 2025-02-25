@@ -16,7 +16,6 @@ public sealed partial class SystemCommandPage : ListPage
     public SystemCommandPage(SettingsManager settingsManager)
     {
         Title = "SystemCommandPage";
-        Name = "Open";
         _settingsManager = settingsManager;
         commandsCache = new SystemCommandsCache(settingsManager);
     }
