@@ -22,8 +22,6 @@ internal static class Commands
     internal const int EWXFORCE = 0x00000004;
     internal const int EWXPOWEROFF = 0x00000008;
     internal const int EWXFORCEIFHUNG = 0x00000010;
-    private static readonly Tag _systemCommandTag = new("System");
-    private static readonly Tag _networkTag = new("Network");
 
     // Cache for network interface information to save query time
     private const int UpdateCacheIntervalSeconds = 5;
@@ -48,42 +46,36 @@ internal static class Commands
                 Title = Resources.Microsoft_plugin_sys_shutdown_computer,
                 Subtitle = Resources.Microsoft_plugin_sys_shutdown_computer_description,
                 Icon = Icons.ShutdownIcon,
-                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_restart_computer_confirmation, () => OpenInShellHelper.OpenInShell("shutdown", "/g /t 0")))
             {
                 Title = Resources.Microsoft_plugin_sys_restart_computer,
                 Subtitle = Resources.Microsoft_plugin_sys_restart_computer_description,
                 Icon = Icons.RestartIcon,
-                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_sign_out_confirmation, () => NativeMethods.ExitWindowsEx(EWXLOGOFF, 0)))
             {
                 Title = Resources.Microsoft_plugin_sys_sign_out,
                 Subtitle = Resources.Microsoft_plugin_sys_sign_out_description,
                 Icon = Icons.LogoffIcon,
-                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_lock_confirmation, () => NativeMethods.LockWorkStation()))
             {
                 Title = Resources.Microsoft_plugin_sys_lock,
                 Subtitle = Resources.Microsoft_plugin_sys_lock_description,
                 Icon = Icons.LockIcon,
-                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_sleep_confirmation, () => NativeMethods.SetSuspendState(false, true, true)))
             {
                 Title = Resources.Microsoft_plugin_sys_sleep,
                 Subtitle = Resources.Microsoft_plugin_sys_sleep_description,
                 Icon = Icons.SleepIcon,
-                Tags = [_systemCommandTag],
             },
             new ListItem(new ExecuteCommand(confirmCommands, Resources.Microsoft_plugin_sys_hibernate_confirmation, () => NativeMethods.SetSuspendState(true, true, true)))
             {
                 Title = Resources.Microsoft_plugin_sys_hibernate,
                 Subtitle = Resources.Microsoft_plugin_sys_hibernate_description,
                 Icon = Icons.SleepIcon, // Icon change needed
-                Tags = [_systemCommandTag],
             },
         });
 
@@ -97,39 +89,23 @@ internal static class Commands
                     Title = Resources.Microsoft_plugin_sys_RecycleBinOpen,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
                     Icon = Icons.RecycleBinIcon,
-                    Tags = [_systemCommandTag],
                 },
                 new ListItem(new OpenInShellCommand("explorer.exe", "shell:RecycleBinFolder"))
                 {
                     Title = Resources.Microsoft_plugin_sys_RecycleBinOpen,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
                     Icon = Icons.RecycleBinIcon,
-                    Tags = [_systemCommandTag],
                 },
                 new ListItem(new RecycleBinCommand(emptyRBSuccessMessage))
                 {
                     Title = Resources.Microsoft_plugin_sys_RecycleBinEmptyResult,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBinEmpty_description,
                     Icon = Icons.RecycleBinIcon,
-                    Tags = [_systemCommandTag],
                 },
             });
         }
         else
         {
-            // results.Add(new Result
-            // {
-            //    Title = Resources.ResourceManager.GetString("Microsoft_plugin_sys_RecycleBin", culture),
-            //    SubTitle = Resources.ResourceManager.GetString("Microsoft_plugin_sys_RecycleBin_description", culture),
-            //    IcoPath = $"Images\\recyclebin.{iconTheme}.png",
-            //    ContextData = new SystemPluginContext { Type = ResultContextType.RecycleBinCommand, SearchTag = Resources.ResourceManager.GetString("Microsoft_plugin_sys_RecycleBin_searchTag", culture) },
-            //    Action = c =>
-            //    {
-            //        return Helper.OpenInShell("explorer.exe", "shell:RecycleBinFolder");
-            //    },
-            // });
-
-            // TODO: contextData?
             results.Add(
                 new ListItem(new OpenInShellCommand("explorer.exe", "shell:RecycleBinFolder"))
                 {
@@ -137,7 +113,7 @@ internal static class Commands
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
                     Icon = Icons.RecycleBinIcon,
                     MoreCommands = [ResultHelper.CreateCommandContextItemByType(ResultContextType.RecycleBinCommand, false)],
-                    Tags = [_systemCommandTag],
+                    Tags = [new Tag(Resources.Microsoft_plugin_sys_RecycleBin_searchTag)],
                 });
         }
 
@@ -149,7 +125,6 @@ internal static class Commands
                 Title = Resources.Microsoft_plugin_sys_uefi,
                 Subtitle = Resources.Microsoft_plugin_sys_uefi_description,
                 Icon = Icons.FirmwareSettingsIcon,
-                Tags = [_systemCommandTag],
             });
         }
 
@@ -182,36 +157,33 @@ internal static class Commands
             if (!string.IsNullOrEmpty(intInfo.IPv4))
             {
                 // TODO: copy data? ToolTipData? contextData?
-                results.Add(new ListItem(new NetworkAdapterCommand())
+                results.Add(new ListItem(new CopyTextCommand(intInfo.GetConnectionDetails()))
                 {
                     Title = intInfo.IPv4,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysIpv4DescriptionCompositeFormate, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
-                    Tags = [_networkTag],
                 });
             }
 
             if (!string.IsNullOrEmpty(intInfo.IPv6Primary))
             {
                 // TODO: copy data? ToolTipData? contextData?
-                results.Add(new ListItem(new NetworkAdapterCommand())
+                results.Add(new ListItem(new CopyTextCommand(intInfo.GetConnectionDetails()))
                 {
                     Title = intInfo.IPv6Primary,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysIpv4DescriptionCompositeFormate, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
-                    Tags = [_networkTag],
                 });
             }
 
             if (!string.IsNullOrEmpty(intInfo.PhysicalAddress))
             {
                 // TODO: copy data? ToolTipData? contextData?
-                results.Add(new ListItem(new NetworkAdapterCommand())
+                results.Add(new ListItem(new CopyTextCommand(intInfo.GetAdapterDetails()))
                 {
                     Title = intInfo.PhysicalAddress,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysMacDescriptionCompositeFormate, intInfo.Adapter, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
-                    Tags = [_networkTag],
                 });
             }
         }
