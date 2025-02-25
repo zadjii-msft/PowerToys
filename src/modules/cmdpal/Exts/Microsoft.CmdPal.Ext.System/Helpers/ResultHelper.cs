@@ -3,11 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Windows.System;
 using static Microsoft.CmdPal.Ext.System.Helpers.MessageBoxHelper;
 
@@ -31,23 +28,6 @@ internal static class ResultHelper
 
         command();
         return true;
-    }
-
-    internal static bool CopyToClipBoard(in string text)
-    {
-        try
-        {
-            ClipboardHelper.SetText(text);
-            return true;
-        }
-        catch (Exception exception)
-        {
-            var name = "Plugin: SystemCommandExtension";
-            var message = $"Can't copy to clipboard. ex: {exception.Message}";
-            ExtensionHost.LogMessage(new LogMessage() { Message = name + message });
-
-            return false;
-        }
     }
 
     public static async void EmptyRecycleBinAsync(bool settingEmptyRBSuccesMsg)
@@ -83,21 +63,6 @@ internal static class ResultHelper
         }
 
         return new CommandContextItem(new NoOpCommand());
-    }
-
-    private static async Task<ContentDialogResult> DisplayConfirmDialog(string title, string content, string primaryButtonText, string closeButtonText)
-    {
-        ContentDialog noWifiDialog = new ContentDialog
-        {
-            Title = title,
-            Content = content,
-            PrimaryButtonText = primaryButtonText,
-            CloseButtonText = closeButtonText,
-        };
-
-        var result = await noWifiDialog.ShowAsync();
-
-        return result;
     }
 
     /// <summary>
