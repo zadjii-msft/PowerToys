@@ -35,15 +35,17 @@ public sealed partial class TopLevelViewModel : ObservableObject
         }
     }
 
-    private string _aliasText = string.Empty;
+    private string _aliasText;
 
     public string AliasText
     {
         get => _aliasText;
         set
         {
-            _aliasText = value;
-            UpdateAlias();
+            if (SetProperty(ref _aliasText, value))
+            {
+                UpdateAlias();
+            }
         }
     }
 
@@ -54,8 +56,10 @@ public sealed partial class TopLevelViewModel : ObservableObject
         get => _isDirectAlias;
         set
         {
-            _isDirectAlias = value;
-            UpdateAlias();
+            if (SetProperty(ref _isDirectAlias, value))
+            {
+                UpdateAlias();
+            }
         }
     }
 
@@ -69,21 +73,21 @@ public sealed partial class TopLevelViewModel : ObservableObject
         Icon.InitializeProperties();
 
         var aliases = _serviceProvider.GetService<AliasManager>()!;
-        _aliasText = _item.Alias?.Alias ?? string.Empty;
         _isDirectAlias = _item.Alias?.IsDirect ?? false;
+        _aliasText = _item.Alias?.Alias ?? string.Empty;
     }
 
     private void Save() => SettingsModel.SaveSettings(_settings);
 
     private void UpdateAlias()
     {
-        if (string.IsNullOrWhiteSpace(AliasText))
+        if (string.IsNullOrWhiteSpace(_aliasText))
         {
             _item.UpdateAlias(null);
         }
         else
         {
-            var newAlias = new CommandAlias(AliasText, _item.Id, IsDirectAlias);
+            var newAlias = new CommandAlias(_aliasText, _item.Id, _isDirectAlias);
             _item.UpdateAlias(newAlias);
         }
 
