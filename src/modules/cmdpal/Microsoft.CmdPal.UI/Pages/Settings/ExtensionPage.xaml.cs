@@ -5,7 +5,6 @@
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using Windows.System;
 
 namespace Microsoft.CmdPal.UI.Pages;
 
@@ -22,20 +21,13 @@ public sealed partial class ExtensionPage : Page
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
-        ViewModel = e.Parameter is ProviderSettingsViewModel vm
-            ? vm
-            : throw new ArgumentException($"{nameof(ExtensionPage)} navigation args should be passed a {nameof(ProviderSettingsViewModel)}");
-    }
-
-    private void AliasTextBox_KeyUp(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
-    {
-        if (e.Key == VirtualKey.Enter)
+        if (e.Parameter is ProviderSettingsViewModel vm)
         {
-            if (sender is TextBox textBox)
-            {
-                // textBox.Focus(Microsoft.UI.Xaml.FocusState.Keyboard);
-                textBox.Text = textBox.Text;
-            }
+            ViewModel = vm;
+        }
+        else
+        {
+            throw new ArgumentException($"{nameof(ExtensionPage)} navigation args should be passed a {nameof(ProviderSettingsViewModel)}");
         }
     }
 }

@@ -85,7 +85,7 @@
                                             Header="Alias"
                                             HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
                                             <StackPanel Orientation="Vertical">
-                                                <TextBox Text="{x:Bind AliasText, Mode=TwoWay}" KeyUp="AliasTextBox_KeyUp"/>
+                                                <TextBox Text="{x:Bind AliasText, Mode=TwoWay}"/>
                                                 <ToggleSwitch 
                                                     IsOn="{x:Bind IsDirectAlias, Mode=TwoWay}" 
                                                     IsEnabled="{x:Bind AliasText, Converter={StaticResource StringEmptyToBoolConverter}, Mode=OneWay}" 
