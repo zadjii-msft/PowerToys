@@ -70,7 +70,15 @@ public partial class AliasManager : ObservableObject
             .FirstOrDefault();
     }
 
-    public void UpdateAlias(string commandId, string newAliasText)
+    public CommandAlias? AliasFromId(string commandId)
+    {
+        return _aliases
+            .Where(kv => kv.Value.CommandId == commandId)
+            .Select(kv => kv.Value)
+            .FirstOrDefault();
+    }
+
+    public void UpdateAlias(string commandId, CommandAlias? newAlias)
     {
         if (string.IsNullOrEmpty(commandId))
         {
@@ -78,7 +86,9 @@ public partial class AliasManager : ObservableObject
             return;
         }
 
-        if (_aliases.TryGetValue(newAliasText, out var existingAlias))
+        // If we already have _this exact alias_, do nothing
+        if (newAlias != null &&
+            _aliases.TryGetValue(newAlias.SearchPrefix, out var existingAlias))
         {
             if (existingAlias.CommandId == commandId)
             {
@@ -102,10 +112,9 @@ public partial class AliasManager : ObservableObject
             _aliases.Remove(alias.SearchPrefix);
         }
 
-        if (!string.IsNullOrEmpty(newAliasText))
+        if (newAlias != null)
         {
-            var alias = CommandAlias.FromSearchText(newAliasText, commandId);
-            AddAlias(alias);
+            AddAlias(newAlias);
         }
     }
 }

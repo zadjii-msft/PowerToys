@@ -35,22 +35,26 @@ public sealed partial class TopLevelViewModel : ObservableObject
         }
     }
 
+    private string _aliasText = string.Empty;
+
     public string AliasText
     {
-        get => field;
+        get => _aliasText;
         set
         {
-            field = value;
+            _aliasText = value;
             UpdateAlias();
         }
     }
 
+    private bool _isDirectAlias;
+
     public bool IsDirectAlias
     {
-        get => field;
+        get => _isDirectAlias;
         set
         {
-            field = value;
+            _isDirectAlias = value;
             UpdateAlias();
         }
     }
@@ -65,18 +69,24 @@ public sealed partial class TopLevelViewModel : ObservableObject
         Icon.InitializeProperties();
 
         var aliases = _serviceProvider.GetService<AliasManager>()!;
-        AliasText = _item.Alias ?? string.Empty;
+        _aliasText = _item.Alias?.Alias ?? string.Empty;
+        _isDirectAlias = _item.Alias?.IsDirect ?? false;
     }
 
     private void Save() => SettingsModel.SaveSettings(_settings);
 
     private void UpdateAlias()
     {
-        var newAliasString = string.IsNullOrWhiteSpace(AliasText) ?
-            string.Empty :
-            AliasText + (IsDirectAlias ? string.Empty : " ");
+        if (string.IsNullOrWhiteSpace(AliasText))
+        {
+            _item.UpdateAlias(null);
+        }
+        else
+        {
+            var newAlias = new CommandAlias(AliasText, _item.Id, IsDirectAlias);
+            _item.UpdateAlias(newAlias);
+        }
 
-        _item.UpdateAlias(newAliasString);
         Save();
     }
 }

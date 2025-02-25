@@ -34,7 +34,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
 
     private readonly TopLevelCommandWrapper _topLevelCommand;
 
-    public string? Alias { get; private set; }
+    public CommandAlias? Alias { get; private set; }
 
     private HotkeySettings? _hotkey;
 
@@ -112,7 +112,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
         _generatedId = $"{_commandProviderId}{result}";
     }
 
-    public void UpdateAlias(string newAlias)
+    public void UpdateAlias(CommandAlias? newAlias)
     {
         _serviceProvider.GetService<AliasManager>()!.UpdateAlias(Id, newAlias);
         UpdateAlias();
@@ -125,7 +125,7 @@ public partial class TopLevelCommandItemWrapper : ListItem
         var aliases = _serviceProvider.GetService<AliasManager>();
         if (aliases != null)
         {
-            Alias = aliases.KeysFromId(Id);
+            Alias = aliases.AliasFromId(Id);
         }
     }
 
@@ -148,9 +148,9 @@ public partial class TopLevelCommandItemWrapper : ListItem
             tags.Add(new Tag() { Text = Hotkey.ToString() });
         }
 
-        if (Alias is string keys)
+        if (Alias != null)
         {
-            tags.Add(new Tag() { Text = keys });
+            tags.Add(new Tag() { Text = Alias.SearchPrefix });
         }
 
         this.Tags = tags.ToArray();
