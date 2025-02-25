@@ -130,8 +130,7 @@ public partial class MainListPage : DynamicListPage,
             if (_filteredItems == null)
             {
                 IEnumerable<IListItem> apps = AllAppsCommandProvider.Page.GetItems();
-                IEnumerable<IListItem> systemCommands = SystemCommandExtensionProvider.Page.GetItems();
-                _filteredItems = commands.Concat(apps).Concat(systemCommands);
+                _filteredItems = commands.Concat(apps);
             }
 
             // Produce a list of everything that matches the current filter.
