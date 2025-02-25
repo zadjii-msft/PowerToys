@@ -120,6 +120,12 @@
   <data name="confirm_system_commands" xml:space="preserve">
     <value>Show a dialog to confirm system commands</value>
   </data>
+  <data name="Microsoft_plugin_ext_provider_name" xml:space="preserve">
+    <value>Microsoft System Command</value>
+  </data>
+  <data name="Microsoft_plugin_ext_system_page_name" xml:space="preserve">
+    <value>Windows System Command</value>
+  </data>
   <data name="Microsoft_plugin_sys_AdapterDetails" xml:space="preserve">
     <value>Adapter details</value>
   </data>

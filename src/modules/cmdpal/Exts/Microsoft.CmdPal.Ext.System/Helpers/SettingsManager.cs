@@ -15,43 +15,27 @@ public class SettingsManager : JsonSettingsManager
 
     private readonly ToggleSetting _showDialogToConfirmCommand = new(
         Namespaced(nameof(ShowDialogToConfirmCommand)),
-        "Show a dialog to confirm system commands",
-        "Show a dialog to confirm system commands",
+        Resources.confirm_system_commands,
+        Resources.confirm_system_commands,
         false); // TODO -- double check default value
 
     private readonly ToggleSetting _showSuccessMessageAfterEmptyingRecycleBin = new(
         Namespaced(nameof(ShowSuccessMessageAfterEmptyingRecycleBin)),
-        "Show a success message after emptying the Recycle Bin",
-        "Show a success message after emptying the Recycle Bin",
+        Resources.Microsoft_plugin_sys_RecycleBin_ShowEmptySuccessMessage,
+        Resources.Microsoft_plugin_sys_RecycleBin_ShowEmptySuccessMessage,
         false); // TODO -- double check default value
-
-    private readonly ToggleSetting _useLocalizedSystemCommandsInsteadOfEnglishOnes = new(
-        Namespaced(nameof(UseLocalizedSystemCommandsInsteadOfEnglishOnes)),
-        "Use localized system commands instead of English ones",
-        "Use localized system commands instead of English ones",
-        true); // TODO -- double check default value
 
     private readonly ToggleSetting _showSeparateResultForEmptyRecycleBin = new(
         Namespaced(nameof(ShowSeparateResultForEmptyRecycleBin)),
-        "Show separate result for Empty Recycle Bin command",
-        "Show separate result for Empty Recycle Bin command",
-        true); // TODO -- double check default value
-
-    private readonly ToggleSetting _reduceThePriorityOfIPAndMacResults = new(
-        Namespaced(nameof(ReduceThePriorityOfIPAndMacResults)),
-        "Reduce the priority of 'IP' and 'MAC' results to improve the order in the global results",
-        "Reduce the priority of 'IP' and 'MAC' results to improve the order in the global results",
+        Resources.Microsoft_plugin_sys_RecycleBin_ShowEmptySeparate,
+        Resources.Microsoft_plugin_sys_RecycleBin_ShowEmptySeparate,
         true); // TODO -- double check default value
 
     public bool ShowDialogToConfirmCommand => _showDialogToConfirmCommand.Value;
 
     public bool ShowSuccessMessageAfterEmptyingRecycleBin => _showSuccessMessageAfterEmptyingRecycleBin.Value;
 
-    public bool UseLocalizedSystemCommandsInsteadOfEnglishOnes => _useLocalizedSystemCommandsInsteadOfEnglishOnes.Value;
-
     public bool ShowSeparateResultForEmptyRecycleBin => _showSeparateResultForEmptyRecycleBin.Value;
-
-    public bool ReduceThePriorityOfIPAndMacResults => _reduceThePriorityOfIPAndMacResults.Value;
 
     internal static string SettingsJsonPath()
     {
@@ -68,9 +52,7 @@ public class SettingsManager : JsonSettingsManager
 
         Settings.Add(_showDialogToConfirmCommand);
         Settings.Add(_showSuccessMessageAfterEmptyingRecycleBin);
-        Settings.Add(_useLocalizedSystemCommandsInsteadOfEnglishOnes);
         Settings.Add(_showSeparateResultForEmptyRecycleBin);
-        Settings.Add(_reduceThePriorityOfIPAndMacResults);
 
         // Load settings from file upon initialization
         LoadSettings();

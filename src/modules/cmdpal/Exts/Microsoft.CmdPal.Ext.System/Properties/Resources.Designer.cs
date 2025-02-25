@@ -70,6 +70,24 @@ namespace Microsoft.CmdPal.Ext.System {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Microsoft System Command.
+        /// </summary>
+        public static string Microsoft_plugin_ext_provider_name {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_ext_provider_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Windows System Command.
+        /// </summary>
+        public static string Microsoft_plugin_ext_system_page_name {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_ext_system_page_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adapter details.
         /// </summary>
         public static string Microsoft_plugin_sys_AdapterDetails {

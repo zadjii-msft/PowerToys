@@ -106,7 +106,6 @@ internal static class Commands
                     Title = Resources.Microsoft_plugin_sys_RecycleBin,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
                     Icon = Icons.RecycleBinIcon,
-                    MoreCommands = [ResultHelper.CreateCommandContextItemByType(ResultContextType.RecycleBinCommand, false)],
                     Tags = [new Tag(Resources.Microsoft_plugin_sys_RecycleBin_searchTag)],
                 });
         }

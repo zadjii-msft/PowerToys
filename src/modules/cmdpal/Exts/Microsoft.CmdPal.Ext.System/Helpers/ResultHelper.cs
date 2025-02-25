@@ -42,29 +42,6 @@ internal static class ResultHelper
         await Task.Run(() => EmptyRecycleBinTask(settingEmptyRBSuccesMsg));
     }
 
-    public static CommandContextItem CreateCommandContextItemByType(ResultContextType type, bool settingEmptyRBSuccesMsg)
-    {
-        switch (type)
-        {
-            case ResultContextType.NetworkAdapterInfo:
-                return new CommandContextItem(new NetworkAdapterCommand())
-                {
-                    Title = Resources.Microsoft_plugin_sys_CopyDetails,
-                    Icon = new IconInfo("\xE8C8"),
-                    RequestedShortcut = KeyChordHelpers.FromModifiers(true, false, false, false, (int)VirtualKey.C, 0),
-                };
-            case ResultContextType.RecycleBinCommand:
-                return new CommandContextItem(new RecycleBinCommand(settingEmptyRBSuccesMsg))
-                {
-                    Title = Resources.Microsoft_plugin_sys_RecycleBin_contextMenu,
-                    Icon = new IconInfo("\xE74D"),
-                    RequestedShortcut = KeyChordHelpers.FromModifiers(false, false, true, false, (int)VirtualKey.D, 0),
-                };
-        }
-
-        return new CommandContextItem(new NoOpCommand());
-    }
-
     /// <summary>
     /// Method to process the empty recycle bin command in a separate task
     /// </summary>
