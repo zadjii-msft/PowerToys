@@ -203,18 +203,8 @@ public sealed partial class MainWindow : Window,
         }
 
         var display = GetScreen(hwnd, target);
-
-        // AppWindow.Move(new(display.WorkArea.X, display.WorkArea.Y));
         PositionCentered(display);
 
-        // App.Current.AppWindow.AppWindow.
-        // PInvoke.SetWindowPos(hwnd,
-        //             0,
-        //             newOrigin.x,
-        //             newOrigin.y,
-        //             currentWindowRect.width(),
-        //             currentWindowRect.height(),
-        //             SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
         PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_SHOW);
         PInvoke.SetForegroundWindow(hwnd);
         PInvoke.SetActiveWindow(hwnd);

@@ -336,7 +336,6 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         if (isRoot)
         {
             // If this is the hotkey for the root level, then always show us
-            // ShowHwnd(message.Hwnd, settings.SummonOn);
             WeakReferenceMessenger.Default.Send<ShowWindowMessage>(new(message.Hwnd));
 
             // Depending on the settings, either
@@ -373,7 +372,6 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                         // of some kind. Let's pop the stack, show the window, and navigate to it.
                         GoHome(false);
 
-                        // ShowHwnd(message.Hwnd, settings.SummonOn);
                         WeakReferenceMessenger.Default.Send<ShowWindowMessage>(new(message.Hwnd));
                     }
 
@@ -394,24 +392,6 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         WeakReferenceMessenger.Default.Send<FocusSearchBoxMessage>();
     }
 
-    // private void ShowHwnd(IntPtr hwndValue, MonitorBehavior target)
-    // {
-    //    var hwnd = new HWND(hwndValue);
-
-    // // Remember, IsIconic == "minimized", which is entirely different state
-    //    // from "show/hide"
-    //    // If we're currently minimized, restore us first, before we reveal
-    //    // our window. Otherwise we'd just be showing a minimized window -
-    //    // which would remain not visible to the user.
-    //    if (PInvoke.IsIconic(hwnd))
-    //    {
-    //        PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_RESTORE);
-    //    }
-
-    // PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_SHOW);
-    //    PInvoke.SetForegroundWindow(hwnd);
-    //    PInvoke.SetActiveWindow(hwnd);
-    // }
     private void GoBack(bool withAnimation = true, bool focusSearch = true)
     {
         HideDetails();
