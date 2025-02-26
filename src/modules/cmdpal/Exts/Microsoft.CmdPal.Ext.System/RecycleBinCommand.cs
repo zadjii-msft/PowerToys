@@ -19,7 +19,7 @@ public sealed partial class RecycleBinCommand : InvokableCommand
 
     public override CommandResult Invoke()
     {
-        if (ResultHelper.ExecutingEmptyRecycleBinTask || true)
+        if (ResultHelper.ExecutingEmptyRecycleBinTask)
         {
             return CommandResult.ShowToast(new ToastArgs() { Message = Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning });
         }
