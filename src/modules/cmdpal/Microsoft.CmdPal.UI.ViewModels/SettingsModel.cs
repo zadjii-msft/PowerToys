@@ -151,12 +151,15 @@ public partial class SettingsModel : ObservableObject
     {
         PropertyNameCaseInsensitive = true,
         IncludeFields = true,
+        Converters = { new JsonStringEnumConverter() },
+        AllowTrailingCommas = true,
     };
 }
 
 public enum MonitorBehavior
 {
     ToMouse = 0,
-    ToCurrent = 1,
-    InPlace = 2,
+    ToPrimary = 1,
+    ToFocusedWindow = 2,
+    InPlace = 3,
 }
