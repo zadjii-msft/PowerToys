@@ -148,37 +148,34 @@ internal static class Commands
         {
             if (!string.IsNullOrEmpty(intInfo.IPv4))
             {
-                // TODO: copy data? ToolTipData? contextData?
                 results.Add(new ListItem(new CopyTextCommand(intInfo.GetConnectionDetails()))
                 {
                     Title = intInfo.IPv4,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysIpv4DescriptionCompositeFormate, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
-                    Tags = [new Tag() { Text = Resources.Microsoft_plugin_ext_copy, ToolTip = intInfo.GetConnectionDetails() }],
+                    Details = new Details() { Title = Resources.Microsoft_plugin_ext_connection_details, Body = intInfo.GetConnectionDetails() },
                 });
             }
 
             if (!string.IsNullOrEmpty(intInfo.IPv6Primary))
             {
-                // TODO: copy data? ToolTipData? contextData?
                 results.Add(new ListItem(new CopyTextCommand(intInfo.GetConnectionDetails()))
                 {
                     Title = intInfo.IPv6Primary,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysIpv4DescriptionCompositeFormate, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
-                    Tags = [new Tag() { Text = Resources.Microsoft_plugin_ext_copy, ToolTip = intInfo.GetConnectionDetails() }],
+                    Details = new Details() { Title = Resources.Microsoft_plugin_ext_connection_details, Body = intInfo.GetConnectionDetails() },
                 });
             }
 
             if (!string.IsNullOrEmpty(intInfo.PhysicalAddress))
             {
-                // TODO: copy data? ToolTipData? contextData?
                 results.Add(new ListItem(new CopyTextCommand(intInfo.GetAdapterDetails()))
                 {
                     Title = intInfo.PhysicalAddress,
                     Subtitle = string.Format(CultureInfo.InvariantCulture, sysMacDescriptionCompositeFormate, intInfo.Adapter, intInfo.ConnectionName) + " - " + Resources.Microsoft_plugin_sys_SubTitle_CopyHint,
                     Icon = Icons.NetworkAdapterIcon,
-                    Tags = [new Tag() { Text = Resources.Microsoft_plugin_ext_copy, ToolTip = intInfo.GetConnectionDetails() }],
+                    Details = new Details() { Title = Resources.Microsoft_plugin_ext_connection_details, Body = intInfo.GetConnectionDetails() },
                 });
             }
         }

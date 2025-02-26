@@ -19,6 +19,7 @@ public sealed partial class SystemCommandPage : ListPage
         Icon = new IconInfo("\uE72E");
         _settingsManager = settingsManager;
         commandsCache = new SystemCommandsCache(settingsManager);
+        ShowDetails = true;
     }
 
     public override IListItem[] GetItems() => commandsCache.CachedCommands;

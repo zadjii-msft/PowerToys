@@ -12,7 +12,7 @@ namespace Microsoft.CmdPal.Ext.System.Helpers;
 
 internal static class ResultHelper
 {
-    private static bool executingEmptyRecycleBinTask;
+    public static bool ExecutingEmptyRecycleBinTask { get; set; }
 
     internal static bool ExecuteCommand(bool confirm, string confirmationMessage, Action command)
     {
@@ -30,24 +30,12 @@ internal static class ResultHelper
         return true;
     }
 
-    public static async void EmptyRecycleBinAsync(bool settingEmptyRBSuccesMsg)
-    {
-        if (executingEmptyRecycleBinTask)
-        {
-            MessageBoxHelper.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, IconType.Info, MessageBoxType.OK);
-
-            return;
-        }
-
-        await Task.Run(() => EmptyRecycleBinTask(settingEmptyRBSuccesMsg));
-    }
-
     /// <summary>
     /// Method to process the empty recycle bin command in a separate task
     /// </summary>
-    private static void EmptyRecycleBinTask(bool settingEmptyRBSuccesMsg)
+    public static void EmptyRecycleBinTask(bool settingEmptyRBSuccesMsg)
     {
-        executingEmptyRecycleBinTask = true;
+        ExecutingEmptyRecycleBinTask = true;
 
         // https://learn.microsoft.com/windows/win32/api/shellapi/nf-shellapi-shemptyrecyclebina/
         // http://www.pinvoke.net/default.aspx/shell32/SHEmptyRecycleBin.html/
@@ -75,6 +63,6 @@ internal static class ResultHelper
             _ = MessageBoxHelper.Show(Resources.Microsoft_plugin_sys_RecycleBin_EmptySuccessMessage, "Plugin: " + Resources.Microsoft_plugin_sys_plugin_name, IconType.Info, MessageBoxType.OK);
         }
 
-        executingEmptyRecycleBinTask = false;
+        ExecutingEmptyRecycleBinTask = false;
     }
 }

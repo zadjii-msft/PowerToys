@@ -70,6 +70,15 @@ namespace Microsoft.CmdPal.Ext.System {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection Details.
+        /// </summary>
+        public static string Microsoft_plugin_ext_connection_details {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_ext_connection_details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy to clipboard.
         /// </summary>
         public static string Microsoft_plugin_ext_copy {
