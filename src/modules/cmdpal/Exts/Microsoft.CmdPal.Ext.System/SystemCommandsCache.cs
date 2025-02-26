@@ -38,7 +38,7 @@ public sealed partial class SystemCommandsCache
 
             // Network (ip and mac) results are slow with many network cards and returned delayed.
             // On global queries the first word/part has to be 'ip', 'mac' or 'address' for network results
-            var networkConnectionResults = Commands.GetNetworkConnectionResults();
+            var networkConnectionResults = Commands.GetNetworkConnectionResults(manager);
             lock (listLock)
             {
                 list.AddRange(networkConnectionResults);

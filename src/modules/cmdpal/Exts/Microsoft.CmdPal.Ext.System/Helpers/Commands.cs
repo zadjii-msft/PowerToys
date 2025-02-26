@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net.NetworkInformation;
 using System.Text;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
@@ -90,7 +91,7 @@ internal static class Commands
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
                     Icon = Icons.RecycleBinIcon,
                 },
-                new ListItem(new RecycleBinCommand(emptyRBSuccessMessage))
+                new ListItem(new EmptyRecycleBinCommand(emptyRBSuccessMessage))
                 {
                     Title = Resources.Microsoft_plugin_sys_RecycleBinEmptyResult,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBinEmpty_description,
@@ -126,10 +127,9 @@ internal static class Commands
     /// <summary>
     /// Returns a list of all ip and mac results
     /// </summary>
-    /// <param name="iconTheme">The theme to use for the icons</param>
-    /// <param name="culture">The culture to use for the result's title and sub title</param>
+    /// <param name="manager">The tSettingsManager instance</param>
     /// <returns>The list of available results</returns>
-    public static List<IListItem> GetNetworkConnectionResults()
+    public static List<IListItem> GetNetworkConnectionResults(SettingsManager manager)
     {
         var results = new List<IListItem>();
 
@@ -143,9 +143,18 @@ internal static class Commands
 
         CompositeFormat sysIpv4DescriptionCompositeFormate = CompositeFormat.Parse(Resources.Microsoft_plugin_sys_ip4_description);
         CompositeFormat sysMacDescriptionCompositeFormate = CompositeFormat.Parse(Resources.Microsoft_plugin_sys_mac_description);
+        var hideDisconnectedNetworkInfo = manager.HideDisconnectedNetworkInfo;
 
         foreach (NetworkConnectionProperties intInfo in networkPropertiesCache)
         {
+            if (hideDisconnectedNetworkInfo)
+            {
+                if (intInfo.State != OperationalStatus.Up)
+                {
+                    continue;
+                }
+            }
+
             if (!string.IsNullOrEmpty(intInfo.IPv4))
             {
                 results.Add(new ListItem(new CopyTextCommand(intInfo.GetConnectionDetails()))

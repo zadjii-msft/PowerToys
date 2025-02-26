@@ -97,6 +97,15 @@ namespace Microsoft.CmdPal.Ext.System {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hide disconnected network info.
+        /// </summary>
+        public static string Microsoft_plugin_ext_settings_hideDisconnectedNetworkInfo {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_ext_settings_hideDisconnectedNetworkInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Windows System Command.
         /// </summary>
         public static string Microsoft_plugin_ext_system_page_name {

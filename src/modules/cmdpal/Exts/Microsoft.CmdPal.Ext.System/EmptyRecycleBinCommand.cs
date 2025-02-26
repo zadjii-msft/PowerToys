@@ -10,9 +10,9 @@ using static Microsoft.CmdPal.Ext.System.Helpers.MessageBoxHelper;
 
 namespace Microsoft.CmdPal.Ext.System;
 
-public sealed partial class RecycleBinCommand : InvokableCommand
+public sealed partial class EmptyRecycleBinCommand : InvokableCommand
 {
-    public RecycleBinCommand(bool settingEmptyRBSuccesMsg)
+    public EmptyRecycleBinCommand(bool settingEmptyRBSuccesMsg)
     {
         _settingEmptyRBSuccesMsg = settingEmptyRBSuccesMsg;
     }

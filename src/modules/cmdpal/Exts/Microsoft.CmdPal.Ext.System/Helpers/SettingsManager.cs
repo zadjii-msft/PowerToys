@@ -31,11 +31,19 @@ public class SettingsManager : JsonSettingsManager
         Resources.Microsoft_plugin_sys_RecycleBin_ShowEmptySeparate,
         true); // TODO -- double check default value
 
+    private readonly ToggleSetting _hideDisconnectedNetworkInfo = new(
+        Namespaced(nameof(HideDisconnectedNetworkInfo)),
+        Resources.Microsoft_plugin_ext_settings_hideDisconnectedNetworkInfo,
+        Resources.Microsoft_plugin_ext_settings_hideDisconnectedNetworkInfo,
+        true); // TODO -- double check default value
+
     public bool ShowDialogToConfirmCommand => _showDialogToConfirmCommand.Value;
 
     public bool ShowSuccessMessageAfterEmptyingRecycleBin => _showSuccessMessageAfterEmptyingRecycleBin.Value;
 
     public bool ShowSeparateResultForEmptyRecycleBin => _showSeparateResultForEmptyRecycleBin.Value;
+
+    public bool HideDisconnectedNetworkInfo => _hideDisconnectedNetworkInfo.Value;
 
     internal static string SettingsJsonPath()
     {
@@ -53,6 +61,7 @@ public class SettingsManager : JsonSettingsManager
         Settings.Add(_showDialogToConfirmCommand);
         Settings.Add(_showSuccessMessageAfterEmptyingRecycleBin);
         Settings.Add(_showSeparateResultForEmptyRecycleBin);
+        Settings.Add(_hideDisconnectedNetworkInfo);
 
         // Load settings from file upon initialization
         LoadSettings();
