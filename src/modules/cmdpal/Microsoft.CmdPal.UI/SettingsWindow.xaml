@@ -37,6 +37,7 @@
             IsBackButtonVisible="Collapsed"
             IsSettingsVisible="False"
             ItemInvoked="NavView_ItemInvoked"
+            OpenPaneLength="200"
             Loaded="NavView_Loaded">
             <NavigationView.Resources>
                 <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent" />
