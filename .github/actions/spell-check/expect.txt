@@ -280,6 +280,8 @@ CTest
 CTEXT
 CTest
 CTEXT
+CTest
+CTEXT
 CTLCOLORSTATIC
 currentculture
 CURRENTDIR
@@ -808,6 +810,7 @@ KEYBDINPUT
 keyboardeventhandlers
 keyboardmanagercommon
 KEYBOARDMANAGEREDITOR
+KEYBOARDMANAGEREDITORLIBRARYWRAPPER
 keyboardmanagerstate
 keyboardmanagerui
 keyboardtester
@@ -1199,6 +1202,8 @@ OWNDC
 OWNERDRAWFIXED
 OWNDC
 OWNERDRAWFIXED
+OWNDC
+OWNERDRAWFIXED
 Packagemanager
 PACL
 PAINTSTRUCT
@@ -1397,6 +1402,7 @@ RECTSOURCE
 recyclebin
 Redist
 reencode
+Reencode
 reencoded
 REFCLSID
 REFIID
@@ -1746,6 +1752,7 @@ throughs
 TIcon
 TILEDWINDOW
 TILEINFO
+TILEDWINDOW
 TILEDWINDOW
 TILEDWINDOW
 TILLSON
