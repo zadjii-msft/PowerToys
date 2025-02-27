@@ -241,4 +241,7 @@ Right-click to remove the key combination, thereby deactivating the shortcut.</v
     <value>Command Palette Toast</value>
     <comment>The title of the toast window for the command palette</comment>
   </data>
+  <data name="DefaultSearchPlaceholderText" xml:space="preserve">
+    <value>Type here to search...</value>
+  </data>
 </root>
