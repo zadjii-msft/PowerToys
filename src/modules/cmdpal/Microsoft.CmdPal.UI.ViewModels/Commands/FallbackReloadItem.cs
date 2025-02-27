@@ -15,7 +15,7 @@ internal sealed partial class FallbackReloadItem : FallbackCommandItem
     {
         _reloadCommand = (ReloadExtensionsCommand)Command!;
         Title = string.Empty;
-        Subtitle = "Reload Command Palette extensions";
+        Subtitle = Properties.Resources.builtin_reload_subtitle;
     }
 
     public override void UpdateQuery(string query)

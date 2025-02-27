@@ -17,12 +17,12 @@ internal sealed partial class FallbackLogItem : FallbackCommandItem
         _logMessagesPage = (LogMessagesPage)Command!;
         Title = string.Empty;
         _logMessagesPage.Name = string.Empty;
-        Subtitle = "View log messages";
+        Subtitle = Properties.Resources.builtin_log_subtitle;
     }
 
     public override void UpdateQuery(string query)
     {
-        _logMessagesPage.Name = query.StartsWith('l') ? "View log" : string.Empty;
+        _logMessagesPage.Name = query.StartsWith('l') ? Properties.Resources.builtin_log_title : string.Empty;
         Title = _logMessagesPage.Name;
     }
 }
