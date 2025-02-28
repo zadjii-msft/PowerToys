@@ -207,14 +207,14 @@ public partial class ListViewModel : PageViewModel
     // InvokeItemCommand is what this will be in Xaml due to source generator
     [RelayCommand]
     private void InvokeItem(ListItemViewModel item) =>
-        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command, item.Model));
+        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command.Model, item.Model));
 
     [RelayCommand]
     private void InvokeSecondaryCommand(ListItemViewModel item)
     {
         if (item.SecondaryCommand != null)
         {
-            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command, item.Model));
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command.Model, item.Model));
         }
     }
 
@@ -269,6 +269,14 @@ public partial class ListViewModel : PageViewModel
 
         FetchItems();
         listPage.ItemsChanged += Model_ItemsChanged;
+    }
+
+    public void LoadMoreIfNeeded()
+    {
+        if (_model.Unsafe?.HasMoreItems ?? false)
+        {
+            _model.Unsafe.LoadMore();
+        }
     }
 
     protected override void FetchProperty(string propertyName)

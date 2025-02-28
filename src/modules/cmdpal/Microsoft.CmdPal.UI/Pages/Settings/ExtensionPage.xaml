@@ -29,6 +29,10 @@
                 x:Key="BoolToInvertedVisibilityConverter"
                 FalseValue="Visible"
                 TrueValue="Collapsed" />
+            <converters:EmptyStringToObjectConverter
+                x:Key="StringEmptyToBoolConverter"
+                EmptyValue="False"
+                NotEmptyValue="True" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -46,9 +50,7 @@
 
                     <TextBlock x:Uid="ExtensionCommandsHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
-                    <ItemsRepeater 
-                        ItemsSource="{x:Bind ViewModel.TopLevelCommands, Mode=OneWay}" 
-                        Layout="{StaticResource VerticalStackLayout}">
+                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.TopLevelCommands, Mode=OneWay}" Layout="{StaticResource VerticalStackLayout}">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:TopLevelViewModel">
                                 <controls:SettingsExpander
@@ -77,12 +79,27 @@
                                             HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}">
                                             <cpcontrols:ShortcutControl HotkeySettings="{x:Bind Hotkey, Mode=TwoWay}" />
                                         </controls:SettingsCard>
+
+                                        <controls:SettingsCard
+                                            Description="Typing this alias will navigate to this command. Direct aliases navigate as soon as you type the alias. Indirect aliases navigate after typing a trailing space"
+                                            Header="Alias"
+                                            HeaderIcon="{ui:FontIcon Glyph=&#xE8AC;}">
+                                            <StackPanel Orientation="Vertical">
+                                                <TextBox Text="{x:Bind AliasText, Mode=TwoWay}" />
+                                                <ToggleSwitch
+                                                    IsEnabled="{x:Bind AliasText, Converter={StaticResource StringEmptyToBoolConverter}, Mode=OneWay}"
+                                                    IsOn="{x:Bind IsDirectAlias, Mode=TwoWay}"
+                                                    OffContent="Indirect"
+                                                    OnContent="Direct" />
+                                            </StackPanel>
+                                        </controls:SettingsCard>
+
                                     </controls:SettingsExpander.Items>
                                 </controls:SettingsExpander>
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
                     </ItemsRepeater>
-                    
+
                     <TextBlock
                         x:Uid="ExtensionSettingsHeader"
                         Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"

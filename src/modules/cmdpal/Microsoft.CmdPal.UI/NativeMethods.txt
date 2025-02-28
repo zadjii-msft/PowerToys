@@ -2,7 +2,11 @@ GetPhysicallyInstalledSystemMemory
 GlobalMemoryStatusEx
 GetSystemInfo
 CoCreateInstance
+GetForegroundWindow
 SetForegroundWindow
+GetWindowRect
+GetCursorPos
+SetWindowPos
 IsIconic
 RegisterHotKey
 UnregisterHotKey
@@ -10,6 +14,7 @@ SetWindowLongPtr
 CallWindowProc
 ShowWindow
 SetForegroundWindow
+EnableWindow
 SetFocus
 SetActiveWindow
 MonitorFromWindow

@@ -148,7 +148,7 @@ public partial class MainListPage : DynamicListPage,
     // Almost verbatim ListHelpers.ScoreListItem, but also accounting for the
     // fact that we want fallback handlers down-weighted, so that they don't
     // _always_ show up first.
-    private static int ScoreTopLevelItem(string query, IListItem topLevelOrAppItem)
+    private int ScoreTopLevelItem(string query, IListItem topLevelOrAppItem)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
@@ -162,13 +162,16 @@ public partial class MainListPage : DynamicListPage,
         }
 
         var isFallback = false;
-        var isAlias = false;
+        var isAliasSubstringMatch = false;
+        var isAliasMatch = false;
+        var id = IdForTopLevelOrAppItem(topLevelOrAppItem);
         if (topLevelOrAppItem is TopLevelCommandItemWrapper toplevel)
         {
             isFallback = toplevel.IsFallback;
-            if (toplevel.Alias is string alias)
+            if (toplevel.Alias?.Alias is string alias)
             {
-                isAlias = alias == query;
+                isAliasMatch = alias == query;
+                isAliasSubstringMatch = isAliasMatch || alias.StartsWith(query, StringComparison.CurrentCultureIgnoreCase);
             }
         }
 
@@ -179,12 +182,49 @@ public partial class MainListPage : DynamicListPage,
         {
              nameMatch.Score,
              (descriptionMatch.Score - 4) / 2,
-             isFallback ? 1 : 0, // Always give fallbacks a chance
+             isFallback ? 1 : 0, // Always give fallbacks a chance...
         };
         var max = scores.Max();
-        var finalScore = (max / (isFallback ? 3 : 1))
-            + (isAlias ? 9001 : 0);
-        return finalScore; // but downweight them
+
+        // ... but downweight them
+        var matchSomething = (max / (isFallback ? 3 : 1))
+            + (isAliasMatch ? 9001 : (isAliasSubstringMatch ? 1 : 0));
+
+        // If we matched title, subtitle, or alias (something real), then
+        // here we add the recent command weight boost
+        //
+        // Otherwise something like `x` will still match everything you've run before
+        var finalScore = matchSomething;
+        if (matchSomething > 0)
+        {
+            var history = _serviceProvider.GetService<AppStateModel>()!.RecentCommands;
+            var recentWeightBoost = history.GetCommandHistoryWeight(id);
+            finalScore += recentWeightBoost;
+        }
+
+        return finalScore;
+    }
+
+    public void UpdateHistory(IListItem topLevelOrAppItem)
+    {
+        var id = IdForTopLevelOrAppItem(topLevelOrAppItem);
+        var state = _serviceProvider.GetService<AppStateModel>()!;
+        var history = state.RecentCommands;
+        history.AddHistoryItem(id);
+        AppStateModel.SaveState(state);
+    }
+
+    private string IdForTopLevelOrAppItem(IListItem topLevelOrAppItem)
+    {
+        if (topLevelOrAppItem is TopLevelCommandItemWrapper toplevel)
+        {
+            return toplevel.Id;
+        }
+        else
+        {
+            // we've got an app here
+            return topLevelOrAppItem.Command?.Id ?? string.Empty;
+        }
     }
 
     public void Receive(ClearSearchMessage message) => SearchText = string.Empty;

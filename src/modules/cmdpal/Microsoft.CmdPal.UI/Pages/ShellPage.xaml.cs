@@ -12,9 +12,6 @@ using Microsoft.CommandPalette.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media.Animation;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.UI.WindowsAndMessaging;
 using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
 namespace Microsoft.CmdPal.UI.Pages;
@@ -42,6 +39,8 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
     private readonly SlideNavigationTransitionInfo _slideRightTransition = new() { Effect = SlideNavigationTransitionEffect.FromRight };
     private readonly SuppressNavigationTransitionInfo _noAnimation = new();
+
+    private readonly ToastWindow _toast = new();
 
     public ShellViewModel ViewModel { get; private set; } = App.Current.Services.GetService<ShellViewModel>()!;
 
@@ -97,6 +96,12 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
             return;
         }
 
+        if (!ViewModel.CurrentPage.IsNested)
+        {
+            // on the main page here
+            ViewModel.PerformTopLevelCommand(message);
+        }
+
         // TODO: Actually loading up the page, or invoking the command -
         // that might belong in the model, not the view?
         // Especially considering the try/catch concerns around the fact that the
@@ -123,6 +128,8 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                 {
                     // Also hide our details pane about here, if we had one
                     HideDetails();
+
+                    WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(null));
 
                     var isMainPage = command is MainListPage;
 
@@ -171,7 +178,10 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
             else if (command is IInvokableCommand invokable)
             {
                 var result = invokable.Invoke(message.Context);
-                HandleCommandResult(result);
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    HandleCommandResultOnUiThread(result);
+                });
             }
         }
         catch (Exception ex)
@@ -187,7 +197,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         }
     }
 
-    private void HandleCommandResult(ICommandResult? result)
+    private void HandleCommandResultOnUiThread(ICommandResult? result)
     {
         try
         {
@@ -199,7 +209,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                     case CommandResultKind.Dismiss:
                         {
                             // Reset the palette to the main page and dismiss
-                            GoHome();
+                            GoHome(withAnimation: false, focusSearch: false);
                             WeakReferenceMessenger.Default.Send<DismissMessage>();
                             break;
                         }
@@ -230,6 +240,17 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                             // Do nothing.
                             break;
                         }
+
+                    case CommandResultKind.ShowToast:
+                        {
+                            if (result.Args is IToastArgs a)
+                            {
+                                _toast.ShowToast(a.Message);
+                                HandleCommandResultOnUiThread(a.Result);
+                            }
+
+                            break;
+                        }
                 }
             }
         }
@@ -254,6 +275,16 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
     public void Receive(ShowDetailsMessage message)
     {
+        // TERRIBLE HACK TODO GH #245
+        // There's weird wacky bugs with debounce currently.
+        if (!ViewModel.IsDetailsVisible)
+        {
+            ViewModel.Details = message.Details;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(HasHeroImage)));
+            ViewModel.IsDetailsVisible = true;
+            return;
+        }
+
         // GH #322:
         // For inexplicable reasons, if you try to change the details too fast,
         // we'll explode. This seemingly only happens if you change the details
@@ -276,99 +307,92 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
     public void Receive(LaunchUriMessage message) => _ = global::Windows.System.Launcher.LaunchUriAsync(message.Uri);
 
-    public void Receive(HandleCommandResultMessage message) => HandleCommandResult(message.Result.Unsafe);
+    public void Receive(HandleCommandResultMessage message)
+    {
+        DispatcherQueue.TryEnqueue(() =>
+        {
+            HandleCommandResultOnUiThread(message.Result.Unsafe);
+        });
+    }
 
-    private void HideDetails() => ViewModel.IsDetailsVisible = false;
+    private void HideDetails()
+    {
+        ViewModel.Details = null;
+        ViewModel.IsDetailsVisible = false;
+    }
 
     public void Receive(ClearSearchMessage message) => SearchBox.ClearSearch();
 
     public void Receive(HotkeySummonMessage message)
     {
-        var settings = App.Current.Services.GetService<SettingsModel>()!;
-
-        _ = DispatcherQueue.TryEnqueue(() =>
-        {
-            var commandId = message.CommandId;
-            var isRoot = string.IsNullOrEmpty(commandId);
-            if (isRoot)
-            {
-                // If this is the hotkey for the root level, then always show us
-                ShowHwnd(message.Hwnd);
-
-                // Depending on the settings, either
-                // * Go home, or
-                // * Select the search text (if we should remain open on this page)
-                if (settings.HotkeyGoesHome)
-                {
-                    GoHome(false);
-                }
-                else if (settings.HighlightSearchOnActivate)
-                {
-                    SearchBox.SelectSearch();
-                }
-            }
-            else
-            {
-                try
-                {
-                    // For a hotkey bound to a command, first lookup the
-                    // command from our list of toplevel commands.
-                    var tlcManager = App.Current.Services.GetService<TopLevelCommandManager>()!;
-                    var topLevelCommand = tlcManager.LookupCommand(commandId);
-                    if (topLevelCommand != null)
-                    {
-                        var command = topLevelCommand.Command;
-                        var isPage = command is TopLevelCommandWrapper wrapper && wrapper.Command is not IInvokableCommand;
-
-                        // If the bound command is an invokable command, then
-                        // we don't want to open the window at all - we want to
-                        // just do it.
-                        if (isPage)
-                        {
-                            // If we're here, then the bound command was a page
-                            // of some kind. Let's pop the stack, show the window, and navigate to it.
-                            GoHome(false);
-                            ShowHwnd(message.Hwnd);
-                        }
-
-                        var msg = new PerformCommandMessage(new(topLevelCommand.Command)) { WithAnimation = false };
-                        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(msg);
-
-                        // we can't necessarily SelectSearch() here, because when the page is loaded,
-                        // we'll fetch the SearchText from the page itself, and that'll stomp the
-                        // selection we start now.
-                        // That's probably okay though.
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            WeakReferenceMessenger.Default.Send<FocusSearchBoxMessage>();
-        });
+        _ = DispatcherQueue.TryEnqueue(() => SummonOnUiThread(message));
     }
 
-    private void ShowHwnd(IntPtr hwndValue)
+    private void SummonOnUiThread(HotkeySummonMessage message)
     {
-        var hwnd = new HWND(hwndValue);
-
-        // Remember, IsIconic == "minimized", which is entirely different state
-        // from "show/hide"
-        // If we're currently minimized, restore us first, before we reveal
-        // our window. Otherwise we'd just be showing a minimized window -
-        // which would remain not visible to the user.
-        if (PInvoke.IsIconic(hwnd))
+        var settings = App.Current.Services.GetService<SettingsModel>()!;
+        var commandId = message.CommandId;
+        var isRoot = string.IsNullOrEmpty(commandId);
+        if (isRoot)
         {
-            PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_RESTORE);
+            // If this is the hotkey for the root level, then always show us
+            WeakReferenceMessenger.Default.Send<ShowWindowMessage>(new(message.Hwnd));
+
+            // Depending on the settings, either
+            // * Go home, or
+            // * Select the search text (if we should remain open on this page)
+            if (settings.HotkeyGoesHome)
+            {
+                GoHome(false);
+            }
+            else if (settings.HighlightSearchOnActivate)
+            {
+                SearchBox.SelectSearch();
+            }
+        }
+        else
+        {
+            try
+            {
+                // For a hotkey bound to a command, first lookup the
+                // command from our list of toplevel commands.
+                var tlcManager = App.Current.Services.GetService<TopLevelCommandManager>()!;
+                var topLevelCommand = tlcManager.LookupCommand(commandId);
+                if (topLevelCommand != null)
+                {
+                    var command = topLevelCommand.Command;
+                    var isPage = command is TopLevelCommandWrapper wrapper && wrapper.Command is not IInvokableCommand;
+
+                    // If the bound command is an invokable command, then
+                    // we don't want to open the window at all - we want to
+                    // just do it.
+                    if (isPage)
+                    {
+                        // If we're here, then the bound command was a page
+                        // of some kind. Let's pop the stack, show the window, and navigate to it.
+                        GoHome(false);
+
+                        WeakReferenceMessenger.Default.Send<ShowWindowMessage>(new(message.Hwnd));
+                    }
+
+                    var msg = new PerformCommandMessage(new(topLevelCommand.Command)) { WithAnimation = false };
+                    WeakReferenceMessenger.Default.Send<PerformCommandMessage>(msg);
+
+                    // we can't necessarily SelectSearch() here, because when the page is loaded,
+                    // we'll fetch the SearchText from the page itself, and that'll stomp the
+                    // selection we start now.
+                    // That's probably okay though.
+                }
+            }
+            catch
+            {
+            }
         }
 
-        PInvoke.ShowWindow(hwnd, SHOW_WINDOW_CMD.SW_SHOW);
-        PInvoke.SetForegroundWindow(hwnd);
-        PInvoke.SetActiveWindow(hwnd);
+        WeakReferenceMessenger.Default.Send<FocusSearchBoxMessage>();
     }
 
-    private void GoBack(bool withAnimation = true)
+    private void GoBack(bool withAnimation = true, bool focusSearch = true)
     {
         HideDetails();
 
@@ -392,14 +416,19 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         // back to a recent page they visited (like the Pokedex) so we don't have to reload it from  scratch.
         // That'd be retrieved as we re-navigate in the PerformCommandMessage logic above
         RootFrame.ForwardStack.Clear();
-        SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+
+        if (focusSearch)
+        {
+            SearchBox.Focus(Microsoft.UI.Xaml.FocusState.Programmatic);
+            SearchBox.SelectSearch();
+        }
     }
 
-    private void GoHome(bool withAnimation = true)
+    private void GoHome(bool withAnimation = true, bool focusSearch = true)
     {
         while (RootFrame.CanGoBack)
         {
-            GoBack(withAnimation);
+            GoBack(withAnimation, focusSearch);
         }
 
         WeakReferenceMessenger.Default.Send<GoHomeMessage>();
