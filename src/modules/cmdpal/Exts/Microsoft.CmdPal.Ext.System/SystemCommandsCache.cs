@@ -34,8 +34,6 @@ public sealed partial class SystemCommandsCache
 
         var b = Task.Run(() =>
         {
-            var isBootedInUefiMode = Win32Helpers.GetSystemFirmwareType() == FirmwareType.Uefi;
-
             // Network (ip and mac) results are slow with many network cards and returned delayed.
             // On global queries the first word/part has to be 'ip', 'mac' or 'address' for network results
             var networkConnectionResults = Commands.GetNetworkConnectionResults(manager);

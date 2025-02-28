@@ -10,7 +10,6 @@ namespace Microsoft.CmdPal.Ext.System.Pages;
 
 public sealed partial class SystemCommandPage : ListPage
 {
-    private SystemCommandsCache commandsCache;
     private SettingsManager _settingsManager;
 
     public SystemCommandPage(SettingsManager settingsManager)
@@ -18,9 +17,8 @@ public sealed partial class SystemCommandPage : ListPage
         Title = Resources.Microsoft_plugin_ext_system_page_name;
         Icon = new IconInfo("\uE72E");
         _settingsManager = settingsManager;
-        commandsCache = new SystemCommandsCache(settingsManager);
         ShowDetails = true;
     }
 
-    public override IListItem[] GetItems() => commandsCache.CachedCommands;
+    public override IListItem[] GetItems() => Commands.GetAllCommands(_settingsManager).ToArray();
 }

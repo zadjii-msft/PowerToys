@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -190,5 +191,28 @@ internal static class Commands
         }
 
         return results;
+    }
+
+    public static List<IListItem> GetAllCommands(SettingsManager manager)
+    {
+        var list = new List<IListItem>();
+        var listLock = new object();
+
+        // Network (ip and mac) results are slow with many network cards and returned delayed.
+        // On global queries the first word/part has to be 'ip', 'mac' or 'address' for network results
+        var networkConnectionResults = Commands.GetNetworkConnectionResults(manager);
+
+        var isBootedInUefiMode = Win32Helpers.GetSystemFirmwareType() == FirmwareType.Uefi;
+
+        var separateEmptyRB = manager.ShowSeparateResultForEmptyRecycleBin;
+        var confirmSystemCommands = manager.ShowDialogToConfirmCommand;
+        var showSuccessOnEmptyRB = manager.ShowSuccessMessageAfterEmptyingRecycleBin;
+
+        // normal system commands are fast and can be returned immediately
+        var systemCommands = Commands.GetSystemCommands(isBootedInUefiMode, separateEmptyRB, confirmSystemCommands, showSuccessOnEmptyRB);
+        list.AddRange(systemCommands);
+        list.AddRange(networkConnectionResults);
+
+        return list;
     }
 }
