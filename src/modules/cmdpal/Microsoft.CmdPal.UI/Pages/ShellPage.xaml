@@ -126,7 +126,7 @@
 
             <!--  Back button and search box  -->
             <Grid
-                Padding="0,12,0,12"
+                Padding="0,0,0,12"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
@@ -250,7 +250,10 @@
                 </StackPanel>
                 <!--  Search box: wrapped in a grid to enable RepositionThemeTransitions  -->
                 <Grid Grid.Column="1" HorizontalAlignment="Stretch">
-                    <cpcontrols:SearchBar x:Name="SearchBox" CurrentPageViewModel="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />
+                    <cpcontrols:SearchBar
+                        x:Name="SearchBox"
+                        HorizontalAlignment="Stretch"
+                        CurrentPageViewModel="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />
                     <Grid.Transitions>
                         <TransitionCollection>
                             <RepositionThemeTransition />

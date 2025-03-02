@@ -9,6 +9,8 @@
     Activated="MainWindow_Activated"
     Closed="MainWindow_Closed"
     mc:Ignorable="d">
-
+    <Window.SystemBackdrop>
+        <DesktopAcrylicBackdrop/>
+    </Window.SystemBackdrop>
     <pages:ShellPage x:Name="RootShellPage" />
 </Window>
