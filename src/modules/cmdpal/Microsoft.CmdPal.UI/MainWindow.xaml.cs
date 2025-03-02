@@ -67,7 +67,6 @@ public sealed partial class MainWindow : Window,
 
         AppWindow.Resize(new SizeInt32 { Width = 1000, Height = 620 });
         PositionCentered();
-        SetAcrylic();
 
         WeakReferenceMessenger.Default.Register<DismissMessage>(this);
         WeakReferenceMessenger.Default.Register<QuitMessage>(this);
@@ -94,9 +93,6 @@ public sealed partial class MainWindow : Window,
         // Load our settings, and then also wire up a settings changed handler
         HotReloadSettings();
         App.Current.Services.GetService<SettingsModel>()!.SettingsChanged += SettingsChangedHandler;
-
-        // Make sure that we update the acrylic theme when the OS theme changes
-        RootShellPage.ActualThemeChanged += (s, e) => UpdateAcrylic();
     }
 
     private void SettingsChangedHandler(SettingsModel sender, object? args) => HotReloadSettings();
@@ -137,55 +133,6 @@ public sealed partial class MainWindow : Window,
         // This will prevent our window from appearing in alt+tab or the taskbar.
         // You'll _need_ to use the hotkey to summon it.
         AppWindow.IsShownInSwitchers = System.Diagnostics.Debugger.IsAttached;
-    }
-
-    // We want to use DesktopAcrylicKind.Thin and custom colors as this is the default material
-    // other Shell surfaces are using, this cannot be set in XAML however.
-    private void SetAcrylic()
-    {
-        if (DesktopAcrylicController.IsSupported())
-        {
-            // Hooking up the policy object.
-            _configurationSource = new SystemBackdropConfiguration
-            {
-                // Initial configuration state.
-                IsInputActive = true,
-            };
-            UpdateAcrylic();
-        }
-    }
-
-    private void UpdateAcrylic()
-    {
-        _acrylicController = GetAcrylicConfig(Content);
-
-        // Enable the system backdrop.
-        // Note: Be sure to have "using WinRT;" to support the Window.As<...>() call.
-        _acrylicController.AddSystemBackdropTarget(this.As<ICompositionSupportsSystemBackdrop>());
-        _acrylicController.SetSystemBackdropConfiguration(_configurationSource);
-    }
-
-    private static DesktopAcrylicController GetAcrylicConfig(UIElement content)
-    {
-        var feContent = content as FrameworkElement;
-
-        return feContent?.ActualTheme == ElementTheme.Light
-            ? new DesktopAcrylicController()
-            {
-                Kind = DesktopAcrylicKind.Thin,
-                TintColor = Color.FromArgb(255, 243, 243, 243),
-                LuminosityOpacity = 0.90f,
-                TintOpacity = 0.0f,
-                FallbackColor = Color.FromArgb(255, 238, 238, 238),
-            }
-            : new DesktopAcrylicController()
-            {
-                Kind = DesktopAcrylicKind.Thin,
-                TintColor = Color.FromArgb(255, 32, 32, 32),
-                LuminosityOpacity = 0.96f,
-                TintOpacity = 0.5f,
-                FallbackColor = Color.FromArgb(255, 28, 28, 28),
-            };
     }
 
     private void ShowHwnd(IntPtr hwndValue, MonitorBehavior target)
