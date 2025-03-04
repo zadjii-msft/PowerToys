@@ -50,9 +50,6 @@ public sealed partial class MainWindow : Window,
     private bool _createdIcon;
     private DestroyIconSafeHandle? _largeIcon;
 
-    private DesktopAcrylicController? _acrylicController;
-    private SystemBackdropConfiguration? _configurationSource;
-
     public MainWindow()
     {
         InitializeComponent();
@@ -227,17 +224,6 @@ public sealed partial class MainWindow : Window,
         // WinUI bug is causing a crash on shutdown when FailFastOnErrors is set to true (#51773592).
         // Workaround by turning it off before shutdown.
         App.Current.DebugSettings.FailFastOnErrors = false;
-        DisposeAcrylic();
-    }
-
-    private void DisposeAcrylic()
-    {
-        if (_acrylicController != null)
-        {
-            _acrylicController.Dispose();
-            _acrylicController = null!;
-            _configurationSource = null!;
-        }
     }
 
     // Updates our window s.t. the top of the window is draggable.
@@ -296,11 +282,6 @@ public sealed partial class MainWindow : Window,
             {
                 PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_HIDE);
             }
-        }
-
-        if (_configurationSource != null)
-        {
-            _configurationSource.IsInputActive = args.WindowActivationState != WindowActivationState.Deactivated;
         }
     }
 
