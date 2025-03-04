@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.CmdPal.Ext.Indexer.Commands;
+using Microsoft.CmdPal.Ext.Indexer.Properties;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.Ext.Indexer.Data;
@@ -20,7 +21,7 @@ internal sealed partial class IndexerListItem : ListItem
 
         MoreCommands = [
             new CommandContextItem(new OpenWithCommand(indexerItem)),
-            new CommandContextItem(new ShowFileInFolderCommand(indexerItem)),
+            new CommandContextItem(new ShowFileInFolderCommand(indexerItem.FullPath) { Name = Resources.Indexer_Command_ShowInFolder }),
             new CommandContextItem(new CopyPathCommand(indexerItem)),
             new CommandContextItem(new OpenInConsoleCommand(indexerItem)),
             new CommandContextItem(new OpenPropertiesCommand(indexerItem)),
