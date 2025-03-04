@@ -61,6 +61,31 @@ namespace winrt::Microsoft::Terminal::UI::implementation
     };*/
 #pragma endregion
 
+#pragma region PathIconSource
+    template<typename TIconSource>
+    struct PathIconSource
+    {
+    };
+
+    template<>
+    struct PathIconSource<winrt::Microsoft::UI::Xaml::Controls::IconSource>
+    {
+        using type = winrt::Microsoft::UI::Xaml::Controls::PathIconSource;
+    };
+#pragma endregion
+#pragma region ImageIconSource
+    template<typename TIconSource>
+    struct ImageIconSource
+    {
+    };
+
+    template<>
+    struct ImageIconSource<winrt::Microsoft::UI::Xaml::Controls::IconSource>
+    {
+        using type = winrt::Microsoft::UI::Xaml::Controls::ImageIconSource;
+    };
+#pragma endregion
+
     // Method Description:
     // - Creates an IconSource for the given path. The icon returned is a colored
     //   icon. If we couldn't create the icon for any reason, we return an empty
@@ -81,6 +106,16 @@ namespace winrt::Microsoft::Terminal::UI::implementation
             try
             {
                 winrt::Windows::Foundation::Uri iconUri{ path };
+
+                if (til::equals_insensitive_ascii(iconUri.Extension(), L".svg"))
+                {
+                    typename ImageIconSource<TIconSource>::type iconSource;
+                    winrt::Microsoft::UI::Xaml::Media::Imaging::SvgImageSource source{ iconUri };	
+                    iconSource.ImageSource(source);
+                    return iconSource;
+                }
+                else
+                {
                 typename BitmapIconSource<TIconSource>::type iconSource;
                 // Make sure to set this to false, so we keep the RGB data of the
                 // image. Otherwise, the icon will be white for all the
@@ -88,6 +123,7 @@ namespace winrt::Microsoft::Terminal::UI::implementation
                 iconSource.ShowAsMonochrome(monochrome);
                 iconSource.UriSource(iconUri);
                 return iconSource;
+            }
             }
             CATCH_LOG();
         }
