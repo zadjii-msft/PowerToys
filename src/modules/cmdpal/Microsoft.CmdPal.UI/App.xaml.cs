@@ -80,9 +80,9 @@ public partial class App : Application
 
         // Built-in Commands. Order matters - this is the order they'll be presented by default.
         var allApps = new AllAppsCommandProvider();
-
+        var winget = new WinGetExtensionCommandsProvider();
         var callback = allApps.LookupApp;
-
+        winget.SetAllLookup(callback);
         services.AddSingleton<ICommandProvider>(allApps);
         services.AddSingleton<ICommandProvider, ShellCommandsProvider>();
         services.AddSingleton<ICommandProvider, CalculatorCommandProvider>();
@@ -91,7 +91,7 @@ public partial class App : Application
         services.AddSingleton<ICommandProvider, ClipboardHistoryCommandsProvider>();
         services.AddSingleton<ICommandProvider, WindowWalkerCommandsProvider>();
         services.AddSingleton<ICommandProvider, WebSearchCommandsProvider>();
-
+        services.AddSingleton<ICommandProvider>(winget);
         services.AddSingleton<ICommandProvider, WindowsTerminalCommandsProvider>();
         services.AddSingleton<ICommandProvider, WindowsSettingsCommandsProvider>();
         services.AddSingleton<ICommandProvider, RegistryCommandsProvider>();
