@@ -103,13 +103,13 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Padding="0,12,0,0">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Background="{ThemeResource LayerOnAcrylicFillColorDefaultBrush}">
+        <Grid Background="{ThemeResource LayerOnAcrylicPrimaryBackgroundBrush}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -118,7 +118,7 @@
 
             <!--  Back button and search box  -->
             <Grid
-                Padding="0,0,0,12"
+                Padding="0,12,0,12"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
@@ -400,7 +400,9 @@
             </InfoBar>
         </StackPanel>
 
-        <cpcontrols:CommandBar Grid.Row="1" CurrentPageViewModel="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />
+        <Grid Grid.Row="1" Background="{ThemeResource LayerOnAcrylicSecondaryBackgroundBrush}">
+            <cpcontrols:CommandBar CurrentPageViewModel="{x:Bind ViewModel.CurrentPage, Mode=OneWay}" />
+        </Grid>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>

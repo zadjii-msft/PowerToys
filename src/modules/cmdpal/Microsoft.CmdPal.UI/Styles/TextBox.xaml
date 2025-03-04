@@ -166,9 +166,10 @@
                         <Button
                             x:Name="DeleteButton"
                             Grid.Column="2"
+                            Margin="0,0,8,0"
                             Padding="12"
                             HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
+                            VerticalAlignment="Center"
                             AutomationProperties.AccessibilityView="Raw"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
