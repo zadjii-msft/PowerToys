@@ -116,14 +116,14 @@ namespace winrt::Microsoft::Terminal::UI::implementation
                 }
                 else
                 {
-                typename BitmapIconSource<TIconSource>::type iconSource;
-                // Make sure to set this to false, so we keep the RGB data of the
-                // image. Otherwise, the icon will be white for all the
-                // non-transparent pixels in the image.
-                iconSource.ShowAsMonochrome(monochrome);
-                iconSource.UriSource(iconUri);
-                return iconSource;
-            }
+                    typename BitmapIconSource<TIconSource>::type iconSource;
+                    // Make sure to set this to false, so we keep the RGB data of the
+                    // image. Otherwise, the icon will be white for all the
+                    // non-transparent pixels in the image.
+                    iconSource.ShowAsMonochrome(monochrome);
+                    iconSource.UriSource(iconUri);
+                    return iconSource;
+                }
             }
             CATCH_LOG();
         }
