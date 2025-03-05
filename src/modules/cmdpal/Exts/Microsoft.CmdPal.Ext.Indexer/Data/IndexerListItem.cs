@@ -11,9 +11,13 @@ namespace Microsoft.CmdPal.Ext.Indexer.Data;
 
 internal sealed partial class IndexerListItem : ListItem
 {
+    internal string FilePath { get; private set; }
+
     public IndexerListItem(IndexerItem indexerItem)
         : base(new OpenFileCommand(indexerItem))
     {
+        FilePath = indexerItem.FullPath;
+
         Title = indexerItem.FileName;
         Subtitle = indexerItem.FullPath;
         List<CommandContextItem> context = [];
