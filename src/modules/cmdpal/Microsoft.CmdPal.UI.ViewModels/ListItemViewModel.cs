@@ -14,7 +14,7 @@ namespace Microsoft.CmdPal.UI.ViewModels;
 public partial class ListItemViewModel(IListItem model, IPageContext context)
     : CommandItemViewModel(new(model), context)
 {
-    public ExtensionObject<IListItem> Model { get; } = new(model);
+    public new ExtensionObject<IListItem> Model { get; } = new(model);
 
     [ObservableProperty]
     public partial ObservableCollection<TagViewModel> Tags { get; set; } = [];
@@ -84,6 +84,7 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
             case nameof(Details):
                 var extensionDetails = model.Details;
                 Details = extensionDetails != null ? new(extensionDetails, PageContext) : null;
+                Details?.InitializeProperties();
                 UpdateProperty(nameof(Details));
                 UpdateProperty(nameof(HasDetails));
                 break;
