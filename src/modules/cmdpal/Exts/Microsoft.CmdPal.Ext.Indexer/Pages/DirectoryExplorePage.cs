@@ -14,13 +14,17 @@ using Windows.Storage.Streams;
 #nullable enable
 namespace Microsoft.CmdPal.Ext.Indexer;
 
-public sealed partial class DirectoryPage : ListPage
+/// <summary>
+/// This is almost more of just a sample than anything.
+/// This is one singular page for switching.
+/// </summary>
+public sealed partial class DirectoryExplorePage : DynamicListPage
 {
-    private readonly string _path;
+    private string _path;
+    private List<ExploreListItem>? _directoryContents;
+    private List<ExploreListItem>? _filteredContents;
 
-    private List<IndexerListItem>? _directoryContents;
-
-    public DirectoryPage(string path)
+    public DirectoryExplorePage(string path)
     {
         _path = path;
         Icon = Icons.FileExplorerSegoe;
@@ -28,13 +32,59 @@ public sealed partial class DirectoryPage : ListPage
         Title = path;
     }
 
+    public override void UpdateSearchText(string oldSearch, string newSearch)
+    {
+        if (_directoryContents == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(newSearch))
+        {
+            if (_filteredContents != null)
+            {
+                _filteredContents = null;
+                RaiseItemsChanged(-1);
+            }
+
+            return;
+        }
+
+        // Need to break this out the manual way so that the compiler can know
+        // this is an ExploreListItem
+        var filteredResults = ListHelpers.FilterList(
+            _directoryContents,
+            newSearch,
+            (s, i) => ListHelpers.ScoreListItem(s, i));
+
+        if (_filteredContents != null)
+        {
+            lock (_filteredContents)
+            {
+                ListHelpers.InPlaceUpdateList<ExploreListItem>(_filteredContents, filteredResults);
+            }
+        }
+        else
+        {
+            _filteredContents = filteredResults.ToList();
+        }
+
+        RaiseItemsChanged(-1);
+    }
+
     public override IListItem[] GetItems()
     {
+        if (_filteredContents != null)
+        {
+            return _filteredContents.ToArray();
+        }
+
         if (_directoryContents != null)
         {
             return _directoryContents.ToArray();
         }
 
+        IsLoading = true;
         if (!Path.Exists(_path))
         {
             EmptyContent = new CommandItem(title: "This file doesn't exist!"); // TODO:LOC
@@ -53,8 +103,13 @@ public sealed partial class DirectoryPage : ListPage
         var contents = Directory.EnumerateFileSystemEntries(_path);
         _directoryContents = contents
             .Select(s => new IndexerItem() { FullPath = s, FileName = Path.GetFileName(s) })
-            .Select(i => new IndexerListItem(i, true))
+            .Select(i => new ExploreListItem(i))
             .ToList();
+
+        foreach (var i in _directoryContents)
+        {
+            i.PathChangeRequested += HandlePathChangeRequested;
+        }
 
         _ = Task.Run(() =>
         {
@@ -71,6 +126,18 @@ public sealed partial class DirectoryPage : ListPage
             }
         });
 
+        IsLoading = false;
+
         return _directoryContents.ToArray();
+    }
+
+    private void HandlePathChangeRequested(ExploreListItem sender, string path)
+    {
+        _directoryContents = null;
+        _filteredContents = null;
+        _path = path;
+        Title = path;
+        SearchText = string.Empty;
+        RaiseItemsChanged(-1);
     }
 }

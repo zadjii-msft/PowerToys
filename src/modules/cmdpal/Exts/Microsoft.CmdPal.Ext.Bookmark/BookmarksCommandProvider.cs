@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.CmdPal.Ext.Indexer;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -88,8 +89,10 @@ public partial class BookmarksCommandProvider : CommandProvider
             if (urlCommand.Type == "folder")
             {
                 contextMenu.Add(
-                    new CommandContextItem(new Microsoft.CmdPal.Ext.Indexer.DirectoryPage(urlCommand.Url)));
+                    new CommandContextItem(new DirectoryPage(urlCommand.Url)));
 
+                // contextMenu.Add(
+                //    new CommandContextItem(new DirectoryExplorePage(urlCommand.Url)));
                 contextMenu.Add(
                     new CommandContextItem(new OpenInTerminalCommand(urlCommand.Url)));
             }

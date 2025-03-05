@@ -4,17 +4,24 @@
 
 using System.Collections.Generic;
 using Microsoft.CmdPal.Ext.Indexer.Commands;
-using Microsoft.CmdPal.Ext.Indexer.Properties;
+using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Foundation;
 
-namespace Microsoft.CmdPal.Ext.Indexer.Data;
+#nullable enable
+namespace Microsoft.CmdPal.Ext.Indexer;
 
-internal sealed partial class IndexerListItem : ListItem
+/// <summary>
+/// This is almost more of just a sample than anything.
+/// </summary>
+internal sealed partial class ExploreListItem : ListItem
 {
     internal string FilePath { get; private set; }
 
-    public IndexerListItem(IndexerItem indexerItem, bool browseByDefault = false)
-        : base(new OpenFileCommand(indexerItem))
+    internal event TypedEventHandler<ExploreListItem, string>? PathChangeRequested;
+
+    public ExploreListItem(IndexerItem indexerItem)
+        : base(new NoOpCommand())
     {
         FilePath = indexerItem.FullPath;
 
@@ -23,23 +30,23 @@ internal sealed partial class IndexerListItem : ListItem
         List<CommandContextItem> context = [];
         if (indexerItem.IsDirectory())
         {
-            var directoryPage = new DirectoryPage(indexerItem.FullPath);
-            if (browseByDefault)
+            Command = new AnonymousCommand(
+                () => { PathChangeRequested?.Invoke(this, FilePath); })
             {
-                // Swap the open file command into the context menu
-                context.Add(new CommandContextItem(Command));
-                Command = directoryPage;
-            }
-            else
-            {
-                context.Add(new CommandContextItem(directoryPage));
-            }
+                Result = CommandResult.KeepOpen(),
+                Name = "Browse", // TODO:LOC
+            };
+            context.Add(new CommandContextItem(new DirectoryPage(indexerItem.FullPath)));
+        }
+        else
+        {
+            Command = new OpenFileCommand(indexerItem);
         }
 
         MoreCommands = [
             ..context,
             new CommandContextItem(new OpenWithCommand(indexerItem)),
-            new CommandContextItem(new ShowFileInFolderCommand(indexerItem.FullPath) { Name = Resources.Indexer_Command_ShowInFolder }),
+            new CommandContextItem(new ShowFileInFolderCommand(indexerItem.FullPath)), // TODO:LOC, like IndexerListItem
             new CommandContextItem(new CopyPathCommand(indexerItem)),
             new CommandContextItem(new OpenInConsoleCommand(indexerItem)),
             new CommandContextItem(new OpenPropertiesCommand(indexerItem)),
