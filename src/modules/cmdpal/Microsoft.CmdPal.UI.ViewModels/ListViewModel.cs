@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -14,7 +15,7 @@ using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ListViewModel : PageViewModel
+public partial class ListViewModel : PageViewModel, IDisposable
 {
     // private readonly HashSet<ListItemViewModel> _itemCache = [];
 
@@ -53,6 +54,9 @@ public partial class ListViewModel : PageViewModel
     public CommandItemViewModel EmptyContent { get; private set; }
 
     private bool _isDynamic;
+
+    private Task? _initializeItemsTask;
+    private CancellationTokenSource? _cancellationTokenSource;
 
     public override bool IsInitialized
     {
@@ -131,12 +135,18 @@ public partial class ListViewModel : PageViewModel
             foreach (var item in newItems)
             {
                 ListItemViewModel viewModel = new(item, this);
+                newViewModels.Add(viewModel);
+                //// If an item fails to load, silently ignore it.
+                // if (viewModel.SafeInitializeProperties())
+                // {
+                //    newViewModels.Add(viewModel);
+                // }
+            }
 
-                // If an item fails to load, silently ignore it.
-                if (viewModel.SafeInitializeProperties())
-                {
-                    newViewModels.Add(viewModel);
-                }
+            var firstTwenty = newViewModels.Take(20);
+            foreach (var item in firstTwenty)
+            {
+                item?.SafeInitializeProperties();
             }
 
             lock (_listLock)
@@ -156,6 +166,40 @@ public partial class ListViewModel : PageViewModel
             ShowException(ex, _model?.Unsafe?.Name);
             throw;
         }
+
+        // Cancel any ongoing search
+        if (_cancellationTokenSource != null)
+        {
+            Debug.WriteLine("Cancelling old initialize task");
+            _cancellationTokenSource.Cancel();
+        }
+
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        _initializeItemsTask = new Task(() =>
+        {
+            try
+            {
+                InitializeItemsTask(_cancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        }); // Task.Run(
+        _initializeItemsTask.Start();
+
+        // () =>
+        // {
+        //    // TODO cancellation token
+        //    lock (_listLock)
+        //    {
+        //        foreach (var item in Items)
+        //        {
+        //            item.SafeInitializeProperties();
+        //        }
+        //    }
+        // },
+        //    cancellationToken: _cancellationTokenSource.Token);
 
         // _initiallyFetchedItems = true;
         Task.Factory.StartNew(
@@ -185,6 +229,25 @@ public partial class ListViewModel : PageViewModel
             CancellationToken.None,
             TaskCreationOptions.None,
             PageContext.Scheduler);
+    }
+
+    private void InitializeItemsTask(CancellationToken ct)
+    {
+        // Were we already canceled?
+        ct.ThrowIfCancellationRequested();
+
+        // lock (_listLock)
+        // {
+        foreach (var item in Items)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            item.SafeInitializeProperties();
+
+            ct.ThrowIfCancellationRequested();
+        }
+
+        // }
     }
 
     /// <summary>
@@ -354,5 +417,13 @@ public partial class ListViewModel : PageViewModel
            CancellationToken.None,
            TaskCreationOptions.None,
            PageContext.Scheduler);
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = null;
     }
 }

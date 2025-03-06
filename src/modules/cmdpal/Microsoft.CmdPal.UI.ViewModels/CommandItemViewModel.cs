@@ -142,6 +142,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         UpdateProperty(nameof(Title));
         UpdateProperty(nameof(Subtitle));
         UpdateProperty(nameof(Icon));
+        UpdateProperty(nameof(IsInitialized));
 
         IsInitialized = true;
     }
