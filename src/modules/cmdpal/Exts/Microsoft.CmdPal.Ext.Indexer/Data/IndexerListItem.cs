@@ -13,7 +13,9 @@ internal sealed partial class IndexerListItem : ListItem
 {
     internal string FilePath { get; private set; }
 
-    public IndexerListItem(IndexerItem indexerItem, bool browseByDefault = false)
+    public IndexerListItem(
+        IndexerItem indexerItem,
+        IncludeBrowseCommand browseByDefault = IncludeBrowseCommand.Include)
         : base(new OpenFileCommand(indexerItem))
     {
         FilePath = indexerItem.FullPath;
@@ -24,13 +26,13 @@ internal sealed partial class IndexerListItem : ListItem
         if (indexerItem.IsDirectory())
         {
             var directoryPage = new DirectoryPage(indexerItem.FullPath);
-            if (browseByDefault)
+            if (browseByDefault == IncludeBrowseCommand.AsDefault)
             {
                 // Swap the open file command into the context menu
                 context.Add(new CommandContextItem(Command));
                 Command = directoryPage;
             }
-            else
+            else if (browseByDefault == IncludeBrowseCommand.Include)
             {
                 context.Add(new CommandContextItem(directoryPage));
             }
@@ -45,4 +47,11 @@ internal sealed partial class IndexerListItem : ListItem
             new CommandContextItem(new OpenPropertiesCommand(indexerItem)),
         ];
     }
+}
+
+internal enum IncludeBrowseCommand
+{
+    AsDefault = 0,
+    Include = 1,
+    Exclude = 2,
 }

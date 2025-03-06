@@ -68,21 +68,11 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
                 IsLoading = false;
                 return _results.Select(PackageToListItem).ToArray();
             }
-
-            // items = (_results == null || !_results.Any())
-            //    ? [
-            //        new ListItem(new NoOpCommand())
-            //        {
-            //            Title = (string.IsNullOrEmpty(SearchText) && !HasTag) ?
-            //                "Start typing to search for packages" :
-            //                "No packages found",
-            //        }
-            //    ]
-            //    : _results.Select(PackageToListItem).ToArray();
         }
 
         EmptyContent = new CommandItem(new NoOpCommand())
         {
+            Icon = WinGetIcon,
             Title = (string.IsNullOrEmpty(SearchText) && !HasTag) ?
                             "Start typing to search for packages" :
                             "No packages found",

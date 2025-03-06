@@ -35,7 +35,7 @@ public partial class ListViewModel : PageViewModel
 
     public bool HasLoadedItems =>
         _initiallyFetchedItems &&
-        Items.Count != 0 &&
+        FilteredItems.Count != 0 &&
         IsLoading == false;
 
     // Remember - "observable" properties from the model (via PropChanged)
@@ -147,7 +147,6 @@ public partial class ListViewModel : PageViewModel
         }
 
         _initiallyFetchedItems = true;
-        UpdateProperty(nameof(HasLoadedItems));
 
         Task.Factory.StartNew(
             () =>
@@ -167,6 +166,8 @@ public partial class ListViewModel : PageViewModel
                         // FilteredItems. The extension already did any filtering it cared about.
                         ListHelpers.InPlaceUpdateList(FilteredItems, Items);
                     }
+
+                    UpdateEmptyContent();
                 }
 
                 ItemsUpdated?.Invoke(this, EventArgs.Empty);
@@ -320,10 +321,28 @@ public partial class ListViewModel : PageViewModel
                 EmptyContent.InitializeProperties();
                 break;
             case nameof(IsLoading):
-                UpdateProperty(nameof(HasLoadedItems));
+                UpdateEmptyContent();
                 break;
         }
 
         UpdateProperty(propertyName);
+    }
+
+    private void UpdateEmptyContent()
+    {
+        UpdateProperty(nameof(HasLoadedItems));
+        if (HasLoadedItems || EmptyContent.Model.Unsafe == null)
+        {
+            return;
+        }
+
+        Task.Factory.StartNew(
+           () =>
+           {
+               WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(EmptyContent));
+           },
+           CancellationToken.None,
+           TaskCreationOptions.None,
+           PageContext.Scheduler);
     }
 }

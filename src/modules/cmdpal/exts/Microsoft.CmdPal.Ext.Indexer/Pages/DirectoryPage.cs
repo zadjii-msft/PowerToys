@@ -37,7 +37,9 @@ public sealed partial class DirectoryPage : ListPage
 
         if (!Path.Exists(_path))
         {
-            EmptyContent = new CommandItem(title: "This file doesn't exist!"); // TODO:LOC
+            EmptyContent = new CommandItem(
+                title: "This path doesn't exist",
+                subtitle: $"{_path}"); // TODO:LOC
             return [];
         }
 
@@ -46,14 +48,33 @@ public sealed partial class DirectoryPage : ListPage
         // detect whether its a directory or file
         if ((attr & FileAttributes.Directory) != FileAttributes.Directory)
         {
-            EmptyContent = new CommandItem(title: "This is a file, not a folder!"); // TODO:LOC
+            EmptyContent = new CommandItem(
+                title: "This is a file, not a folder", subtitle: $"{_path}") // TODO:LOC
+            {
+                Icon = Icons.Document,
+            };
             return [];
         }
 
         var contents = Directory.EnumerateFileSystemEntries(_path);
+
+        if (!contents.Any())
+        {
+            var item = new IndexerItem() { FullPath = _path, FileName = Path.GetFileName(_path) };
+            var listItemForUs = new IndexerListItem(item, IncludeBrowseCommand.Exclude);
+            EmptyContent = new CommandItem(
+                title: "This folder is empty", subtitle: $"{_path}") // TODO:LOC
+            {
+                Icon = Icons.FolderOpen,
+                Command = listItemForUs.Command,
+                MoreCommands = listItemForUs.MoreCommands,
+            };
+            return [];
+        }
+
         _directoryContents = contents
             .Select(s => new IndexerItem() { FullPath = s, FileName = Path.GetFileName(s) })
-            .Select(i => new IndexerListItem(i, true))
+            .Select(i => new IndexerListItem(i, IncludeBrowseCommand.AsDefault))
             .ToList();
 
         _ = Task.Run(() =>

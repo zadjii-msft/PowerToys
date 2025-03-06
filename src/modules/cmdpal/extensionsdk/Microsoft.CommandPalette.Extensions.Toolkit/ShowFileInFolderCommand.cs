@@ -11,7 +11,7 @@ public partial class ShowFileInFolderCommand : InvokableCommand
     private readonly string _path;
     private static readonly IconInfo Ico = new("\uE838");
 
-    public CommandResult Result { get; set; } = CommandResult.GoHome();
+    public CommandResult Result { get; set; } = CommandResult.Dismiss();
 
     public ShowFileInFolderCommand(string path)
     {
@@ -22,7 +22,7 @@ public partial class ShowFileInFolderCommand : InvokableCommand
 
     public override CommandResult Invoke()
     {
-        if (File.Exists(_path))
+        if (Path.Exists(_path))
         {
             try
             {
