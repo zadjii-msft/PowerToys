@@ -46,50 +46,67 @@
                     Text="{x:Bind Text, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ToolTip, Mode=OneWay}" />
             </DataTemplate>
+            <DataTemplate x:Key="TagItemTemplate" x:DataType="viewModels:TagViewModel">
+                <ItemContainer>
+                    <cpcontrols:Tag
+                    BackgroundColor="{x:Bind Background, Mode=OneWay}"
+                    FontSize="12"
+                    ForegroundColor="{x:Bind Foreground, Mode=OneWay}"
+                    Icon="{x:Bind Icon, Mode=OneWay}"
+                    Text="{x:Bind Text, Mode=OneWay}"
+                    ToolTipService.ToolTip="{x:Bind ToolTip, Mode=OneWay}" />
+
+                </ItemContainer>
+            </DataTemplate>
 
             <DataTemplate x:Key="DetailsLinkTemplate" x:DataType="viewModels:DetailsLinkViewModel">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock
+                <ItemContainer>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock
                         FontWeight="SemiBold"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Key, Mode=OneWay}"
                         TextWrapping="WrapWholeWords" />
-                    <TextBlock
+                        <TextBlock
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Text, Mode=OneWay}"
                         TextWrapping="WrapWholeWords"
                         Visibility="{x:Bind IsText, Mode=OneWay}" />
-                    <HyperlinkButton
+                        <HyperlinkButton
                         Padding="0"
                         Content="{x:Bind Text, Mode=OneWay}"
                         NavigateUri="{x:Bind Link, Mode=OneWay}"
                         Visibility="{x:Bind IsLink, Mode=OneWay}" />
-                </StackPanel>
+                    </StackPanel>
+                </ItemContainer>
             </DataTemplate>
             <DataTemplate x:Key="DetailsSeparatorTemplate" x:DataType="viewModels:DetailsSeparatorViewModel">
-                <StackPanel Margin="0,8,8,0" Orientation="Vertical">
-                    <Border
+                <ItemContainer>
+                    <StackPanel Margin="0,8,8,0" Orientation="Vertical">
+                        <Border
                         Margin="8,0,0,0"
                         BorderBrush="{ThemeResource TextFillColorSecondaryBrush}"
                         BorderThickness="0,0,0,2">
-                        <TextBlock
+                            <TextBlock
                             Margin="-8,0,0,8"
                             FontWeight="SemiBold"
                             IsTextSelectionEnabled="True"
                             Text="{x:Bind Key, Mode=OneWay}"
                             TextWrapping="WrapWholeWords" />
-                    </Border>
-                </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ItemContainer>
             </DataTemplate>
             <DataTemplate x:Key="DetailsTagsTemplate" x:DataType="viewModels:DetailsTagsViewModel">
-                <StackPanel Orientation="Vertical" Spacing="4">
-                    <TextBlock
+                <ItemContainer>
+                    <StackPanel Orientation="Vertical" Spacing="4">
+                        <TextBlock
                         FontWeight="SemiBold"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Key, Mode=OneWay}"
                         TextWrapping="WrapWholeWords" />
-                    <ItemsRepeater
+                        <!--<ItemsRepeater
                         Grid.Column="2"
                         ItemTemplate="{StaticResource TagTemplate}"
                         ItemsSource="{x:Bind Tags, Mode=OneWay}"
@@ -97,8 +114,18 @@
                         <ItemsRepeater.Layout>
                             <toolkit:WrapLayout HorizontalSpacing="8" VerticalSpacing="8" />
                         </ItemsRepeater.Layout>
-                    </ItemsRepeater>
-                </StackPanel>
+                    </ItemsRepeater>-->
+                        <ItemsView 
+                        Grid.Column="2"
+                        ItemTemplate="{StaticResource TagItemTemplate}"
+                        ItemsSource="{x:Bind Tags, Mode=OneWay}"
+                        Visibility="{x:Bind HasTags, Mode=OneWay}">
+                            <ItemsView.Layout>
+                                <toolkit:WrapLayout HorizontalSpacing="8" VerticalSpacing="8" />
+                            </ItemsView.Layout>
+                        </ItemsView>
+                    </StackPanel>
+                </ItemContainer>
             </DataTemplate>
         </ResourceDictionary>
     </Page.Resources>
@@ -331,14 +358,14 @@
                             IsTextSelectionEnabled="True"
                             Text="{x:Bind ViewModel.Details.Body, Mode=OneWay}" />
 
-                        <ItemsRepeater
+                        <ItemsView
                             Grid.Row="3"
                             ItemTemplate="{StaticResource DetailsDataTemplateSelector}"
                             ItemsSource="{x:Bind ViewModel.Details.Metadata, Mode=OneWay}">
-                            <ItemsRepeater.Layout>
+                            <ItemsView.Layout>
                                 <StackLayout Spacing="8" />
-                            </ItemsRepeater.Layout>
-                        </ItemsRepeater>
+                            </ItemsView.Layout>
+                        </ItemsView>
                     </Grid>
                 </ScrollViewer>
                 <!--  /DetailsContent  -->
@@ -346,7 +373,7 @@
             <ScrollView
                 Grid.Row="2"
                 Grid.ColumnSpan="2"
-                MaxHeight="120"
+                MaxHeight="240"
                 Background="{ThemeResource SystemControlErrorBackgroundColor}"
                 BorderBrush="{ThemeResource SystemControlErrorTextForegroundBrush}"
                 BorderThickness="0,1,0,1"

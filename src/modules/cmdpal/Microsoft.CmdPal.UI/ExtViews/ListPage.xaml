@@ -41,6 +41,18 @@
                 Text="{x:Bind Text, Mode=OneWay}"
                 ToolTipService.ToolTip="{x:Bind ToolTip, Mode=OneWay}" />
         </DataTemplate>
+        <DataTemplate x:Key="TagItemTemplate" x:DataType="viewmodels:TagViewModel">
+            <ItemContainer>
+                <cpcontrols:Tag
+                    BackgroundColor="{x:Bind Background, Mode=OneWay}"
+                    FontSize="12"
+                    ForegroundColor="{x:Bind Foreground, Mode=OneWay}"
+                    Icon="{x:Bind Icon, Mode=OneWay}"
+                    Text="{x:Bind Text, Mode=OneWay}"
+                    ToolTipService.ToolTip="{x:Bind ToolTip, Mode=OneWay}" />
+
+            </ItemContainer>
+        </DataTemplate>
 
         <!--  https://learn.microsoft.com/windows/apps/design/controls/itemsview#specify-the-look-of-the-items  -->
         <DataTemplate x:Key="ListItemViewModelTemplate" x:DataType="viewmodels:ListItemViewModel">
@@ -85,13 +97,18 @@
                         TextWrapping="NoWrap"
                         Visibility="{x:Bind Subtitle, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}" />
                 </StackPanel>
-
-                <ItemsRepeater
+                <ItemsView 
+                    Grid.Column="2"
+                    ItemTemplate="{StaticResource TagItemTemplate}"
+                    ItemsSource="{x:Bind Tags, Mode=OneWay}"
+                    Layout="{StaticResource HorizontalStackLayout}"
+                    Visibility="{x:Bind HasTags, Mode=OneWay}" />
+                <!--<ItemsRepeater
                     Grid.Column="2"
                     ItemTemplate="{StaticResource TagTemplate}"
                     ItemsSource="{x:Bind Tags, Mode=OneWay}"
                     Layout="{StaticResource HorizontalStackLayout}"
-                    Visibility="{x:Bind HasTags, Mode=OneWay}" />
+                    Visibility="{x:Bind HasTags, Mode=OneWay}" />-->
             </Grid>
         </DataTemplate>
     </Page.Resources>
