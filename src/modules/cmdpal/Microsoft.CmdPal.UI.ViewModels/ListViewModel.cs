@@ -33,10 +33,12 @@ public partial class ListViewModel : PageViewModel
 
     public event TypedEventHandler<ListViewModel, object>? ItemsUpdated;
 
-    public bool HasLoadedItems =>
+    public bool ShowEmptyContent =>
         _initiallyFetchedItems &&
-        FilteredItems.Count != 0 &&
+        FilteredItems.Count == 0 &&
         IsLoading == false;
+
+    public bool HasLoadedItems => !ShowEmptyContent;
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
