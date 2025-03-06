@@ -100,8 +100,8 @@
 
         <controls:SwitchPresenter HorizontalAlignment="Stretch"
                                   TargetType="x:Boolean"
-                                  Value="{x:Bind ViewModel.HasLoadedItems, Mode=OneWay}">
-            <controls:Case Value="True">
+                                  Value="{x:Bind ViewModel.ShowEmptyContent, Mode=OneWay}">
+            <controls:Case Value="False">
                 <ListView
                     x:Name="ItemsList"
                     DoubleTapped="ItemsList_DoubleTapped"
@@ -128,7 +128,7 @@
                 </ListView.GroupStyle>-->
                 </ListView>
             </controls:Case>
-            <controls:Case Value="False">
+            <controls:Case Value="True">
                 <StackPanel 
                     Orientation="Vertical" 
                     VerticalAlignment="Center" 

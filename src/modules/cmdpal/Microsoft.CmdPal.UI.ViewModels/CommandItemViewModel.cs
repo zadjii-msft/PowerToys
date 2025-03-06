@@ -120,12 +120,22 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         {
             _itemTitle = Name,
             Subtitle = Subtitle,
-            _listItemIcon = _listItemIcon,
-            Command = new(model.Command, PageContext),
+
+            // _listItemIcon = _listItemIcon,
+            // Command = new(model.Command, PageContext),
+            Command = Command,
 
             // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
         };
 
+        // Only set the icon on the context item for us if our command didn't
+        // have its own icon
+        if (!Command.HasIcon)
+        {
+            _defaultCommandContextItem._listItemIcon = _listItemIcon;
+        }
+
+        // _defaultCommandContextItem.InitializeProperties();
         model.PropChanged += Model_PropChanged;
         Command.PropertyChanged += Command_PropertyChanged;
         UpdateProperty(nameof(Name));

@@ -34,11 +34,11 @@ public partial class ListViewModel : PageViewModel
     public event TypedEventHandler<ListViewModel, object>? ItemsUpdated;
 
     public bool ShowEmptyContent =>
-        _initiallyFetchedItems &&
+        IsInitialized &&
         FilteredItems.Count == 0 &&
         IsLoading == false;
 
-    public bool HasLoadedItems => !ShowEmptyContent;
+    // public bool HasLoadedItems => !ShowEmptyContent;
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
@@ -53,8 +53,17 @@ public partial class ListViewModel : PageViewModel
     public CommandItemViewModel EmptyContent { get; private set; }
 
     private bool _isDynamic;
-    private bool _initiallyFetchedItems;
 
+    public override bool IsInitialized
+    {
+        get => base.IsInitialized; protected set
+        {
+            base.IsInitialized = value;
+            UpdateEmptyContent();
+        }
+    }
+
+    // private bool _initiallyFetchedItems;
     public ListViewModel(IListPage model, TaskScheduler scheduler, CommandPaletteHost host)
         : base(model, scheduler, host)
     {
@@ -148,8 +157,7 @@ public partial class ListViewModel : PageViewModel
             throw;
         }
 
-        _initiallyFetchedItems = true;
-
+        // _initiallyFetchedItems = true;
         Task.Factory.StartNew(
             () =>
             {
@@ -332,8 +340,8 @@ public partial class ListViewModel : PageViewModel
 
     private void UpdateEmptyContent()
     {
-        UpdateProperty(nameof(HasLoadedItems));
-        if (HasLoadedItems || EmptyContent.Model.Unsafe == null)
+        UpdateProperty(nameof(ShowEmptyContent));
+        if (!ShowEmptyContent || EmptyContent.Model.Unsafe == null)
         {
             return;
         }
