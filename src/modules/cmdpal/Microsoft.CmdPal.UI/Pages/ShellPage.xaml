@@ -51,11 +51,11 @@
             <DataTemplate x:Key="DetailsLinkTemplate" x:DataType="viewModels:DetailsLinkViewModel">
                 <StackPanel Orientation="Vertical">
                     <TextBlock
-                        FontWeight="SemiBold"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Key, Mode=OneWay}"
                         TextWrapping="WrapWholeWords" />
                     <TextBlock
+                        FontSize="12"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Text, Mode=OneWay}"
@@ -64,6 +64,7 @@
                     <HyperlinkButton
                         Padding="0"
                         Content="{x:Bind Text, Mode=OneWay}"
+                        FontSize="12"
                         NavigateUri="{x:Bind Link, Mode=OneWay}"
                         Visibility="{x:Bind IsLink, Mode=OneWay}" />
                 </StackPanel>
@@ -86,7 +87,6 @@
             <DataTemplate x:Key="DetailsTagsTemplate" x:DataType="viewModels:DetailsTagsViewModel">
                 <StackPanel Orientation="Vertical" Spacing="4">
                     <TextBlock
-                        FontWeight="SemiBold"
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Key, Mode=OneWay}"
                         TextWrapping="WrapWholeWords" />
@@ -302,8 +302,8 @@
                     Grid.Column="1"
                     Padding="12"
                     HorizontalAlignment="Stretch"
-                    Background="{ThemeResource LayerFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
                     BorderThickness="1,0,0,0"
                     Visibility="Collapsed">
                     <Grid>
@@ -318,7 +318,7 @@
                             x:Name="HeroImageBorder"
                             MinWidth="64"
                             MinHeight="64"
-                            MaxHeight="128"
+                            MaxHeight="96"
                             HorizontalAlignment="Center"
                             SourceKey="{x:Bind ViewModel.Details.HeroImage, Mode=OneWay}"
                             SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}"
@@ -336,6 +336,7 @@
                             Grid.Row="2"
                             Margin="0,12,0,24"
                             Background="Transparent"
+                            FontSize="10"
                             Header3FontSize="12"
                             Header3FontWeight="Normal"
                             Header3Foreground="{ThemeResource TextFillColorSecondaryBrush}"
