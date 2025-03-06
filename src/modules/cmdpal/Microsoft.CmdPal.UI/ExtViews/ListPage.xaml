@@ -36,6 +36,8 @@
             <cpcontrols:Tag
                 BackgroundColor="{x:Bind Background, Mode=OneWay}"
                 FontSize="12"
+                CornerRadius="{x:Bind CornerRadius, Mode=OneWay}"
+                BorderBrush="{x:Bind BorderBrush, Mode=OneWay}"
                 ForegroundColor="{x:Bind Foreground, Mode=OneWay}"
                 Icon="{x:Bind Icon, Mode=OneWay}"
                 Text="{x:Bind Text, Mode=OneWay}"

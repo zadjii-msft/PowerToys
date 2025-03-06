@@ -42,6 +42,8 @@
                 <cpcontrols:Tag
                     BackgroundColor="{x:Bind Background, Mode=OneWay}"
                     ForegroundColor="{x:Bind Foreground, Mode=OneWay}"
+                    BorderBrush="{x:Bind BorderBrush, Mode=OneWay}"
+                    CornerRadius="{x:Bind CornerRadius, Mode=OneWay}"
                     Icon="{x:Bind Icon, Mode=OneWay}"
                     Text="{x:Bind Text, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind ToolTip, Mode=OneWay}" />

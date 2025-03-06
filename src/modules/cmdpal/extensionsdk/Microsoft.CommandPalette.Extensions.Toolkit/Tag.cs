@@ -2,12 +2,16 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.UI.Xaml;
+
 namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
 public partial class Tag : BaseObservable, ITag
 {
     private OptionalColor _foreground;
     private OptionalColor _background;
+    private OptionalColor _borderBrush;
+    private CornerRadius _cornerRadius;
     private string _text = string.Empty;
 
     public OptionalColor Foreground
@@ -27,6 +31,26 @@ public partial class Tag : BaseObservable, ITag
         {
             _background = value;
             OnPropertyChanged(nameof(Background));
+        }
+    }
+
+    public OptionalColor BorderBrush
+    {
+        get => _borderBrush;
+        set
+        {
+            _borderBrush = value;
+            OnPropertyChanged(nameof(BorderBrush));
+        }
+    }
+
+    public CornerRadius CornerRadius
+    {
+        get => _cornerRadius;
+        set
+        {
+            _cornerRadius = value;
+            OnPropertyChanged(nameof(CornerRadius));
         }
     }
 

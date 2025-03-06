@@ -4,6 +4,7 @@
 
 using Microsoft.CmdPal.UI.ViewModels.Models;
 using Microsoft.CommandPalette.Extensions;
+using Microsoft.UI.Xaml;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -21,6 +22,10 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
 
     public OptionalColor Background { get; private set; }
 
+    public OptionalColor BorderBrush { get; private set; }
+
+    public CornerRadius CornerRadius { get; private set; }
+
     public IconInfoViewModel Icon { get; private set; } = new(null);
 
     public ExtensionObject<ICommand> Command { get; private set; } = new(null);
@@ -36,6 +41,8 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
         Text = model.Text;
         Foreground = model.Foreground;
         Background = model.Background;
+        BorderBrush = model.BorderBrush;
+        CornerRadius = model.CornerRadius;
         ToolTip = model.ToolTip;
         Icon = new(model.Icon);
         Icon.InitializeProperties();
@@ -43,6 +50,8 @@ public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionOb
         UpdateProperty(nameof(Text));
         UpdateProperty(nameof(Foreground));
         UpdateProperty(nameof(Background));
+        UpdateProperty(nameof(BorderBrush));
+        UpdateProperty(nameof(CornerRadius));
         UpdateProperty(nameof(ToolTip));
         UpdateProperty(nameof(Icon));
     }
