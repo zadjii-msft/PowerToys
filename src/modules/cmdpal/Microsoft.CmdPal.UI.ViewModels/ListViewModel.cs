@@ -150,6 +150,13 @@ public partial class ListViewModel : PageViewModel, IDisposable
                 item?.SafeInitializeProperties();
             }
 
+            // Cancel any ongoing search
+            if (_cancellationTokenSource != null)
+            {
+                Debug.WriteLine("Cancelling old initialize task");
+                _cancellationTokenSource.Cancel();
+            }
+
             lock (_listLock)
             {
                 // Now that we have new ViewModels for everything from the
@@ -166,13 +173,6 @@ public partial class ListViewModel : PageViewModel, IDisposable
             // Create a special ListItemViewModel for errors and use an ItemTemplateSelector in the ListPage to display error items differently.
             ShowException(ex, _model?.Unsafe?.Name);
             throw;
-        }
-
-        // Cancel any ongoing search
-        if (_cancellationTokenSource != null)
-        {
-            Debug.WriteLine("Cancelling old initialize task");
-            _cancellationTokenSource.Cancel();
         }
 
         _cancellationTokenSource = new CancellationTokenSource();
@@ -308,7 +308,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item)
     {
-        if (!item.SafeInitializeProperties())
+        if (!item.SafeSlowInit())
         {
             return;
         }

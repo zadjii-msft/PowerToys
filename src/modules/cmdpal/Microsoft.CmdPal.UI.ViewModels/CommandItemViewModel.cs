@@ -20,6 +20,8 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
 
     protected bool IsInitialized { get; private set; }
 
+    protected bool IsSelectedInitialized { get; private set; }
+
     // These are properties that are "observable" from the extension object
     // itself, in the sense that they get raised by PropChanged events from the
     // extension. However, we don't want to actually make them
@@ -127,6 +129,37 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
             _listItemIcon.InitializeProperties();
         }
 
+        // TODO: Do these need to go into FastInit?
+        model.PropChanged += Model_PropChanged;
+        Command.PropertyChanged += Command_PropertyChanged;
+
+        UpdateProperty(nameof(Name));
+        UpdateProperty(nameof(Title));
+        UpdateProperty(nameof(Subtitle));
+        UpdateProperty(nameof(Icon));
+        UpdateProperty(nameof(IsInitialized));
+
+        IsInitialized = true;
+    }
+
+    public void SlowInitializeProperties()
+    {
+        if (IsSelectedInitialized)
+        {
+            return;
+        }
+
+        if (!IsInitialized)
+        {
+            InitializeProperties();
+        }
+
+        var model = _commandItemModel.Unsafe;
+        if (model == null)
+        {
+            return;
+        }
+
         var more = model.MoreCommands;
         if (more != null)
         {
@@ -163,18 +196,10 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
             _defaultCommandContextItem._listItemIcon = _listItemIcon;
         }
 
-        // _defaultCommandContextItem.InitializeProperties();
-        model.PropChanged += Model_PropChanged;
-        Command.PropertyChanged += Command_PropertyChanged;
-        UpdateProperty(nameof(Name));
-        UpdateProperty(nameof(Title));
-        UpdateProperty(nameof(Subtitle));
-        UpdateProperty(nameof(Icon));
-        UpdateProperty(nameof(IsInitialized));
+        IsSelectedInitialized = true;
         UpdateProperty(nameof(MoreCommands));
         UpdateProperty(nameof(AllCommands));
-
-        IsInitialized = true;
+        UpdateProperty(nameof(IsSelectedInitialized));
     }
 
     public bool SafeFastInit()
@@ -193,6 +218,21 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
             _listItemIcon = new(new IconInfo("❌"));
             _listItemIcon.InitializeProperties();
             IsInitialized = true;
+        }
+
+        return false;
+    }
+
+    public bool SafeSlowInit()
+    {
+        try
+        {
+            SlowInitializeProperties();
+            return true;
+        }
+        catch (Exception)
+        {
+            IsSelectedInitialized = true;
         }
 
         return false;
