@@ -96,19 +96,25 @@
         </DataTemplate>
     </Page.Resources>
 
-    <ListView
-        x:Name="ItemsList"
-        DoubleTapped="ItemsList_DoubleTapped"
-        IsDoubleTapEnabled="True"
-        IsItemClickEnabled="True"
-        ItemClick="ItemsList_ItemClick"
-        ItemTemplate="{StaticResource ListItemViewModelTemplate}"
-        ItemsSource="{x:Bind ViewModel.FilteredItems, Mode=OneWay}"
-        SelectionChanged="ItemsList_SelectionChanged">
-        <ListView.ItemContainerTransitions>
-            <TransitionCollection />
-        </ListView.ItemContainerTransitions>
-        <!--<ListView.GroupStyle>
+    <Grid>
+
+        <controls:SwitchPresenter HorizontalAlignment="Stretch"
+                                  TargetType="x:Boolean"
+                                  Value="{x:Bind ViewModel.HasLoadedItems, Mode=OneWay}">
+            <controls:Case Value="True">
+                <ListView
+                    x:Name="ItemsList"
+                    DoubleTapped="ItemsList_DoubleTapped"
+                    IsDoubleTapEnabled="True"
+                    IsItemClickEnabled="True"
+                    ItemClick="ItemsList_ItemClick"
+                    ItemTemplate="{StaticResource ListItemViewModelTemplate}"
+                    ItemsSource="{x:Bind ViewModel.FilteredItems, Mode=OneWay}"
+                    SelectionChanged="ItemsList_SelectionChanged">
+                    <ListView.ItemContainerTransitions>
+                        <TransitionCollection />
+                    </ListView.ItemContainerTransitions>
+                    <!--<ListView.GroupStyle>
                     <GroupStyle HidesIfEmpty="True">
                         <GroupStyle.HeaderTemplate>
                             <DataTemplate>
@@ -120,5 +126,24 @@
                         </GroupStyle.HeaderTemplate>
                     </GroupStyle>
                 </ListView.GroupStyle>-->
-    </ListView>
+                </ListView>
+            </controls:Case>
+            <controls:Case Value="False">
+                <StackPanel 
+                    Orientation="Vertical" 
+                    VerticalAlignment="Center" 
+                    HorizontalAlignment="Center">
+                    <TextBlock 
+                        Style="{ThemeResource HeaderTextBlockStyle}"
+                        FontSize="24"
+                        Text="{x:Bind ViewModel.EmptyContent.Title, Mode=OneWay}" />
+                    <TextBlock 
+                        Text="{x:Bind ViewModel.EmptyContent.Subtitle, Mode=OneWay}" />
+
+                </StackPanel>
+            </controls:Case>
+        </controls:SwitchPresenter>
+
+
+    </Grid>
 </Page>

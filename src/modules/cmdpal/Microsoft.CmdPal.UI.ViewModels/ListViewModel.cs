@@ -33,6 +33,11 @@ public partial class ListViewModel : PageViewModel
 
     public event TypedEventHandler<ListViewModel, object>? ItemsUpdated;
 
+    public bool HasLoadedItems =>
+        _initiallyFetchedItems &&
+        Items.Count != 0 &&
+        IsLoading == false;
+
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
     public bool ShowDetails { get; private set; }
@@ -43,12 +48,16 @@ public partial class ListViewModel : PageViewModel
 
     public string SearchText { get; private set; } = string.Empty;
 
+    public CommandItemViewModel EmptyContent { get; private set; }
+
     private bool _isDynamic;
+    private bool _initiallyFetchedItems;
 
     public ListViewModel(IListPage model, TaskScheduler scheduler, CommandPaletteHost host)
         : base(model, scheduler, host)
     {
         _model = new(model);
+        EmptyContent = new(new(null), PageContext);
     }
 
     // TODO: Does this need to hop to a _different_ thread, so that we don't block the extension while we're fetching?
@@ -136,6 +145,9 @@ public partial class ListViewModel : PageViewModel
             ShowException(ex, _model?.Unsafe?.Name);
             throw;
         }
+
+        _initiallyFetchedItems = true;
+        UpdateProperty(nameof(HasLoadedItems));
 
         Task.Factory.StartNew(
             () =>
@@ -250,25 +262,28 @@ public partial class ListViewModel : PageViewModel
     {
         base.InitializeProperties();
 
-        var listPage = _model.Unsafe;
-        if (listPage == null)
+        var model = _model.Unsafe;
+        if (model == null)
         {
             return; // throw?
         }
 
-        _isDynamic = listPage is IDynamicListPage;
+        _isDynamic = model is IDynamicListPage;
 
-        ShowDetails = listPage.ShowDetails;
+        ShowDetails = model.ShowDetails;
         UpdateProperty(nameof(ShowDetails));
 
-        ModelPlaceholderText = listPage.PlaceholderText;
+        ModelPlaceholderText = model.PlaceholderText;
         UpdateProperty(nameof(PlaceholderText));
 
-        SearchText = listPage.SearchText;
+        SearchText = model.SearchText;
         UpdateProperty(nameof(SearchText));
 
+        EmptyContent = new(new(model.EmptyContent), PageContext);
+        EmptyContent.InitializeProperties();
+
         FetchItems();
-        listPage.ItemsChanged += Model_ItemsChanged;
+        model.ItemsChanged += Model_ItemsChanged;
     }
 
     public void LoadMoreIfNeeded()
@@ -299,6 +314,13 @@ public partial class ListViewModel : PageViewModel
                 break;
             case nameof(SearchText):
                 this.SearchText = model.SearchText;
+                break;
+            case nameof(EmptyContent):
+                EmptyContent = new(new(model.EmptyContent), PageContext);
+                EmptyContent.InitializeProperties();
+                break;
+            case nameof(IsLoading):
+                UpdateProperty(nameof(HasLoadedItems));
                 break;
         }
 
