@@ -135,12 +135,13 @@ public partial class ListViewModel : PageViewModel, IDisposable
             foreach (var item in newItems)
             {
                 ListItemViewModel viewModel = new(item, this);
-                newViewModels.Add(viewModel);
+
+                // newViewModels.Add(viewModel);
                 //// If an item fails to load, silently ignore it.
-                // if (viewModel.SafeInitializeProperties())
-                // {
-                //    newViewModels.Add(viewModel);
-                // }
+                if (viewModel.SafeFastInit())
+                {
+                    newViewModels.Add(viewModel);
+                }
             }
 
             var firstTwenty = newViewModels.Take(20);
@@ -307,6 +308,11 @@ public partial class ListViewModel : PageViewModel, IDisposable
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item)
     {
+        if (!item.SafeInitializeProperties())
+        {
+            return;
+        }
+
         // GH #322:
         // For inexplicable reasons, if you try updating the command bar and
         // the details on the same UI thread tick as updating the list, we'll

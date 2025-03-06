@@ -16,6 +16,8 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
     private readonly ExtensionObject<ICommandItem> _commandItemModel = new(null);
     private CommandContextItemViewModel? _defaultCommandContextItem;
 
+    protected bool IsFastInitialized { get; private set; }
+
     protected bool IsInitialized { get; private set; }
 
     // These are properties that are "observable" from the extension object
@@ -72,8 +74,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         Command = new(null, errorContext);
     }
 
-    //// Called from ListViewModel on background thread started in ListPage.xaml.cs
-    public override void InitializeProperties()
+    public void FastInitializeProperties()
     {
         if (IsInitialized)
         {
@@ -92,6 +93,33 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         _itemTitle = model.Title;
         Subtitle = model.Subtitle;
 
+        IsFastInitialized = true;
+    }
+
+    //// Called from ListViewModel on background thread started in ListPage.xaml.cs
+    public override void InitializeProperties()
+    {
+        if (IsInitialized)
+        {
+            return;
+        }
+
+        if (!IsFastInitialized)
+        {
+            FastInitializeProperties();
+        }
+
+        var model = _commandItemModel.Unsafe;
+        if (model == null)
+        {
+            return;
+        }
+
+        // Command = new(model.Command, PageContext);
+        // Command.InitializeProperties();
+
+        // _itemTitle = model.Title;
+        // Subtitle = model.Subtitle;
         var listIcon = model.Icon;
         if (listIcon != null)
         {
@@ -143,8 +171,31 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         UpdateProperty(nameof(Subtitle));
         UpdateProperty(nameof(Icon));
         UpdateProperty(nameof(IsInitialized));
+        UpdateProperty(nameof(MoreCommands));
+        UpdateProperty(nameof(AllCommands));
 
         IsInitialized = true;
+    }
+
+    public bool SafeFastInit()
+    {
+        try
+        {
+            FastInitializeProperties();
+            return true;
+        }
+        catch (Exception)
+        {
+            Command = new(null, PageContext);
+            _itemTitle = "Error";
+            Subtitle = "Item failed to load";
+            MoreCommands = [];
+            _listItemIcon = new(new IconInfo("❌"));
+            _listItemIcon.InitializeProperties();
+            IsInitialized = true;
+        }
+
+        return false;
     }
 
     public bool SafeInitializeProperties()
