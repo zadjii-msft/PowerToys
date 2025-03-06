@@ -191,4 +191,10 @@ Right-click to remove the key combination, thereby deactivating the shortcut.</v
   <data name="Run_Radio_Position_In_Place.Content" xml:space="preserve">
     <value>Don't move</value>
   </data>
+  <data name="BehaviorSettingsHeader.Text" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="ActivationSettingsHeader.Text" xml:space="preserve">
+    <value>Activation</value>
+  </data>
 </root>

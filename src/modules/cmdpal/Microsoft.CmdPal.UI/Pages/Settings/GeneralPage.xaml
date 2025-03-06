@@ -33,34 +33,33 @@
                   <EntranceThemeTransition FromVerticalOffset="50" />
                   <RepositionThemeTransition IsStaggeringEnabled="False" />
               </StackPanel.ChildrenTransitions>-->
-                    <controls:SettingsExpander
+                    <TextBlock x:Uid="ActivationSettingsHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
+                    <controls:SettingsCard
                         Description="This key will open the Command Palette"
                         Header="Activation key"
-                        HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}"
-                        IsExpanded="True">
+                        HeaderIcon="{ui:FontIcon Glyph=&#xEDA7;}">
                         <ptControls:ShortcutControl HotkeySettings="{x:Bind viewModel.Hotkey, Mode=TwoWay}" />
+                    </controls:SettingsCard>
 
-                        <controls:SettingsExpander.Items>
-                            <controls:SettingsCard
-                                Description="If enabled, the Command Palette will return to the home page when activated"
-                                Header="Go home when activated"
-                                HeaderIcon="{ui:FontIcon Glyph=&#xE80F;}">
-                                <ToggleSwitch IsOn="{x:Bind viewModel.HotkeyGoesHome, Mode=TwoWay}" />
-                            </controls:SettingsCard>
-                            <controls:SettingsCard Description="When enabled, the previous search text will be selected when the app is opened" Header="Highlight search on activate">
-                                <ToggleSwitch IsOn="{x:Bind viewModel.HighlightSearchOnActivate, Mode=TwoWay}" />
-                            </controls:SettingsCard>
-                            <controls:SettingsCard x:Uid="Run_PositionHeader" HeaderIcon="{ui:FontIcon Glyph=&#xe78b;}">
-                                <ComboBox MinWidth="{StaticResource SettingActionControlMinWidth}" SelectedIndex="{x:Bind viewModel.MonitorPositionIndex, Mode=TwoWay}">
-                                    <ComboBoxItem x:Uid="Run_Radio_Position_Cursor" />
-                                    <ComboBoxItem x:Uid="Run_Radio_Position_Primary_Monitor" />
-                                    <ComboBoxItem x:Uid="Run_Radio_Position_Focus" />
-                                    <ComboBoxItem x:Uid="Run_Radio_Position_In_Place" />
-                                </ComboBox>
-                            </controls:SettingsCard>
+                    <controls:SettingsCard
+                        Description="If enabled, the Command Palette will return to the home page when activated"
+                        Header="Go home when activated"
+                        HeaderIcon="{ui:FontIcon Glyph=&#xE80F;}">
+                        <ToggleSwitch IsOn="{x:Bind viewModel.HotkeyGoesHome, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard Description="When enabled, the previous search text will be selected when the app is opened" Header="Highlight search on activate">
+                        <ToggleSwitch IsOn="{x:Bind viewModel.HighlightSearchOnActivate, Mode=TwoWay}" />
+                    </controls:SettingsCard>
+                    <controls:SettingsCard x:Uid="Run_PositionHeader" HeaderIcon="{ui:FontIcon Glyph=&#xe78b;}">
+                        <ComboBox MinWidth="{StaticResource SettingActionControlMinWidth}" SelectedIndex="{x:Bind viewModel.MonitorPositionIndex, Mode=TwoWay}">
+                            <ComboBoxItem x:Uid="Run_Radio_Position_Cursor" />
+                            <ComboBoxItem x:Uid="Run_Radio_Position_Primary_Monitor" />
+                            <ComboBoxItem x:Uid="Run_Radio_Position_Focus" />
+                            <ComboBoxItem x:Uid="Run_Radio_Position_In_Place" />
+                        </ComboBox>
+                    </controls:SettingsCard>
 
-                        </controls:SettingsExpander.Items>
-                    </controls:SettingsExpander>
+                    <TextBlock x:Uid="BehaviorSettingsHeader" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
                     <controls:SettingsCard
                         Description="Controls if app details are automatically expanded or not"
@@ -78,7 +77,7 @@
 
                     <controls:SettingsCard
                         Description="When enabled, single click activates list items. When disabled, single click selects and double click activates."
-                        Header="Single-click activates"
+                        Header="Single-click activation"
                         HeaderIcon="{ui:FontIcon Glyph=&#xE962;}">
                         <ToggleSwitch IsOn="{x:Bind viewModel.SingleClickActivates, Mode=TwoWay}" />
                     </controls:SettingsCard>
@@ -97,7 +96,7 @@
                         <controls:SettingsExpander.Items>
                             <controls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
                                 <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
-                                    <HyperlinkButton Content="View GitHub Repo" NavigateUri="https://github.com/zadjii-msft/PowerToys" />
+                                    <HyperlinkButton Content="View GitHub repository" NavigateUri="https://github.com/zadjii-msft/PowerToys" />
                                     <HyperlinkButton Content="Extension SDK docs" NavigateUri="https://github.com/zadjii-msft/PowerToys/blob/main/src/modules/cmdpal/doc/initial-sdk-spec/initial-sdk-spec.md" />
                                 </StackPanel>
                             </controls:SettingsCard>
