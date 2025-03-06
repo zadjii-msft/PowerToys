@@ -76,7 +76,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
 
     public void FastInitializeProperties()
     {
-        if (IsInitialized)
+        if (IsFastInitialized)
         {
             return;
         }
@@ -88,7 +88,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         }
 
         Command = new(model.Command, PageContext);
-        Command.InitializeProperties();
+        Command.FastInitializeProperties();
 
         _itemTitle = model.Title;
         Subtitle = model.Subtitle;
@@ -116,7 +116,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         }
 
         // Command = new(model.Command, PageContext);
-        // Command.InitializeProperties();
+        Command.InitializeProperties();
 
         // _itemTitle = model.Title;
         // Subtitle = model.Subtitle;
