@@ -26,7 +26,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
     [ObservableProperty]
     public partial ObservableCollection<ListItemViewModel> FilteredItems { get; set; } = [];
 
-    public ObservableCollection<ListItemViewModel> Items { get; set; } = [];
+    private ObservableCollection<ListItemViewModel> Items { get; set; } = [];
 
     private readonly ExtensionObject<IListPage> _model;
 
@@ -114,6 +114,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
             }
 
             ItemsUpdated?.Invoke(this, EventArgs.Empty);
+            UpdateEmptyContent();
         }
     }
 
