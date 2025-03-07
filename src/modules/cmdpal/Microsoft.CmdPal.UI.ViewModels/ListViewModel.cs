@@ -39,8 +39,6 @@ public partial class ListViewModel : PageViewModel, IDisposable
         FilteredItems.Count == 0 &&
         IsLoading == false;
 
-    // public bool HasLoadedItems => !ShowEmptyContent;
-
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
     public bool ShowDetails { get; private set; }
@@ -67,7 +65,6 @@ public partial class ListViewModel : PageViewModel, IDisposable
         }
     }
 
-    // private bool _initiallyFetchedItems;
     public ListViewModel(IListPage model, TaskScheduler scheduler, CommandPaletteHost host)
         : base(model, scheduler, host)
     {
