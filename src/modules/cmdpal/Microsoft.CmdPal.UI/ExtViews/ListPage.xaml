@@ -98,9 +98,10 @@
 
     <Grid>
 
-        <controls:SwitchPresenter HorizontalAlignment="Stretch"
-                                  TargetType="x:Boolean"
-                                  Value="{x:Bind ViewModel.ShowEmptyContent, Mode=OneWay}">
+        <controls:SwitchPresenter
+            HorizontalAlignment="Stretch"
+            TargetType="x:Boolean"
+            Value="{x:Bind ViewModel.ShowEmptyContent, Mode=OneWay}">
             <controls:Case Value="False">
                 <ListView
                     x:Name="ItemsList"
@@ -129,10 +130,10 @@
                 </ListView>
             </controls:Case>
             <controls:Case Value="True">
-                <StackPanel 
-                    Orientation="Vertical" 
-                    VerticalAlignment="Center" 
-                    HorizontalAlignment="Center">
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Orientation="Vertical">
                     <cpcontrols:IconBox
                         x:Name="IconBorder"
                         Grid.Column="0"
@@ -143,14 +144,12 @@
                         SourceKey="{x:Bind ViewModel.EmptyContent.Icon, Mode=OneWay}"
                         SourceRequested="{x:Bind help:IconCacheProvider.SourceRequested}" />
 
-                    <TextBlock 
+                    <TextBlock
                         HorizontalAlignment="Center"
-                        Style="{ThemeResource HeaderTextBlockStyle}"
                         FontSize="24"
+                        Style="{ThemeResource HeaderTextBlockStyle}"
                         Text="{x:Bind ViewModel.EmptyContent.Title, Mode=OneWay}" />
-                    <TextBlock 
-                        HorizontalAlignment="Center"
-                        Text="{x:Bind ViewModel.EmptyContent.Subtitle, Mode=OneWay}" />
+                    <TextBlock HorizontalAlignment="Center" Text="{x:Bind ViewModel.EmptyContent.Subtitle, Mode=OneWay}" />
 
                 </StackPanel>
             </controls:Case>
