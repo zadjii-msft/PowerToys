@@ -69,6 +69,14 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         }
     }
 
+    private static readonly IconInfoViewModel _errorIcon;
+
+    static CommandItemViewModel()
+    {
+        _errorIcon = new(new IconInfo("\uEA39")); // ErrorBadge
+        _errorIcon.InitializeProperties();
+    }
+
     public CommandItemViewModel(ExtensionObject<ICommandItem> item, IPageContext errorContext)
         : base(errorContext)
     {
@@ -181,9 +189,6 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         {
             _itemTitle = Name,
             Subtitle = Subtitle,
-
-            // _listItemIcon = _listItemIcon,
-            // Command = new(model.Command, PageContext),
             Command = Command,
 
             // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
@@ -215,8 +220,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
             _itemTitle = "Error";
             Subtitle = "Item failed to load";
             MoreCommands = [];
-            _listItemIcon = new(new IconInfo("❌"));
-            _listItemIcon.InitializeProperties();
+            _listItemIcon = _errorIcon;
             IsInitialized = true;
         }
 
@@ -251,8 +255,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
             _itemTitle = "Error";
             Subtitle = "Item failed to load";
             MoreCommands = [];
-            _listItemIcon = new(new IconInfo("❌"));
-            _listItemIcon.InitializeProperties();
+            _listItemIcon = _errorIcon;
         }
 
         return false;
