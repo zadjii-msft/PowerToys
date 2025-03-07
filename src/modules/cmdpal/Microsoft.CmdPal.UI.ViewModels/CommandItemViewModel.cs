@@ -212,10 +212,12 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         catch (Exception)
         {
             Command = new(null, PageContext);
-            _itemTitle = string.Empty;
-            Subtitle = string.Empty;
+            _itemTitle = "Error";
+            Subtitle = "Item failed to load";
+            MoreCommands = [];
+            _listItemIcon = new(new IconInfo("❌"));
+            _listItemIcon.InitializeProperties();
             IsInitialized = true;
-            IsSelectedInitialized = true;
         }
 
         return false;
@@ -246,10 +248,11 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         catch (Exception)
         {
             Command = new(null, PageContext);
-            _itemTitle = string.Empty;
-            Subtitle = string.Empty;
-            IsInitialized = true;
-            IsSelectedInitialized = true;
+            _itemTitle = "Error";
+            Subtitle = "Item failed to load";
+            MoreCommands = [];
+            _listItemIcon = new(new IconInfo("❌"));
+            _listItemIcon.InitializeProperties();
         }
 
         return false;
