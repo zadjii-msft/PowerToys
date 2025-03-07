@@ -190,20 +190,6 @@ public partial class ListViewModel : PageViewModel, IDisposable
         }); // Task.Run(
         _initializeItemsTask.Start();
 
-        // () =>
-        // {
-        //    // TODO cancellation token
-        //    lock (_listLock)
-        //    {
-        //        foreach (var item in Items)
-        //        {
-        //            item.SafeInitializeProperties();
-        //        }
-        //    }
-        // },
-        //    cancellationToken: _cancellationTokenSource.Token);
-
-        // _initiallyFetchedItems = true;
         Task.Factory.StartNew(
             () =>
             {
@@ -220,7 +206,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
                     {
                         // A dynamic list? Even better! Just stick everything into
                         // FilteredItems. The extension already did any filtering it cared about.
-                        ListHelpers.InPlaceUpdateList(FilteredItems, Items);
+                        ListHelpers.InPlaceUpdateList(FilteredItems, Items.Where(i => !i.IsInErrorState));
                     }
 
                     UpdateEmptyContent();
@@ -285,6 +271,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
     public static IEnumerable<ListItemViewModel> FilterList(IEnumerable<ListItemViewModel> items, string query)
     {
         var scores = items
+            .Where(i => !i.IsInErrorState)
             .Select(li => new ScoredListItemViewModel() { ViewModel = li, Score = ScoreListItem(query, li) })
             .Where(score => score.Score > 0)
             .OrderByDescending(score => score.Score);
