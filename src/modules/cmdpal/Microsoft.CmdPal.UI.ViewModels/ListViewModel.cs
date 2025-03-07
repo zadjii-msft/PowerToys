@@ -280,16 +280,38 @@ public partial class ListViewModel : PageViewModel, IDisposable
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
+    // This is what gets invoked when the user presses <enter>
     [RelayCommand]
-    private void InvokeItem(ListItemViewModel item) =>
-        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command.Model, item.Model));
-
-    [RelayCommand]
-    private void InvokeSecondaryCommand(ListItemViewModel item)
+    private void InvokeItem(ListItemViewModel? item)
     {
-        if (item.SecondaryCommand != null)
+        if (item != null)
         {
-            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command.Model, item.Model));
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command.Model, item.Model));
+        }
+        else if (ShowEmptyContent && EmptyContent.PrimaryCommand?.Model.Unsafe != null)
+        {
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(
+                EmptyContent.PrimaryCommand.Command.Model,
+                EmptyContent.PrimaryCommand.Model));
+        }
+    }
+
+    // This is what gets invoked when the user presses <ctrl+enter>
+    [RelayCommand]
+    private void InvokeSecondaryCommand(ListItemViewModel? item)
+    {
+        if (item != null)
+        {
+            if (item.SecondaryCommand != null)
+            {
+                WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command.Model, item.Model));
+            }
+        }
+        else if (ShowEmptyContent && EmptyContent.SecondaryCommand?.Model.Unsafe != null)
+        {
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(
+                EmptyContent.SecondaryCommand.Command.Model,
+                EmptyContent.SecondaryCommand.Model));
         }
     }
 
@@ -348,7 +370,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
         UpdateProperty(nameof(SearchText));
 
         EmptyContent = new(new(model.EmptyContent), PageContext);
-        EmptyContent.InitializeProperties();
+        EmptyContent.SlowInitializeProperties();
 
         FetchItems();
         model.ItemsChanged += Model_ItemsChanged;
