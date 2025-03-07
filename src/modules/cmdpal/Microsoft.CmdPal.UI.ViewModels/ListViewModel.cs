@@ -205,29 +205,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
 
         // _initiallyFetchedItems = true;
         Task.Factory.StartNew(
-            () =>
-            {
-                lock (_listLock)
-                {
-                    // Now that our Items contains everything we want, it's time for us to
-                    // re-evaluate our Filter on those items.
-                    if (!_isDynamic)
-                    {
-                        // A static list? Great! Just run the filter.
-                        ApplyFilterUnderLock();
-                    }
-                    else
-                    {
-                        // A dynamic list? Even better! Just stick everything into
-                        // FilteredItems. The extension already did any filtering it cared about.
-                        ListHelpers.InPlaceUpdateList(FilteredItems, Items);
-                    }
-
-                    UpdateEmptyContent();
-                }
-
-                ItemsUpdated?.Invoke(this, EventArgs.Empty);
-            },
+            UpdateFilteredItemsForItemsChange,
             CancellationToken.None,
             TaskCreationOptions.None,
             PageContext.Scheduler);
@@ -238,18 +216,64 @@ public partial class ListViewModel : PageViewModel, IDisposable
         // Were we already canceled?
         ct.ThrowIfCancellationRequested();
 
+        var removedItems = false;
+
         // lock (_listLock)
         // {
-        foreach (var item in Items)
+        for (var i = 0; i < Items.Count; i++)
         {
+            var item = Items[i];
+
             ct.ThrowIfCancellationRequested();
 
-            item.SafeInitializeProperties();
+            if (!item.SafeInitializeProperties())
+            {
+                lock (_listLock)
+                {
+                    Items.Remove(item);
+                    removedItems = true;
+
+                    // FilteredItems.Remove(item);
+                }
+            }
 
             ct.ThrowIfCancellationRequested();
         }
 
+        if (removedItems)
+        {
+            Task.Factory.StartNew(
+                UpdateFilteredItemsForItemsChange,
+                ct,
+                TaskCreationOptions.None,
+                PageContext.Scheduler);
+        }
+
         // }
+    }
+
+    private void UpdateFilteredItemsForItemsChange()
+    {
+        lock (_listLock)
+        {
+            // Now that our Items contains everything we want, it's time for us to
+            // re-evaluate our Filter on those items.
+            if (!_isDynamic)
+            {
+                // A static list? Great! Just run the filter.
+                ApplyFilterUnderLock();
+            }
+            else
+            {
+                // A dynamic list? Even better! Just stick everything into
+                // FilteredItems. The extension already did any filtering it cared about.
+                ListHelpers.InPlaceUpdateList(FilteredItems, Items);
+            }
+
+            UpdateEmptyContent();
+        }
+
+        ItemsUpdated?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
