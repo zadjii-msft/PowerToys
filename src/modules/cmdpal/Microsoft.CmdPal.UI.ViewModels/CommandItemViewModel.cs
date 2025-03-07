@@ -129,11 +129,8 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
             return;
         }
 
-        // Command = new(model.Command, PageContext);
         Command.InitializeProperties();
 
-        // _itemTitle = model.Title;
-        // Subtitle = model.Subtitle;
         var listIcon = model.Icon;
         if (listIcon != null)
         {

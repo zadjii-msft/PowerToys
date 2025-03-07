@@ -134,8 +134,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
             {
                 ListItemViewModel viewModel = new(item, this);
 
-                // newViewModels.Add(viewModel);
-                //// If an item fails to load, silently ignore it.
+                // If an item fails to load, silently ignore it.
                 if (viewModel.SafeFastInit())
                 {
                     newViewModels.Add(viewModel);
@@ -184,7 +183,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
             catch (OperationCanceledException)
             {
             }
-        }); // Task.Run(
+        });
         _initializeItemsTask.Start();
 
         Task.Factory.StartNew(
@@ -221,18 +220,19 @@ public partial class ListViewModel : PageViewModel, IDisposable
         // Were we already canceled?
         ct.ThrowIfCancellationRequested();
 
-        // lock (_listLock)
-        // {
         foreach (var item in Items)
         {
             ct.ThrowIfCancellationRequested();
 
+            // TODO: GH #502
+            // We should probably remove the item from the list if it
+            // entered the error state. I had issues doing that without having
+            // multiple threads muck with `Items` (and possibly FilteredItems!)
+            // at once.
             item.SafeInitializeProperties();
 
             ct.ThrowIfCancellationRequested();
         }
-
-        // }
     }
 
     /// <summary>
