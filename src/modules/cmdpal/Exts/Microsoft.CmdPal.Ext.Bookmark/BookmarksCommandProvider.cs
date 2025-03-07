@@ -91,8 +91,6 @@ public partial class BookmarksCommandProvider : CommandProvider
                 contextMenu.Add(
                     new CommandContextItem(new DirectoryPage(urlCommand.Url)));
 
-                // contextMenu.Add(
-                //    new CommandContextItem(new DirectoryExplorePage(urlCommand.Url)));
                 contextMenu.Add(
                     new CommandContextItem(new OpenInTerminalCommand(urlCommand.Url)));
             }

@@ -313,7 +313,7 @@ public partial class ListViewModel : PageViewModel
         UpdateProperty(nameof(SearchText));
 
         EmptyContent = new(new(model.EmptyContent), PageContext);
-        EmptyContent.SlowInitializeProperties();
+        EmptyContent.InitializeProperties();
 
         FetchItems();
         model.ItemsChanged += Model_ItemsChanged;
