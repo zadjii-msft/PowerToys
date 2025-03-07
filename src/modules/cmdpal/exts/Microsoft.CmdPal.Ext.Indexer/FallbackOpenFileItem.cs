@@ -5,6 +5,7 @@
 using System.IO;
 using Microsoft.CmdPal.Ext.Indexer.Data;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using Windows.Storage.Streams;
 
 namespace Microsoft.CmdPal.Ext.Indexer;
 
@@ -25,9 +26,16 @@ internal sealed partial class FallbackOpenFileItem : FallbackCommandItem
             var listItemForUs = new IndexerListItem(item, IncludeBrowseCommand.AsDefault);
             Command = listItemForUs.Command;
             MoreCommands = listItemForUs.MoreCommands;
-            Subtitle = item.FullPath;
-            Title = item.FileName;
+            Subtitle = item.FileName;
+            Title = item.FullPath;
             Icon = listItemForUs.Icon;
+
+            var stream = ThumbnailHelper.GetThumbnail(item.FullPath).Result;
+            if (stream != null)
+            {
+                var data = new IconData(RandomAccessStreamReference.CreateFromStream(stream));
+                Icon = new IconInfo(data, data);
+            }
         }
         else
         {

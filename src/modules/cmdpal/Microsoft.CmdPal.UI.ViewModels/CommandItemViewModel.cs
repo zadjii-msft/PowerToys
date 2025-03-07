@@ -120,9 +120,6 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         {
             _itemTitle = Name,
             Subtitle = Subtitle,
-
-            // _listItemIcon = _listItemIcon,
-            // Command = new(model.Command, PageContext),
             Command = Command,
 
             // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
@@ -135,7 +132,6 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
             _defaultCommandContextItem._listItemIcon = _listItemIcon;
         }
 
-        // _defaultCommandContextItem.InitializeProperties();
         model.PropChanged += Model_PropChanged;
         Command.PropertyChanged += Command_PropertyChanged;
         UpdateProperty(nameof(Name));
