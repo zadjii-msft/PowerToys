@@ -44,7 +44,7 @@ public partial class BookmarksCommandProvider : CommandProvider
         SaveAndUpdateCommands();
     }
 
-    // In the edit path, `args` was alread in _bookmarks, we just updated it
+    // In the edit path, `args` was already in _bookmarks, we just updated it
     private void Edit_AddedCommand(object sender, BookmarkData args)
     {
         ExtensionHost.LogMessage($"Edited bookmark ({args.Name},{args.Bookmark})");
