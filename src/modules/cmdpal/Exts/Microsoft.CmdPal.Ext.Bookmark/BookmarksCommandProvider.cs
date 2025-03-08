@@ -35,9 +35,7 @@ public partial class BookmarksCommandProvider : CommandProvider
 
     private void AddNewCommand_AddedCommand(object sender, BookmarkData args)
     {
-        // Construct a new json blob with the name and url
-
-        // var data = Bookmarks.ReadFromFile(jsonPath);
+        ExtensionHost.LogMessage($"Adding bookmark ({args.Name},{args.Bookmark})");
         if (_bookmarks != null)
         {
             _bookmarks.Data.Add(args);
@@ -49,6 +47,8 @@ public partial class BookmarksCommandProvider : CommandProvider
     // In the edit path, `args` was alread in _bookmarks, we just updated it
     private void Edit_AddedCommand(object sender, BookmarkData args)
     {
+        ExtensionHost.LogMessage($"Edited bookmark ({args.Name},{args.Bookmark})");
+
         SaveAndUpdateCommands();
     }
 
@@ -136,12 +136,11 @@ public partial class BookmarksCommandProvider : CommandProvider
             {
                 if (_bookmarks != null)
                 {
+                    ExtensionHost.LogMessage($"Deleting bookmark ({bookmark.Name},{bookmark.Bookmark})");
+
                     _bookmarks.Data.Remove(bookmark);
-                    var jsonPath = BookmarksCommandProvider.StateJsonPath();
-                    Bookmarks.WriteToFile(jsonPath, _bookmarks);
-                    _commands.Clear();
-                    LoadCommands();
-                    RaiseItemsChanged(0);
+
+                    SaveAndUpdateCommands();
                 }
             },
             result: CommandResult.KeepOpen())

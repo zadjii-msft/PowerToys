@@ -100,13 +100,6 @@ internal sealed partial class AddBookmarkForm : FormContent
         updated.Bookmark = formBookmark.ToString();
         updated.Type = bookmarkType;
 
-        //// Construct a new json blob with the name and url
-        // var jsonPath = BookmarksCommandProvider.StateJsonPath();
-        // var data = Bookmarks.ReadFromFile(jsonPath);
-
-        // data.Data.Add(formData);
-
-        // Bookmarks.WriteToFile(jsonPath, data);
         AddedCommand?.Invoke(this, updated);
         return CommandResult.GoHome();
     }
