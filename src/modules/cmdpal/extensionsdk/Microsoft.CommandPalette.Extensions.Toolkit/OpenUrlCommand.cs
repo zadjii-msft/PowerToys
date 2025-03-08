@@ -8,7 +8,7 @@ public sealed partial class OpenUrlCommand : InvokableCommand
 {
     private readonly string _target;
 
-    public virtual CommandResult Result { get; set; } = CommandResult.KeepOpen();
+    public CommandResult Result { get; set; } = CommandResult.KeepOpen();
 
     public OpenUrlCommand(string target)
     {

@@ -4,9 +4,9 @@
 
 namespace Microsoft.CommandPalette.Extensions.Toolkit;
 
-public partial class Filter : IFilter
+public partial class Filter : BaseObservable, IFilter
 {
-    public virtual IIconInfo Icon 
+    public virtual IIconInfo Icon
     {
         get => field;
         set
@@ -18,7 +18,7 @@ public partial class Filter : IFilter
 
 = new IconInfo();
 
-    public virtual string Id 
+    public virtual string Id
     {
         get;
         set
@@ -30,7 +30,7 @@ public partial class Filter : IFilter
 
 = string.Empty;
 
-    public virtual string Name 
+    public virtual string Name
     {
         get;
         set
@@ -41,5 +41,4 @@ public partial class Filter : IFilter
     }
 
 = string.Empty;
-
 }

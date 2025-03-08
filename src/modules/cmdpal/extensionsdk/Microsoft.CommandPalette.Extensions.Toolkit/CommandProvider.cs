@@ -24,7 +24,7 @@ public abstract partial class CommandProvider : ICommandProvider
 
     public virtual ICommandSettings? Settings { get; protected set; }
 
-    public virtual bool Frozen { get; protected set; } = false;
+    public virtual bool Frozen { get; protected set; } = true;
 
     IIconInfo ICommandProvider.Icon => Icon;
 
