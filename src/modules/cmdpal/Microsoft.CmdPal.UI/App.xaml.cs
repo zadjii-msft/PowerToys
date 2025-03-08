@@ -10,6 +10,7 @@ using Microsoft.CmdPal.Ext.ClipboardHistory;
 using Microsoft.CmdPal.Ext.Indexer;
 using Microsoft.CmdPal.Ext.Registry;
 using Microsoft.CmdPal.Ext.Shell;
+using Microsoft.CmdPal.Ext.System;
 using Microsoft.CmdPal.Ext.TimeDate;
 using Microsoft.CmdPal.Ext.WebSearch;
 using Microsoft.CmdPal.Ext.WindowsServices;
@@ -98,6 +99,7 @@ public partial class App : Application
         services.AddSingleton<ICommandProvider, WindowsServicesCommandsProvider>();
         services.AddSingleton<ICommandProvider, BuiltInsCommandProvider>();
         services.AddSingleton<ICommandProvider, TimeDateCommandsProvider>();
+        services.AddSingleton<ICommandProvider, SystemCommandExtensionProvider>();
 
         // Models
         services.AddSingleton<TopLevelCommandManager>();
