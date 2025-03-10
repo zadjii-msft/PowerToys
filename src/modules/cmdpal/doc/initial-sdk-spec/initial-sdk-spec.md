@@ -1639,7 +1639,7 @@ will show to the user in the settings for your application.
 
 For example: a "Search the Web" command would just set its `DisplayTitle` to    
 "Search the web", but the `UpdateQuery` method might change the title to "Search
-the web vor {searchText}"
+the web for {searchText}"
 
 ##### `GetCommand`
 
