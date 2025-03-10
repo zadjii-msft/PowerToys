@@ -74,7 +74,7 @@ public partial class EvilSamplesPage : ListPage
            MoreCommands = null,
            Details = new Details()
            {
-               Body = "This is a test for GH#512. If it doesn't appead immediately, it's likely InvokeCommand is happening on the UI thread.",
+               Body = "This is a test for GH#512. If it doesn't appear immediately, it's likely InvokeCommand is happening on the UI thread.",
            },
         }
     ];
