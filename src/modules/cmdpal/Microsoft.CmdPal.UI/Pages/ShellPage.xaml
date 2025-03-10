@@ -90,12 +90,22 @@
                         IsTextSelectionEnabled="True"
                         Text="{x:Bind Key, Mode=OneWay}"
                         TextWrapping="WrapWholeWords" />
-                    <ItemsRepeater
-                        Grid.Column="2"
+                    <ItemsControl
                         ItemTemplate="{StaticResource TagTemplate}"
                         ItemsSource="{x:Bind Tags, Mode=OneWay}"
                         Visibility="{x:Bind HasTags, Mode=OneWay}">
-                    </ItemsRepeater>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <toolkit:WrapPanel
+                                    x:Name="TagsWrapPanel"
+                                    MinWidth="0"
+                                    Padding="0"
+                                    HorizontalSpacing="8"
+                                    Orientation="Horizontal"
+                                    VerticalSpacing="8" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
                 </StackPanel>
             </DataTemplate>
         </ResourceDictionary>

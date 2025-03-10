@@ -89,14 +89,14 @@
                 </StackPanel>
 
                 <ItemsView
-                    IsTabStop="False"
-                    SelectionMode="None"
-                    IsItemInvokedEnabled="False"
-                    IsHitTestVisible="False"
                     Grid.Column="2"
+                    IsHitTestVisible="False"
+                    IsItemInvokedEnabled="False"
+                    IsTabStop="False"
                     ItemTemplate="{StaticResource TagTemplate}"
                     ItemsSource="{x:Bind Tags, Mode=OneWay}"
                     Layout="{StaticResource HorizontalStackLayout}"
+                    SelectionMode="None"
                     Visibility="{x:Bind HasTags, Mode=OneWay}" />
             </Grid>
         </DataTemplate>
