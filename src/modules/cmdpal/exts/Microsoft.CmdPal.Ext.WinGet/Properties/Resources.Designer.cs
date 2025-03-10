@@ -79,7 +79,7 @@ namespace Microsoft.CmdPal.Ext.WinGet.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error {connectResult.ExtendedErrorCode.HResult}. Are you connected to the internet?.
+        ///   Looks up a localized string similar to Error {0}. Are you connected to the internet?.
         /// </summary>
         public static string winget_create_catalog_error {
             get {
