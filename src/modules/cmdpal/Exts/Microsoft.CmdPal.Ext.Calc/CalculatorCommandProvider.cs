@@ -36,7 +36,7 @@ public partial class CalculatorCommandProvider : CommandProvider
 //   - The default command is `SaveCommand`.
 //     - When you save, insert into list at spot 1
 //     - change SearchText to the result
-//   - MoreCommands: a single `CopyCommand` to copy the result to the clipbaord
+//   - MoreCommands: a single `CopyCommand` to copy the result to the clipboard
 // * The rest of the items are previously saved results
 //   - Command is a CopyCommand
 //   - Each item also sets the TextToSuggest to the result
