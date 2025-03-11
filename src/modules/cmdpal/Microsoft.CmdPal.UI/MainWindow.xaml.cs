@@ -183,6 +183,7 @@ public sealed partial class MainWindow : Window,
                 Kind = DesktopAcrylicKind.Thin,
                 TintColor = Color.FromArgb(255, 32, 32, 32),
                 LuminosityOpacity = 0.96f,
+
                 TintOpacity = 0.5f,
                 FallbackColor = Color.FromArgb(255, 28, 28, 28),
             };

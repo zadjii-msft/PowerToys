@@ -26,6 +26,18 @@
                 Opacity="0.4"
                 Color="#FFFFFF" />
         </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <!--  For Light theme, we slightly update the LayerOnAcrylicFillColorDefault color so that the cursor of the searchbox shows  -->
+            <SolidColorBrush
+                x:Key="LayerOnAcrylicPrimaryBackgroundBrush"
+                Opacity="0.4"
+                Color="#282828" />
+            <!--  Because we are tweaking the LayerOnAcrylicPrimaryBackgroundBrush, we need to tweak the command bar background too. If not, it's too bright.  -->
+            <SolidColorBrush
+                x:Key="LayerOnAcrylicSecondaryBackgroundBrush"
+                Opacity="0.4"
+                Color="#282828" />
+        </ResourceDictionary>
 
         <ResourceDictionary x:Key="HighContrast">
             <!--  This is a local copy of LayerOnAcrylicFillColorDefaultBrush  -->
