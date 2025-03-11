@@ -27,7 +27,7 @@ public partial class BuiltInsCommandProvider : CommandProvider
 
     public override IFallbackCommandItem[] FallbackCommands() =>
         [
-            new FallbackCommandItem(quitCommand) { Subtitle = Properties.Resources.builtin_quit_subtitle },
+            new FallbackCommandItem(quitCommand, displayTitle: Properties.Resources.builtin_quit_subtitle) { Subtitle = Properties.Resources.builtin_quit_subtitle },
             _fallbackReloadItem,
             _fallbackLogItem,
         ];

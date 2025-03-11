@@ -2,18 +2,29 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class CommandItemViewModel : ExtensionObjectViewModel
+public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBarContext
 {
+    public ExtensionObject<ICommandItem> Model => _commandItemModel;
+
     private readonly ExtensionObject<ICommandItem> _commandItemModel = new(null);
     private CommandContextItemViewModel? _defaultCommandContextItem;
 
-    protected bool IsInitialized { get; private set; }
+    internal InitializedState Initialized { get; private set; } = InitializedState.Uninitialized;
+
+    protected bool IsFastInitialized => IsInErrorState || Initialized.HasFlag(InitializedState.FastInitialized);
+
+    protected bool IsInitialized => IsInErrorState || Initialized.HasFlag(InitializedState.Initialized);
+
+    protected bool IsSelectedInitialized => IsInErrorState || Initialized.HasFlag(InitializedState.SelectionInitialized);
+
+    public bool IsInErrorState => Initialized.HasFlag(InitializedState.Error);
 
     // These are properties that are "observable" from the extension object
     // itself, in the sense that they get raised by PropChanged events from the
@@ -37,9 +48,13 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
 
     public List<CommandContextItemViewModel> MoreCommands { get; private set; } = [];
 
+    IEnumerable<CommandContextItemViewModel> ICommandBarContext.MoreCommands => MoreCommands;
+
     public bool HasMoreCommands => MoreCommands.Count > 0;
 
     public string SecondaryCommandName => SecondaryCommand?.Name ?? string.Empty;
+
+    public CommandItemViewModel? PrimaryCommand => this;
 
     public CommandItemViewModel? SecondaryCommand => HasMoreCommands ? MoreCommands[0] : null;
 
@@ -58,6 +73,14 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         }
     }
 
+    private static readonly IconInfoViewModel _errorIcon;
+
+    static CommandItemViewModel()
+    {
+        _errorIcon = new(new IconInfo("\uEA39")); // ErrorBadge
+        _errorIcon.InitializeProperties();
+    }
+
     public CommandItemViewModel(ExtensionObject<ICommandItem> item, IPageContext errorContext)
         : base(errorContext)
     {
@@ -65,10 +88,9 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         Command = new(null, errorContext);
     }
 
-    //// Called from ListViewModel on background thread started in ListPage.xaml.cs
-    public override void InitializeProperties()
+    public void FastInitializeProperties()
     {
-        if (IsInitialized)
+        if (IsFastInitialized)
         {
             return;
         }
@@ -80,16 +102,71 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         }
 
         Command = new(model.Command, PageContext);
-        Command.InitializeProperties();
+        Command.FastInitializeProperties();
 
         _itemTitle = model.Title;
         Subtitle = model.Subtitle;
+
+        Initialized |= InitializedState.FastInitialized;
+    }
+
+    //// Called from ListViewModel on background thread started in ListPage.xaml.cs
+    public override void InitializeProperties()
+    {
+        if (IsInitialized)
+        {
+            return;
+        }
+
+        if (!IsFastInitialized)
+        {
+            FastInitializeProperties();
+        }
+
+        var model = _commandItemModel.Unsafe;
+        if (model == null)
+        {
+            return;
+        }
+
+        Command.InitializeProperties();
 
         var listIcon = model.Icon;
         if (listIcon != null)
         {
             _listItemIcon = new(listIcon);
             _listItemIcon.InitializeProperties();
+        }
+
+        // TODO: Do these need to go into FastInit?
+        model.PropChanged += Model_PropChanged;
+        Command.PropertyChanged += Command_PropertyChanged;
+
+        UpdateProperty(nameof(Name));
+        UpdateProperty(nameof(Title));
+        UpdateProperty(nameof(Subtitle));
+        UpdateProperty(nameof(Icon));
+        UpdateProperty(nameof(IsInitialized));
+
+        Initialized |= InitializedState.Initialized;
+    }
+
+    public void SlowInitializeProperties()
+    {
+        if (IsSelectedInitialized)
+        {
+            return;
+        }
+
+        if (!IsInitialized)
+        {
+            InitializeProperties();
+        }
+
+        var model = _commandItemModel.Unsafe;
+        if (model == null)
+        {
+            return;
         }
 
         var more = model.MoreCommands;
@@ -113,20 +190,57 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
         {
             _itemTitle = Name,
             Subtitle = Subtitle,
-            _listItemIcon = _listItemIcon,
-            Command = new(model.Command, PageContext),
+            Command = Command,
 
             // TODO this probably should just be a CommandContextItemViewModel(CommandItemViewModel) ctor, or a copy ctor or whatever
         };
 
-        model.PropChanged += Model_PropChanged;
-        Command.PropertyChanged += Command_PropertyChanged;
-        UpdateProperty(nameof(Name));
-        UpdateProperty(nameof(Title));
-        UpdateProperty(nameof(Subtitle));
-        UpdateProperty(nameof(Icon));
+        // Only set the icon on the context item for us if our command didn't
+        // have its own icon
+        if (!Command.HasIcon)
+        {
+            _defaultCommandContextItem._listItemIcon = _listItemIcon;
+        }
 
-        IsInitialized = true;
+        Initialized |= InitializedState.SelectionInitialized;
+        UpdateProperty(nameof(MoreCommands));
+        UpdateProperty(nameof(AllCommands));
+        UpdateProperty(nameof(IsSelectedInitialized));
+    }
+
+    public bool SafeFastInit()
+    {
+        try
+        {
+            FastInitializeProperties();
+            return true;
+        }
+        catch (Exception)
+        {
+            Command = new(null, PageContext);
+            _itemTitle = "Error";
+            Subtitle = "Item failed to load";
+            MoreCommands = [];
+            _listItemIcon = _errorIcon;
+            Initialized |= InitializedState.Error;
+        }
+
+        return false;
+    }
+
+    public bool SafeSlowInit()
+    {
+        try
+        {
+            SlowInitializeProperties();
+            return true;
+        }
+        catch (Exception)
+        {
+            Initialized |= InitializedState.Error;
+        }
+
+        return false;
     }
 
     public bool SafeInitializeProperties()
@@ -142,8 +256,8 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
             _itemTitle = "Error";
             Subtitle = "Item failed to load";
             MoreCommands = [];
-            _listItemIcon = new(new IconInfo("❌"));
-            _listItemIcon.InitializeProperties();
+            _listItemIcon = _errorIcon;
+            Initialized |= InitializedState.Error;
         }
 
         return false;
@@ -245,4 +359,14 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel
                 break;
         }
     }
+}
+
+[Flags]
+internal enum InitializedState
+{
+    Uninitialized = 0,
+    FastInitialized = 1,
+    Initialized = 2,
+    SelectionInitialized = 4,
+    Error = 8,
 }

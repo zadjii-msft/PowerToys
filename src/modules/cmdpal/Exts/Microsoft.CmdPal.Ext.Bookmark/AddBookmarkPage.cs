@@ -13,7 +13,7 @@ internal sealed partial class AddBookmarkPage : ContentPage
 {
     private readonly AddBookmarkForm _addBookmark;
 
-    internal event TypedEventHandler<object, object?>? AddedCommand
+    internal event TypedEventHandler<object, BookmarkData>? AddedCommand
     {
         add => _addBookmark.AddedCommand += value;
         remove => _addBookmark.AddedCommand -= value;
@@ -21,12 +21,14 @@ internal sealed partial class AddBookmarkPage : ContentPage
 
     public override IContent[] GetContent() => [_addBookmark];
 
-    public AddBookmarkPage(string name = "", string url = "")
+    public AddBookmarkPage(BookmarkData? bookmark)
     {
+        var name = bookmark?.Name ?? string.Empty;
+        var url = bookmark?.Bookmark ?? string.Empty;
         Icon = new IconInfo("\ued0e");
         var isAdd = string.IsNullOrEmpty(name) && string.IsNullOrEmpty(url);
         Title = isAdd ? Resources.bookmarks_add_title : Resources.bookmarks_edit_name;
         Name = isAdd ? Resources.bookmarks_add_name : Resources.bookmarks_edit_name;
-        _addBookmark = new(name, url);
+        _addBookmark = new(bookmark);
     }
 }

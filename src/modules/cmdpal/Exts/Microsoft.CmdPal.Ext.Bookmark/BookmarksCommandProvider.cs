@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.CmdPal.Ext.Bookmarks.Properties;
+using Microsoft.CmdPal.Ext.Indexer;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -17,7 +18,7 @@ public partial class BookmarksCommandProvider : CommandProvider
 {
     private readonly List<CommandItem> _commands = [];
 
-    private readonly AddBookmarkPage _addNewCommand = new();
+    private readonly AddBookmarkPage _addNewCommand = new(null);
 
     private Bookmarks? _bookmarks;
 
@@ -34,9 +35,33 @@ public partial class BookmarksCommandProvider : CommandProvider
         _addNewCommand.AddedCommand += AddNewCommand_AddedCommand;
     }
 
-    private void AddNewCommand_AddedCommand(object sender, object? args)
+    private void AddNewCommand_AddedCommand(object sender, BookmarkData args)
     {
-        _commands.Clear();
+        ExtensionHost.LogMessage($"Adding bookmark ({args.Name},{args.Bookmark})");
+        if (_bookmarks != null)
+        {
+            _bookmarks.Data.Add(args);
+        }
+
+        SaveAndUpdateCommands();
+    }
+
+    // In the edit path, `args` was already in _bookmarks, we just updated it
+    private void Edit_AddedCommand(object sender, BookmarkData args)
+    {
+        ExtensionHost.LogMessage($"Edited bookmark ({args.Name},{args.Bookmark})");
+
+        SaveAndUpdateCommands();
+    }
+
+    private void SaveAndUpdateCommands()
+    {
+        if (_bookmarks != null)
+        {
+            var jsonPath = BookmarksCommandProvider.StateJsonPath();
+            Bookmarks.WriteToFile(jsonPath, _bookmarks);
+        }
+
         LoadCommands();
         RaiseItemsChanged(0);
     }
@@ -46,7 +71,10 @@ public partial class BookmarksCommandProvider : CommandProvider
         List<CommandItem> collected = [];
         collected.Add(new CommandItem(_addNewCommand));
 
-        LoadBookmarksFromFile();
+        if (_bookmarks == null)
+        {
+            LoadBookmarksFromFile();
+        }
 
         if (_bookmarks != null)
         {
@@ -80,11 +108,27 @@ public partial class BookmarksCommandProvider : CommandProvider
             new BookmarkPlaceholderPage(bookmark) :
             new UrlCommand(bookmark);
 
-        var listItem = new CommandItem(command);
+        var listItem = new CommandItem(command) { Icon = command.Icon };
 
         List<CommandContextItem> contextMenu = [];
-        var edit = new AddBookmarkPage(bookmark.Name, bookmark.Bookmark) { Icon = EditIcon };
-        edit.AddedCommand += AddNewCommand_AddedCommand;
+
+        // Add commands for folder types
+        if (command is UrlCommand urlCommand)
+        {
+            if (urlCommand.Type == "folder")
+            {
+                contextMenu.Add(
+                    new CommandContextItem(new DirectoryPage(urlCommand.Url)));
+
+                contextMenu.Add(
+                    new CommandContextItem(new OpenInTerminalCommand(urlCommand.Url)));
+            }
+
+            listItem.Subtitle = urlCommand.Url;
+        }
+
+        var edit = new AddBookmarkPage(bookmark) { Icon = EditIcon };
+        edit.AddedCommand += Edit_AddedCommand;
         contextMenu.Add(new CommandContextItem(edit));
 
         var delete = new CommandContextItem(
@@ -94,12 +138,11 @@ public partial class BookmarksCommandProvider : CommandProvider
             {
                 if (_bookmarks != null)
                 {
+                    ExtensionHost.LogMessage($"Deleting bookmark ({bookmark.Name},{bookmark.Bookmark})");
+
                     _bookmarks.Data.Remove(bookmark);
-                    var jsonPath = BookmarksCommandProvider.StateJsonPath();
-                    Bookmarks.WriteToFile(jsonPath, _bookmarks);
-                    _commands.Clear();
-                    LoadCommands();
-                    RaiseItemsChanged(0);
+
+                    SaveAndUpdateCommands();
                 }
             },
             result: CommandResult.KeepOpen())
@@ -108,18 +151,6 @@ public partial class BookmarksCommandProvider : CommandProvider
             Icon = DeleteIcon,
         };
         contextMenu.Add(delete);
-
-        // Add commands for folder types
-        if (command is UrlCommand urlCommand)
-        {
-            if (urlCommand.Type == "folder")
-            {
-                contextMenu.Add(
-                    new CommandContextItem(new OpenInTerminalCommand(urlCommand.Url)));
-            }
-
-            listItem.Subtitle = urlCommand.Url;
-        }
 
         listItem.MoreCommands = contextMenu.ToArray();
 
