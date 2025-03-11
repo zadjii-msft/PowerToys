@@ -385,6 +385,15 @@ namespace Microsoft.CmdPal.UI.ViewModels.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reload Command Palette extensions.
+        /// </summary>
+        public static string builtin_reload_display_title {
+            get {
+                return ResourceManager.GetString("builtin_reload_display_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reload.
         /// </summary>
         public static string builtin_reload_name {
