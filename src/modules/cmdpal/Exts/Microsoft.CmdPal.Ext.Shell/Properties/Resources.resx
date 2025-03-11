@@ -187,4 +187,7 @@
   <data name="list_placeholder_text" xml:space="preserve">
     <value>Type the name of a command to run</value>
   </data>
+  <data name="shell_command_display_title" xml:space="preserve">
+    <value>Run commands</value>
+  </data>
 </root>
