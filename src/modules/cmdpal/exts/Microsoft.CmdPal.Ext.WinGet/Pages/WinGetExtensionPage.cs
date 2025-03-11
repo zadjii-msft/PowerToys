@@ -230,7 +230,7 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
             if (searchResults.Status != FindPackagesResultStatus.Ok)
             {
                 _errorMessage.Message = string.Format(CultureInfo.CurrentCulture, ErrorMessage, searchResults.Status);
-                WinGetExtensionHost.Instance.ShowStatus(_errorMessage);
+                WinGetExtensionHost.Instance.ShowStatus(_errorMessage, StatusContext.Page);
                 return [];
             }
 

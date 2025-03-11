@@ -4,6 +4,7 @@
 
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.CmdPal.Common.Messages;
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
@@ -30,6 +31,7 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class MainWindow : Window,
     IRecipient<DismissMessage>,
     IRecipient<ShowWindowMessage>,
+    IRecipient<HideWindowMessage>,
     IRecipient<QuitMessage>
 {
     private readonly HWND _hwnd;
@@ -74,6 +76,7 @@ public sealed partial class MainWindow : Window,
         WeakReferenceMessenger.Default.Register<DismissMessage>(this);
         WeakReferenceMessenger.Default.Register<QuitMessage>(this);
         WeakReferenceMessenger.Default.Register<ShowWindowMessage>(this);
+        WeakReferenceMessenger.Default.Register<HideWindowMessage>(this);
 
         // Hide our titlebar.
         // We need to both ExtendsContentIntoTitleBar, then set the height to Collapsed
@@ -263,6 +266,11 @@ public sealed partial class MainWindow : Window,
         var settings = App.Current.Services.GetService<SettingsModel>()!;
 
         ShowHwnd(message.Hwnd, settings.SummonOn);
+    }
+
+    public void Receive(HideWindowMessage message)
+    {
+        PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_HIDE);
     }
 
     public void Receive(QuitMessage message) =>

@@ -102,7 +102,7 @@ internal static class WinGetStatics
         if (connectResult.Status == ConnectResultStatus.CatalogError)
         {
             _errorMessage.Message = string.Format(CultureInfo.CurrentCulture, CreateCatalogErrorMessage, connectResult.ExtendedErrorCode.HResult);
-            WinGetExtensionHost.Instance.ShowStatus(_errorMessage);
+            WinGetExtensionHost.Instance.ShowStatus(_errorMessage, StatusContext.Extension);
         }
 
         return compositeCatalog;

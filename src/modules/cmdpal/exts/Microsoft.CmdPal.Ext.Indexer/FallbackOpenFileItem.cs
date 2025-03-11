@@ -13,7 +13,7 @@ namespace Microsoft.CmdPal.Ext.Indexer;
 internal sealed partial class FallbackOpenFileItem : FallbackCommandItem
 {
     public FallbackOpenFileItem()
-        : base(new NoOpCommand(), Resources.Indexer_Find_Path_fallback_display_title) 
+        : base(new NoOpCommand(), Resources.Indexer_Find_Path_fallback_display_title)
     {
         Title = string.Empty;
         Subtitle = string.Empty;
@@ -42,6 +42,7 @@ internal sealed partial class FallbackOpenFileItem : FallbackCommandItem
         {
             Title = string.Empty;
             Subtitle = string.Empty;
+            Command = new NoOpCommand();
         }
     }
 }
