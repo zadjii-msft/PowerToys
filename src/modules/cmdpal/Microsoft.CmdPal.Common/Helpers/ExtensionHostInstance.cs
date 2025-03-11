@@ -45,7 +45,7 @@ public partial class ExtensionHostInstance
         LogMessage(logMessage);
     }
 
-    public void ShowStatus(IStatusMessage message, StatusContext context = StatusContext.Extension)
+    public void ShowStatus(IStatusMessage message, StatusContext context)
     {
         if (Host != null)
         {

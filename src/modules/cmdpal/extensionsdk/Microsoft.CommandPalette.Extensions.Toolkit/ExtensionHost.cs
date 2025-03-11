@@ -40,7 +40,7 @@ public partial class ExtensionHost
         LogMessage(logMessage);
     }
 
-    public static void ShowStatus(IStatusMessage message, StatusContext context = StatusContext.Extension)
+    public static void ShowStatus(IStatusMessage message, StatusContext context)
     {
         if (Host != null)
         {
