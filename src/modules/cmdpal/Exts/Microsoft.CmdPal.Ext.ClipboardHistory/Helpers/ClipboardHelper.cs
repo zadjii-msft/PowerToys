@@ -55,6 +55,8 @@ internal static class ClipboardHelper
         {
             DataPackage output = new();
             output.SetText(text);
+            output.RequestedOperation = DataPackageOperation.Copy;
+
             try
             {
                 // Clipboard.SetContentWithOptions(output, null);

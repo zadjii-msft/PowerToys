@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Threading;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Models;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -29,7 +30,15 @@ internal sealed partial class CopyCommand : InvokableCommand
 
     public override CommandResult Invoke()
     {
-        ClipboardHelper.SetClipboardContent(_clipboardItem, _clipboardFormat);
+        var thread = new Thread(() =>
+        {
+            ClipboardHelper.SetClipboardContent(_clipboardItem, _clipboardFormat);
+        });
+
+        // thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+
         return CommandResult.ShowToast("Copied to clipboard");
     }
 }

@@ -2,6 +2,7 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.InteropServices;
 using Microsoft.Windows.AppLifecycle;
 
 namespace Microsoft.CmdPal.UI;
@@ -16,7 +17,7 @@ internal sealed class Program
     // LOAD BEARING
     //
     // Main cannot be async. If it is, then the clipboard won't work, and neither will narrator.
-    [MTAThread]
+    [STAThread]
     private static int Main(string[] args)
     {
         if (Helpers.GpoValueChecker.GetConfiguredCmdPalEnabledValue() == Helpers.GpoRuleConfiguredValue.Disabled)
@@ -53,7 +54,9 @@ internal sealed class Program
         else
         {
             isRedirect = true;
-            keyInstance.RedirectActivationToAsync(args).AsTask().ConfigureAwait(false);
+            RedirectActivationTo(args, keyInstance);
+
+            // keyInstance.RedirectActivationToAsync(args).AsTask().ConfigureAwait(false);
         }
 
         return isRedirect;
@@ -71,5 +74,33 @@ internal sealed class Program
                 mainWindow.Summon(string.Empty);
             }
         }
+    }
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+    private static extern IntPtr CreateEvent(
+    IntPtr lpEventAttributes, bool bManualReset, bool bInitialState, string? lpName);
+
+    [DllImport("kernel32.dll")]
+    private static extern bool SetEvent(IntPtr hEvent);
+
+    [DllImport("ole32.dll")]
+    private static extern uint CoWaitForMultipleObjects(
+    uint dwFlags, uint dwMilliseconds, ulong nHandles, IntPtr[] pHandles, out uint dwIndex);
+
+    private static IntPtr redirectEventHandle = IntPtr.Zero;
+
+    // Do the redirection on another thread, and use a non-blocking
+    // wait method to wait for the redirection to complete.
+    public static void RedirectActivationTo(AppActivationArguments args, AppInstance keyInstance)
+    {
+        redirectEventHandle = CreateEvent(IntPtr.Zero, true, false, null);
+        Task.Run(() =>
+        {
+            keyInstance.RedirectActivationToAsync(args).AsTask().Wait();
+            SetEvent(redirectEventHandle);
+        });
+        uint cWMO_DEFAULT = 0;
+        var iNFINITE = 0xFFFFFFFF;
+        _ = CoWaitForMultipleObjects(cWMO_DEFAULT, iNFINITE, 1, new IntPtr[] { redirectEventHandle }, out var handleIndex);
     }
 }
