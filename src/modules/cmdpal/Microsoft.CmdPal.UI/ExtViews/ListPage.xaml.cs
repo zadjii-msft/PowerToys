@@ -166,7 +166,11 @@ public sealed partial class ListPage : Page,
         // extension a bit of a heads-up before the user actually gets there.
         if (scrollView.VerticalOffset >= (scrollView.ScrollableHeight * .8))
         {
-            ViewModel?.LoadMoreIfNeeded();
+            var vm = ViewModel;
+            _ = Task.Run(() =>
+            {
+                vm?.LoadMoreIfNeeded();
+            });
         }
     }
 
