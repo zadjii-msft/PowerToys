@@ -10,7 +10,11 @@ using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
@@ -197,6 +201,50 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         }
     }
 
+    private void ShowConfirmationDialog(IConfirmationArgs args)
+    {
+        ContentDialog dialog = new()
+        {
+            Title = args.Title,
+            Content = args.Description,
+            PrimaryButtonText = "Confirm",
+            CloseButtonText = "Cancel",
+            XamlRoot = this.XamlRoot,
+        };
+
+        /*
+         * We need a beatiful way to show the dialog in red if it's a critical action.
+        if (args.IsPrimaryCommandCritical)
+        {
+            dialog.PrimaryButtonStyle = new Style(typeof(Button))
+            {
+                Setters =
+                {
+                    new Setter(Button.ForegroundProperty, new SolidColorBrush(Colors.White)),
+                    new Setter(Button.BackgroundProperty, new SolidColorBrush(Colors.Red)),
+                },
+            };
+        }*/
+
+        DispatcherQueue.TryEnqueue(async () =>
+        {
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                // confirm
+                if (args.PrimaryCommand is IInvokableCommand invokeableCommand)
+                {
+                    var invokeResult = invokeableCommand.Invoke(this);
+                    HandleCommandResultOnUiThread(invokeResult);
+                }
+            }
+            else
+            {
+                // cancel
+            }
+        });
+    }
+
     private void HandleCommandResultOnUiThread(ICommandResult? result)
     {
         try
@@ -238,6 +286,16 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                     case CommandResultKind.KeepOpen:
                         {
                             // Do nothing.
+                            break;
+                        }
+
+                    case CommandResultKind.Confirm:
+                        {
+                            if (result.Args is IConfirmationArgs a)
+                            {
+                                ShowConfirmationDialog(a);
+                            }
+
                             break;
                         }
 
