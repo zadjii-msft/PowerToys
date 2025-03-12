@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -33,6 +33,8 @@ public partial class ListViewModel : PageViewModel, IDisposable
     private readonly Lock _listLock = new();
 
     public event TypedEventHandler<ListViewModel, object>? ItemsUpdated;
+
+    public bool HasMoreItems => _model.Unsafe?.HasMoreItems ?? false;
 
     public bool ShowEmptyContent =>
         IsInitialized &&
@@ -373,12 +375,15 @@ public partial class ListViewModel : PageViewModel, IDisposable
         model.ItemsChanged += Model_ItemsChanged;
     }
 
-    public void LoadMoreIfNeeded()
+    public void LoadMore()
     {
-        if (_model.Unsafe?.HasMoreItems ?? false)
+        var model = this._model.Unsafe;
+        if (model == null)
         {
-            _model.Unsafe.LoadMore();
+            return;
         }
+
+        model.LoadMore();
     }
 
     protected override void FetchProperty(string propertyName)
