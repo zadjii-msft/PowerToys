@@ -204,8 +204,8 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
     private void ShowConfirmationDialog(IConfirmationArgs args)
     {
         var resourceLoader = Microsoft.CmdPal.UI.Helpers.ResourceLoaderInstance.ResourceLoader;
-        var confirmText = resourceLoader.GetString("ShellPage_ConfirmationDialog_ConfirmButtonText");
-        var cancelText = resourceLoader.GetString("ShellPage_ConfirmationDialog_CancelButtonText");
+        var confirmText = resourceLoader.GetString("ConfirmationDialog_ConfirmButtonText");
+        var cancelText = resourceLoader.GetString("ConfirmationDialog_CancelButtonText");
 
         ContentDialog dialog = new()
         {
