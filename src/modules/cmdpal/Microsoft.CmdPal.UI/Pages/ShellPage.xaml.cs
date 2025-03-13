@@ -237,9 +237,9 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
             if (result == ContentDialogResult.Primary)
             {
                 // confirm
-                if (args.PrimaryCommand is IInvokableCommand invokeableCommand)
+                if (args.PrimaryCommand is IInvokableCommand invokableCommand)
                 {
-                    var invokeResult = invokeableCommand.Invoke(this);
+                    var invokeResult = invokableCommand.Invoke(this);
                     HandleCommandResultOnUiThread(invokeResult);
                 }
             }
