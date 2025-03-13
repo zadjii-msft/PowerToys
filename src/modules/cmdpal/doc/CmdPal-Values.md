@@ -18,7 +18,10 @@ issue id: n/a
 
 I really don't think that I need to explain this one. CmdPal should spark joy,
 in all facets of it. The host app should be a seamless part of user's workflows.
-It shouldn't ever be frustrating - it .
+It shouldn't ever be frustrating - it should be intuitive and seamlessly snappy.
+
+The other side of this is the API should be fun to develop for. It should be
+easy to get started, quick to iterate on, and simple to publish results.
 
 ## Start **anything** here 
 
@@ -38,14 +41,13 @@ app and extensions will enable these apps to work for everyone.
 
 ## You shouldn't need a web browser just to use your PC
 
-When did a web browser become the platform for everything a user needs to do?
 Users shouldn't have to open a web browser for every little thing they want to
 do. What users need should always be at their fingertips.
 
 ## Success is measured in disengagement mins 
 
-Our goal should not be to have users using their devices more. They should be
-using their devices less. Get what you need done, then go live life.
+Our goal is not to have you spending **more** time with the Command Palette.
+It's to have you spending **less**. Get what you need done, then go live life.
 
 Command Palette is here to get what you need, and get out. How fast we can help
 the user get to what they need and get back to were doing - that's the metric
