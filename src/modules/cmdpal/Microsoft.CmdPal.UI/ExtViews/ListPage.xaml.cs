@@ -27,8 +27,6 @@ public sealed partial class ListPage : Page,
         set => SetValue(ViewModelProperty, value);
     }
 
-    private bool _loadMoreInProgress;
-
     // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(nameof(ViewModel), typeof(ListViewModel), typeof(ListPage), new PropertyMetadata(null, OnViewModelChanged));
@@ -168,7 +166,7 @@ public sealed partial class ListPage : Page,
         // extension a bit of a heads-up before the user actually gets there.
         if (scrollView.VerticalOffset >= (scrollView.ScrollableHeight * .8))
         {
-            LoadMoreIfNeeded();
+            ViewModel?.LoadMoreIfNeeded();
         }
     }
 
@@ -249,8 +247,6 @@ public sealed partial class ListPage : Page,
         {
             ItemsList.SelectedIndex = 0;
         }
-
-        _loadMoreInProgress = false;
     }
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -280,19 +276,5 @@ public sealed partial class ListPage : Page,
         }
 
         return null;
-    }
-
-    private void LoadMoreIfNeeded()
-    {
-        if (!_loadMoreInProgress && (ViewModel?.HasMoreItems ?? false))
-        {
-            _loadMoreInProgress = true;
-
-            var vm = ViewModel;
-            _ = Task.Run(() =>
-            {
-                vm?.LoadMore();
-            });
-        }
     }
 }

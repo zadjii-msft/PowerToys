@@ -32,9 +32,9 @@ public partial class ListViewModel : PageViewModel, IDisposable
 
     private readonly Lock _listLock = new();
 
-    public event TypedEventHandler<ListViewModel, object>? ItemsUpdated;
+    private bool _isLoading;
 
-    public bool HasMoreItems => _model.Unsafe?.HasMoreItems ?? false;
+    public event TypedEventHandler<ListViewModel, object>? ItemsUpdated;
 
     public bool ShowEmptyContent =>
         IsInitialized &&
@@ -114,6 +114,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
 
             ItemsUpdated?.Invoke(this, EventArgs.Empty);
             UpdateEmptyContent();
+            _isLoading = false;
         }
     }
 
@@ -211,6 +212,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
                 }
 
                 ItemsUpdated?.Invoke(this, EventArgs.Empty);
+                _isLoading = false;
             },
             CancellationToken.None,
             TaskCreationOptions.None,
@@ -375,7 +377,7 @@ public partial class ListViewModel : PageViewModel, IDisposable
         model.ItemsChanged += Model_ItemsChanged;
     }
 
-    public void LoadMore()
+    public void LoadMoreIfNeeded()
     {
         var model = this._model.Unsafe;
         if (model == null)
@@ -383,7 +385,21 @@ public partial class ListViewModel : PageViewModel, IDisposable
             return;
         }
 
-        model.LoadMore();
+        if (model.HasMoreItems && !_isLoading)
+        {
+            _isLoading = true;
+            _ = Task.Run(() =>
+            {
+                try
+                {
+                    model.LoadMore();
+                }
+                catch (Exception ex)
+                {
+                    ShowException(ex, model.Name);
+                }
+            });
+        }
     }
 
     protected override void FetchProperty(string propertyName)
