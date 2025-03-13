@@ -11,11 +11,8 @@ using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
@@ -97,6 +94,11 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
     }
 
     public void Receive(PerformCommandMessage message)
+    {
+        PerformCommand(message);
+    }
+
+    private void PerformCommand(PerformCommandMessage message)
     {
         var command = message.Command.Unsafe;
         if (command == null)
@@ -234,22 +236,28 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
         }
     }
 
-    private void ShowConfirmationDialog(IConfirmationArgs args)
+    // This gets called from the UI thread
+    private void HandleConfirmArgs(IConfirmationArgs args)
     {
+        ConfirmResultViewModel vm = new(args, ViewModel.CurrentPage);
+        var initializeDialogTask = Task.Run(() => { InitializeConfirmationDialog(vm); });
+        initializeDialogTask.Wait();
+
         var resourceLoader = Microsoft.CmdPal.UI.Helpers.ResourceLoaderInstance.ResourceLoader;
         var confirmText = resourceLoader.GetString("ConfirmationDialog_ConfirmButtonText");
         var cancelText = resourceLoader.GetString("ConfirmationDialog_CancelButtonText");
 
+        var name = string.IsNullOrEmpty(vm.PrimaryCommand.Name) ? confirmText : vm.PrimaryCommand.Name;
         ContentDialog dialog = new()
         {
-            Title = args.Title,
-            Content = args.Description,
-            PrimaryButtonText = confirmText,
+            Title = vm.Title,
+            Content = vm.Description,
+            PrimaryButtonText = name,
             CloseButtonText = cancelText,
             XamlRoot = this.XamlRoot,
         };
 
-        if (args.IsPrimaryCommandCritical)
+        if (vm.IsPrimaryCommandCritical)
         {
             dialog.DefaultButton = ContentDialogButton.Close;
 
@@ -269,18 +277,19 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                // confirm
-                if (args.PrimaryCommand is IInvokableCommand invokableCommand)
-                {
-                    var invokeResult = invokableCommand.Invoke(this);
-                    HandleCommandResultOnUiThread(invokeResult);
-                }
+                var performMessage = new PerformCommandMessage(vm);
+                PerformCommand(performMessage);
             }
             else
             {
                 // cancel
             }
         });
+    }
+
+    private void InitializeConfirmationDialog(ConfirmResultViewModel vm)
+    {
+        vm.SafeInitializePropertiesSynchronous();
     }
 
     private void HandleCommandResultOnUiThread(ICommandResult? result)
@@ -331,7 +340,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                         {
                             if (result.Args is IConfirmationArgs a)
                             {
-                                ShowConfirmationDialog(a);
+                                HandleConfirmArgs(a);
                             }
 
                             break;
@@ -471,7 +480,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
                         WeakReferenceMessenger.Default.Send<ShowWindowMessage>(new(message.Hwnd));
                     }
 
-                    var msg = new PerformCommandMessage(new(topLevelCommand.Command)) { WithAnimation = false };
+                    var msg = new PerformCommandMessage(topLevelCommand) { WithAnimation = false };
                     WeakReferenceMessenger.Default.Send<PerformCommandMessage>(msg);
 
                     // we can't necessarily SelectSearch() here, because when the page is loaded,
