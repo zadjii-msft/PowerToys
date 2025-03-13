@@ -70,8 +70,16 @@ public sealed class IconCacheService(DispatcherQueue dispatcherQueue)
         {
             using var bitmapStream = await iconStreamRef.OpenReadAsync();
             var itemImage = new BitmapImage();
-            await itemImage.SetSourceAsync(bitmapStream);
-            completionSource.TrySetResult(itemImage);
+            try
+            {
+                await itemImage.SetSourceAsync(bitmapStream);
+                completionSource.TrySetResult(itemImage);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                completionSource.SetException(ex);
+            }
         });
 
         var bitmapImage = await completionSource.Task;

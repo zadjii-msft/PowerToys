@@ -107,6 +107,10 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         _itemTitle = model.Title;
         Subtitle = model.Subtitle;
 
+        // TODO: Do these need to go into FastInit?
+        model.PropChanged += Model_PropChanged;
+        Command.PropertyChanged += Command_PropertyChanged;
+
         Initialized |= InitializedState.FastInitialized;
     }
 
@@ -137,10 +141,6 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
             _listItemIcon = new(listIcon);
             _listItemIcon.InitializeProperties();
         }
-
-        // TODO: Do these need to go into FastInit?
-        model.PropChanged += Model_PropChanged;
-        Command.PropertyChanged += Command_PropertyChanged;
 
         UpdateProperty(nameof(Name));
         UpdateProperty(nameof(Title));
