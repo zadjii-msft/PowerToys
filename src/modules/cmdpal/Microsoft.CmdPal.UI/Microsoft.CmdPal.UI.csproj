@@ -83,8 +83,6 @@
     <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" GeneratePathProperty="true" />
     <PackageReference Include="AdaptiveCards.Rendering.WinUI3" GeneratePathProperty="True" />
     <PackageReference Include="AdaptiveCards.Templating" />
-
-    <PackageReference Include="HtmlAgilityPack" />
   </ItemGroup>
 
   <!--
