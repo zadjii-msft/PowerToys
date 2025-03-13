@@ -10,8 +10,11 @@ using Microsoft.CmdPal.UI.ViewModels.MainPage;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.UI;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
 
@@ -200,28 +203,33 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
 
     private void ShowConfirmationDialog(IConfirmationArgs args)
     {
+        var resourceLoader = Microsoft.CmdPal.UI.Helpers.ResourceLoaderInstance.ResourceLoader;
+        var confirmText = resourceLoader.GetString("ShellPage_ConfirmationDialog_ConfirmButtonText");
+        var cancelText = resourceLoader.GetString("ShellPage_ConfirmationDialog_CancelButtonText");
+
         ContentDialog dialog = new()
         {
             Title = args.Title,
             Content = args.Description,
-            PrimaryButtonText = "Confirm",
-            CloseButtonText = "Cancel",
+            PrimaryButtonText = confirmText,
+            CloseButtonText = cancelText,
             XamlRoot = this.XamlRoot,
         };
 
-        /*
-         * We need a beatiful way to show the dialog in red if it's a critical action.
         if (args.IsPrimaryCommandCritical)
         {
-            dialog.PrimaryButtonStyle = new Style(typeof(Button))
-            {
-                Setters =
-                {
-                    new Setter(Button.ForegroundProperty, new SolidColorBrush(Colors.White)),
-                    new Setter(Button.BackgroundProperty, new SolidColorBrush(Colors.Red)),
-                },
-            };
-        }*/
+            dialog.DefaultButton = ContentDialogButton.Close;
+
+            // TODO: Maybe we need to style the primary button to be red?
+            // dialog.PrimaryButtonStyle = new Style(typeof(Button))
+            // {
+            //     Setters =
+            //     {
+            //         new Setter(Button.ForegroundProperty, new SolidColorBrush(Colors.Red)),
+            //         new Setter(Button.BackgroundProperty, new SolidColorBrush(Colors.Red)),
+            //     },
+            // };
+        }
 
         DispatcherQueue.TryEnqueue(async () =>
         {
