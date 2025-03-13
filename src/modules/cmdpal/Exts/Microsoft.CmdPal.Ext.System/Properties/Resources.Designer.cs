@@ -70,6 +70,24 @@ namespace Microsoft.CmdPal.Ext.System {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do you want to empty your Recycle Bin?.
+        /// </summary>
+        public static string EmptyRecycleBin_ConfirmationDialog_Description {
+            get {
+                return ResourceManager.GetString("EmptyRecycleBin_ConfirmationDialog_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Empty Recycle Bin.
+        /// </summary>
+        public static string EmptyRecycleBin_ConfirmationDialog_Title {
+            get {
+                return ResourceManager.GetString("EmptyRecycleBin_ConfirmationDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connection Details.
         /// </summary>
         public static string Microsoft_plugin_ext_connection_details {

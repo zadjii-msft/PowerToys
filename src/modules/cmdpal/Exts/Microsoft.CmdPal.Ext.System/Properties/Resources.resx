@@ -120,6 +120,12 @@
   <data name="confirm_system_commands" xml:space="preserve">
     <value>Show a dialog to confirm system commands</value>
   </data>
+  <data name="EmptyRecycleBin_ConfirmationDialog_Description" xml:space="preserve">
+    <value>Do you want to empty your Recycle Bin?</value>
+  </data>
+  <data name="EmptyRecycleBin_ConfirmationDialog_Title" xml:space="preserve">
+    <value>Empty Recycle Bin</value>
+  </data>
   <data name="Microsoft_plugin_ext_connection_details" xml:space="preserve">
     <value>Connection Details</value>
   </data>
