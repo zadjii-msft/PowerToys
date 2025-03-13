@@ -2170,7 +2170,7 @@ devpal://commands/{{extension_id}}/{{page_id}}?param=arg
 ```
 
 that could be used to activate a particular page in an app. Apps would need to
-be able to specify their own extension ID (everyone dislikes working with
+be able to specify their own extension ID (all my homies dislike working with
 PFNs). DevPal would also need to be able to control which schemes are active,
 and if they're active, which apps can call through to it (if that's knowable).
 
