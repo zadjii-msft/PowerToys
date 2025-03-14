@@ -2,8 +2,10 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.Storage.Streams;
 
@@ -14,6 +16,10 @@ internal sealed partial class AppListItem : ListItem
     private readonly AppItem _app;
     private static readonly Tag _appTag = new("App");
 
+    private readonly Lazy<Details> _details;
+
+    public override IDetails? Details { get => _details.Value; set => base.Details = value; }
+
     public AppListItem(AppItem app)
         : base(new AppCommand(app))
     {
@@ -21,11 +27,11 @@ internal sealed partial class AppListItem : ListItem
         Title = app.Name;
         Subtitle = app.Subtitle;
         Tags = [_appTag];
-
+        _details = new Lazy<Details>(() => BuildDetails());
         MoreCommands = _app.Commands!.ToArray();
     }
 
-    private void BuildDetails()
+    private Details BuildDetails()
     {
         var metadata = new List<DetailsElement>();
         metadata.Add(new DetailsElement() { Key = "Type", Data = new DetailsTags() { Tags = [new Tag(_app.Type)] } });
@@ -34,7 +40,7 @@ internal sealed partial class AppListItem : ListItem
             metadata.Add(new DetailsElement() { Key = "Path", Data = new DetailsLink() { Text = _app.ExePath } });
         }
 
-        Details = new Details()
+        return new Details()
         {
             Title = this.Title,
             HeroImage = this.Icon ?? new IconInfo(string.Empty),
@@ -47,7 +53,12 @@ internal sealed partial class AppListItem : ListItem
         if (_app.IsPackaged)
         {
             Icon = new IconInfo(_app.IcoPath);
-            BuildDetails();
+            if (_details.IsValueCreated)
+            {
+                _details.Value.HeroImage = Icon;
+            }
+
+            // BuildDetails();
             return;
         }
 
@@ -74,6 +85,9 @@ internal sealed partial class AppListItem : ListItem
             Icon = new IconInfo(_app.IcoPath);
         }
 
-        BuildDetails();
+        if (_details.IsValueCreated)
+        {
+            _details.Value.HeroImage = Icon;
+        }
     }
 }
