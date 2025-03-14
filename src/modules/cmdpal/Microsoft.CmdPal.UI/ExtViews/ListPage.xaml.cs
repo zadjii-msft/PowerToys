@@ -21,7 +21,7 @@ public sealed partial class ListPage : Page,
      IRecipient<ActivateSelectedListItemMessage>,
      IRecipient<ActivateSecondaryCommandMessage>
 {
-    public ListViewModel? ViewModel
+    private ListViewModel? ViewModel
     {
         get => (ListViewModel?)GetValue(ViewModelProperty);
         set => SetValue(ViewModelProperty, value);
@@ -72,6 +72,12 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Unregister<ActivateSecondaryCommandMessage>(this);
 
         // Clean-up event listeners
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            ViewModel.ItemsUpdated -= Page_ItemsUpdated;
+        }
+
         ViewModel = null;
     }
 
