@@ -17,18 +17,28 @@ internal sealed partial class AppListItem : ListItem
     private static readonly Tag _appTag = new("App");
 
     private readonly Lazy<Details> _details;
+    private readonly Lazy<IconInfo> _icon;
 
     public override IDetails? Details { get => _details.Value; set => base.Details = value; }
 
-    public AppListItem(AppItem app)
+    public override IIconInfo? Icon { get => _icon.Value; set => base.Icon = value; }
+
+    public AppListItem(AppItem app, bool useThumbnails)
         : base(new AppCommand(app))
     {
         _app = app;
         Title = app.Name;
         Subtitle = app.Subtitle;
         Tags = [_appTag];
-        _details = new Lazy<Details>(() => BuildDetails());
         MoreCommands = _app.Commands!.ToArray();
+
+        _details = new Lazy<Details>(() => BuildDetails());
+        _icon = new Lazy<IconInfo>(() =>
+        {
+            var t = FetchIcon(useThumbnails);
+            t.Wait();
+            return t.Result;
+        });
     }
 
     private Details BuildDetails()
@@ -48,23 +58,23 @@ internal sealed partial class AppListItem : ListItem
         };
     }
 
-    public async Task FetchIcon(bool useThumbnails)
+    public async Task<IconInfo> FetchIcon(bool useThumbnails)
     {
+        IconInfo? icon = null;
         if (_app.IsPackaged)
         {
-            Icon = new IconInfo(_app.IcoPath);
+            icon = new IconInfo(_app.IcoPath);
             if (_details.IsValueCreated)
             {
-                _details.Value.HeroImage = Icon;
+                _details.Value.HeroImage = icon;
             }
 
             // BuildDetails();
-            return;
+            return icon;
         }
 
         if (useThumbnails)
         {
-            IconInfo? icon = null;
             try
             {
                 var stream = await ThumbnailHelper.GetThumbnail(_app.ExePath);
@@ -78,16 +88,18 @@ internal sealed partial class AppListItem : ListItem
             {
             }
 
-            Icon = icon ?? new IconInfo(_app.IcoPath);
+            icon = icon ?? new IconInfo(_app.IcoPath);
         }
         else
         {
-            Icon = new IconInfo(_app.IcoPath);
+            icon = new IconInfo(_app.IcoPath);
         }
 
         if (_details.IsValueCreated)
         {
-            _details.Value.HeroImage = Icon;
+            _details.Value.HeroImage = icon;
         }
+
+        return icon;
     }
 }
