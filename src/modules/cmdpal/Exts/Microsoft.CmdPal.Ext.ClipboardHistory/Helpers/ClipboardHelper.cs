@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Helpers;
 using Microsoft.CmdPal.Ext.ClipboardHistory.Models;
@@ -50,15 +51,21 @@ internal static class ClipboardHelper
 
     internal static void SetClipboardTextContent(string text)
     {
-        ExtensionHost.LogMessage(new LogMessage() { Message = "Copied text to clipboard" });
-
         if (!string.IsNullOrEmpty(text))
         {
             DataPackage output = new();
             output.SetText(text);
-            Clipboard.SetContentWithOptions(output, null);
-
-            Flush();
+            try
+            {
+                // Clipboard.SetContentWithOptions(output, null);
+                Clipboard.SetContent(output);
+                Flush();
+                ExtensionHost.LogMessage(new LogMessage() { Message = "Copied text to clipboard" });
+            }
+            catch (COMException ex)
+            {
+                ExtensionHost.LogMessage($"Error: {ex.HResult}\n{ex.Source}\n{ex.StackTrace}");
+            }
         }
     }
 
@@ -119,19 +126,33 @@ internal static class ClipboardHelper
 
     internal static void SetClipboardContent(ClipboardItem clipboardItem, ClipboardFormat clipboardFormat)
     {
-        if (clipboardItem.Content == null && clipboardItem.ImageData == null)
-        {
-            ExtensionHost.LogMessage(new LogMessage() { Message = "No valid clipboard content" });
-            return;
-        }
-
         switch (clipboardFormat)
         {
             case ClipboardFormat.Text:
-                SetClipboardTextContent(clipboardItem.Content); break;
+                if (clipboardItem.Content == null)
+                {
+                    ExtensionHost.LogMessage(new LogMessage() { Message = "No valid clipboard content" });
+                    return;
+                }
+                else
+                {
+                    SetClipboardTextContent(clipboardItem.Content);
+                }
+
+                break;
 
             case ClipboardFormat.Image:
-                SetClipboardImageContent(clipboardItem.ImageData); break;
+                if (clipboardItem.ImageData == null)
+                {
+                    ExtensionHost.LogMessage(new LogMessage() { Message = "No valid clipboard content" });
+                    return;
+                }
+                else
+                {
+                    SetClipboardImageContent(clipboardItem.ImageData);
+                }
+
+                break;
 
             default:
                 ExtensionHost.LogMessage(new LogMessage { Message = "Unsupported clipboard format." });
@@ -144,7 +165,7 @@ internal static class ClipboardHelper
     {
         var ignoreKeyEventFlag = (UIntPtr)0x5555;
 
-        NativeMethods.INPUT inputShift = new NativeMethods.INPUT
+        var inputShift = new NativeMethods.INPUT
         {
             type = NativeMethods.INPUTTYPE.INPUT_KEYBOARD,
             data = new NativeMethods.InputUnion
@@ -160,7 +181,7 @@ internal static class ClipboardHelper
             },
         };
 
-        NativeMethods.INPUT[] inputs = new NativeMethods.INPUT[] { inputShift };
+        var inputs = new NativeMethods.INPUT[] { inputShift };
         _ = NativeMethods.SendInput(1, inputs, NativeMethods.INPUT.Size);
     }
 
@@ -206,7 +227,7 @@ internal static class ClipboardHelper
     internal static async Task<string> GetClipboardHtmlContentAsync(DataPackageView clipboardData) =>
         clipboardData.Contains(StandardDataFormats.Html) ? await clipboardData.GetHtmlFormatAsync() : string.Empty;
 
-    internal static async Task<SoftwareBitmap> GetClipboardImageContentAsync(DataPackageView clipboardData)
+    internal static async Task<SoftwareBitmap?> GetClipboardImageContentAsync(DataPackageView clipboardData)
     {
         using var stream = await GetClipboardImageStreamAsync(clipboardData);
         if (stream != null)
@@ -218,7 +239,7 @@ internal static class ClipboardHelper
         return null;
     }
 
-    private static async Task<IRandomAccessStream> GetClipboardImageStreamAsync(DataPackageView clipboardData)
+    private static async Task<IRandomAccessStream?> GetClipboardImageStreamAsync(DataPackageView clipboardData)
     {
         if (clipboardData.Contains(StandardDataFormats.StorageItems))
         {

@@ -51,10 +51,10 @@
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.commandpalette"
-            Id="PG-SP-ID"
+            Id="ID"
             PublicFolder="Public"
             DisplayName="Process Monitor Extension Sample"
-            Description="Process Monitor Extension for CmdPal">
+            Description="A sample Process Monitor Extension for CmdPal">
             <uap3:Properties>
               <CmdPalProvider>
                 <Activation>

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CmdPal.Ext.Registry.Classes;
 using Microsoft.CmdPal.Ext.Registry.Helpers;
+using Microsoft.CmdPal.Ext.Registry.Properties;
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
@@ -16,11 +17,20 @@ internal sealed partial class RegistryListPage : DynamicListPage
 {
     public static IconInfo RegistryIcon { get; } = new("\uE74C"); // OEM
 
+    private readonly CommandItem _emptyMessage;
+
     public RegistryListPage()
     {
         Icon = RegistryIcon;
-        Name = "Windows Registry";
+        Name = Title = Resources.Registry_Page_Title;
         Id = "com.microsoft.cmdpal.registry";
+        _emptyMessage = new CommandItem()
+        {
+            Icon = RegistryIcon,
+            Title = Resources.Registry_Key_Not_Found,
+            Subtitle = SearchText,
+        };
+        EmptyContent = _emptyMessage;
     }
 
     public List<ListItem> Query(string query)
@@ -58,7 +68,11 @@ internal sealed partial class RegistryListPage : DynamicListPage
         return [];
     }
 
-    public override void UpdateSearchText(string oldSearch, string newSearch) => RaiseItemsChanged(0);
+    public override void UpdateSearchText(string oldSearch, string newSearch)
+    {
+        _emptyMessage.Subtitle = newSearch;
+        RaiseItemsChanged(0);
+    }
 
     public override IListItem[] GetItems() => Query(SearchText).ToArray();
 }

@@ -17,6 +17,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
 using WinRT;
+using RS_ = Microsoft.CmdPal.UI.Helpers.ResourceLoaderInstance;
 
 namespace Microsoft.CmdPal.UI;
 
@@ -40,7 +41,7 @@ public sealed partial class ToastWindow : Window,
         ExtendsContentIntoTitleBar = true;
         AppWindow.SetPresenter(AppWindowPresenterKind.CompactOverlay);
         AppWindow.SetIcon("ms-appx:///Assets/Icons/StoreLogo.png");
-        AppWindow.Title = "Command Palette Settings";
+        AppWindow.Title = RS_.GetString("ToastWindowTitle");
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
 
         _hwnd = new HWND(WinRT.Interop.WindowNative.GetWindowHandle(this).ToInt32());
@@ -69,7 +70,7 @@ public sealed partial class ToastWindow : Window,
 
             var monitorHeight = displayArea.WorkArea.Height;
             var windowHeight = AppWindow.Size.Height;
-            centeredPosition.Y = (int)(monitorHeight - (windowHeight * 2));
+            centeredPosition.Y = monitorHeight - (windowHeight * 2);
             AppWindow.Move(centeredPosition);
         }
     }
@@ -96,8 +97,11 @@ public sealed partial class ToastWindow : Window,
         });
     }
 
-    public void Receive(QuitMessage message) =>
-        Close();
+    public void Receive(QuitMessage message)
+    {
+        // This might come in on a background thread
+        DispatcherQueue.TryEnqueue(() => Close());
+    }
 
     ////// Literally everything below here is for acrylic //////
 

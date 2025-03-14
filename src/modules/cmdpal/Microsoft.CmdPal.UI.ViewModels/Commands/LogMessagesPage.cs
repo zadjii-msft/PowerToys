@@ -14,9 +14,9 @@ public partial class LogMessagesPage : ListPage
 
     public LogMessagesPage()
     {
-        Name = "View log";
-        Title = "Log";
-        Icon = new IconInfo("\uE8FD");
+        Name = Properties.Resources.builtin_log_name;
+        Title = Properties.Resources.builtin_log_page_name;
+        Icon = new IconInfo("\uE8FD"); // BulletedList icon
         CommandPaletteHost.LogMessages.CollectionChanged += LogMessages_CollectionChanged;
     }
 

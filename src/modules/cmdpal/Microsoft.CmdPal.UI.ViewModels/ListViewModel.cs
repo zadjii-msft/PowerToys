@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -14,7 +15,7 @@ using Windows.Foundation;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ListViewModel : PageViewModel
+public partial class ListViewModel : PageViewModel, IDisposable
 {
     // private readonly HashSet<ListItemViewModel> _itemCache = [];
 
@@ -25,7 +26,7 @@ public partial class ListViewModel : PageViewModel
     [ObservableProperty]
     public partial ObservableCollection<ListItemViewModel> FilteredItems { get; set; } = [];
 
-    public ObservableCollection<ListItemViewModel> Items { get; set; } = [];
+    private ObservableCollection<ListItemViewModel> Items { get; set; } = [];
 
     private readonly ExtensionObject<IListPage> _model;
 
@@ -33,22 +34,42 @@ public partial class ListViewModel : PageViewModel
 
     public event TypedEventHandler<ListViewModel, object>? ItemsUpdated;
 
+    public bool ShowEmptyContent =>
+        IsInitialized &&
+        FilteredItems.Count == 0 &&
+        IsLoading == false;
+
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
     public bool ShowDetails { get; private set; }
 
-    public string ModelPlaceholderText { get => string.IsNullOrEmpty(field) ? "Type here to search..." : field; private set; } = string.Empty;
+    private string _modelPlaceholderText = string.Empty;
 
-    public override string PlaceholderText => ModelPlaceholderText;
+    public override string PlaceholderText => _modelPlaceholderText;
 
     public string SearchText { get; private set; } = string.Empty;
 
+    public CommandItemViewModel EmptyContent { get; private set; }
+
     private bool _isDynamic;
+
+    private Task? _initializeItemsTask;
+    private CancellationTokenSource? _cancellationTokenSource;
+
+    public override bool IsInitialized
+    {
+        get => base.IsInitialized; protected set
+        {
+            base.IsInitialized = value;
+            UpdateEmptyContent();
+        }
+    }
 
     public ListViewModel(IListPage model, TaskScheduler scheduler, CommandPaletteHost host)
         : base(model, scheduler, host)
     {
         _model = new(model);
+        EmptyContent = new(new(null), PageContext);
     }
 
     // TODO: Does this need to hop to a _different_ thread, so that we don't block the extension while we're fetching?
@@ -90,6 +111,7 @@ public partial class ListViewModel : PageViewModel
             }
 
             ItemsUpdated?.Invoke(this, EventArgs.Empty);
+            UpdateEmptyContent();
         }
     }
 
@@ -113,10 +135,23 @@ public partial class ListViewModel : PageViewModel
                 ListItemViewModel viewModel = new(item, this);
 
                 // If an item fails to load, silently ignore it.
-                if (viewModel.SafeInitializeProperties())
+                if (viewModel.SafeFastInit())
                 {
                     newViewModels.Add(viewModel);
                 }
+            }
+
+            var firstTwenty = newViewModels.Take(20);
+            foreach (var item in firstTwenty)
+            {
+                item?.SafeInitializeProperties();
+            }
+
+            // Cancel any ongoing search
+            if (_cancellationTokenSource != null)
+            {
+                Debug.WriteLine("Cancelling old initialize task");
+                _cancellationTokenSource.Cancel();
             }
 
             lock (_listLock)
@@ -137,6 +172,20 @@ public partial class ListViewModel : PageViewModel
             throw;
         }
 
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        _initializeItemsTask = new Task(() =>
+        {
+            try
+            {
+                InitializeItemsTask(_cancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        });
+        _initializeItemsTask.Start();
+
         Task.Factory.StartNew(
             () =>
             {
@@ -153,8 +202,10 @@ public partial class ListViewModel : PageViewModel
                     {
                         // A dynamic list? Even better! Just stick everything into
                         // FilteredItems. The extension already did any filtering it cared about.
-                        ListHelpers.InPlaceUpdateList(FilteredItems, Items);
+                        ListHelpers.InPlaceUpdateList(FilteredItems, Items.Where(i => !i.IsInErrorState));
                     }
+
+                    UpdateEmptyContent();
                 }
 
                 ItemsUpdated?.Invoke(this, EventArgs.Empty);
@@ -162,6 +213,26 @@ public partial class ListViewModel : PageViewModel
             CancellationToken.None,
             TaskCreationOptions.None,
             PageContext.Scheduler);
+    }
+
+    private void InitializeItemsTask(CancellationToken ct)
+    {
+        // Were we already canceled?
+        ct.ThrowIfCancellationRequested();
+
+        foreach (var item in Items)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            // TODO: GH #502
+            // We should probably remove the item from the list if it
+            // entered the error state. I had issues doing that without having
+            // multiple threads muck with `Items` (and possibly FilteredItems!)
+            // at once.
+            item.SafeInitializeProperties();
+
+            ct.ThrowIfCancellationRequested();
+        }
     }
 
     /// <summary>
@@ -197,6 +268,7 @@ public partial class ListViewModel : PageViewModel
     public static IEnumerable<ListItemViewModel> FilterList(IEnumerable<ListItemViewModel> items, string query)
     {
         var scores = items
+            .Where(i => !i.IsInErrorState)
             .Select(li => new ScoredListItemViewModel() { ViewModel = li, Score = ScoreListItem(query, li) })
             .Where(score => score.Score > 0)
             .OrderByDescending(score => score.Score);
@@ -205,22 +277,49 @@ public partial class ListViewModel : PageViewModel
     }
 
     // InvokeItemCommand is what this will be in Xaml due to source generator
+    // This is what gets invoked when the user presses <enter>
     [RelayCommand]
-    private void InvokeItem(ListItemViewModel item) =>
-        WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command.Model, item.Model));
-
-    [RelayCommand]
-    private void InvokeSecondaryCommand(ListItemViewModel item)
+    private void InvokeItem(ListItemViewModel? item)
     {
-        if (item.SecondaryCommand != null)
+        if (item != null)
         {
-            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command.Model, item.Model));
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.Command.Model, item.Model));
+        }
+        else if (ShowEmptyContent && EmptyContent.PrimaryCommand?.Model.Unsafe != null)
+        {
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(
+                EmptyContent.PrimaryCommand.Command.Model,
+                EmptyContent.PrimaryCommand.Model));
+        }
+    }
+
+    // This is what gets invoked when the user presses <ctrl+enter>
+    [RelayCommand]
+    private void InvokeSecondaryCommand(ListItemViewModel? item)
+    {
+        if (item != null)
+        {
+            if (item.SecondaryCommand != null)
+            {
+                WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(item.SecondaryCommand.Command.Model, item.Model));
+            }
+        }
+        else if (ShowEmptyContent && EmptyContent.SecondaryCommand?.Model.Unsafe != null)
+        {
+            WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(
+                EmptyContent.SecondaryCommand.Command.Model,
+                EmptyContent.SecondaryCommand.Model));
         }
     }
 
     [RelayCommand]
     private void UpdateSelectedItem(ListItemViewModel item)
     {
+        if (!item.SafeSlowInit())
+        {
+            return;
+        }
+
         // GH #322:
         // For inexplicable reasons, if you try updating the command bar and
         // the details on the same UI thread tick as updating the list, we'll
@@ -250,25 +349,28 @@ public partial class ListViewModel : PageViewModel
     {
         base.InitializeProperties();
 
-        var listPage = _model.Unsafe;
-        if (listPage == null)
+        var model = _model.Unsafe;
+        if (model == null)
         {
             return; // throw?
         }
 
-        _isDynamic = listPage is IDynamicListPage;
+        _isDynamic = model is IDynamicListPage;
 
-        ShowDetails = listPage.ShowDetails;
+        ShowDetails = model.ShowDetails;
         UpdateProperty(nameof(ShowDetails));
 
-        ModelPlaceholderText = listPage.PlaceholderText;
+        _modelPlaceholderText = model.PlaceholderText;
         UpdateProperty(nameof(PlaceholderText));
 
-        SearchText = listPage.SearchText;
+        SearchText = model.SearchText;
         UpdateProperty(nameof(SearchText));
 
+        EmptyContent = new(new(model.EmptyContent), PageContext);
+        EmptyContent.SlowInitializeProperties();
+
         FetchItems();
-        listPage.ItemsChanged += Model_ItemsChanged;
+        model.ItemsChanged += Model_ItemsChanged;
     }
 
     public void LoadMoreIfNeeded()
@@ -295,13 +397,46 @@ public partial class ListViewModel : PageViewModel
                 this.ShowDetails = model.ShowDetails;
                 break;
             case nameof(PlaceholderText):
-                this.ModelPlaceholderText = model.PlaceholderText;
+                this._modelPlaceholderText = model.PlaceholderText;
                 break;
             case nameof(SearchText):
                 this.SearchText = model.SearchText;
                 break;
+            case nameof(EmptyContent):
+                EmptyContent = new(new(model.EmptyContent), PageContext);
+                EmptyContent.InitializeProperties();
+                break;
+            case nameof(IsLoading):
+                UpdateEmptyContent();
+                break;
         }
 
         UpdateProperty(propertyName);
+    }
+
+    private void UpdateEmptyContent()
+    {
+        UpdateProperty(nameof(ShowEmptyContent));
+        if (!ShowEmptyContent || EmptyContent.Model.Unsafe == null)
+        {
+            return;
+        }
+
+        Task.Factory.StartNew(
+           () =>
+           {
+               WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(EmptyContent));
+           },
+           CancellationToken.None,
+           TaskCreationOptions.None,
+           PageContext.Scheduler);
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = null;
     }
 }

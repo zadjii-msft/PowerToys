@@ -18,8 +18,8 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class ListPage : Page,
     IRecipient<NavigateNextCommand>,
     IRecipient<NavigatePreviousCommand>,
-    IRecipient<ActivateSelectedListItemMessage>,
-    IRecipient<ActivateSecondaryCommandMessage>
+     IRecipient<ActivateSelectedListItemMessage>,
+     IRecipient<ActivateSecondaryCommandMessage>
 {
     public ListViewModel? ViewModel
     {
@@ -56,9 +56,9 @@ public sealed partial class ListPage : Page,
         // RegisterAll isn't AOT compatible
         WeakReferenceMessenger.Default.Register<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Register<NavigatePreviousCommand>(this);
+
         WeakReferenceMessenger.Default.Register<ActivateSelectedListItemMessage>(this);
         WeakReferenceMessenger.Default.Register<ActivateSecondaryCommandMessage>(this);
-
         base.OnNavigatedTo(e);
     }
 
@@ -192,7 +192,11 @@ public sealed partial class ListPage : Page,
 
     public void Receive(ActivateSelectedListItemMessage message)
     {
-        if (ItemsList.SelectedItem is ListItemViewModel item)
+        if (ViewModel?.ShowEmptyContent ?? false)
+        {
+            ViewModel?.InvokeItemCommand.Execute(null);
+        }
+        else if (ItemsList.SelectedItem is ListItemViewModel item)
         {
             ViewModel?.InvokeItemCommand.Execute(item);
         }
@@ -200,7 +204,11 @@ public sealed partial class ListPage : Page,
 
     public void Receive(ActivateSecondaryCommandMessage message)
     {
-        if (ItemsList.SelectedItem is ListItemViewModel item)
+        if (ViewModel?.ShowEmptyContent ?? false)
+        {
+            ViewModel?.InvokeSecondaryCommandCommand.Execute(null);
+        }
+        else if (ItemsList.SelectedItem is ListItemViewModel item)
         {
             ViewModel?.InvokeSecondaryCommandCommand.Execute(item);
         }

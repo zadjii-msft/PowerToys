@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Microsoft.CmdPal.Ext.Bookmarks.Properties;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using Windows.Foundation;
 
@@ -13,10 +14,15 @@ namespace Microsoft.CmdPal.Ext.Bookmarks;
 
 internal sealed partial class AddBookmarkForm : FormContent
 {
-    internal event TypedEventHandler<object, object?>? AddedCommand;
+    internal event TypedEventHandler<object, BookmarkData>? AddedCommand;
 
-    public AddBookmarkForm(string name = "", string url = "")
+    private readonly BookmarkData? _bookmark;
+
+    public AddBookmarkForm(BookmarkData? bookmark)
     {
+        _bookmark = bookmark;
+        var name = _bookmark?.Name ?? string.Empty;
+        var url = _bookmark?.Bookmark ?? string.Empty;
         TemplateJson = $$"""
 {
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -27,25 +33,25 @@ internal sealed partial class AddBookmarkForm : FormContent
             "type": "Input.Text",
             "style": "text",
             "id": "name",
-            "label": "Name",
+            "label": "{{Resources.bookmarks_form_name_label}}",
             "value": {{JsonSerializer.Serialize(name)}},
             "isRequired": true,
-            "errorMessage": "Name is required"
+            "errorMessage": "{{Resources.bookmarks_form_name_required}}"
         },
         {
             "type": "Input.Text",
             "style": "text",
             "id": "bookmark",
             "value": {{JsonSerializer.Serialize(url)}},
-            "label": "URL or File Path",
+            "label": "{{Resources.bookmarks_form_bookmark_label}}",
             "isRequired": true,
-            "errorMessage": "URL or File Path is required"
+            "errorMessage": "{{Resources.bookmarks_form_bookmark_required}}"
         }
     ],
     "actions": [
         {
             "type": "Action.Submit",
-            "title": "Save",
+            "title": "{{Resources.bookmarks_form_save}}",
             "data": {
                 "name": "name",
                 "bookmark": "bookmark"
@@ -90,22 +96,12 @@ internal sealed partial class AddBookmarkForm : FormContent
             bookmarkType = "web";
         }
 
-        var formData = new BookmarkData()
-        {
-            Name = formName.ToString(),
-            Bookmark = formBookmark.ToString(),
-            Type = bookmarkType,
-        };
+        var updated = _bookmark ?? new BookmarkData();
+        updated.Name = formName.ToString();
+        updated.Bookmark = formBookmark.ToString();
+        updated.Type = bookmarkType;
 
-        // Construct a new json blob with the name and url
-        var jsonPath = BookmarksCommandProvider.StateJsonPath();
-        var data = Bookmarks.ReadFromFile(jsonPath);
-
-        data.Data.Add(formData);
-
-        Bookmarks.WriteToFile(jsonPath, data);
-
-        AddedCommand?.Invoke(this, null);
+        AddedCommand?.Invoke(this, updated);
         return CommandResult.GoHome();
     }
 }

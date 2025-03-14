@@ -4,6 +4,7 @@
 
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.CmdPal.Common.Messages;
 using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
@@ -23,12 +24,14 @@ using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.WindowsAndMessaging;
 using WinRT;
+using RS_ = Microsoft.CmdPal.UI.Helpers.ResourceLoaderInstance;
 
 namespace Microsoft.CmdPal.UI;
 
 public sealed partial class MainWindow : Window,
     IRecipient<DismissMessage>,
     IRecipient<ShowWindowMessage>,
+    IRecipient<HideWindowMessage>,
     IRecipient<QuitMessage>
 {
     private readonly HWND _hwnd;
@@ -65,6 +68,7 @@ public sealed partial class MainWindow : Window,
         // notification area icon back
         WM_TASKBAR_RESTART = PInvoke.RegisterWindowMessage("TaskbarCreated");
 
+        AppWindow.Title = RS_.GetString("AppName");
         AppWindow.Resize(new SizeInt32 { Width = 1000, Height = 620 });
         PositionCentered();
         SetAcrylic();
@@ -72,6 +76,7 @@ public sealed partial class MainWindow : Window,
         WeakReferenceMessenger.Default.Register<DismissMessage>(this);
         WeakReferenceMessenger.Default.Register<QuitMessage>(this);
         WeakReferenceMessenger.Default.Register<ShowWindowMessage>(this);
+        WeakReferenceMessenger.Default.Register<HideWindowMessage>(this);
 
         // Hide our titlebar.
         // We need to both ExtendsContentIntoTitleBar, then set the height to Collapsed
@@ -263,8 +268,16 @@ public sealed partial class MainWindow : Window,
         ShowHwnd(message.Hwnd, settings.SummonOn);
     }
 
-    public void Receive(QuitMessage message) =>
-        Close();
+    public void Receive(HideWindowMessage message)
+    {
+        PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_HIDE);
+    }
+
+    public void Receive(QuitMessage message)
+    {
+        // This might come in on a background thread
+        DispatcherQueue.TryEnqueue(() => Close());
+    }
 
     public void Receive(DismissMessage message) =>
         PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_HIDE);
@@ -514,7 +527,7 @@ public sealed partial class MainWindow : Window,
                 uFlags = NOTIFY_ICON_DATA_FLAGS.NIF_MESSAGE | NOTIFY_ICON_DATA_FLAGS.NIF_ICON | NOTIFY_ICON_DATA_FLAGS.NIF_TIP,
                 uCallbackMessage = WM_TRAY_ICON,
                 hIcon = (HICON)_largeIcon.DangerousGetHandle(),
-                szTip = "Windows Command Palette",
+                szTip = RS_.GetString("AppStoreName"),
             };
         }
 

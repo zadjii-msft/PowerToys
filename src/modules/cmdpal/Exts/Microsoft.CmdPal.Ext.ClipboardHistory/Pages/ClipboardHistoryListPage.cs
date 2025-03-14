@@ -32,14 +32,14 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         Clipboard.HistoryChanged += TrackClipboardHistoryChanged_EventHandler;
     }
 
-    private void TrackClipboardHistoryChanged_EventHandler(object sender, ClipboardHistoryChangedEventArgs e) => RaiseItemsChanged(0);
+    private void TrackClipboardHistoryChanged_EventHandler(object? sender, ClipboardHistoryChangedEventArgs? e) => RaiseItemsChanged(0);
 
     private bool IsClipboardHistoryEnabled()
     {
         var registryKey = @"HKEY_CURRENT_USER\Software\Microsoft\Clipboard\";
         try
         {
-            var enableClipboardHistory = (int)Registry.GetValue(registryKey, "EnableClipboardHistory", false);
+            var enableClipboardHistory = (int)(Registry.GetValue(registryKey, "EnableClipboardHistory", false) ?? 0);
             return enableClipboardHistory != 0;
         }
         catch (Exception)
@@ -54,14 +54,7 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         try
         {
             var allowClipboardHistory = Registry.GetValue(registryKey, "AllowClipboardHistory", null);
-            if (allowClipboardHistory != null)
-            {
-                return (int)allowClipboardHistory == 0;
-            }
-            else
-            {
-                return false;
-            }
+            return allowClipboardHistory != null ? (int)allowClipboardHistory == 0 : false;
         }
         catch (Exception)
         {
@@ -120,7 +113,7 @@ internal sealed partial class ClipboardHistoryListPage : ListPage
         {
             // TODO GH #108 We need to figure out some logging
             // Logger.LogError("Loading clipboard history failed", ex);
-            ExtensionHost.ShowStatus(new StatusMessage() { Message = "Loading clipboard history failed", State = MessageState.Error });
+            ExtensionHost.ShowStatus(new StatusMessage() { Message = "Loading clipboard history failed", State = MessageState.Error }, StatusContext.Page);
             ExtensionHost.LogMessage(ex.ToString());
         }
     }

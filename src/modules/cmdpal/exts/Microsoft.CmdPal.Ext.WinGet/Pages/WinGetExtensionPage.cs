@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.WinGet.Pages;
@@ -19,6 +20,8 @@ namespace Microsoft.CmdPal.Ext.WinGet;
 
 internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
 {
+    private static readonly CompositeFormat ErrorMessage = System.Text.CompositeFormat.Parse(Properties.Resources.winget_unexpected_error);
+
     private readonly string _tag = string.Empty;
 
     public bool HasTag => !string.IsNullOrEmpty(_tag);
@@ -30,7 +33,7 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
 
     private IEnumerable<CatalogPackage>? _results;
 
-    public static IconInfo WinGetIcon { get; } = IconHelpers.FromRelativePath("Assets\\WinGet.png");
+    public static IconInfo WinGetIcon { get; } = IconHelpers.FromRelativePath("Assets\\WinGet.svg");
 
     public static IconInfo ExtensionsIcon { get; } = new("\uEA86"); // Puzzle
 
@@ -41,7 +44,7 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
     public WinGetExtensionPage(string tag = "")
     {
         Icon = tag == ExtensionsTag ? ExtensionsIcon : WinGetIcon;
-        Name = "Search Winget";
+        Name = Properties.Resources.winget_page_name;
         _tag = tag;
         ShowDetails = true;
     }
@@ -51,6 +54,8 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
         IListItem[] items = [];
         lock (_resultsLock)
         {
+            // emptySearchForTag ===
+            // we don't have results yet, we haven't typed anything, and we're searching for a tag
             var emptySearchForTag = _results == null &&
                 string.IsNullOrEmpty(SearchText) &&
                 HasTag;
@@ -62,17 +67,20 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
                 return items;
             }
 
-            items = (_results == null || !_results.Any())
-                ? [
-                    new ListItem(new NoOpCommand())
-                    {
-                        Title = (string.IsNullOrEmpty(SearchText) && !HasTag) ?
-                            "Start typing to search for packages" :
-                            "No packages found",
-                    }
-                ]
-                : _results.Select(PackageToListItem).ToArray();
+            if (_results != null && _results.Any())
+            {
+                IsLoading = false;
+                return _results.Select(PackageToListItem).ToArray();
+            }
         }
+
+        EmptyContent = new CommandItem(new NoOpCommand())
+        {
+            Icon = WinGetIcon,
+            Title = (string.IsNullOrEmpty(SearchText) && !HasTag) ?
+                            Properties.Resources.winget_placeholder_text :
+                            Properties.Resources.winget_no_packages_found,
+        };
 
         IsLoading = false;
 
@@ -221,8 +229,8 @@ internal sealed partial class WinGetExtensionPage : DynamicListPage, IDisposable
             // TODO more error handling like this:
             if (searchResults.Status != FindPackagesResultStatus.Ok)
             {
-                _errorMessage.Message = $"Unexpected error: {searchResults.Status}";
-                WinGetExtensionHost.Instance.ShowStatus(_errorMessage);
+                _errorMessage.Message = string.Format(CultureInfo.CurrentCulture, ErrorMessage, searchResults.Status);
+                WinGetExtensionHost.Instance.ShowStatus(_errorMessage, StatusContext.Page);
                 return [];
             }
 

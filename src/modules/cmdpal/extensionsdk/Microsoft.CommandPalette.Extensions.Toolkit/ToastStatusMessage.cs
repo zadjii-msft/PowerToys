@@ -9,9 +9,9 @@ public partial class ToastStatusMessage
     private readonly Lock _showLock = new();
     private bool _shown;
 
-    public StatusMessage Message { get; init; }
+    public virtual StatusMessage Message { get; init; }
 
-    public int Duration { get; init; } = 2500;
+    public virtual int Duration { get; init; } = 2500;
 
     public ToastStatusMessage(StatusMessage message)
     {
@@ -29,7 +29,7 @@ public partial class ToastStatusMessage
         {
             if (!_shown)
             {
-                ExtensionHost.ShowStatus(Message);
+                ExtensionHost.ShowStatus(Message, StatusContext.Extension);
                 _ = Task.Run(() =>
                 {
                     Thread.Sleep(Duration);
