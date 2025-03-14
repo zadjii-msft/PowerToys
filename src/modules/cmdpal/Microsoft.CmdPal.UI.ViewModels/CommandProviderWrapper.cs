@@ -60,6 +60,8 @@ public sealed class CommandProviderWrapper
         Icon.InitializeProperties();
         Settings = new(provider.Settings, this, _taskScheduler);
         Settings.InitializeProperties();
+
+        Logger.LogDebug($"Initialized command provider {ProviderId}");
     }
 
     public CommandProviderWrapper(IExtensionWrapper extension, TaskScheduler mainThread)
@@ -90,6 +92,8 @@ public sealed class CommandProviderWrapper
             model.ItemsChanged += CommandProvider_ItemsChanged;
 
             isValid = true;
+
+            Logger.LogDebug($"Initialized extension command provider {Extension.PackageFamilyName}:{Extension.ExtensionUniqueId}");
         }
         catch (Exception e)
         {
@@ -129,6 +133,8 @@ public sealed class CommandProviderWrapper
 
             Settings = new(model.Settings, this, _taskScheduler);
             Settings.InitializeProperties();
+
+            Logger.LogDebug($"Loaded commands from {DisplayName} ({ProviderId})");
         }
         catch (Exception e)
         {
