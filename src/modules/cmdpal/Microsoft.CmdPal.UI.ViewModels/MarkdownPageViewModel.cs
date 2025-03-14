@@ -4,12 +4,8 @@
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 using Microsoft.CommandPalette.Extensions;
-using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -54,16 +50,6 @@ public partial class MarkdownPageViewModel : PageViewModel
             ShowException(ex, _model?.Unsafe?.Name);
             throw;
         }
-
-        // Now, back to a UI thread to update the observable collection
-        Task.Factory.StartNew(
-        () =>
-        {
-            ListHelpers.InPlaceUpdateList(Bodies, newBodies);
-        },
-        CancellationToken.None,
-        TaskCreationOptions.None,
-        PageContext.Scheduler);
     }
 
     public override void InitializeProperties()
@@ -123,21 +109,5 @@ public partial class MarkdownPageViewModel : PageViewModel
     {
         UpdateProperty(nameof(Details));
         UpdateProperty(nameof(HasDetails));
-
-        Task.Factory.StartNew(
-            () =>
-            {
-                if (HasDetails)
-                {
-                    WeakReferenceMessenger.Default.Send<ShowDetailsMessage>(new(Details));
-                }
-                else
-                {
-                    WeakReferenceMessenger.Default.Send<HideDetailsMessage>();
-                }
-            },
-            CancellationToken.None,
-            TaskCreationOptions.None,
-            PageContext.Scheduler);
     }
 }

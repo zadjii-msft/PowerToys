@@ -7,7 +7,7 @@ using Microsoft.CommandPalette.Extensions;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class TagViewModel(ITag _tag, IPageContext context) : ExtensionObjectViewModel(context)
+public partial class TagViewModel(ITag _tag, WeakReference<IPageContext> context) : ExtensionObjectViewModel(context)
 {
     private readonly ExtensionObject<ITag> _tagModel = new(_tag);
 

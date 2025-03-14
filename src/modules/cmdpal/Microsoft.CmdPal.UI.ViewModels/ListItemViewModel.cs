@@ -11,7 +11,7 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ListItemViewModel(IListItem model, IPageContext context)
+public partial class ListItemViewModel(IListItem model, WeakReference<IPageContext> context)
     : CommandItemViewModel(new(model), context)
 {
     public new ExtensionObject<IListItem> Model { get; } = new(model);
@@ -113,7 +113,7 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
         })
             .ToList() ?? [];
 
-        Task.Factory.StartNew(
+        DoOnUiThread(
             () =>
             {
                 lock (Tags)
@@ -122,9 +122,6 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
                 }
 
                 UpdateProperty(nameof(HasTags));
-            },
-            CancellationToken.None,
-            TaskCreationOptions.None,
-            PageContext.Scheduler);
+            });
     }
 }

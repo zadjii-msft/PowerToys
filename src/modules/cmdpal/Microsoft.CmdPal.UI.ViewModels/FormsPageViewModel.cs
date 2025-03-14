@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.CmdPal.UI.ViewModels.Models;
 using Microsoft.CommandPalette.Extensions;
-using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -46,16 +45,6 @@ public partial class FormsPageViewModel : PageViewModel
             ShowException(ex);
             throw;
         }
-
-        // Now, back to a UI thread to update the observable collection
-        Task.Factory.StartNew(
-            () =>
-            {
-                ListHelpers.InPlaceUpdateList(Forms, newForms);
-            },
-            CancellationToken.None,
-            TaskCreationOptions.None,
-            PageContext.Scheduler);
     }
 
     public override void InitializeProperties()

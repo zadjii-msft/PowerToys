@@ -127,7 +127,7 @@ public partial class ListViewModel : PageViewModel
             // building new viewmodels for the ones we haven't already built.
             foreach (var item in newItems)
             {
-                ListItemViewModel viewModel = new(item, this);
+                ListItemViewModel viewModel = new(item, new(this));
 
                 // If an item fails to load, silently ignore it.
                 if (viewModel.SafeInitializeProperties())
@@ -154,7 +154,7 @@ public partial class ListViewModel : PageViewModel
             throw;
         }
 
-        Task.Factory.StartNew(
+        DoOnUiThread(
             () =>
             {
                 lock (_listLock)
@@ -177,10 +177,7 @@ public partial class ListViewModel : PageViewModel
                 }
 
                 ItemsUpdated?.Invoke(this, EventArgs.Empty);
-            },
-            CancellationToken.None,
-            TaskCreationOptions.None,
-            PageContext.Scheduler);
+            });
     }
 
     /// <summary>
@@ -266,7 +263,7 @@ public partial class ListViewModel : PageViewModel
         // For inexplicable reasons, if you try updating the command bar and
         // the details on the same UI thread tick as updating the list, we'll
         // explode
-        Task.Factory.StartNew(
+        DoOnUiThread(
            () =>
            {
                WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(item));
@@ -281,10 +278,7 @@ public partial class ListViewModel : PageViewModel
                }
 
                TextToSuggest = item.TextToSuggest;
-           },
-           CancellationToken.None,
-           TaskCreationOptions.None,
-           PageContext.Scheduler);
+           });
     }
 
     public override void InitializeProperties()
@@ -364,13 +358,10 @@ public partial class ListViewModel : PageViewModel
             return;
         }
 
-        Task.Factory.StartNew(
+        DoOnUiThread(
            () =>
            {
                WeakReferenceMessenger.Default.Send<UpdateCommandBarMessage>(new(EmptyContent));
-           },
-           CancellationToken.None,
-           TaskCreationOptions.None,
-           PageContext.Scheduler);
+           });
     }
 }

@@ -96,7 +96,7 @@ public partial class FormViewModel(IForm _form, IPageContext context) : Extensio
             }
             catch (Exception ex)
             {
-                PageContext.ShowException(ex);
+                ShowException(ex);
             }
         }
     }

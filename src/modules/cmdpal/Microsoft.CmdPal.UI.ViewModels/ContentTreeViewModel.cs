@@ -9,7 +9,7 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ContentTreeViewModel(ITreeContent _tree, IPageContext context) :
+public partial class ContentTreeViewModel(ITreeContent _tree, WeakReference<IPageContext> context) :
     ContentViewModel(context)
 {
     public ExtensionObject<ITreeContent> Model { get; } = new(_tree);
@@ -58,7 +58,7 @@ public partial class ContentTreeViewModel(ITreeContent _tree, IPageContext conte
         }
         catch (Exception ex)
         {
-            PageContext.ShowException(ex);
+            ShowException(ex);
         }
     }
 
@@ -111,19 +111,16 @@ public partial class ContentTreeViewModel(ITreeContent _tree, IPageContext conte
         }
         catch (Exception ex)
         {
-            PageContext.ShowException(ex);
+            ShowException(ex);
             throw;
         }
 
         // Now, back to a UI thread to update the observable collection
-        Task.Factory.StartNew(
+        DoOnUiThread(
         () =>
         {
             ListHelpers.InPlaceUpdateList(Children, newContent);
-        },
-        CancellationToken.None,
-        TaskCreationOptions.None,
-        PageContext.Scheduler);
+        });
 
         UpdateProperty(nameof(HasChildren));
     }
