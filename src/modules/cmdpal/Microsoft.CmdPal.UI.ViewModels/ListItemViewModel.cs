@@ -17,11 +17,11 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
     public new ExtensionObject<IListItem> Model { get; } = new(model);
 
     [ObservableProperty]
-    public partial ObservableCollection<TagViewModel> Tags { get; set; } = [];
+    public partial ObservableCollection<TagViewModel>? Tags { get; set; } // = [];
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
-    public bool HasTags => Tags.Count > 0;
+    public bool HasTags => (Tags?.Count ?? 0) > 0;
 
     public string TextToSuggest { get; private set; } = string.Empty;
 
@@ -61,7 +61,6 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
             UpdateProperty(nameof(HasDetails));
         }
 
-        UpdateProperty(nameof(Tags));
         UpdateProperty(nameof(TextToSuggest));
         UpdateProperty(nameof(Section));
     }
@@ -122,11 +121,13 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
         Task.Factory.StartNew(
             () =>
             {
+                Tags ??= new();
                 lock (Tags)
                 {
                     ListHelpers.InPlaceUpdateList(Tags, newTags);
                 }
 
+                UpdateProperty(nameof(Tags));
                 UpdateProperty(nameof(HasTags));
             },
             CancellationToken.None,
