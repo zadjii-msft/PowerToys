@@ -69,7 +69,6 @@ internal sealed partial class AppListItem : ListItem
                 _details.Value.HeroImage = icon;
             }
 
-            // BuildDetails();
             return icon;
         }
 
