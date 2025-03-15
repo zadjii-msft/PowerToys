@@ -17,7 +17,7 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
     public new ExtensionObject<IListItem> Model { get; } = new(model);
 
     [ObservableProperty]
-    public partial ObservableCollection<TagViewModel>? Tags { get; set; } // = [];
+    public partial ObservableCollection<TagViewModel>? Tags { get; set; }
 
     // Remember - "observable" properties from the model (via PropChanged)
     // cannot be marked [ObservableProperty]
@@ -121,6 +121,8 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
         Task.Factory.StartNew(
             () =>
             {
+                // The Tags ObservableCollection _MUST_ be created on the UI
+                // thread. If it isn't, then binding to it's changes in the UI won't work
                 Tags ??= new();
                 lock (Tags)
                 {

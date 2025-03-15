@@ -43,9 +43,11 @@ public partial class Tag : Control
         set => SetValue(TextProperty, value);
     }
 
-    private Brush? originalBg;
-    private Brush? originalFg;
-    private Brush? originalBorder;
+    private static Brush? OriginalBg => Application.Current.Resources["TagBackground"] as Brush;
+
+    private static Brush? OriginalFg => Application.Current.Resources["TagForeground"] as Brush;
+
+    private static Brush? OriginalBorder => Application.Current.Resources["TagBorderBrush"] as Brush;
 
     public static readonly DependencyProperty ForegroundColorProperty =
         DependencyProperty.Register(nameof(ForegroundColor), typeof(OptionalColor), typeof(Tag), new PropertyMetadata(null, OnForegroundColorPropertyChanged));
@@ -68,10 +70,6 @@ public partial class Tag : Control
     {
         base.OnApplyTemplate();
 
-        // Application.Current.Resources["TagBackground"] as Brush;
-        originalBg = Application.Current.Resources["TagBackground"] as Brush;
-        originalFg = Application.Current.Resources["TagForeground"] as Brush;
-        originalBorder = Application.Current.Resources["TagBorderBrush"] as Brush;
         if (GetTemplateChild(TagIconBox) is IconBox iconBox)
         {
             iconBox.SourceRequested += IconCacheProvider.SourceRequested;
@@ -86,10 +84,10 @@ public partial class Tag : Control
             return;
         }
 
-        if (/*tag.Foreground is null || */!tag.ForegroundColor.HasValue)
+        if (!tag.ForegroundColor.HasValue)
         {
-            tag.Foreground = tag.originalFg;
-            tag.BorderBrush = tag.originalBorder;
+            tag.Foreground = OriginalFg;
+            tag.BorderBrush = OriginalBorder;
         }
         else if (OptionalColorBrushCacheProvider.Convert(tag.ForegroundColor.Value) is SolidColorBrush brush)
         {
@@ -98,8 +96,8 @@ public partial class Tag : Control
         }
         else
         {
-            tag.Foreground = tag.originalFg;
-            tag.BorderBrush = tag.originalBorder;
+            tag.Foreground = OriginalFg;
+            tag.BorderBrush = OriginalBorder;
         }
     }
 
@@ -110,14 +108,8 @@ public partial class Tag : Control
             return;
         }
 
-        if (/*tag.Background is null || */!tag.BackgroundColor.HasValue)
-        {
-            // foo bar
-            tag.Background = tag.originalBg;
-        }
-        else
-        {
-            tag.Background = OptionalColorBrushCacheProvider.Convert(tag.BackgroundColor.Value) is SolidColorBrush brush ? brush : tag.originalBg;
-        }
+        tag.Background = !tag.BackgroundColor.HasValue
+            ? OriginalBg
+            : OptionalColorBrushCacheProvider.Convert(tag.BackgroundColor.Value) is SolidColorBrush brush ? brush : OriginalBg;
     }
 }
