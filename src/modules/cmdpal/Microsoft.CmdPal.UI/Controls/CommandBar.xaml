@@ -229,8 +229,8 @@
                 Padding="4"
                 Content="{ui:FontIcon Glyph=&#xE712;,
                                       FontSize=16}"
-                ToolTipService.ToolTip="Ctrl+k"
                 Style="{StaticResource SubtleButtonStyle}"
+                ToolTipService.ToolTip="Ctrl+k"
                 Visibility="{x:Bind ViewModel.ShouldShowContextMenu, Mode=OneWay}">
                 <Button.Flyout>
                     <Flyout Placement="TopEdgeAlignedRight">
