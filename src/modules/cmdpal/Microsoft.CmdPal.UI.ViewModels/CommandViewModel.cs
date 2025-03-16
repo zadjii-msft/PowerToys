@@ -29,7 +29,7 @@ public partial class CommandViewModel : ExtensionObjectViewModel
 
     public IconInfoViewModel Icon { get; private set; }
 
-    public CommandViewModel(ICommand? command, IPageContext pageContext)
+    public CommandViewModel(ICommand? command, WeakReference<IPageContext> pageContext)
         : base(pageContext)
     {
         Model = new(command);
@@ -90,7 +90,7 @@ public partial class CommandViewModel : ExtensionObjectViewModel
         }
         catch (Exception ex)
         {
-            PageContext.ShowException(ex, Name);
+            ShowException(ex, Name);
         }
     }
 

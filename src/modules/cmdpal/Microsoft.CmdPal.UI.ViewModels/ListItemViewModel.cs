@@ -9,7 +9,7 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ListItemViewModel(IListItem model, IPageContext context)
+public partial class ListItemViewModel(IListItem model, WeakReference<IPageContext> context)
     : CommandItemViewModel(new(model), context)
 {
     public new ExtensionObject<IListItem> Model { get; } = new(model);
@@ -107,7 +107,7 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
 
     private void UpdateTags(ITag[]? newTagsFromModel)
     {
-        Task.Factory.StartNew(
+        DoOnUiThread(
             () =>
             {
                 var newTags = newTagsFromModel?.Select(t =>
@@ -124,9 +124,6 @@ public partial class ListItemViewModel(IListItem model, IPageContext context)
 
                 UpdateProperty(nameof(Tags));
                 UpdateProperty(nameof(HasTags));
-            },
-            CancellationToken.None,
-            TaskCreationOptions.None,
-            PageContext.Scheduler);
+            });
     }
 }

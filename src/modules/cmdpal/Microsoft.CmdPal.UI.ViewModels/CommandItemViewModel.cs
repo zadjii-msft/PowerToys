@@ -81,7 +81,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         _errorIcon.InitializeProperties();
     }
 
-    public CommandItemViewModel(ExtensionObject<ICommandItem> item, IPageContext errorContext)
+    public CommandItemViewModel(ExtensionObject<ICommandItem> item, WeakReference<IPageContext> errorContext)
         : base(errorContext)
     {
         _commandItemModel = item;
@@ -271,7 +271,7 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
         }
         catch (Exception ex)
         {
-            PageContext.ShowException(ex, _commandItemModel?.Unsafe?.Title);
+            ShowException(ex, _commandItemModel?.Unsafe?.Title);
         }
     }
 

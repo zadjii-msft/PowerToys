@@ -249,7 +249,7 @@ public sealed partial class ShellPage : Microsoft.UI.Xaml.Controls.Page,
     // This gets called from the UI thread
     private void HandleConfirmArgs(IConfirmationArgs args)
     {
-        ConfirmResultViewModel vm = new(args, ViewModel.CurrentPage);
+        ConfirmResultViewModel vm = new(args, new(ViewModel.CurrentPage));
         var initializeDialogTask = Task.Run(() => { InitializeConfirmationDialog(vm); });
         initializeDialogTask.Wait();
 

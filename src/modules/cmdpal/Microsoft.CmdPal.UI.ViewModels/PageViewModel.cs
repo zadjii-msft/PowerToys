@@ -70,11 +70,11 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     public IconInfoViewModel Icon { get; protected set; }
 
     public PageViewModel(IPage? model, TaskScheduler scheduler, CommandPaletteHost extensionHost)
-        : base(null)
+        : base((IPageContext?)null)
     {
         _pageModel = new(model);
         Scheduler = scheduler;
-        PageContext = this;
+        PageContext = new(this);
         ExtensionHost = extensionHost;
         Icon = new(null);
 
@@ -203,7 +203,7 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
         UpdateProperty(propertyName);
     }
 
-    public void ShowException(Exception ex, string? extensionHint = null)
+    public new void ShowException(Exception ex, string? extensionHint = null)
     {
         // Set the extensionHint to the Page Title (if we have one, and one not provided).
         // extensionHint ??= _pageModel?.Unsafe?.Title;

@@ -8,7 +8,7 @@ using Microsoft.CommandPalette.Extensions;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
-public partial class ContentMarkdownViewModel(IMarkdownContent _markdown, IPageContext context) :
+public partial class ContentMarkdownViewModel(IMarkdownContent _markdown, WeakReference<IPageContext> context) :
     ContentViewModel(context)
 {
     public ExtensionObject<IMarkdownContent> Model { get; } = new(_markdown);
@@ -42,7 +42,7 @@ public partial class ContentMarkdownViewModel(IMarkdownContent _markdown, IPageC
         }
         catch (Exception ex)
         {
-            PageContext.ShowException(ex);
+            ShowException(ex);
         }
     }
 

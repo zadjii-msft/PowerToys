@@ -21,7 +21,7 @@ public sealed partial class ListPage : Page,
      IRecipient<ActivateSelectedListItemMessage>,
      IRecipient<ActivateSecondaryCommandMessage>
 {
-    public ListViewModel? ViewModel
+    private ListViewModel? ViewModel
     {
         get => (ListViewModel?)GetValue(ViewModelProperty);
         set => SetValue(ViewModelProperty, value);
@@ -71,8 +71,27 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Unregister<ActivateSelectedListItemMessage>(this);
         WeakReferenceMessenger.Default.Unregister<ActivateSecondaryCommandMessage>(this);
 
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            ViewModel.ItemsUpdated -= Page_ItemsUpdated;
+        }
+
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            ViewModel.ItemsUpdated -= Page_ItemsUpdated;
+        }
+
         // Clean-up event listeners
         Bindings.StopTracking();
+        
+        if (ViewModel != null)
+        {
+            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            ViewModel.ItemsUpdated -= Page_ItemsUpdated;
+        }
+
         ViewModel = null;
         CleanupHelper.Cleanup(this);
     }
