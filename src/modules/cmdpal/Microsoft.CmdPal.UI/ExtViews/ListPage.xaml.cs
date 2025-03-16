@@ -34,7 +34,7 @@ public sealed partial class ListPage : Page,
     public ListPage()
     {
         this.InitializeComponent();
-
+        this.NavigationCacheMode = NavigationCacheMode.Disabled;
         this.ItemsList.Loaded += ItemsList_Loaded;
     }
 
@@ -72,7 +72,9 @@ public sealed partial class ListPage : Page,
         WeakReferenceMessenger.Default.Unregister<ActivateSecondaryCommandMessage>(this);
 
         // Clean-up event listeners
+        Bindings.StopTracking();
         ViewModel = null;
+        CleanupHelper.Cleanup(this);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]
