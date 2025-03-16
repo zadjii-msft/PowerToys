@@ -56,9 +56,9 @@ public sealed partial class ListPage : Page,
         // RegisterAll isn't AOT compatible
         WeakReferenceMessenger.Default.Register<NavigateNextCommand>(this);
         WeakReferenceMessenger.Default.Register<NavigatePreviousCommand>(this);
-
         WeakReferenceMessenger.Default.Register<ActivateSelectedListItemMessage>(this);
         WeakReferenceMessenger.Default.Register<ActivateSecondaryCommandMessage>(this);
+
         base.OnNavigatedTo(e);
     }
 
@@ -77,23 +77,15 @@ public sealed partial class ListPage : Page,
             ViewModel.ItemsUpdated -= Page_ItemsUpdated;
         }
 
-        if (ViewModel != null)
-        {
-            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
-            ViewModel.ItemsUpdated -= Page_ItemsUpdated;
-        }
-
         // Clean-up event listeners
-        Bindings.StopTracking();
-        
-        if (ViewModel != null)
-        {
-            ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
-            ViewModel.ItemsUpdated -= Page_ItemsUpdated;
-        }
-
         ViewModel = null;
-        CleanupHelper.Cleanup(this);
+
+        if (e.NavigationMode != NavigationMode.New)
+        {
+            CleanupHelper.Cleanup(this);
+
+            Bindings.StopTracking();
+        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]
