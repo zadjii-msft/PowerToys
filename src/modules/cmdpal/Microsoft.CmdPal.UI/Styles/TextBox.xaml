@@ -54,6 +54,7 @@
                                                 CornerRadius="{TemplateBinding CornerRadius}">
                                                 <TextBlock
                                                     x:Name="GlyphElement"
+                                                    Margin="{TemplateBinding Padding}"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
                                                     AutomationProperties.AccessibilityView="Raw"
@@ -167,7 +168,7 @@
                             x:Name="DeleteButton"
                             Grid.Column="2"
                             Margin="0,0,8,0"
-                            Padding="12"
+                            Padding="4"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             AutomationProperties.AccessibilityView="Raw"
