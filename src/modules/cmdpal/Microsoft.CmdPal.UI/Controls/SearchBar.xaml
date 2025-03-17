@@ -16,11 +16,11 @@
         MinHeight="32"
         VerticalAlignment="Stretch"
         VerticalContentAlignment="Stretch"
-        Description="{x:Bind CurrentPageViewModel.TextToSuggest, Mode=OneWay}"
         KeyDown="FilterBox_KeyDown"
         PlaceholderText="{x:Bind CurrentPageViewModel.PlaceholderText, Mode=OneWay}"
         PreviewKeyDown="FilterBox_PreviewKeyDown"
         PreviewKeyUp="FilterBox_PreviewKeyUp"
         Style="{StaticResource SearchTextBoxStyle}"
         TextChanged="FilterBox_TextChanged" />
+    <!--  Disabled Description="{x:Bind CurrentPageViewModel.TextToSuggest, Mode=OneWay}" for now, needs more work  -->
 </UserControl>
