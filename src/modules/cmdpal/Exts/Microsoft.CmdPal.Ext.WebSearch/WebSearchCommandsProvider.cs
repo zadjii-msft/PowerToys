@@ -19,7 +19,7 @@ public partial class WebSearchCommandsProvider : CommandProvider
     {
         Id = "WebSearch";
         DisplayName = Resources.extension_name;
-        Icon = IconHelpers.FromRelativePath("Assets\\WebSearch.svg");
+        Icon = IconHelpers.FromRelativePath("Assets\\WebSearch.png");
         Settings = _settingsManager.Settings;
 
         _fallbackItem = new FallbackExecuteSearchItem(_settingsManager);

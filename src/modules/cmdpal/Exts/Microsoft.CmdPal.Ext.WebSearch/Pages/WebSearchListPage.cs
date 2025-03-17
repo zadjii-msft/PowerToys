@@ -30,10 +30,10 @@ internal sealed partial class WebSearchListPage : DynamicListPage
         Name = Resources.command_item_title;
         Title = Resources.command_item_title;
         PlaceholderText = Resources.plugin_description;
-        Icon = IconHelpers.FromRelativePath("Assets\\WebSearch.svg");
+        Icon = IconHelpers.FromRelativePath("Assets\\WebSearch.png");
         allItems = [new(new NoOpCommand())
         {
-            Icon = IconHelpers.FromRelativePath("Assets\\WebSearch.svg"),
+            Icon = IconHelpers.FromRelativePath("Assets\\WebSearch.png"),
             Title = Properties.Resources.plugin_description,
             Subtitle = string.Format(CultureInfo.CurrentCulture, PluginOpen, BrowserInfo.Name ?? BrowserInfo.MSEdgeName),
         }
