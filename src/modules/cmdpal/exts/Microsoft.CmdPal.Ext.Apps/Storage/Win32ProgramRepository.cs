@@ -106,6 +106,12 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
         var oldPath = e.OldFullPath;
         var newPath = e.FullPath;
 
+        // fix for https://github.com/microsoft/PowerToys/issues/34391
+        // the msi installer creates a shortcut, which is detected by the PT Run and ends up in calling this OnAppRenamed method
+        // the thread needs to be halted for a short time to avoid locking the new shortcut file as we read it, otherwise the lock causes
+        // in the issue scenario that a warning is popping up during the msi install process.
+        System.Threading.Thread.Sleep(1000);
+
         var extension = Path.GetExtension(newPath);
         Win32Program.ApplicationType oldAppType = Win32Program.GetAppTypeFromPath(oldPath);
         Programs.Win32Program? newApp = Win32Program.GetAppFromPath(newPath);
