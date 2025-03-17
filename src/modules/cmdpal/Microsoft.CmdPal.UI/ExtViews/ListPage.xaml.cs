@@ -4,6 +4,7 @@
 
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
+using ManagedCommon;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.Messages;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,10 +76,8 @@ public sealed partial class ListPage : Page,
         {
             ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
             ViewModel.ItemsUpdated -= Page_ItemsUpdated;
+            ViewModel.Cleanup();
         }
-
-        // Clean-up event listeners
-        ViewModel = null;
 
         if (e.NavigationMode != NavigationMode.New)
         {
@@ -86,6 +85,12 @@ public sealed partial class ListPage : Page,
 
             Bindings.StopTracking();
         }
+
+        // Clean-up event listeners
+        ViewModel = null;
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]
@@ -238,6 +243,10 @@ public sealed partial class ListPage : Page,
             {
                 page.PropertyChanged += @this.ViewModel_PropertyChanged;
                 page.ItemsUpdated += @this.Page_ItemsUpdated;
+            }
+            else if (e.NewValue == null)
+            {
+                Logger.LogDebug("cleared viewmodel");
             }
         }
     }
