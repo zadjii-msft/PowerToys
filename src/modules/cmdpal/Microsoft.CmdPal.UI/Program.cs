@@ -17,7 +17,9 @@ internal sealed class Program
     // LOAD BEARING
     //
     // Main cannot be async. If it is, then the clipboard won't work, and neither will narrator.
-    [MTAThread]
+    // That means you, the person thinking about making this a MTA thread. Don't 
+    // do it. It won't work. That's not the solution. 
+    [STAThread]
     private static int Main(string[] args)
     {
         if (Helpers.GpoValueChecker.GetConfiguredCmdPalEnabledValue() == Helpers.GpoRuleConfiguredValue.Disabled)
