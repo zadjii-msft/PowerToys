@@ -22,7 +22,9 @@ public partial class ContentTreeViewModel(ITreeContent _tree, WeakReference<IPag
 
     public bool HasChildren => Children.Count > 0;
 
-    public ObservableCollection<ContentViewModel> StupidGames => [RootContent];
+    // This is the content that's actually bound in XAML. We needed a
+    // collection, even if the collection is just a single item.
+    public ObservableCollection<ContentViewModel> Root => [RootContent];
 
     public override void InitializeProperties()
     {
@@ -38,7 +40,7 @@ public partial class ContentTreeViewModel(ITreeContent _tree, WeakReference<IPag
             RootContent = ContentPageViewModel.ViewModelFromContent(root, PageContext);
             RootContent?.InitializeProperties();
             UpdateProperty(nameof(RootContent));
-            UpdateProperty(nameof(StupidGames));
+            UpdateProperty(nameof(Root));
         }
 
         FetchContent();
@@ -83,7 +85,7 @@ public partial class ContentTreeViewModel(ITreeContent _tree, WeakReference<IPag
                     root = null;
                 }
 
-                UpdateProperty(nameof(StupidGames));
+                UpdateProperty(nameof(Root));
 
                 break;
         }
@@ -123,5 +125,23 @@ public partial class ContentTreeViewModel(ITreeContent _tree, WeakReference<IPag
         });
 
         UpdateProperty(nameof(HasChildren));
+    }
+
+    protected override void UnsafeCleanup()
+    {
+        base.UnsafeCleanup();
+        RootContent?.SafeCleanup();
+        foreach (var item in Children)
+        {
+            item.SafeCleanup();
+        }
+
+        Children.Clear();
+        var model = Model.Unsafe;
+        if (model != null)
+        {
+            model.PropChanged -= Model_PropChanged;
+            model.ItemsChanged -= Model_ItemsChanged;
+        }
     }
 }

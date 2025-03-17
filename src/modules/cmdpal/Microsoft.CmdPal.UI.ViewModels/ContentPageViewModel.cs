@@ -237,4 +237,30 @@ public partial class ContentPageViewModel : PageViewModel, ICommandBarContext
             WeakReferenceMessenger.Default.Send<PerformCommandMessage>(new(SecondaryCommand.Command.Model, SecondaryCommand.Model));
         }
     }
+
+    protected override void UnsafeCleanup()
+    {
+        base.UnsafeCleanup();
+
+        Details?.SafeCleanup();
+        foreach (var item in Commands)
+        {
+            item.SafeCleanup();
+        }
+
+        Commands.Clear();
+
+        foreach (var item in Content)
+        {
+            item.SafeCleanup();
+        }
+
+        Content.Clear();
+
+        var model = _model.Unsafe;
+        if (model != null)
+        {
+            model.ItemsChanged -= Model_ItemsChanged;
+        }
+    }
 }

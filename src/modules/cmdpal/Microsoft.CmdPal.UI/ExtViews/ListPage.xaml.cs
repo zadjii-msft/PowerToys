@@ -19,8 +19,8 @@ namespace Microsoft.CmdPal.UI;
 public sealed partial class ListPage : Page,
     IRecipient<NavigateNextCommand>,
     IRecipient<NavigatePreviousCommand>,
-     IRecipient<ActivateSelectedListItemMessage>,
-     IRecipient<ActivateSecondaryCommandMessage>
+    IRecipient<ActivateSelectedListItemMessage>,
+    IRecipient<ActivateSecondaryCommandMessage>
 {
     private ListViewModel? ViewModel
     {
@@ -88,8 +88,7 @@ public sealed partial class ListPage : Page,
         // Clean-up event listeners
         ViewModel = null;
 
-        // GC.Collect();
-        // GC.WaitForPendingFinalizers();
+        GC.Collect();
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]

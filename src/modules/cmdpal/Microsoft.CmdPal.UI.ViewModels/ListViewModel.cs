@@ -219,7 +219,13 @@ public partial class ListViewModel : PageViewModel, IDisposable
         // Were we already canceled?
         ct.ThrowIfCancellationRequested();
 
-        foreach (var item in Items)
+        ListItemViewModel[] iterable;
+        lock (_listLock)
+        {
+            iterable = Items.ToArray();
+        }
+
+        foreach (var item in iterable)
         {
             ct.ThrowIfCancellationRequested();
 
