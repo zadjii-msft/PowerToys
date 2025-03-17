@@ -126,4 +126,21 @@ public partial class ListItemViewModel(IListItem model, WeakReference<IPageConte
                 UpdateProperty(nameof(HasTags));
             });
     }
+
+    protected override void UnsafeCleanup()
+    {
+        base.UnsafeCleanup();
+
+        // Tags don't have event handlers or anything to cleanup
+        Tags?.ForEach(t => t.SafeCleanup());
+        Details?.SafeCleanup();
+
+        var model = Model.Unsafe;
+        if (model != null)
+        {
+            // We don't need to revoke the PropChanged event handler here,
+            // because we are just overriding CommnadItem's FetchProperty and
+            // piggy-backing off their PropChanged
+        }
+    }
 }

@@ -362,6 +362,38 @@ public partial class CommandItemViewModel : ExtensionObjectViewModel, ICommandBa
                 break;
         }
     }
+
+    protected override void UnsafeCleanup()
+    {
+        base.UnsafeCleanup();
+
+        lock (MoreCommands)
+        {
+            MoreCommands.ForEach(c => c.SafeCleanup());
+            MoreCommands.Clear();
+        }
+
+        // _listItemIcon.SafeCleanup();
+        _listItemIcon = new(null); // necessary?
+
+        _defaultCommandContextItem?.SafeCleanup();
+        _defaultCommandContextItem = null;
+
+        Command.PropertyChanged -= Command_PropertyChanged;
+        Command.SafeCleanup();
+
+        var model = _commandItemModel.Unsafe;
+        if (model != null)
+        {
+            model.PropChanged -= Model_PropChanged;
+        }
+    }
+
+    public override void SafeCleanup()
+    {
+        base.SafeCleanup();
+        Initialized |= InitializedState.CleanedUp;
+    }
 }
 
 [Flags]
@@ -372,4 +404,5 @@ internal enum InitializedState
     Initialized = 2,
     SelectionInitialized = 4,
     Error = 8,
+    CleanedUp = 16,
 }

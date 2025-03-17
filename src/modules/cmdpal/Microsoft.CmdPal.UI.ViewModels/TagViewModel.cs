@@ -25,8 +25,6 @@ public partial class TagViewModel(ITag _tag, WeakReference<IPageContext> context
 
     public IconInfoViewModel Icon { get; private set; } = new(null);
 
-    public ExtensionObject<ICommand> Command { get; private set; } = new(null);
-
     public override void InitializeProperties()
     {
         var model = _tagModel.Unsafe;

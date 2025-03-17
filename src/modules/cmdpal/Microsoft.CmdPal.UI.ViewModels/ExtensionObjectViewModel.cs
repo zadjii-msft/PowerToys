@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using ManagedCommon;
 
 namespace Microsoft.CmdPal.UI.ViewModels;
 
@@ -67,6 +68,23 @@ public abstract partial class ExtensionObjectViewModel : ObservableObject
                 CancellationToken.None,
                 TaskCreationOptions.None,
                 pageContext.Scheduler);
+        }
+    }
+
+    protected virtual void UnsafeCleanup()
+    {
+        // base doesn't do anything, but sub-classes should override this.
+    }
+
+    public virtual void SafeCleanup()
+    {
+        try
+        {
+            UnsafeCleanup();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogDebug(ex.ToString());
         }
     }
 }

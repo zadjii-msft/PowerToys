@@ -116,4 +116,17 @@ public partial class CommandViewModel : ExtensionObjectViewModel
 
         UpdateProperty(propertyName);
     }
+
+    protected override void UnsafeCleanup()
+    {
+        base.UnsafeCleanup();
+
+        Icon = new(null); // necessary?
+
+        var model = Model.Unsafe;
+        if (model != null)
+        {
+            model.PropChanged -= Model_PropChanged;
+        }
+    }
 }

@@ -219,6 +219,19 @@ public partial class PageViewModel : ExtensionObjectViewModel, IPageContext
     }
 
     public override string ToString() => $"{Title} ViewModel";
+
+    protected override void UnsafeCleanup()
+    {
+        base.UnsafeCleanup();
+
+        ExtensionHost.StatusMessages.CollectionChanged -= StatusMessages_CollectionChanged;
+
+        var model = _pageModel.Unsafe;
+        if (model != null)
+        {
+            model.PropChanged -= Model_PropChanged;
+        }
+    }
 }
 
 public interface IPageContext

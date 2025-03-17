@@ -76,21 +76,20 @@ public sealed partial class ListPage : Page,
         {
             ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
             ViewModel.ItemsUpdated -= Page_ItemsUpdated;
-            ViewModel.Cleanup();
         }
 
         if (e.NavigationMode != NavigationMode.New)
         {
+            ViewModel?.SafeCleanup();
             CleanupHelper.Cleanup(this);
-
             Bindings.StopTracking();
         }
 
         // Clean-up event listeners
         ViewModel = null;
 
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
+        // GC.Collect();
+        // GC.WaitForPendingFinalizers();
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "VS is too aggressive at pruning methods bound in XAML")]

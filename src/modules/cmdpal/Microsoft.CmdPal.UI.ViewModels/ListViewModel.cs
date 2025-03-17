@@ -450,10 +450,35 @@ public partial class ListViewModel : PageViewModel, IDisposable
         _cancellationTokenSource = null;
     }
 
-    public void Cleanup()
+    protected override void UnsafeCleanup()
     {
-        Items.Clear();
-        FilteredItems
-            .Clear();
+        base.UnsafeCleanup();
+
+        EmptyContent?.SafeCleanup();
+        EmptyContent = new(new(null), PageContext); // necessary?
+
+        _cancellationTokenSource?.Cancel();
+
+        lock (_listLock)
+        {
+            foreach (var item in Items)
+            {
+                item.SafeCleanup();
+            }
+
+            Items.Clear();
+            foreach (var item in FilteredItems)
+            {
+                item.SafeCleanup();
+            }
+
+            FilteredItems.Clear();
+        }
+
+        var model = _model.Unsafe;
+        if (model != null)
+        {
+            model.ItemsChanged -= Model_ItemsChanged;
+        }
     }
 }
