@@ -101,7 +101,7 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
         }
     }
 
-    private async Task DoOnAppRenamed(object sender, RenamedEventArgs e)
+    private async Task OnAppRenamedAsync(object sender, RenamedEventArgs e)
     {
         var oldPath = e.OldFullPath;
         var newPath = e.FullPath;
@@ -160,7 +160,7 @@ internal sealed class Win32ProgramRepository : ListRepository<Programs.Win32Prog
     {
         Task.Run(async () =>
         {
-            await DoOnAppRenamed(sender, e).ConfigureAwait(false);
+            await OnAppRenamedAsync(sender, e).ConfigureAwait(false);
         }).ConfigureAwait(false);
     }
 
