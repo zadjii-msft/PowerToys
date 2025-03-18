@@ -26,6 +26,8 @@ public partial class SystemCommandExtensionProvider : CommandProvider
                 MoreCommands = [new CommandContextItem(_settingsManager.Settings.SettingsPage)],
             },
         ];
+
+        Icon = Page.Icon;
     }
 
     public override ICommandItem[] TopLevelCommands()
