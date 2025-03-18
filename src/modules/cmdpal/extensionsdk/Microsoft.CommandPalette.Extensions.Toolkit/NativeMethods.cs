@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation
+// Copyright (c) Microsoft Corporation
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -24,4 +24,7 @@ internal sealed class NativeMethods
         public string szTypeName;
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
     }
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    internal static extern bool DestroyIcon(IntPtr hIcon);
 }
