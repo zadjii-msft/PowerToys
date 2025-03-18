@@ -97,15 +97,6 @@ namespace Microsoft.CmdPal.Ext.System {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Microsoft System Command.
-        /// </summary>
-        public static string Microsoft_plugin_ext_provider_name {
-            get {
-                return ResourceManager.GetString("Microsoft_plugin_ext_provider_name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Hide disconnected network info.
         /// </summary>
         public static string Microsoft_plugin_ext_settings_hideDisconnectedNetworkInfo {
@@ -120,15 +111,6 @@ namespace Microsoft.CmdPal.Ext.System {
         public static string Microsoft_plugin_ext_system_page_name {
             get {
                 return ResourceManager.GetString("Microsoft_plugin_ext_system_page_name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Adapter details.
-        /// </summary>
-        public static string Microsoft_plugin_sys_AdapterDetails {
-            get {
-                return ResourceManager.GetString("Microsoft_plugin_sys_AdapterDetails", resourceCulture);
             }
         }
         
@@ -169,29 +151,11 @@ namespace Microsoft.CmdPal.Ext.System {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connection details.
-        /// </summary>
-        public static string Microsoft_plugin_sys_ConnectionDetails {
-            get {
-                return ResourceManager.GetString("Microsoft_plugin_sys_ConnectionDetails", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Connection name.
         /// </summary>
         public static string Microsoft_plugin_sys_ConnectionName {
             get {
                 return ResourceManager.GetString("Microsoft_plugin_sys_ConnectionName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copy details (Ctrl+C).
-        /// </summary>
-        public static string Microsoft_plugin_sys_CopyDetails {
-            get {
-                return ResourceManager.GetString("Microsoft_plugin_sys_CopyDetails", resourceCulture);
             }
         }
         
@@ -417,15 +381,6 @@ namespace Microsoft.CmdPal.Ext.System {
         public static string Microsoft_plugin_sys_PhysicalAddress {
             get {
                 return ResourceManager.GetString("Microsoft_plugin_sys_PhysicalAddress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Executes system commands (e.g. &apos;shutdown&apos;, &apos;lock&apos;, &apos;sleep&apos;).
-        /// </summary>
-        public static string Microsoft_plugin_sys_plugin_description {
-            get {
-                return ResourceManager.GetString("Microsoft_plugin_sys_plugin_description", resourceCulture);
             }
         }
         
@@ -691,15 +646,6 @@ namespace Microsoft.CmdPal.Ext.System {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select to copy.
-        /// </summary>
-        public static string Microsoft_plugin_sys_SubTitle_CopyHint {
-            get {
-                return ResourceManager.GetString("Microsoft_plugin_sys_SubTitle_CopyHint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to DNS Suffix.
         /// </summary>
         public static string Microsoft_plugin_sys_Suffix {
@@ -777,33 +723,6 @@ namespace Microsoft.CmdPal.Ext.System {
         public static string Microsoft_plugin_sys_WirelessLan {
             get {
                 return ResourceManager.GetString("Microsoft_plugin_sys_WirelessLan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reduce the priority of &apos;IP&apos; and &apos;MAC&apos; results to improve the order in the global results.
-        /// </summary>
-        public static string Reduce_Network_Result_Score {
-            get {
-                return ResourceManager.GetString("Reduce_Network_Result_Score", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to With this setting enabled, you have to type more characters to find the results..
-        /// </summary>
-        public static string Reduce_Network_Result_Score_Description {
-            get {
-                return ResourceManager.GetString("Reduce_Network_Result_Score_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use localized system commands instead of English ones.
-        /// </summary>
-        public static string Use_localized_system_commands {
-            get {
-                return ResourceManager.GetString("Use_localized_system_commands", resourceCulture);
             }
         }
     }

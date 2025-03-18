@@ -129,17 +129,11 @@
   <data name="Microsoft_plugin_ext_copy" xml:space="preserve">
     <value>Copy to clipboard</value>
   </data>
-  <data name="Microsoft_plugin_ext_provider_name" xml:space="preserve">
-    <value>Microsoft System Command</value>
-  </data>
   <data name="Microsoft_plugin_ext_settings_hideDisconnectedNetworkInfo" xml:space="preserve">
     <value>Hide disconnected network info</value>
   </data>
   <data name="Microsoft_plugin_ext_system_page_name" xml:space="preserve">
     <value>Windows System Command</value>
-  </data>
-  <data name="Microsoft_plugin_sys_AdapterDetails" xml:space="preserve">
-    <value>Adapter details</value>
   </data>
   <data name="Microsoft_plugin_sys_AdapterName" xml:space="preserve">
     <value>Adapter name</value>
@@ -154,15 +148,8 @@
   <data name="Microsoft_plugin_sys_Connected" xml:space="preserve">
     <value>Connected</value>
   </data>
-  <data name="Microsoft_plugin_sys_ConnectionDetails" xml:space="preserve">
-    <value>Connection details</value>
-  </data>
   <data name="Microsoft_plugin_sys_ConnectionName" xml:space="preserve">
     <value>Connection name</value>
-  </data>
-  <data name="Microsoft_plugin_sys_CopyDetails" xml:space="preserve">
-    <value>Copy details (Ctrl+C)</value>
-    <comment>'Ctrl+C' is a shortcut</comment>
   </data>
   <data name="Microsoft_plugin_sys_Dhcp" xml:space="preserve">
     <value>DHCP servers</value>
@@ -249,10 +236,6 @@
   </data>
   <data name="Microsoft_plugin_sys_PhysicalAddress" xml:space="preserve">
     <value>Physical address (MAC)</value>
-  </data>
-  <data name="Microsoft_plugin_sys_plugin_description" xml:space="preserve">
-    <value>Executes system commands (e.g. 'shutdown', 'lock', 'sleep')</value>
-    <comment>This should align to the actions in Windows relating to shutting down, signing out, locking, sleeping, restarting, emptying the recycle bin, and hibernating your computer. </comment>
   </data>
   <data name="Microsoft_plugin_sys_plugin_name" xml:space="preserve">
     <value>Windows System Commands</value>
@@ -366,9 +349,6 @@
   <data name="Microsoft_plugin_sys_State" xml:space="preserve">
     <value>State</value>
   </data>
-  <data name="Microsoft_plugin_sys_SubTitle_CopyHint" xml:space="preserve">
-    <value>Select to copy</value>
-  </data>
   <data name="Microsoft_plugin_sys_Suffix" xml:space="preserve">
     <value>DNS Suffix</value>
   </data>
@@ -399,14 +379,5 @@
   </data>
   <data name="Microsoft_plugin_sys_WirelessLan" xml:space="preserve">
     <value>Wireless LAN</value>
-  </data>
-  <data name="Reduce_Network_Result_Score" xml:space="preserve">
-    <value>Reduce the priority of 'IP' and 'MAC' results to improve the order in the global results</value>
-  </data>
-  <data name="Reduce_Network_Result_Score_Description" xml:space="preserve">
-    <value>With this setting enabled, you have to type more characters to find the results.</value>
-  </data>
-  <data name="Use_localized_system_commands" xml:space="preserve">
-    <value>Use localized system commands instead of English ones</value>
   </data>
 </root>

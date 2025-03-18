@@ -17,7 +17,7 @@ public partial class SystemCommandExtensionProvider : CommandProvider
 
     public SystemCommandExtensionProvider()
     {
-        DisplayName = Resources.Microsoft_plugin_ext_provider_name;
+        DisplayName = Resources.Microsoft_plugin_ext_system_page_name;
         _commands = [
             new CommandItem(Page)
             {
