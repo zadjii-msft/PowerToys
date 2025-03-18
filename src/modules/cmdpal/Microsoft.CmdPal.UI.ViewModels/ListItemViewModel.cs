@@ -139,7 +139,7 @@ public partial class ListItemViewModel(IListItem model, WeakReference<IPageConte
         if (model != null)
         {
             // We don't need to revoke the PropChanged event handler here,
-            // because we are just overriding CommnadItem's FetchProperty and
+            // because we are just overriding CommandItem's FetchProperty and
             // piggy-backing off their PropChanged
         }
     }
