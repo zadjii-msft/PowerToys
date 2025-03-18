@@ -24,7 +24,7 @@ public sealed partial class EmptyRecycleBinConfirmation : InvokableCommand
 
         var confirmArgs = new ConfirmationArgs()
         {
-            Title = Resources.EmptyRecycleBin_ConfirmationDialog_Title,
+            Title = Resources.Microsoft_plugin_sys_confirmation,
             Description = Resources.EmptyRecycleBin_ConfirmationDialog_Description,
             PrimaryCommand = new EmptyRecycleBinCommand(_settingEmptyRBSuccesMsg),
             IsPrimaryCommandCritical = true,
