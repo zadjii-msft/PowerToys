@@ -22,7 +22,7 @@ public partial class SystemCommandExtensionProvider : CommandProvider
             new CommandItem(Page)
             {
                 Title = DisplayName,
-                Icon = new IconInfo("\uE72E"),
+                Icon = Page.Icon,
                 MoreCommands = [new CommandContextItem(_settingsManager.Settings.SettingsPage)],
             },
         ];

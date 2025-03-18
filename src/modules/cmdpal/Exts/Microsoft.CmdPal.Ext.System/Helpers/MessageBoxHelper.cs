@@ -28,12 +28,6 @@ public sealed partial class MessageBoxHelper
     public enum MessageBoxType
     {
         OK = 0x00000000,
-        OkAndCancel = 0x00000001,
-        AbortRetryIgnore = 0x00000002,
-        YesNoCancel = 0x00000003,
-        YesOrNo = 0x00000004,
-        RetryAndCancel = 0x00000005,
-        CancelTryAgainAndContinue = 0x00000006,
     }
 
     public enum MessageBoxResult

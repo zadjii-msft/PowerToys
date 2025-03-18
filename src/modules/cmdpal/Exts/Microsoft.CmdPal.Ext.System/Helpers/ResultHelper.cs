@@ -14,22 +14,6 @@ internal static class ResultHelper
 {
     public static bool ExecutingEmptyRecycleBinTask { get; set; }
 
-    internal static bool ExecuteCommand(bool confirm, string confirmationMessage, Action command)
-    {
-        if (confirm)
-        {
-            var result = MessageBoxHelper.Show(confirmationMessage, Resources.Microsoft_plugin_sys_confirmation, IconType.Warning, MessageBoxHelper.MessageBoxType.YesOrNo);
-
-            if (result == MessageBoxResult.No)
-            {
-                return false;
-            }
-        }
-
-        command();
-        return true;
-    }
-
     /// <summary>
     /// Method to process the empty recycle bin command in a separate task
     /// </summary>

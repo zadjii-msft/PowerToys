@@ -2,11 +2,11 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CmdPal.Ext.Shell;
+using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.System.Helpers;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 
-namespace Microsoft.CmdPal.Ext.System;
+namespace Microsoft.CmdPal.Ext.Shell;
 
 public sealed partial class EmptyRecycleBinCommand : InvokableCommand
 {
@@ -17,20 +17,9 @@ public sealed partial class EmptyRecycleBinCommand : InvokableCommand
 
     public override CommandResult Invoke()
     {
-        if (ResultHelper.ExecutingEmptyRecycleBinTask)
-        {
-            return CommandResult.ShowToast(new ToastArgs() { Message = Resources.Microsoft_plugin_sys_RecycleBin_EmptyTaskRunning });
-        }
+        Task.Run(() => ResultHelper.EmptyRecycleBinTask(_settingEmptyRBSuccesMsg));
 
-        var confirmArgs = new ConfirmationArgs()
-        {
-            Title = Resources.EmptyRecycleBin_ConfirmationDialog_Title,
-            Description = Resources.EmptyRecycleBin_ConfirmationDialog_Description,
-            PrimaryCommand = new ExecuteEmptyRecycleBinCommand(_settingEmptyRBSuccesMsg),
-            IsPrimaryCommandCritical = true,
-        };
-
-        return CommandResult.Confirm(confirmArgs);
+        return CommandResult.Dismiss();
     }
 
     private bool _settingEmptyRBSuccesMsg;
