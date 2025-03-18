@@ -13,7 +13,7 @@
         <DesktopAcrylicBackdrop />
     </Window.SystemBackdrop>
     <Grid x:Name="ToastGrid">
-        <!--  This padding is used in codebehind to calculate the dimensions of the ToastWindow  -->
+        <!--  This padding is used to calculate the dimensions of the ToastWindow  -->
         <TextBlock
             x:Name="ToastText"
             Padding="16,16,36,24"
