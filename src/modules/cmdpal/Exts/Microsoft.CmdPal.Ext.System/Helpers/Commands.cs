@@ -42,37 +42,37 @@ internal static class Commands
         var results = new List<IListItem>();
         results.AddRange(new[]
         {
-            new ListItem(new ExecuteCommandConfirmation(confirmCommands, Resources.Microsoft_plugin_sys_shutdown_computer_confirmation, () => OpenInShellHelper.OpenInShell("shutdown", "/s /hybrid /t 0")))
+            new ListItem(new ExecuteCommandConfirmation(Resources.Microsoft_plugin_command_name_shutdown, confirmCommands, Resources.Microsoft_plugin_sys_shutdown_computer_confirmation, () => OpenInShellHelper.OpenInShell("shutdown", "/s /hybrid /t 0")))
             {
                 Title = Resources.Microsoft_plugin_sys_shutdown_computer,
                 Subtitle = Resources.Microsoft_plugin_sys_shutdown_computer_description,
                 Icon = Icons.ShutdownIcon,
             },
-            new ListItem(new ExecuteCommandConfirmation(confirmCommands, Resources.Microsoft_plugin_sys_restart_computer_confirmation, () => OpenInShellHelper.OpenInShell("shutdown", "/g /t 0")))
+            new ListItem(new ExecuteCommandConfirmation(Resources.Microsoft_plugin_command_name_restart, confirmCommands, Resources.Microsoft_plugin_sys_restart_computer_confirmation, () => OpenInShellHelper.OpenInShell("shutdown", "/g /t 0")))
             {
                 Title = Resources.Microsoft_plugin_sys_restart_computer,
                 Subtitle = Resources.Microsoft_plugin_sys_restart_computer_description,
                 Icon = Icons.RestartIcon,
             },
-            new ListItem(new ExecuteCommandConfirmation(confirmCommands, Resources.Microsoft_plugin_sys_sign_out_confirmation, () => NativeMethods.ExitWindowsEx(EWXLOGOFF, 0)))
+            new ListItem(new ExecuteCommandConfirmation(Resources.Microsoft_plugin_command_name_signout, confirmCommands, Resources.Microsoft_plugin_sys_sign_out_confirmation, () => NativeMethods.ExitWindowsEx(EWXLOGOFF, 0)))
             {
                 Title = Resources.Microsoft_plugin_sys_sign_out,
                 Subtitle = Resources.Microsoft_plugin_sys_sign_out_description,
                 Icon = Icons.LogoffIcon,
             },
-            new ListItem(new ExecuteCommandConfirmation(confirmCommands, Resources.Microsoft_plugin_sys_lock_confirmation, () => NativeMethods.LockWorkStation()))
+            new ListItem(new ExecuteCommandConfirmation(Resources.Microsoft_plugin_command_name_lock, confirmCommands, Resources.Microsoft_plugin_sys_lock_confirmation, () => NativeMethods.LockWorkStation()))
             {
                 Title = Resources.Microsoft_plugin_sys_lock,
                 Subtitle = Resources.Microsoft_plugin_sys_lock_description,
                 Icon = Icons.LockIcon,
             },
-            new ListItem(new ExecuteCommandConfirmation(confirmCommands, Resources.Microsoft_plugin_sys_sleep_confirmation, () => NativeMethods.SetSuspendState(false, true, true)))
+            new ListItem(new ExecuteCommandConfirmation(Resources.Microsoft_plugin_command_name_sleep, confirmCommands, Resources.Microsoft_plugin_sys_sleep_confirmation, () => NativeMethods.SetSuspendState(false, true, true)))
             {
                 Title = Resources.Microsoft_plugin_sys_sleep,
                 Subtitle = Resources.Microsoft_plugin_sys_sleep_description,
                 Icon = Icons.SleepIcon,
             },
-            new ListItem(new ExecuteCommandConfirmation(confirmCommands, Resources.Microsoft_plugin_sys_hibernate_confirmation, () => NativeMethods.SetSuspendState(true, true, true)))
+            new ListItem(new ExecuteCommandConfirmation(Resources.Microsoft_plugin_command_name_hibernate, confirmCommands, Resources.Microsoft_plugin_sys_hibernate_confirmation, () => NativeMethods.SetSuspendState(true, true, true)))
             {
                 Title = Resources.Microsoft_plugin_sys_hibernate,
                 Subtitle = Resources.Microsoft_plugin_sys_hibernate_description,
@@ -85,7 +85,7 @@ internal static class Commands
         {
             results.AddRange(new[]
             {
-                new ListItem(new OpenInShellCommand("explorer.exe", "shell:RecycleBinFolder"))
+                new ListItem(new OpenInShellCommand(Resources.Microsoft_plugin_command_name_empty, "explorer.exe", "shell:RecycleBinFolder"))
                 {
                     Title = Resources.Microsoft_plugin_sys_RecycleBinOpen,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
@@ -102,7 +102,7 @@ internal static class Commands
         else
         {
             results.Add(
-                new ListItem(new OpenInShellCommand("explorer.exe", "shell:RecycleBinFolder"))
+                new ListItem(new OpenInShellCommand(Resources.Microsoft_plugin_command_name_empty, "explorer.exe", "shell:RecycleBinFolder"))
                 {
                     Title = Resources.Microsoft_plugin_sys_RecycleBin,
                     Subtitle = Resources.Microsoft_plugin_sys_RecycleBin_description,
@@ -113,7 +113,7 @@ internal static class Commands
         // UEFI command/result. It is only available on systems booted in UEFI mode.
         if (isUefi)
         {
-            results.Add(new ListItem(new ExecuteCommandConfirmation(confirmCommands, Resources.Microsoft_plugin_sys_uefi_confirmation, () => OpenInShellHelper.OpenInShell("shutdown", "/r /fw /t 0", null, OpenInShellHelper.ShellRunAsType.Administrator)))
+            results.Add(new ListItem(new ExecuteCommandConfirmation(Resources.Microsoft_plugin_command_name_reboot, confirmCommands, Resources.Microsoft_plugin_sys_uefi_confirmation, () => OpenInShellHelper.OpenInShell("shutdown", "/r /fw /t 0", null, OpenInShellHelper.ShellRunAsType.Administrator)))
             {
                 Title = Resources.Microsoft_plugin_sys_uefi,
                 Subtitle = Resources.Microsoft_plugin_sys_uefi_description,

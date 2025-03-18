@@ -9,8 +9,9 @@ namespace Microsoft.CmdPal.Ext.System;
 
 public sealed partial class OpenInShellCommand : InvokableCommand
 {
-    public OpenInShellCommand(string path, string? arguments = null, string? workingDir = null, OpenInShellHelper.ShellRunAsType runAs = OpenInShellHelper.ShellRunAsType.None, bool runWithHiddenWindow = false)
+    public OpenInShellCommand(string name, string path, string? arguments = null, string? workingDir = null, OpenInShellHelper.ShellRunAsType runAs = OpenInShellHelper.ShellRunAsType.None, bool runWithHiddenWindow = false)
     {
+        Name = name;
         _path = path;
         _arguments = arguments;
         _workingDir = workingDir;

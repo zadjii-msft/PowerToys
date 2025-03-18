@@ -123,6 +123,31 @@
   <data name="EmptyRecycleBin_ConfirmationDialog_Description" xml:space="preserve">
     <value>Do you want to empty your Recycle Bin?</value>
   </data>
+  <data name="Microsoft_plugin_command_name_empty" xml:space="preserve">
+    <value>Empty</value>
+    <comment>Empty recycle bin command name</comment>
+  </data>
+  <data name="Microsoft_plugin_command_name_hibernate" xml:space="preserve">
+    <value>Hibernate</value>
+  </data>
+  <data name="Microsoft_plugin_command_name_lock" xml:space="preserve">
+    <value>Lock</value>
+  </data>
+  <data name="Microsoft_plugin_command_name_signout" xml:space="preserve">
+    <value>Sign Out</value>
+  </data>
+  <data name="Microsoft_plugin_command_name_open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Microsoft_plugin_command_name_reboot" xml:space="preserve">
+    <value>Reboot</value>
+  </data>
+  <data name="Microsoft_plugin_command_name_restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="Microsoft_plugin_command_name_shutdown" xml:space="preserve">
+    <value>Shutdown</value>
+  </data>
   <data name="Microsoft_plugin_ext_connection_details" xml:space="preserve">
     <value>Connection Details</value>
   </data>
@@ -379,5 +404,8 @@
   </data>
   <data name="Microsoft_plugin_sys_WirelessLan" xml:space="preserve">
     <value>Wireless LAN</value>
+  </data>
+  <data name="Microsoft_plugin_command_name_sleep" xml:space="preserve">
+    <value>Sleep</value>
   </data>
 </root>

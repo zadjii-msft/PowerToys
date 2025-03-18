@@ -9,8 +9,9 @@ namespace Microsoft.CmdPal.Ext.System;
 
 public sealed partial class ExecuteCommandConfirmation : InvokableCommand
 {
-    public ExecuteCommandConfirmation(bool confirm, string confirmationMessage, Action command)
+    public ExecuteCommandConfirmation(string name, bool confirm, string confirmationMessage, Action command)
     {
+        Name = name;
         _command = command;
         _confirm = confirm;
         _confirmationMessage = confirmationMessage;

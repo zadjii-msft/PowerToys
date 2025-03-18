@@ -79,6 +79,87 @@ namespace Microsoft.CmdPal.Ext.System {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Empty.
+        /// </summary>
+        public static string Microsoft_plugin_command_name_empty {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_command_name_empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hibernate.
+        /// </summary>
+        public static string Microsoft_plugin_command_name_hibernate {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_command_name_hibernate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lock.
+        /// </summary>
+        public static string Microsoft_plugin_command_name_lock {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_command_name_lock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string Microsoft_plugin_command_name_open {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_command_name_open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reboot.
+        /// </summary>
+        public static string Microsoft_plugin_command_name_reboot {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_command_name_reboot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restart.
+        /// </summary>
+        public static string Microsoft_plugin_command_name_restart {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_command_name_restart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shutdown.
+        /// </summary>
+        public static string Microsoft_plugin_command_name_shutdown {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_command_name_shutdown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign Out.
+        /// </summary>
+        public static string Microsoft_plugin_command_name_signout {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_command_name_signout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sleep.
+        /// </summary>
+        public static string Microsoft_plugin_command_name_sleep {
+            get {
+                return ResourceManager.GetString("Microsoft_plugin_command_name_sleep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connection Details.
         /// </summary>
         public static string Microsoft_plugin_ext_connection_details {

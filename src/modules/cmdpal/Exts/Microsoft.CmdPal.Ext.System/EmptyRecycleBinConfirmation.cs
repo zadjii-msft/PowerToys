@@ -12,6 +12,7 @@ public sealed partial class EmptyRecycleBinConfirmation : InvokableCommand
 {
     public EmptyRecycleBinConfirmation(bool settingEmptyRBSuccesMsg)
     {
+        Name = Resources.Microsoft_plugin_command_name_empty;
         _settingEmptyRBSuccesMsg = settingEmptyRBSuccesMsg;
     }
 
