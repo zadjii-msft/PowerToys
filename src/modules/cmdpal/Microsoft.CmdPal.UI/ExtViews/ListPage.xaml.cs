@@ -247,6 +247,15 @@ public sealed partial class ListPage : Page,
     // GetItems or a change in the filter.
     private void Page_ItemsUpdated(ListViewModel sender, object args)
     {
+        if (ViewModel != null)
+        {
+            ViewModel?.UpdateGroupsIfNeeded();
+
+            var grouping = ViewModel?.HasGrouping ?? false;
+            ItemsCVS.IsSourceGrouped = grouping;
+            ItemsCVS.Source = grouping ? ViewModel?.Groups : ViewModel?.FilteredItems;
+        }
+
         // If for some reason, we don't have a selected item, fix that.
         //
         // It's important to do this here, because once there's no selection
